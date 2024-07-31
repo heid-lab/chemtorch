@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "DeepRxn"
+authors = [
+    { name = "Esther Heid", email = "esther.heid@tuwien.ac.at" },
+]
+description = "Deep learning of chemical reactions"
+license = { text = "MIT License" }
+requires-python = ">=3.8"
+dependencies = [
+    "rdkit",
+    "numpy",
+    "scikit-learn",
+    "torch",
+    "torch_scatter",
+    "torch_sparse",
+    "torch_geometric",
+    "pandas",
+]
+readme = "README.md"
+dynamic = ["version"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.dynamic]
+version = { attr = "deeprxn.__version__" }
