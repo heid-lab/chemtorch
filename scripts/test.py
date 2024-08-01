@@ -1,38 +1,37 @@
+import os
 from deeprxn.data import load_from_csv, construct_loader
-from deeprxn.train import train
+from deeprxn.train import train, ArgumentParser, set_seed
 from deeprxn.featurizer import make_featurizer
 
-atom_featurizer = make_featurizer("atom_rdkit_organic")
-bond_featurizer = make_featurizer("bond_rdkit_base")
+def get_data_paths(data_folder):
+    base_path = os.path.join("data", data_folder)
+    return {
+        "train": os.path.join(base_path, "train.csv"),
+        "val": os.path.join(base_path, "val.csv"),
+        "test": os.path.join(base_path, "test.csv")
+    }
 
-'''
-#Example for molecules:
-smiles, labels = load_from_csv("https://github.com/hesther/rxn_workshop/raw/main/data/esol/train_full.csv", 'smiles', 'logSolubility')
-train_loader = construct_loader(smiles, labels, atom_featurizer, bond_featurizer, True, mode='mol')
+def main():
+    args = ArgumentParser().parse_args()
+    
+    set_seed(args.seed)
 
+    atom_featurizer = make_featurizer("atom_rdkit_organic")
+    bond_featurizer = make_featurizer("bond_rdkit_base")
 
-smiles, labels = load_from_csv("https://github.com/hesther/rxn_workshop/raw/main/data/esol/val_full.csv", 'smiles', 'logSolubility')
-val_loader = construct_loader(smiles, labels, atom_featurizer, bond_featurizer, False, mode='mol')
+    data_paths = get_data_paths(args.data)
 
-smiles, labels = load_from_csv("https://github.com/hesther/rxn_workshop/raw/main/data/esol/test_full.csv", 'smiles', 'logSolubility')
-test_loader = construct_loader(smiles, labels, atom_featurizer, bond_featurizer, False, mode='mol')
+    # Load data and construct loaders
+    smiles, labels = load_from_csv(data_paths["train"], 'AAM', 'ea')
+    train_loader = construct_loader(smiles, labels, atom_featurizer, bond_featurizer, True, mode='rxn')
 
-train(train_loader, val_loader, test_loader)
-'''
+    smiles, labels = load_from_csv(data_paths["val"], 'AAM', 'ea')
+    val_loader = construct_loader(smiles, labels, atom_featurizer, bond_featurizer, False, mode='rxn')
 
+    smiles, labels = load_from_csv(data_paths["test"], 'AAM', 'ea')
+    test_loader = construct_loader(smiles, labels, atom_featurizer, bond_featurizer, False, mode='rxn')
 
-#Example for reactions:
-smiles, labels = load_from_csv("https://github.com/hesther/rxn_workshop/raw/main/data/e2/train_full.csv", 'AAM', 'ea')
-train_loader = construct_loader(smiles, labels, atom_featurizer, bond_featurizer, True, mode='rxn')
+    train(train_loader, val_loader, test_loader, args)
 
-
-smiles, labels = load_from_csv("https://github.com/hesther/rxn_workshop/raw/main/data/e2/val_full.csv", 'AAM', 'ea')
-val_loader = construct_loader(smiles, labels, atom_featurizer, bond_featurizer, False, mode='rxn')
-
-smiles, labels = load_from_csv("https://github.com/hesther/rxn_workshop/raw/main/data/e2/test_full.csv", 'AAM', 'ea')
-test_loader = construct_loader(smiles, labels, atom_featurizer, bond_featurizer, False, mode='rxn')
-
-train(train_loader, val_loader, test_loader)
-
-
-#TODO: Test also on bigger datasets eg. ccsd barrier heights, compare to chemprop v1 and v2
+if __name__ == "__main__":
+    main()

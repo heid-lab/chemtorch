@@ -3,11 +3,28 @@ import numpy as np
 from torch import nn
 import math
 from sklearn.metrics import mean_absolute_error, root_mean_squared_error
+from tap import Tap
+import random
 
 from .data import Standardizer
 from .model import GNN
 
-#TODO (also in other files): add support for cuda
+#TODO: support cuda
+
+class ArgumentParser(Tap):
+    seed: int = 0  # Random seed for reproducibility
+    epochs: int = 30  # Number of training epochs
+    learning_rate: float = 0.001  # Learning rate for the optimizer
+    data: str = "barriers_e2"  # Dataset to use (e.g., barriers_cycloadd, barriers_e2, barriers_rdb7, barriers_rgd1 ,barriers_sn2)
+
+def set_seed(seed):
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    if torch.cuda.is_available():
+        torch.cuda.manual_seed_all(seed)
+        torch.backends.cudnn.deterministic = True
+        torch.backends.cudnn.benchmark = False
 
 def train_epoch(model, loader, optimizer, loss, stdzer):
     #TODO: add docstring
@@ -39,11 +56,11 @@ def pred(model, loader, loss, stdzer):
 
     return preds
 
-def train(train_loader, val_loader, test_loader):
+def train(train_loader, val_loader, test_loader, args):
     #TODO add docstring
     #TODO add arguments for seed, epochs, learning rate, etc (currently hardcoded)
     #TODO add option for early stopping and implement accordingly (roll back to best model after some patience)
-    torch.manual_seed(0)
+    set_seed(args.seed)
     mean = np.mean(train_loader.dataset.labels)
     std = np.std(train_loader.dataset.labels)
     stdzer = Standardizer(mean, std)
