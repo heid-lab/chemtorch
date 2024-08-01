@@ -60,7 +60,6 @@ def train(train_loader, val_loader, test_loader, args):
     #TODO add docstring
     #TODO add arguments for seed, epochs, learning rate, etc (currently hardcoded)
     #TODO add option for early stopping and implement accordingly (roll back to best model after some patience)
-    set_seed(args.seed)
     mean = np.mean(train_loader.dataset.labels)
     std = np.std(train_loader.dataset.labels)
     stdzer = Standardizer(mean, std)
