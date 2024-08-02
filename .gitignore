@@ -9,6 +9,9 @@ __pycache__/
 # Data folder
 data/
 
+# Saved models
+saved_models/
+
 # data.tar.gz
 data.tar.gz
 

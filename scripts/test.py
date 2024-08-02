@@ -1,6 +1,9 @@
-from deeprxn.data import load_from_csv, construct_loader
-from deeprxn.train import train, ArgumentParser, set_seed
+# test.py
+from deeprxn.data import load_from_csv, construct_loader, Standardizer
+from deeprxn.train import train, ArgumentParser, set_seed, load_model, predict
 from deeprxn.featurizer import make_featurizer
+from deeprxn.model import GNN
+import numpy as np
 
 def main():
     args = ArgumentParser().parse_args()
@@ -20,7 +23,20 @@ def main():
     smiles, labels = load_from_csv(args.data, "test")
     test_loader = construct_loader(smiles, labels, atom_featurizer, bond_featurizer, False, mode='rxn')
 
-    train(train_loader, val_loader, test_loader, args)
+    if args.mode == "train":
+        train(train_loader, val_loader, test_loader, args)
+    elif args.mode == "predict":
+        model = GNN(train_loader.dataset.num_node_features, train_loader.dataset.num_edge_features)
+        model, _, _, _ = load_model(model, None, args.model_path)
+        
+        # Make predictions on the test set
+        stdzer = Standardizer(np.mean(train_loader.dataset.labels), np.std(train_loader.dataset.labels))
+        test_preds = predict(model, test_loader, stdzer)
+        
+        # Print or save predictions as needed
+        print("Test set predictions:", test_preds)
+    else:
+        raise ValueError(f"Invalid mode: {args.mode}. Choose 'train' or 'predict'.")
 
 if __name__ == "__main__":
     main()

@@ -5,7 +5,7 @@ from torch_geometric.data import Dataset
 from torch_geometric.loader import DataLoader
 import pandas as pd
 import os
-from .featurizer import make_featurizer
+from deeprxn.featurizer import make_featurizer
 
 def make_mol(smi):
     #TODO: add docstring

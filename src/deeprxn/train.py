@@ -5,9 +5,9 @@ import math
 from sklearn.metrics import mean_absolute_error, root_mean_squared_error
 from tap import Tap
 import random
-
-from .data import Standardizer
-from .model import GNN
+import os
+from deeprxn.data import Standardizer
+from deeprxn.model import GNN
 
 #TODO: support cuda
 
@@ -15,7 +15,9 @@ class ArgumentParser(Tap):
     seed: int = 0  # Random seed for reproducibility
     epochs: int = 30  # Number of training epochs
     learning_rate: float = 0.001  # Learning rate for the optimizer
-    data: str = "barriers_e2"  # Dataset to use (e.g., barriers_cycloadd, barriers_e2, barriers_rdb7, barriers_rgd1 ,barriers_sn2)
+    data: str = "barriers_e2"  # Dataset to use (e.g., barriers_cycloadd, barriers_e2, barriers_rdb7, barriers_rgd1, barriers_sn2)    
+    model_path: str = "model.pt"  # Path to save/load the model
+    mode: str = "train"  # Mode: 'train' or 'predict'
 
 def set_seed(seed):
     random.seed(seed)
@@ -26,6 +28,28 @@ def set_seed(seed):
         torch.cuda.manual_seed_all(seed)
         torch.backends.cudnn.deterministic = True
         torch.backends.cudnn.benchmark = False
+
+def save_model(model, optimizer, epoch, best_val_loss, model_path):
+    torch.save({
+        'epoch': epoch,
+        'model_state_dict': model.state_dict(),
+        'optimizer_state_dict': optimizer.state_dict(),
+        'best_val_loss': best_val_loss,
+    }, model_path)
+
+def load_model(model, optimizer, model_path):
+    if os.path.exists(model_path):
+        checkpoint = torch.load(model_path)
+        model.load_state_dict(checkpoint['model_state_dict'])
+        epoch = checkpoint['epoch']
+        best_val_loss = checkpoint['best_val_loss']
+        
+        if optimizer is not None:
+            optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
+        
+        return model, optimizer, epoch, best_val_loss
+    else:
+        return model, optimizer, 0, float('inf')
 
 def train_epoch(model, loader, optimizer, loss, stdzer):
     #TODO: add docstring
@@ -70,11 +94,33 @@ def train(train_loader, val_loader, test_loader, args):
     loss = nn.MSELoss(reduction='sum')
     print(model)
 
-    for epoch in range(0, 30):
-        train_loss = train_epoch(model, train_loader, optimizer, loss, stdzer)
-        preds = pred(model, val_loader, loss, stdzer)
-        print("Epoch",epoch,"  Train RMSE", train_loss,"   Val RMSE", root_mean_squared_error(preds,val_loader.dataset.labels))
+    model, optimizer, start_epoch, best_val_loss = load_model(model, optimizer, args.model_path)
 
-    preds = pred(model, test_loader, loss, stdzer)
-    print("Test RMSE", root_mean_squared_error(preds,test_loader.dataset.labels))
-    print("Test MAE", mean_absolute_error(preds,test_loader.dataset.labels))
+    for epoch in range(start_epoch, args.epochs):
+        train_loss = train_epoch(model, train_loader, optimizer, loss, stdzer)
+        val_preds = pred(model, val_loader, loss, stdzer)
+        val_loss = root_mean_squared_error(val_preds, val_loader.dataset.labels)
+        
+        if val_loss < best_val_loss:
+            best_val_loss = val_loss
+            save_model(model, optimizer, epoch, best_val_loss, args.model_path)
+        
+        print(f"Epoch {epoch}, Train RMSE: {train_loss}, Val RMSE: {val_loss}")
+
+    # Load the best model for final evaluation
+    model, _, _, _ = load_model(model, optimizer, args.model_path)
+    test_preds = pred(model, test_loader, loss, stdzer)
+    test_rmse = root_mean_squared_error(test_preds, test_loader.dataset.labels)
+    test_mae = mean_absolute_error(test_preds, test_loader.dataset.labels)
+    print(f"Test RMSE: {test_rmse}")
+    print(f"Test MAE: {test_mae}")
+
+def predict(model, loader, stdzer):
+    model.eval()
+    preds = []
+    with torch.no_grad():
+        for data in loader:
+            out = model(data)
+            pred = stdzer(out, rev=True)
+            preds.extend(pred.cpu().detach().tolist())
+    return preds
