@@ -26,6 +26,15 @@ def train_epoch(model, loader, optimizer, loss, stdzer):
 
     return math.sqrt(loss_all / len(loader.dataset))
 
+def check_early_stopping(current_loss, best_loss, counter, patience, min_delta):
+    if current_loss < best_loss - min_delta:
+        return current_loss, 0, False
+    else:
+        counter += 1
+        if counter >= patience:
+            return best_loss, counter, True
+        return best_loss, counter, False
+
 def pred(model, loader, loss, stdzer):
     #TODO: add docstring
     model.eval()
@@ -54,16 +63,24 @@ def train(train_loader, val_loader, test_loader, args):
 
     model, optimizer, start_epoch, best_val_loss = load_model(model, optimizer, args.model_path)
 
+    early_stop_counter = 0
     for epoch in range(start_epoch, args.epochs):
         train_loss = train_epoch(model, train_loader, optimizer, loss, stdzer)
         val_preds = pred(model, val_loader, loss, stdzer)
         val_loss = root_mean_squared_error(val_preds, val_loader.dataset.labels)
         
+        best_val_loss, early_stop_counter, should_stop = check_early_stopping(
+            val_loss, best_val_loss, early_stop_counter, args.patience, args.min_delta
+        )
+
         if val_loss < best_val_loss:
-            best_val_loss = val_loss
             save_model(model, optimizer, epoch, best_val_loss, args.model_path)
-        
+          
         print(f"Epoch {epoch}, Train RMSE: {train_loss}, Val RMSE: {val_loss}")
+
+        if should_stop:
+            print(f"Early stopping at epoch {epoch}")
+            break
 
     # Load the best model for final evaluation
     model, _, _, _ = load_model(model, optimizer, args.model_path)
