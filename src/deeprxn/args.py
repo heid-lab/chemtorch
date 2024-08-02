@@ -9,3 +9,4 @@ class ArgumentParser(Tap):
     mode: str = "train"  # Mode: 'train' or 'predict'
     patience: int = 10  # Number of epochs to wait for improvement before early stopping
     min_delta: float = 0.001  # Minimum change in validation loss to qualify as an improvement
+    use_cuda: bool = False  # Enable CUDA if available
