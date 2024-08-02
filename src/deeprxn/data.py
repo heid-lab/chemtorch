@@ -4,7 +4,7 @@ import torch_geometric as tg
 from torch_geometric.data import Dataset
 from torch_geometric.loader import DataLoader
 import pandas as pd
-
+import os
 from .featurizer import make_featurizer
 
 def make_mol(smi):
@@ -122,9 +122,36 @@ class ChemDataset(Dataset):
         #TODO: add docstring
         return len(self.smiles)
 
-def load_from_csv(data_path, input_column='smiles', target_column='target'):
+def get_data_paths(data_folder):
+    base_path = os.path.join("data", data_folder)
+    return {
+        "train": os.path.join(base_path, "train.csv"),
+        "val": os.path.join(base_path, "val.csv"),
+        "test": os.path.join(base_path, "test.csv")
+    }
+
+def load_from_csv(dataset_name, split):
     #TODO: add docstring
-    data_df = pd.read_csv(data_path)
+
+    data_path = get_data_paths(dataset_name)
+
+    # barriers_cycloadd, barriers_e2, barriers_rdb7, barriers_rgd1 ,barriers_sn2
+    if dataset_name == "barriers_cycloadd":
+        input_column = "rxn_smiles"
+        target_column = "G_act"
+    elif dataset_name == "barriers_e2":
+        input_column = "AAM"
+        target_column = "ea"
+    elif dataset_name == "barriers_rdb7" or dataset_name == "barriers_rgd1":
+        input_column = "smiles"
+        target_column = "ea"
+    elif dataset_name == "barriers_sn2":
+        input_column = "AAM"
+        target_column = "ea"
+    else:
+        raise ValueError("Unknown dataset", dataset_name)
+    
+    data_df = pd.read_csv(data_path[split])
     smiles = data_df[input_column].values
     labels = data_df[target_column].values.astype(float)
     return smiles, labels
@@ -138,7 +165,8 @@ def construct_loader(smiles, labels, atom_featurizer, bond_featurizer, shuffle=T
                             shuffle=shuffle,
                             num_workers=0,
                             pin_memory=True,
-                            sampler=None)
+                            sampler=None,
+                            generator=torch.Generator().manual_seed(0))
     return loader
 
 class Standardizer:
