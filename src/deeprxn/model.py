@@ -3,6 +3,29 @@ from torch import nn
 import torch.nn.functional as F
 from torch_geometric.nn import MessagePassing
 from torch_geometric.nn import global_add_pool
+import os
+
+def save_model(model, optimizer, epoch, best_val_loss, model_path):
+    torch.save({
+        'epoch': epoch,
+        'model_state_dict': model.state_dict(),
+        'optimizer_state_dict': optimizer.state_dict(),
+        'best_val_loss': best_val_loss,
+    }, model_path)
+
+def load_model(model, optimizer, model_path):
+    if os.path.exists(model_path):
+        checkpoint = torch.load(model_path)
+        model.load_state_dict(checkpoint['model_state_dict'])
+        epoch = checkpoint['epoch']
+        best_val_loss = checkpoint['best_val_loss']
+        
+        if optimizer is not None:
+            optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
+        
+        return model, optimizer, epoch, best_val_loss
+    else:
+        return model, optimizer, 0, float('inf')
 
 class GNN(nn.Module):
     #TODO: Add Docstring

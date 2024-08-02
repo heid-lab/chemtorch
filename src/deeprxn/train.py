@@ -3,53 +3,11 @@ import numpy as np
 from torch import nn
 import math
 from sklearn.metrics import mean_absolute_error, root_mean_squared_error
-from tap import Tap
-import random
-import os
+from deeprxn.model import load_model, save_model
 from deeprxn.data import Standardizer
 from deeprxn.model import GNN
 
 #TODO: support cuda
-
-class ArgumentParser(Tap):
-    seed: int = 0  # Random seed for reproducibility
-    epochs: int = 30  # Number of training epochs
-    learning_rate: float = 0.001  # Learning rate for the optimizer
-    data: str = "barriers_e2"  # Dataset to use (e.g., barriers_cycloadd, barriers_e2, barriers_rdb7, barriers_rgd1, barriers_sn2)    
-    model_path: str = "model.pt"  # Path to save/load the model
-    mode: str = "train"  # Mode: 'train' or 'predict'
-
-def set_seed(seed):
-    random.seed(seed)
-    np.random.seed(seed)
-    torch.manual_seed(seed)
-    torch.set_num_threads(1)  # Ensure consistent CPU thread behavior
-    if torch.cuda.is_available():
-        torch.cuda.manual_seed_all(seed)
-        torch.backends.cudnn.deterministic = True
-        torch.backends.cudnn.benchmark = False
-
-def save_model(model, optimizer, epoch, best_val_loss, model_path):
-    torch.save({
-        'epoch': epoch,
-        'model_state_dict': model.state_dict(),
-        'optimizer_state_dict': optimizer.state_dict(),
-        'best_val_loss': best_val_loss,
-    }, model_path)
-
-def load_model(model, optimizer, model_path):
-    if os.path.exists(model_path):
-        checkpoint = torch.load(model_path)
-        model.load_state_dict(checkpoint['model_state_dict'])
-        epoch = checkpoint['epoch']
-        best_val_loss = checkpoint['best_val_loss']
-        
-        if optimizer is not None:
-            optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
-        
-        return model, optimizer, epoch, best_val_loss
-    else:
-        return model, optimizer, 0, float('inf')
 
 def train_epoch(model, loader, optimizer, loss, stdzer):
     #TODO: add docstring

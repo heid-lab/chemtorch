@@ -1,8 +1,10 @@
 # test.py
 from deeprxn.data import load_from_csv, construct_loader, Standardizer
-from deeprxn.train import train, ArgumentParser, set_seed, load_model, predict
+from deeprxn.train import train, load_model, predict
 from deeprxn.featurizer import make_featurizer
+from deeprxn.utils import set_seed
 from deeprxn.model import GNN
+from deeprxn.args import ArgumentParser
 import numpy as np
 
 def main():
@@ -25,6 +27,7 @@ def main():
 
     if args.mode == "train":
         train(train_loader, val_loader, test_loader, args)
+
     elif args.mode == "predict":
         model = GNN(train_loader.dataset.num_node_features, train_loader.dataset.num_edge_features)
         model, _, _, _ = load_model(model, None, args.model_path)

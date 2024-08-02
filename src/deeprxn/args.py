@@ -1,18 +1,9 @@
-from typing import Optional
 from tap import Tap
-import random
-import numpy as np
-import torch
 
-class TrainArgs(Tap):
-    seed: Optional[int] = None
-    """Random seed to use for data splitting and model initialization."""
-    data_source: str = "online"
-    """Source of the data. Can be 'online' or one of the local folder names."""
-
-    def process_args(self) -> None:
-        if self.seed is not None:
-            random.seed(self.seed)
-            np.random.seed(self.seed)
-            torch.manual_seed(self.seed)
-            torch.cuda.manual_seed_all(self.seed)
+class ArgumentParser(Tap):
+    seed: int = 0  # Random seed for reproducibility
+    epochs: int = 30  # Number of training epochs
+    learning_rate: float = 0.001  # Learning rate for the optimizer
+    data: str = "barriers_e2"  # Dataset to use (e.g., barriers_cycloadd, barriers_e2, barriers_rdb7, barriers_rgd1, barriers_sn2)    
+    model_path: str = "model.pt"  # Path to save/load the model
+    mode: str = "train"  # Mode: 'train' or 'predict'
