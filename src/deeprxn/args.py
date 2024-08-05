@@ -10,3 +10,6 @@ class ArgumentParser(Tap):
     patience: int = 10  # Number of epochs to wait for improvement before early stopping
     min_delta: float = 0.001  # Minimum change in validation loss to qualify as an improvement
     use_cuda: bool = False  # Enable CUDA if available
+    num_workers: int = 0  # Number of workers for data loader
+    atom_featurizer: str = "atom_rdkit_organic"  # Atom featurizer option
+    bond_featurizer: str = "bond_rdkit_base"  # Bond featurizer option

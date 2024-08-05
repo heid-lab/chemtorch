@@ -156,14 +156,13 @@ def load_from_csv(dataset_name, split):
     labels = data_df[target_column].values.astype(float)
     return smiles, labels
     
-def construct_loader(smiles, labels, atom_featurizer, bond_featurizer, shuffle=True, batch_size=50, mode='rxn'):
+def construct_loader(smiles, labels, atom_featurizer, bond_featurizer, num_workers, shuffle=True, batch_size=50, mode='rxn'):
     #TODO: add docstring
-    #TODO: add option for num_workers
     dataset = ChemDataset(smiles, labels, atom_featurizer, bond_featurizer, mode)
     loader = DataLoader(dataset=dataset,
                             batch_size=batch_size,
                             shuffle=shuffle,
-                            num_workers=0,
+                            num_workers=num_workers,
                             pin_memory=True,
                             sampler=None,
                             generator=torch.Generator().manual_seed(0))

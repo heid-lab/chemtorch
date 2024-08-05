@@ -15,18 +15,27 @@ def main():
     args.device = torch.device("cuda" if args.use_cuda and torch.cuda.is_available() else "cpu")
     print(f"Using device: {args.device}")
 
-    atom_featurizer = make_featurizer("atom_rdkit_organic")
-    bond_featurizer = make_featurizer("bond_rdkit_base")
+    valid_atom_featurizers = ["atom_atomic_num", "atom_rdkit_base", "atom_rdkit_organic"]
+    valid_bond_featurizers = ["bond_rdkit_base"]
+    
+    if args.atom_featurizer not in valid_atom_featurizers:
+        raise ValueError(f"Invalid atom featurizer: {args.atom_featurizer}. Choose from {valid_atom_featurizers}")
+    
+    if args.bond_featurizer not in valid_bond_featurizers:
+        raise ValueError(f"Invalid bond featurizer: {args.bond_featurizer}. Choose from {valid_bond_featurizers}")
+
+    atom_featurizer = make_featurizer(args.atom_featurizer)
+    bond_featurizer = make_featurizer(args.bond_featurizer)
 
     # Load data and construct loaders
     smiles, labels = load_from_csv(args.data, "train")
-    train_loader = construct_loader(smiles, labels, atom_featurizer, bond_featurizer, True, mode='rxn')
+    train_loader = construct_loader(smiles, labels, atom_featurizer, bond_featurizer, args.num_workers, True, mode='rxn')
 
     smiles, labels = load_from_csv(args.data, "val")
-    val_loader = construct_loader(smiles, labels, atom_featurizer, bond_featurizer, False, mode='rxn')
+    val_loader = construct_loader(smiles, labels, atom_featurizer, bond_featurizer, args.num_workers, False, mode='rxn')
 
     smiles, labels = load_from_csv(args.data, "test")
-    test_loader = construct_loader(smiles, labels, atom_featurizer, bond_featurizer, False, mode='rxn')
+    test_loader = construct_loader(smiles, labels, atom_featurizer, bond_featurizer, args.num_workers, False, mode='rxn')
 
     if args.mode == "train":
         train(train_loader, val_loader, test_loader, args)

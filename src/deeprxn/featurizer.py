@@ -53,6 +53,11 @@ def make_featurizer(
                                      ]),
             (lambda item: Atom.GetIsAromatic(item), []),
             (lambda item: Atom.GetMass(item) * 0.01, []),
+            (lambda item: Atom.IsInRingSize(item, 3), []),
+            (lambda item: Atom.IsInRingSize(item, 4), []),
+            (lambda item: Atom.IsInRingSize(item, 5), []),
+            (lambda item: Atom.IsInRingSize(item, 6), []),
+            (lambda item: Atom.IsInRingSize(item, 7), []),
         ]
 
     elif featurizer_name == "bond_rdkit_base":
@@ -63,7 +68,12 @@ def make_featurizer(
                                 BondType.AROMATIC,
                                 ]),
             (lambda item: Bond.GetIsConjugated(item), []),
-            (lambda item: Bond.IsInRing(item), []),
+            #(lambda item: Bond.IsInRing(item), []), # introduced noise in combination with features below
+            (lambda item: Bond.IsInRingSize(item, 3), []),
+            (lambda item: Bond.IsInRingSize(item, 4), []),
+            (lambda item: Bond.IsInRingSize(item, 5), []),
+            (lambda item: Bond.IsInRingSize(item, 6), []),
+            (lambda item: Bond.IsInRingSize(item, 7), []),
             ]
 
     else:
