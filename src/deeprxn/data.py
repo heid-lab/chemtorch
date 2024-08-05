@@ -46,50 +46,112 @@ class MolGraph:
 class RxnGraph:
     #TODO: add docstring
     #TODO (maybe): add support for unbalanced reactions?
-    def __init__(self, smiles, atom_featurizer, bond_featurizer):
+    def __init__(self, smiles, atom_featurizer, bond_featurizer, representation="CGR"):
         self.smiles_reac, _, self.smiles_prod = smiles.split(">")
         self.f_atoms = []
         self.f_bonds = []
         self.edge_index = []
 
-        mol_reac = make_mol(self.smiles_reac)
-        mol_prod = make_mol(self.smiles_prod)
+        self.mol_reac = make_mol(self.smiles_reac)
+        self.mol_prod = make_mol(self.smiles_prod)
+        self.ri2pi = map_reac_to_prod(self.mol_reac, self.mol_prod)
+        self.n_atoms = self.mol_reac.GetNumAtoms()
 
-        ri2pi = map_reac_to_prod(mol_reac, mol_prod)
-        n_atoms = mol_reac.GetNumAtoms()
+        self.atom_featurizer = atom_featurizer
+        self.bond_featurizer = bond_featurizer
+        self.representation = representation
 
-        for i in range(n_atoms):
-            f_atom_reac = atom_featurizer(mol_reac.GetAtomWithIdx(i))
-            f_atom_prod = atom_featurizer(mol_prod.GetAtomWithIdx(ri2pi[i]))
-            f_atom_diff = [y - x for x, y in zip(f_atom_reac, f_atom_prod)]
-            f_atom = f_atom_reac + f_atom_diff
-            self.f_atoms.append(f_atom)
+        if self.representation == "CGR":
+            self._build_cgr()
+        elif self.representation == "fully_connected":
+            self._build_fully_connected()
+        elif representation == "connected_pair":
+            self._build_connected_pair()
+        else:
+            raise ValueError("Invalid representation. Choose 'CGR', 'fully_connected', or 'connected_pair'.")
 
-            for j in range(i + 1, n_atoms):
-                bond_reac = mol_reac.GetBondBetweenAtoms(i, j)
-                bond_prod = mol_prod.GetBondBetweenAtoms(ri2pi[i], ri2pi[j])
+    def _get_atom_features(self, i):
+        f_atom_reac = self.atom_featurizer(self.mol_reac.GetAtomWithIdx(i))
+        f_atom_prod = self.atom_featurizer(self.mol_prod.GetAtomWithIdx(self.ri2pi[i]))
+        f_atom_diff = [y - x for x, y in zip(f_atom_reac, f_atom_prod)]
+        return f_atom_reac + f_atom_diff
+
+    def _get_bond_features(self, bond_reac, bond_prod):
+        f_bond_reac = self.bond_featurizer(bond_reac) if bond_reac else [0] * len(self.bond_featurizer(None))
+        f_bond_prod = self.bond_featurizer(bond_prod) if bond_prod else [0] * len(self.bond_featurizer(None))
+        f_bond_diff = [y - x for x, y in zip(f_bond_reac, f_bond_prod)]
+        return f_bond_reac + f_bond_diff
+
+    def _build_cgr(self):
+        for i in range(self.n_atoms):
+            self.f_atoms.append(self._get_atom_features(i))
+
+            for j in range(i + 1, self.n_atoms):
+                bond_reac = self.mol_reac.GetBondBetweenAtoms(i, j)
+                bond_prod = self.mol_prod.GetBondBetweenAtoms(self.ri2pi[i], self.ri2pi[j])
                 if bond_reac is None and bond_prod is None:
                     continue
-                f_bond_reac = bond_featurizer(bond_reac)
-                f_bond_prod = bond_featurizer(bond_prod)
-                f_bond_diff = [y - x for x, y in zip(f_bond_reac, f_bond_prod)]
-                f_bond = f_bond_reac + f_bond_diff
+                f_bond = self._get_bond_features(bond_reac, bond_prod)
                 self.f_bonds.append(f_bond)
                 self.f_bonds.append(f_bond)
                 self.edge_index.extend([(i, j), (j, i)])
+
+    def _build_fully_connected(self):
+        for i in range(self.n_atoms):
+            self.f_atoms.append(self._get_atom_features(i))
+
+            for j in range(self.n_atoms):
+                if i != j:
+                    bond_reac = self.mol_reac.GetBondBetweenAtoms(i, j)
+                    bond_prod = self.mol_prod.GetBondBetweenAtoms(self.ri2pi[i], self.ri2pi[j])
+                    f_bond = self._get_bond_features(bond_reac, bond_prod)
+                    self.f_bonds.append(f_bond)
+                    self.edge_index.append((i, j))
+
+    def _build_connected_pair(self):
+        # Build reactant graph
+        for i in range(self.n_atoms):
+            self.f_atoms.append(self.atom_featurizer(self.mol_reac.GetAtomWithIdx(i)))
+            for j in range(i + 1, self.n_atoms):
+                bond_reac = self.mol_reac.GetBondBetweenAtoms(i, j)
+                if bond_reac:
+                    f_bond = self.bond_featurizer(bond_reac)
+                    self.f_bonds.append(f_bond)
+                    self.f_bonds.append(f_bond)
+                    self.edge_index.extend([(i, j), (j, i)])
+
+        # Build product graph
+        offset = self.n_atoms
+        for i in range(self.n_atoms):
+            self.f_atoms.append(self.atom_featurizer(self.mol_prod.GetAtomWithIdx(self.ri2pi[i])))
+            for j in range(i + 1, self.n_atoms):
+                bond_prod = self.mol_prod.GetBondBetweenAtoms(self.ri2pi[i], self.ri2pi[j])
+                if bond_prod:
+                    f_bond = self.bond_featurizer(bond_prod)
+                    self.f_bonds.append(f_bond)
+                    self.f_bonds.append(f_bond)
+                    self.edge_index.extend([(i + offset, j + offset), (j + offset, i + offset)])
+
+        # Connect corresponding atoms between reactants and products
+        for i in range(self.n_atoms):
+            f_bond = [0] * len(self.bond_featurizer(None))  # Use a zero vector for the connecting edge
+            self.f_bonds.append(f_bond)
+            self.f_bonds.append(f_bond)
+            self.edge_index.extend([(i, i + offset), (i + offset, i)])
 
 
 class ChemDataset(Dataset):
     #TODO: add docstring
     #TODO: add functionality to drop invalid molecules
     #TODO: add option to cache graphs
-    def __init__(self, smiles, labels, atom_featurizer, bond_featurizer, mode='mol'):
+    def __init__(self, smiles, labels, atom_featurizer, bond_featurizer, mode='mol', representation="CGR"):
         super(ChemDataset, self).__init__()
         self.smiles = smiles
         self.labels = labels
         self.mode = mode
         self.atom_featurizer = atom_featurizer
         self.bond_featurizer = bond_featurizer
+        self.representation = representation 
 
     def process_key(self, key):
         #TODO: add docstring
@@ -97,7 +159,7 @@ class ChemDataset(Dataset):
         if self.mode == 'mol':
             molgraph = MolGraph(smi, self.atom_featurizer, self.bond_featurizer)
         elif self.mode == 'rxn':
-            molgraph = RxnGraph(smi, self.atom_featurizer, self.bond_featurizer)
+            molgraph = RxnGraph(smi, self.atom_featurizer, self.bond_featurizer, self.representation)
         else:
             raise ValueError("Unknown option for mode", self.mode)
         mol = self.molgraph2data(molgraph, key)
@@ -156,9 +218,17 @@ def load_from_csv(dataset_name, split):
     labels = data_df[target_column].values.astype(float)
     return smiles, labels
     
-def construct_loader(smiles, labels, atom_featurizer, bond_featurizer, num_workers, shuffle=True, batch_size=50, mode='rxn'):
+def construct_loader(smiles, 
+                     labels, 
+                     atom_featurizer, 
+                     bond_featurizer, 
+                     num_workers,
+                     shuffle=True, 
+                     batch_size=50, 
+                     mode='rxn', 
+                     representation="CGR"):
     #TODO: add docstring
-    dataset = ChemDataset(smiles, labels, atom_featurizer, bond_featurizer, mode)
+    dataset = ChemDataset(smiles, labels, atom_featurizer, bond_featurizer, mode, representation)
     loader = DataLoader(dataset=dataset,
                             batch_size=batch_size,
                             shuffle=shuffle,

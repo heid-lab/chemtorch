@@ -29,13 +29,13 @@ def main():
 
     # Load data and construct loaders
     smiles, labels = load_from_csv(args.data, "train")
-    train_loader = construct_loader(smiles, labels, atom_featurizer, bond_featurizer, args.num_workers, True, mode='rxn')
+    train_loader = construct_loader(smiles, labels, atom_featurizer, bond_featurizer, args.num_workers, True, mode='rxn', representation=args.representation)
 
     smiles, labels = load_from_csv(args.data, "val")
-    val_loader = construct_loader(smiles, labels, atom_featurizer, bond_featurizer, args.num_workers, False, mode='rxn')
+    val_loader = construct_loader(smiles, labels, atom_featurizer, bond_featurizer, args.num_workers, False, mode='rxn', representation=args.representation)
 
     smiles, labels = load_from_csv(args.data, "test")
-    test_loader = construct_loader(smiles, labels, atom_featurizer, bond_featurizer, args.num_workers, False, mode='rxn')
+    test_loader = construct_loader(smiles, labels, atom_featurizer, bond_featurizer, args.num_workers, False, mode='rxn', representation=args.representation)
 
     if args.mode == "train":
         train(train_loader, val_loader, test_loader, args)

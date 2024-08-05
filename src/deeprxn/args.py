@@ -13,3 +13,4 @@ class ArgumentParser(Tap):
     num_workers: int = 0  # Number of workers for data loader
     atom_featurizer: str = "atom_rdkit_organic"  # Atom featurizer option
     bond_featurizer: str = "bond_rdkit_base"  # Bond featurizer option
+    representation: str = "CGR"  # Molecular representation option
