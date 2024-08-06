@@ -46,7 +46,7 @@ class MolGraph:
 class RxnGraph:
     #TODO: add docstring
     #TODO (maybe): add support for unbalanced reactions?
-    def __init__(self, smiles, atom_featurizer, bond_featurizer, representation="CGR"):
+    def __init__(self, smiles, atom_featurizer, bond_featurizer, representation="CGR", connection_direction="bidirectional"):
         self.smiles_reac, _, self.smiles_prod = smiles.split(">")
         self.f_atoms = []
         self.f_bonds = []
@@ -60,6 +60,9 @@ class RxnGraph:
         self.atom_featurizer = atom_featurizer
         self.bond_featurizer = bond_featurizer
         self.representation = representation
+        self.connection_direction = connection_direction
+
+        self.atom_is_reactant = []  #flag reactant atoms
 
         if self.representation == "CGR":
             self._build_cgr()
@@ -112,6 +115,7 @@ class RxnGraph:
         # Build reactant graph
         for i in range(self.n_atoms):
             self.f_atoms.append(self.atom_featurizer(self.mol_reac.GetAtomWithIdx(i)))
+            self.atom_is_reactant.append(True)  # flag
             for j in range(i + 1, self.n_atoms):
                 bond_reac = self.mol_reac.GetBondBetweenAtoms(i, j)
                 if bond_reac:
@@ -124,6 +128,7 @@ class RxnGraph:
         offset = self.n_atoms
         for i in range(self.n_atoms):
             self.f_atoms.append(self.atom_featurizer(self.mol_prod.GetAtomWithIdx(self.ri2pi[i])))
+            self.atom_is_reactant.append(False)  # flag
             for j in range(i + 1, self.n_atoms):
                 bond_prod = self.mol_prod.GetBondBetweenAtoms(self.ri2pi[i], self.ri2pi[j])
                 if bond_prod:
@@ -135,16 +140,33 @@ class RxnGraph:
         # Connect corresponding atoms between reactants and products
         for i in range(self.n_atoms):
             f_bond = [0] * len(self.bond_featurizer(None))  # Use a zero vector for the connecting edge
-            self.f_bonds.append(f_bond)
-            self.f_bonds.append(f_bond)
-            self.edge_index.extend([(i, i + offset), (i + offset, i)])
+            if self.connection_direction == "bidirectional":
+                self.f_bonds.append(f_bond)
+                self.f_bonds.append(f_bond)
+                self.edge_index.extend([(i, i + offset), (i + offset, i)])
+            elif self.connection_direction == "reactants_to_products":
+                self.f_bonds.append(f_bond)
+                self.edge_index.append((i, i + offset))
+            elif self.connection_direction == "products_to_reactants":
+                self.f_bonds.append(f_bond)
+                self.edge_index.append((i + offset, i))
+            else:
+                raise ValueError("Invalid connection_direction. Choose 'bidirectional', 'reactants_to_products', or 'products_to_reactants'.")
 
 
 class ChemDataset(Dataset):
     #TODO: add docstring
     #TODO: add functionality to drop invalid molecules
     #TODO: add option to cache graphs
-    def __init__(self, smiles, labels, atom_featurizer, bond_featurizer, mode='mol', representation="CGR"):
+    def __init__(self, 
+                 smiles, 
+                 labels, 
+                 atom_featurizer, 
+                 bond_featurizer, 
+                 mode='mol', 
+                 representation="CGR",
+                 connection_direction="bidirectional"):
+        
         super(ChemDataset, self).__init__()
         self.smiles = smiles
         self.labels = labels
@@ -152,6 +174,8 @@ class ChemDataset(Dataset):
         self.atom_featurizer = atom_featurizer
         self.bond_featurizer = bond_featurizer
         self.representation = representation 
+        self.connection_direction = connection_direction
+        self.bidirectional = connection_direction == "bidirectional"
 
     def process_key(self, key):
         #TODO: add docstring
@@ -159,7 +183,11 @@ class ChemDataset(Dataset):
         if self.mode == 'mol':
             molgraph = MolGraph(smi, self.atom_featurizer, self.bond_featurizer)
         elif self.mode == 'rxn':
-            molgraph = RxnGraph(smi, self.atom_featurizer, self.bond_featurizer, self.representation)
+            molgraph = RxnGraph(smi, 
+                                self.atom_featurizer, 
+                                self.bond_featurizer, 
+                                self.representation, 
+                                self.connection_direction)
         else:
             raise ValueError("Unknown option for mode", self.mode)
         mol = self.molgraph2data(molgraph, key)
@@ -173,7 +201,11 @@ class ChemDataset(Dataset):
         data.edge_attr = torch.tensor(molgraph.f_bonds, dtype=torch.float)
         data.y = torch.tensor([self.labels[key]], dtype=torch.float)
         data.smiles = self.smiles[key]
-
+        data.bidirectional = self.bidirectional
+        if isinstance(molgraph, RxnGraph):
+            data.atom_is_reactant = torch.tensor(molgraph.atom_is_reactant, dtype=torch.bool)
+        else:
+            data.atom_is_reactant = torch.ones(data.x.size(0), dtype=torch.bool)
         return data
 
     def get(self,key):
@@ -226,9 +258,11 @@ def construct_loader(smiles,
                      shuffle=True, 
                      batch_size=50, 
                      mode='rxn', 
-                     representation="CGR"):
+                     representation="CGR",
+                     connection_direction="products_to_reactants",
+                     ):
     #TODO: add docstring
-    dataset = ChemDataset(smiles, labels, atom_featurizer, bond_featurizer, mode, representation)
+    dataset = ChemDataset(smiles, labels, atom_featurizer, bond_featurizer, mode, representation, connection_direction)
     loader = DataLoader(dataset=dataset,
                             batch_size=batch_size,
                             shuffle=shuffle,

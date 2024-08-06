@@ -7,8 +7,6 @@ from deeprxn.model import load_model, save_model
 from deeprxn.data import Standardizer
 from deeprxn.model import GNN
 
-#TODO: support cuda
-
 def train_epoch(model, loader, optimizer, loss, stdzer, device):
     #TODO: add docstring
     model.train()
@@ -33,7 +31,7 @@ def check_early_stopping(current_loss, best_loss, counter, patience, min_delta):
     else:
         counter += 1
         if counter >= patience:
-            return best_loss, counter, True
+            return counter, True
         return counter, False
 
 def pred(model, loader, loss, stdzer, device):
@@ -56,7 +54,9 @@ def train(train_loader, val_loader, test_loader, args):
     std = np.std(train_loader.dataset.labels)
     stdzer = Standardizer(mean, std)
 
-    model = GNN(train_loader.dataset.num_node_features, train_loader.dataset.num_edge_features)
+    bidirectional = args.connection_direction == "bidirectional"
+
+    model = GNN(train_loader.dataset.num_node_features, train_loader.dataset.num_edge_features, pool_type=args.pool_type, bidirectional=bidirectional)
     optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
     loss = nn.MSELoss(reduction='sum')
     print(model)
@@ -76,7 +76,8 @@ def train(train_loader, val_loader, test_loader, args):
 
         if val_loss < best_val_loss:
             best_val_loss = val_loss
-            save_model(model, optimizer, epoch, best_val_loss, args.model_path)
+            if args.save_model:
+                save_model(model, optimizer, epoch, best_val_loss, args.model_path)
           
         print(f"Epoch {epoch}, Train RMSE: {train_loss}, Val RMSE: {val_loss}")
 

@@ -14,3 +14,6 @@ class ArgumentParser(Tap):
     atom_featurizer: str = "atom_rdkit_organic"  # Atom featurizer option
     bond_featurizer: str = "bond_rdkit_base"  # Bond featurizer option
     representation: str = "CGR"  # Molecular representation option
+    save_model: bool = False  # Save the model after training
+    connection_direction: str = "bidirectional"  # Connection direction for the CGR representation: reactants_to_products, products_to_reactants, bidirectional
+    pool_type: str = "global"  # global, reactants, products
