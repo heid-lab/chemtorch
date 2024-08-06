@@ -63,6 +63,7 @@ class RxnGraph:
         self.connection_direction = connection_direction
 
         self.atom_is_reactant = []  #flag reactant atoms
+        self.is_real_bond = []
 
         if self.representation == "CGR":
             self._build_cgr()
@@ -123,6 +124,7 @@ class RxnGraph:
                     self.f_bonds.append(f_bond)
                     self.f_bonds.append(f_bond)
                     self.edge_index.extend([(i, j), (j, i)])
+                    self.is_real_bond.extend([True, True])
 
         # Build product graph
         offset = self.n_atoms
@@ -136,6 +138,7 @@ class RxnGraph:
                     self.f_bonds.append(f_bond)
                     self.f_bonds.append(f_bond)
                     self.edge_index.extend([(i + offset, j + offset), (j + offset, i + offset)])
+                    self.is_real_bond.extend([True, True])
 
         # Connect corresponding atoms between reactants and products
         for i in range(self.n_atoms):
@@ -144,12 +147,18 @@ class RxnGraph:
                 self.f_bonds.append(f_bond)
                 self.f_bonds.append(f_bond)
                 self.edge_index.extend([(i, i + offset), (i + offset, i)])
+                self.is_real_bond.extend([False, False])
+
             elif self.connection_direction == "reactants_to_products":
                 self.f_bonds.append(f_bond)
                 self.edge_index.append((i, i + offset))
+                self.is_real_bond.append(False)
+
             elif self.connection_direction == "products_to_reactants":
                 self.f_bonds.append(f_bond)
                 self.edge_index.append((i + offset, i))
+                self.is_real_bond.append(False)
+
             else:
                 raise ValueError("Invalid connection_direction. Choose 'bidirectional', 'reactants_to_products', or 'products_to_reactants'.")
 
@@ -194,18 +203,15 @@ class ChemDataset(Dataset):
         return mol
 
     def molgraph2data(self, molgraph, key):
-        #TODO: add docstring
         data = tg.data.Data()
         data.x = torch.tensor(molgraph.f_atoms, dtype=torch.float)
         data.edge_index = torch.tensor(molgraph.edge_index, dtype=torch.long).t().contiguous()
         data.edge_attr = torch.tensor(molgraph.f_bonds, dtype=torch.float)
         data.y = torch.tensor([self.labels[key]], dtype=torch.float)
         data.smiles = self.smiles[key]
-        data.bidirectional = self.bidirectional
-        if isinstance(molgraph, RxnGraph):
-            data.atom_is_reactant = torch.tensor(molgraph.atom_is_reactant, dtype=torch.bool)
-        else:
-            data.atom_is_reactant = torch.ones(data.x.size(0), dtype=torch.bool)
+        data.atom_is_reactant = torch.tensor(molgraph.atom_is_reactant, dtype=torch.bool)
+        data.is_real_bond = torch.tensor(molgraph.is_real_bond, dtype=torch.bool)
+        data.connection_direction = self.connection_direction
         return data
 
     def get(self,key):

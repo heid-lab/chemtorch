@@ -56,7 +56,12 @@ def train(train_loader, val_loader, test_loader, args):
 
     bidirectional = args.connection_direction == "bidirectional"
 
-    model = GNN(train_loader.dataset.num_node_features, train_loader.dataset.num_edge_features, pool_type=args.pool_type, bidirectional=bidirectional)
+    model = GNN(train_loader.dataset.num_node_features, 
+                train_loader.dataset.num_edge_features, 
+                pool_type=args.pool_type,
+                bidirectional=bidirectional,
+                separate_nn=args.separate_nn,
+                pool_real_only=args.pool_real_only)
     optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
     loss = nn.MSELoss(reduction='sum')
     print(model)

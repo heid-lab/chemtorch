@@ -11,11 +11,12 @@ cd deeprxn
 ```
 We recommend to install the package inside a conda environment (or any other virtual environment of your choice). Follow the pytorch and torch_geometric installation instructions to install for GPUs (here, for CPUs):
 
+For torch scatter and torch sparse, you need might also need to install specific binaries.
 ```
 conda create -n deeprxn python=3.10
 conda activate deeprxn
 pip install --upgrade pip setuptools wheel
-pip install rdkit numpy scikit-learn torch pandas
+pip install rdkit numpy scikit-learn torch pandas typed-argument-parser
 pip install torch_scatter torch_sparse
 pip install torch_geometric
 pip install -e .

@@ -17,3 +17,5 @@ class ArgumentParser(Tap):
     save_model: bool = False  # Save the model after training
     connection_direction: str = "bidirectional"  # Connection direction for the CGR representation: reactants_to_products, products_to_reactants, bidirectional
     pool_type: str = "global"  # global, reactants, products
+    separate_nn: bool = False  # Use separate neural networks for real and artificial bonds
+    pool_real_only: bool = False  # Pool only along real bonds
