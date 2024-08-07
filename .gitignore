@@ -6,6 +6,18 @@ __pycache__/
 # C extensions
 *.so
 
+# Data folder
+data/
+
+# Saved models
+saved_models/
+
+# data.tar.gz
+data.tar.gz
+
+# DS_Store
+.DS_Store
+
 # Distribution / packaging
 .Python
 build/
