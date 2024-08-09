@@ -1,0 +1,30 @@
+defaults:
+  - _self_
+  - model: gnn
+  - data: e2
+  - features: features
+  - transformation: transformation
+  - override hydra/job_logging: disabled
+  - override hydra/hydra_logging: disabled
+
+seed: 0
+epochs: 30
+learning_rate: 0.001
+mode: train
+patience: 10
+min_delta: 0.001
+use_cuda: false
+device: cpu
+num_workers: 0
+save_model: false
+
+pool_type: global
+separate_nn: false
+pool_real_only: false
+
+model_path: model.pt
+
+hydra:
+  output_subdir: null
+  run:
+    dir: .

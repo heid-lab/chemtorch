@@ -1,5 +1,6 @@
 import torch
 import numpy as np
+from omegaconf import DictConfig, OmegaConf
 from torch import nn
 import math
 from sklearn.metrics import mean_absolute_error, root_mean_squared_error
@@ -48,41 +49,45 @@ def pred(model, loader, loss, stdzer, device):
 
     return preds
 
-def train(train_loader, val_loader, test_loader, args):
+def train(train_loader, val_loader, test_loader, cfg):
     #TODO add docstring
+
+    resolved_cfg = OmegaConf.to_container(cfg, resolve=True)
+    resolved_cfg = OmegaConf.create(resolved_cfg)
+    print(OmegaConf.to_yaml(resolved_cfg))
+
+    device = torch.device(cfg.device)
+
     mean = np.mean(train_loader.dataset.labels)
     std = np.std(train_loader.dataset.labels)
     stdzer = Standardizer(mean, std)
 
-    bidirectional = args.connection_direction == "bidirectional"
+    bidirectional = cfg.transformation.connection_direction == "bidirectional"
 
-    model = GNN(train_loader.dataset.num_node_features, 
-                train_loader.dataset.num_edge_features, 
-                pool_type=args.pool_type,
-                bidirectional=bidirectional,
-                separate_nn=args.separate_nn,
-                pool_real_only=args.pool_real_only)
-    optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
+    model = GNN(**cfg.model)
+
+    optimizer = torch.optim.Adam(model.parameters(), lr=cfg.learning_rate)
+
     loss = nn.MSELoss(reduction='sum')
     print(model)
 
-    model, optimizer, start_epoch, best_val_loss = load_model(model, optimizer, args.model_path)
-    model.to(args.device)
+    model, optimizer, start_epoch, best_val_loss = load_model(model, optimizer, cfg.model_path)
+    model.to(device)
 
     early_stop_counter = 0
-    for epoch in range(start_epoch, args.epochs):
-        train_loss = train_epoch(model, train_loader, optimizer, loss, stdzer, args.device)
-        val_preds = pred(model, val_loader, loss, stdzer, args.device)
+    for epoch in range(start_epoch, cfg.epochs):
+        train_loss = train_epoch(model, train_loader, optimizer, loss, stdzer, device)
+        val_preds = pred(model, val_loader, loss, stdzer, device)
         val_loss = root_mean_squared_error(val_preds, val_loader.dataset.labels)
         
         early_stop_counter, should_stop = check_early_stopping(
-            val_loss, best_val_loss, early_stop_counter, args.patience, args.min_delta
+            val_loss, best_val_loss, early_stop_counter, cfg.patience, cfg.min_delta
         )
 
         if val_loss < best_val_loss:
             best_val_loss = val_loss
-            if args.save_model:
-                save_model(model, optimizer, epoch, best_val_loss, args.model_path)
+            if cfg.save_model:
+                save_model(model, optimizer, epoch, best_val_loss, cfg.model_path)
           
         print(f"Epoch {epoch}, Train RMSE: {train_loss}, Val RMSE: {val_loss}")
 
@@ -91,8 +96,8 @@ def train(train_loader, val_loader, test_loader, args):
             break
 
     # Load the best model for final evaluation
-    model, _, _, _ = load_model(model, optimizer, args.model_path)
-    test_preds = pred(model, test_loader, loss, stdzer, args.device)
+    model, _, _, _ = load_model(model, optimizer, cfg.model_path)
+    test_preds = pred(model, test_loader, loss, stdzer, device)
     test_rmse = root_mean_squared_error(test_preds, test_loader.dataset.labels)
     test_mae = mean_absolute_error(test_preds, test_loader.dataset.labels)
     print(f"Test RMSE: {test_rmse}")

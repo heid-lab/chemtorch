@@ -34,15 +34,18 @@ class GNN(nn.Module):
     def __init__(self, 
                  num_node_features, 
                  num_edge_features, 
+                 depth,
+                 hidden_size,
+                 dropout,
                  pool_type="global", 
                  bidirectional=True,
                  separate_nn=False,
                  pool_real_only=False):
         super(GNN, self).__init__()
 
-        self.depth = 3
-        self.hidden_size = 300
-        self.dropout = 0.1
+        self.depth = depth
+        self.hidden_size = hidden_size
+        self.dropout = dropout
 
         self.pool_type = pool_type
         self.separate_nn = separate_nn

@@ -1,0 +1,9 @@
+num_node_features: null
+num_edge_features: null
+depth: 3
+hidden_size: 300
+dropout: 0.02
+pool_type: ${pool_type}
+bidirectional: bidirectional
+separate_nn: ${separate_nn}
+pool_real_only: ${pool_real_only}

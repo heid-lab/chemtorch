@@ -16,7 +16,8 @@ For torch scatter and torch sparse, you need might also need to install specific
 conda create -n deeprxn python=3.10
 conda activate deeprxn
 pip install --upgrade pip setuptools wheel
-pip install rdkit numpy scikit-learn torch pandas typed-argument-parser
+pip install rdkit numpy scikit-learn torch pandas
+pip install hydra-core --upgrade
 pip install torch_scatter torch_sparse
 pip install torch_geometric
 pip install -e .
@@ -27,7 +28,7 @@ pip install -e .
 
 The scripts provided in the `scripts` folder are meant as a small example:
 ```
-python test.py
+python scripts/test.py mode=train data=barriers_e2  epochs=100 representation=CGR
 ```
 
 ## Copyright
