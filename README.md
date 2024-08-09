@@ -28,7 +28,7 @@ pip install -e .
 
 The scripts provided in the `scripts` folder are meant as a small example:
 ```
-python scripts/test.py mode=train data=barriers_e2  epochs=100 representation=CGR
+python scripts/test.py mode=train data=e2  epochs=30 transformation.representation=CGR
 ```
 
 ## Copyright
