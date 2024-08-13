@@ -62,8 +62,6 @@ def train(train_loader, val_loader, test_loader, cfg):
     std = np.std(train_loader.dataset.labels)
     stdzer = Standardizer(mean, std)
 
-    bidirectional = cfg.transformation.connection_direction == "bidirectional"
-
     model = GNN(**cfg.model)
 
     optimizer = torch.optim.Adam(model.parameters(), lr=cfg.learning_rate)

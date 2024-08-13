@@ -28,13 +28,40 @@ def main(cfg: DictConfig):
 
     # Load data and construct loaders
     smiles, labels = load_from_csv(cfg.data.name, "train")
-    train_loader = construct_loader(smiles, labels, atom_featurizer, bond_featurizer, cfg.num_workers, True, mode='rxn', representation=cfg.transformation.representation, connection_direction=cfg.transformation.connection_direction)
+    train_loader = construct_loader(smiles, 
+                                    labels, 
+                                    atom_featurizer, 
+                                    bond_featurizer, 
+                                    cfg.num_workers, 
+                                    True, 
+                                    mode='rxn', 
+                                    representation=cfg.transformation.representation, 
+                                    connection_direction=cfg.transformation.connection_direction,
+                                    dummy_node=cfg.transformation.dummy_node)
 
     smiles, labels = load_from_csv(cfg.data.name, "val")
-    val_loader = construct_loader(smiles, labels, atom_featurizer, bond_featurizer, cfg.num_workers, False, mode='rxn', representation=cfg.transformation.representation, connection_direction=cfg.transformation.connection_direction)
+    val_loader = construct_loader(smiles, 
+                                  labels, 
+                                  atom_featurizer, 
+                                  bond_featurizer, 
+                                  cfg.num_workers, 
+                                  False, 
+                                  mode='rxn', 
+                                  representation=cfg.transformation.representation, 
+                                  connection_direction=cfg.transformation.connection_direction,
+                                  dummy_node=cfg.transformation.dummy_node)
 
     smiles, labels = load_from_csv(cfg.data.name, "test")
-    test_loader = construct_loader(smiles, labels, atom_featurizer, bond_featurizer, cfg.num_workers, False, mode='rxn', representation=cfg.transformation.representation, connection_direction=cfg.transformation.connection_direction)
+    test_loader = construct_loader(smiles, 
+                                   labels, 
+                                   atom_featurizer, 
+                                   bond_featurizer, 
+                                   cfg.num_workers, 
+                                   False, 
+                                   mode='rxn', 
+                                   representation=cfg.transformation.representation, 
+                                   connection_direction=cfg.transformation.connection_direction,
+                                   dummy_node=cfg.transformation.dummy_node)
 
     if cfg.mode == "train":
         cfg.model.num_node_features = train_loader.dataset.num_node_features

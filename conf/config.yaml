@@ -18,7 +18,7 @@ device: cpu
 num_workers: 0
 save_model: false
 
-pool_type: global
+pool_type: global  # global, reactants, products
 separate_nn: false
 pool_real_only: false
 

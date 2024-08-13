@@ -5,6 +5,7 @@ from torch_geometric.nn import MessagePassing
 from torch_geometric.nn import global_add_pool
 from torch_scatter import scatter_add
 import os
+from deeprxn.data import AtomOriginType
 
 def save_model(model, optimizer, epoch, best_val_loss, model_path):
     torch.save({
@@ -38,11 +39,9 @@ class GNN(nn.Module):
                  hidden_size,
                  dropout,
                  pool_type="global", 
-                 bidirectional=True,
                  separate_nn=False,
                  pool_real_only=False):
         super(GNN, self).__init__()
-
         self.depth = depth
         self.hidden_size = hidden_size
         self.dropout = dropout
@@ -54,9 +53,14 @@ class GNN(nn.Module):
         self.edge_init = nn.Linear(num_node_features + num_edge_features, self.hidden_size)
         self.convs = torch.nn.ModuleList()
         for _ in range(self.depth):
-            self.convs.append(DMPNNConv(self.hidden_size, bidirectional, separate_nn))
+            self.convs.append(DMPNNConv(self.hidden_size, separate_nn))
         self.edge_to_node = nn.Linear(num_node_features + self.hidden_size, self.hidden_size)
         self.pool = global_add_pool
+
+        valid_pool_types = ["global", "reactants", "products", "dummy"]
+        if pool_type not in valid_pool_types:
+            raise ValueError(f"Invalid pool_type. Choose from {', '.join(valid_pool_types)}")
+        self.pool_type = pool_type
         
 #        self.ffn = nn.Linear(self.hidden_size, 1)        
         layers = [
@@ -71,7 +75,7 @@ class GNN(nn.Module):
     def forward(self, data):
         #TODO: add docstring
         x, edge_index, edge_attr, batch = data.x, data.edge_index, data.edge_attr, data.batch
-        atom_is_reactant = data.atom_is_reactant
+        atom_origin_type = data.atom_origin_type
         is_real_bond = data.is_real_bond if hasattr(data, 'is_real_bond') else None
 
         # initial edge features
@@ -97,45 +101,47 @@ class GNN(nn.Module):
                 pooled = self.pool(h, batch)
         elif self.pool_type == "reactants":
             if self.pool_real_only:
-                pooled = self.pool_real_bonds_reactants(h, batch, edge_index, is_real_bond, atom_is_reactant)
+                pooled = self.pool_real_bonds_reactants(h, batch, edge_index, is_real_bond, atom_origin_type)
             else:
-                pooled = self.pool_reactants(h, batch, atom_is_reactant)
+                pooled = self.pool_reactants(h, batch, atom_origin_type)
         elif self.pool_type == "products":
             if self.pool_real_only:
-                pooled = self.pool_real_bonds_products(h, batch, edge_index, is_real_bond, atom_is_reactant)
+                pooled = self.pool_real_bonds_products(h, batch, edge_index, is_real_bond, atom_origin_type)
             else:
-                pooled = self.pool_products(h, batch, atom_is_reactant)
+                pooled = self.pool_products(h, batch, atom_origin_type)
+        elif self.pool_type == "dummy":
+            pooled = self.pool_dummy(h, batch, atom_origin_type)
         else:
-            raise ValueError("Invalid pool_type. Choose 'global', 'reactants', or 'products'.")
+            raise ValueError("Invalid pool_type. Choose 'global', 'reactants', 'products', or 'dummy'.")
 
         assert pooled.dim() == 2, f"Expected 2D tensor, got {pooled.dim()}D tensor from {self.pool_type} pooling"
 
         output = self.ffn(pooled).squeeze(-1)
         return output
     
-    def pool_reactants(self, h, batch, atom_is_reactant):
-        return self.pool(h[atom_is_reactant], batch[atom_is_reactant])
+    def pool_reactants(self, h, batch, atom_types):
+        return self.pool(h[atom_types == AtomOriginType.REACTANT], batch[atom_types == AtomOriginType.REACTANT])
 
-    def pool_products(self, h, batch, atom_is_reactant):
-        return self.pool(h[~atom_is_reactant], batch[~atom_is_reactant])
+    def pool_products(self, h, batch, atom_types):
+        return self.pool(h[atom_types == AtomOriginType.PRODUCT], batch[atom_types == AtomOriginType.PRODUCT])
+    
+    def pool_dummy(self, h, batch, atom_types):
+        dummy_mask = atom_types == AtomOriginType.DUMMY
+        if not dummy_mask.any():
+            raise ValueError("No dummy node found in the graph")
+        return h[dummy_mask]
 
-    def pool_real_bonds(self, h, batch, edge_index, is_real_bond):
+    def pool_real_bonds_reactants(self, h, batch, edge_index, is_real_bond, atom_types):
         row, col = edge_index[:, is_real_bond]
-        edge_batch = batch[row]
-        pooled = scatter_add(h[row], edge_batch, dim=0)
-        return pooled
-
-    def pool_real_bonds_reactants(self, h, batch, edge_index, is_real_bond, atom_is_reactant):
-        row, col = edge_index[:, is_real_bond]
-        mask = atom_is_reactant[row]
+        mask = atom_types[row] == AtomOriginType.REACTANT
         row, col = row[mask], col[mask]
         edge_batch = batch[row]
         pooled = scatter_add(h[row], edge_batch, dim=0)
         return pooled
 
-    def pool_real_bonds_products(self, h, batch, edge_index, is_real_bond, atom_is_reactant):
+    def pool_real_bonds_products(self, h, batch, edge_index, is_real_bond, atom_types):
         row, col = edge_index[:, is_real_bond]
-        mask = ~atom_is_reactant[row]
+        mask = atom_types[row] == AtomOriginType.PRODUCT
         row, col = row[mask], col[mask]
         edge_batch = batch[row]
         pooled = scatter_add(h[row], edge_batch, dim=0)
@@ -143,17 +149,16 @@ class GNN(nn.Module):
 
 class DMPNNConv(MessagePassing):
     #TODO: add docstring 
-    def __init__(self, hidden_size, bidirectional=True, separate_nn=False):
+    def __init__(self, hidden_size, separate_nn=False):
         super(DMPNNConv, self).__init__(aggr='add')
         self.lin_real = nn.Linear(hidden_size, hidden_size)
         self.lin_artificial = nn.Linear(hidden_size, hidden_size) if separate_nn else self.lin_real
-        self.bidirectional = bidirectional
         self.separate_nn = separate_nn
 
     def forward(self, edge_index, edge_attr, is_real_bond=None):
         #TODO: add docstring
         row, col = edge_index
-        a_message = self.propagate(edge_index, x=None, edge_attr=edge_attr, is_real_bond=is_real_bond)
+        a_message = self.propagate(edge_index, x=None, edge_attr=edge_attr)
 
         try:
             rev_message = torch.flip(edge_attr.view(edge_attr.size(0) // 2, 2, -1), dims=[1]).view(edge_attr.size(0), -1)
