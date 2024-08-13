@@ -37,7 +37,8 @@ def main(cfg: DictConfig):
                                     mode='rxn', 
                                     representation=cfg.transformation.representation, 
                                     connection_direction=cfg.transformation.connection_direction,
-                                    dummy_node=cfg.transformation.dummy_node)
+                                    dummy_node=cfg.transformation.dummy_node,
+                                    dummy_connection_direction=cfg.transformation.dummy_connection_direction)
 
     smiles, labels = load_from_csv(cfg.data.name, "val")
     val_loader = construct_loader(smiles, 
@@ -49,7 +50,8 @@ def main(cfg: DictConfig):
                                   mode='rxn', 
                                   representation=cfg.transformation.representation, 
                                   connection_direction=cfg.transformation.connection_direction,
-                                  dummy_node=cfg.transformation.dummy_node)
+                                  dummy_node=cfg.transformation.dummy_node,
+                                  dummy_connection_direction=cfg.transformation.dummy_connection_direction)
 
     smiles, labels = load_from_csv(cfg.data.name, "test")
     test_loader = construct_loader(smiles, 
@@ -61,8 +63,9 @@ def main(cfg: DictConfig):
                                    mode='rxn', 
                                    representation=cfg.transformation.representation, 
                                    connection_direction=cfg.transformation.connection_direction,
-                                   dummy_node=cfg.transformation.dummy_node)
-
+                                   dummy_node=cfg.transformation.dummy_node,
+                                   dummy_connection_direction=cfg.transformation.dummy_connection_direction)
+    
     if cfg.mode == "train":
         cfg.model.num_node_features = train_loader.dataset.num_node_features
         cfg.model.num_edge_features = train_loader.dataset.num_edge_features
