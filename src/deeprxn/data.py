@@ -79,7 +79,11 @@ class RxnGraph:
         self.is_real_bond = []
         self.atom_origin_type = []
         self.dummy_node = dummy_node
+        valid_dummy_directions = ["to_dummy", "from_dummy", "bidirectional", "reactant_dummy_product", "product_dummy_reactant"]
+        if dummy_connection_direction not in valid_dummy_directions:
+            raise ValueError(f"Invalid dummy_connection_direction. Choose from: {', '.join(valid_dummy_directions)}")
         self.dummy_connection_direction = dummy_connection_direction
+
 
         if self.representation == "CGR":
             self._build_cgr()
@@ -233,7 +237,6 @@ class RxnGraph:
                 raise ValueError("Invalid connection_direction. Choose 'bidirectional', 'reactants_to_products', or 'products_to_reactants'.")
         
         if self.dummy_node in ["reactant", "product", "reactant_product"]:
-            # Add dummy node with non-zero features
             dummy_idx = len(self.f_atoms)
             dummy_feature = torch.ones(len(self.atom_featurizer(self.mol_reac.GetAtomWithIdx(0))))
             self.f_atoms.append(dummy_feature.tolist())
@@ -242,21 +245,21 @@ class RxnGraph:
             f_bond = [0] * len(self.bond_featurizer(None))
             if self.dummy_node == "reactant" or self.dummy_node == "reactant_product":
                 for i in range(self.n_atoms):
-                    if self.dummy_connection_direction in ["bidirectional", "from_dummy"]:
+                    if self.dummy_connection_direction in ["bidirectional", "from_dummy", "product_dummy_reactant"]:
                         self.f_bonds.append(f_bond)
                         self.edge_index.append((dummy_idx, i))
                         self.is_real_bond.append(False)
-                    if self.dummy_connection_direction in ["bidirectional", "to_dummy"]:
+                    if self.dummy_connection_direction in ["bidirectional", "to_dummy", "reactant_dummy_product"]:
                         self.f_bonds.append(f_bond)
                         self.edge_index.append((i, dummy_idx))
                         self.is_real_bond.append(False)
             if self.dummy_node == "product" or self.dummy_node == "reactant_product":
                 for i in range(self.n_atoms, 2 * self.n_atoms):
-                    if self.dummy_connection_direction in ["bidirectional", "from_dummy"]:
+                    if self.dummy_connection_direction in ["bidirectional", "from_dummy", "reactant_dummy_product"]:
                         self.f_bonds.append(f_bond)
                         self.edge_index.append((dummy_idx, i))
                         self.is_real_bond.append(False)
-                    if self.dummy_connection_direction in ["bidirectional", "to_dummy"]:
+                    if self.dummy_connection_direction in ["bidirectional", "to_dummy", "product_dummy_reactant"]:
                         self.f_bonds.append(f_bond)
                         self.edge_index.append((i, dummy_idx))
                         self.is_real_bond.append(False)
@@ -295,17 +298,26 @@ class RxnGraph:
         self.f_atoms.append(dummy_feature.tolist())
         self.atom_origin_type.append(AtomOriginType.DUMMY)
 
-        # Connect dummy node to all other nodes
         f_bond = [0] * len(self.bond_featurizer(None))
         for i in range(2 * self.n_atoms):
-            if self.dummy_connection_direction in ["bidirectional", "from_dummy"]:
-                self.f_bonds.append(f_bond)
-                self.edge_index.append((dummy_idx, i))
-                self.is_real_bond.append(False)
-            if self.dummy_connection_direction in ["bidirectional", "to_dummy"]:
-                self.f_bonds.append(f_bond)
-                self.edge_index.append((i, dummy_idx))
-                self.is_real_bond.append(False)
+            if i < self.n_atoms:  # Reactant atoms
+                if self.dummy_connection_direction in ["bidirectional", "from_dummy", "product_dummy_reactant"]:
+                    self.f_bonds.append(f_bond)
+                    self.edge_index.append((dummy_idx, i))
+                    self.is_real_bond.append(False)
+                if self.dummy_connection_direction in ["bidirectional", "to_dummy", "reactant_dummy_product"]:
+                    self.f_bonds.append(f_bond)
+                    self.edge_index.append((i, dummy_idx))
+                    self.is_real_bond.append(False)
+            else:  # Product atoms
+                if self.dummy_connection_direction in ["bidirectional", "from_dummy", "reactant_dummy_product"]:
+                    self.f_bonds.append(f_bond)
+                    self.edge_index.append((dummy_idx, i))
+                    self.is_real_bond.append(False)
+                if self.dummy_connection_direction in ["bidirectional", "to_dummy", "product_dummy_reactant"]:
+                    self.f_bonds.append(f_bond)
+                    self.edge_index.append((i, dummy_idx))
+                    self.is_real_bond.append(False)
 
 class ChemDataset(Dataset):
     #TODO: add docstring
