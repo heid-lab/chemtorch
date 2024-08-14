@@ -118,11 +118,12 @@ class RxnGraph:
         for i in range(self.n_atoms):
             self.f_atoms.append(self.atom_featurizer(self.mol_reac.GetAtomWithIdx(i)))
             self.atom_origin_type.append(AtomOriginType.REACTANT)
+
+        for i in range(self.n_atoms):
             for j in range(i + 1, self.n_atoms):
                 bond_reac = self.mol_reac.GetBondBetweenAtoms(i, j)
                 f_bond = self.bond_featurizer(bond_reac) if bond_reac else [0] * len(self.bond_featurizer(None))
-                self.f_bonds.append(f_bond)
-                self.f_bonds.append(f_bond)
+                self.f_bonds.extend([f_bond, f_bond])
                 self.edge_index.extend([(i, j), (j, i)])
                 self.is_real_bond.extend([bond_reac is not None, bond_reac is not None])
 
@@ -131,51 +132,65 @@ class RxnGraph:
         for i in range(self.n_atoms):
             self.f_atoms.append(self.atom_featurizer(self.mol_prod.GetAtomWithIdx(self.ri2pi[i])))
             self.atom_origin_type.append(AtomOriginType.PRODUCT)
+
+        for i in range(self.n_atoms):
             for j in range(i + 1, self.n_atoms):
                 bond_prod = self.mol_prod.GetBondBetweenAtoms(self.ri2pi[i], self.ri2pi[j])
                 f_bond = self.bond_featurizer(bond_prod) if bond_prod else [0] * len(self.bond_featurizer(None))
-                self.f_bonds.append(f_bond)
-                self.f_bonds.append(f_bond)
+                self.f_bonds.extend([f_bond, f_bond])
                 self.edge_index.extend([(i + offset, j + offset), (j + offset, i + offset)])
                 self.is_real_bond.extend([bond_prod is not None, bond_prod is not None])
 
-        # Connect all nodes across reactants and products
+        # Connect all nodes across reactants and products based on connection_direction
         f_bond = [0] * len(self.bond_featurizer(None))
-        for i in range(self.n_atoms):
-            for j in range(self.n_atoms):
-                self.f_bonds.append(f_bond)
-                self.f_bonds.append(f_bond)
-                self.edge_index.extend([(i, j + offset), (j + offset, i)])
-                self.is_real_bond.extend([False, False])
+        if self.connection_direction is not None:
+            for i in range(self.n_atoms):
+                if self.connection_direction == "bidirectional":
+                    self.f_bonds.extend([f_bond, f_bond])
+                    self.edge_index.extend([(i, i + offset), (i + offset, i)])
+                    self.is_real_bond.extend([False, False])
+                elif self.connection_direction == "reactants_to_products":
+                    self.f_bonds.append(f_bond)
+                    self.edge_index.append((i, i + offset))
+                    self.is_real_bond.append(False)
+                elif self.connection_direction == "products_to_reactants":
+                    self.f_bonds.append(f_bond)
+                    self.edge_index.append((i + offset, i))
+                    self.is_real_bond.append(False)
 
-        # Add dummy node if specified
-        if self.dummy_node in ["reactant", "product", "reactant_product"]:
-            dummy_idx = len(self.f_atoms)
+        # Add dummy nodes if specified
+        if self.dummy_node in [1, 2]:
             dummy_feature = torch.ones(len(self.atom_featurizer(self.mol_reac.GetAtomWithIdx(0))))
+            f_bond = [0] * len(self.bond_featurizer(None))
+
+            # Add first dummy node
+            dummy1_idx = len(self.f_atoms)
             self.f_atoms.append(dummy_feature.tolist())
             self.atom_origin_type.append(AtomOriginType.DUMMY)
 
-            if self.dummy_node == "reactant" or self.dummy_node == "reactant_product":
+            if self.dummy_node == 1:
+                # Connect single dummy node to all reactants and products
+                for i in range(2 * self.n_atoms):
+                    self._connect_dummy_to_node(dummy1_idx, i, f_bond)
+            else:  # self.dummy_node == 2
+                # Connect first dummy node to reactants only
                 for i in range(self.n_atoms):
-                    if self.dummy_connection in ["bidirectional", "from_dummy"]:
-                        self.f_bonds.append(f_bond)
-                        self.edge_index.append((dummy_idx, i))
-                        self.is_real_bond.append(False)
-                    if self.dummy_connection in ["bidirectional", "to_dummy"]:
-                        self.f_bonds.append(f_bond)
-                        self.edge_index.append((i, dummy_idx))
-                        self.is_real_bond.append(False)
+                    self._connect_dummy_to_node(dummy1_idx, i, f_bond)
 
-            if self.dummy_node == "product" or self.dummy_node == "reactant_product":
+                # Add second dummy node
+                dummy2_idx = len(self.f_atoms)
+                self.f_atoms.append(dummy_feature.tolist())
+                self.atom_origin_type.append(AtomOriginType.DUMMY)
+
+                # Connect second dummy node to products only
                 for i in range(self.n_atoms, 2 * self.n_atoms):
-                    if self.dummy_connection in ["bidirectional", "from_dummy"]:
-                        self.f_bonds.append(f_bond)
-                        self.edge_index.append((dummy_idx, i))
-                        self.is_real_bond.append(False)
-                    if self.dummy_connection in ["bidirectional", "to_dummy"]:
-                        self.f_bonds.append(f_bond)
-                        self.edge_index.append((i, dummy_idx))
-                        self.is_real_bond.append(False)
+                    self._connect_dummy_to_node(dummy2_idx, i, f_bond)
+
+                if self.dummy_dummy_connection == "bidirectional":
+                    # Connect dummy nodes bidirectionally
+                    self.f_bonds.extend([f_bond, f_bond])
+                    self.edge_index.extend([(dummy1_idx, dummy2_idx), (dummy2_idx, dummy1_idx)])
+                    self.is_real_bond.extend([False, False])
 
     def _build_cgr(self):
         for i in range(self.n_atoms):
