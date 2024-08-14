@@ -38,7 +38,8 @@ def main(cfg: DictConfig):
                                     representation=cfg.transformation.representation, 
                                     connection_direction=cfg.transformation.connection_direction,
                                     dummy_node=cfg.transformation.dummy_node,
-                                    dummy_connection_direction=cfg.transformation.dummy_connection_direction)
+                                    dummy_connection=cfg.transformation.dummy_connection,
+                                    dummy_dummy_connection=cfg.transformation.dummy_dummy_connection)
 
     smiles, labels = load_from_csv(cfg.data.name, "val")
     val_loader = construct_loader(smiles, 
@@ -51,7 +52,8 @@ def main(cfg: DictConfig):
                                   representation=cfg.transformation.representation, 
                                   connection_direction=cfg.transformation.connection_direction,
                                   dummy_node=cfg.transformation.dummy_node,
-                                  dummy_connection_direction=cfg.transformation.dummy_connection_direction)
+                                  dummy_connection=cfg.transformation.dummy_connection,
+                                dummy_dummy_connection=cfg.transformation.dummy_dummy_connection)
 
     smiles, labels = load_from_csv(cfg.data.name, "test")
     test_loader = construct_loader(smiles, 
@@ -64,7 +66,8 @@ def main(cfg: DictConfig):
                                    representation=cfg.transformation.representation, 
                                    connection_direction=cfg.transformation.connection_direction,
                                    dummy_node=cfg.transformation.dummy_node,
-                                   dummy_connection_direction=cfg.transformation.dummy_connection_direction)
+                                   dummy_connection=cfg.transformation.dummy_connection,
+                                   dummy_dummy_connection=cfg.transformation.dummy_dummy_connection)
     
     if cfg.mode == "train":
         cfg.model.num_node_features = train_loader.dataset.num_node_features

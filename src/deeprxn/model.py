@@ -3,7 +3,7 @@ from torch import nn
 import torch.nn.functional as F
 from torch_geometric.nn import MessagePassing
 from torch_geometric.nn import global_add_pool
-from torch_scatter import scatter_add
+from torch_scatter import scatter_add, scatter_mean
 import os
 from deeprxn.data import AtomOriginType
 
@@ -55,7 +55,7 @@ class GNN(nn.Module):
         for _ in range(self.depth):
             self.convs.append(DMPNNConv(self.hidden_size, separate_nn))
         self.edge_to_node = nn.Linear(num_node_features + self.hidden_size, self.hidden_size)
-        self.pool = global_add_pool
+        self.pool = global_add_pool #TODO: add option for other pooling methods
 
         valid_pool_types = ["global", "reactants", "products", "dummy"]
         if pool_type not in valid_pool_types:
@@ -124,12 +124,18 @@ class GNN(nn.Module):
 
     def pool_products(self, h, batch, atom_types):
         return self.pool(h[atom_types == AtomOriginType.PRODUCT], batch[atom_types == AtomOriginType.PRODUCT])
-    
+        
     def pool_dummy(self, h, batch, atom_types):
         dummy_mask = atom_types == AtomOriginType.DUMMY
         if not dummy_mask.any():
-            raise ValueError("No dummy node found in the graph")
-        return h[dummy_mask]
+            raise ValueError("No dummy nodes found in the graph")
+        
+        dummy_h = h[dummy_mask]
+        dummy_batch = batch[dummy_mask]
+        
+        pooled = scatter_add(dummy_h, dummy_batch, dim=0) # TODO: add option for mean pooling
+        
+        return pooled
 
     def pool_real_bonds_reactants(self, h, batch, edge_index, is_real_bond, atom_types):
         row, col = edge_index[:, is_real_bond]
