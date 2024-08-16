@@ -10,10 +10,22 @@ from enum import IntEnum
 
 
 def make_mol(smi):
-    #TODO: add docstring
     params = Chem.SmilesParserParams()
     params.removeHs = False
-    return Chem.MolFromSmiles(smi,params)
+    
+    parts = smi.split('.')
+    mols = []
+    atom_origins = []
+    current_atom_idx = 0
+    
+    for i, part in enumerate(parts):
+        mol = Chem.MolFromSmiles(part, params)
+        if mol is None:
+            continue
+        atom_origins.extend([i] * mol.GetNumAtoms())
+        current_atom_idx += mol.GetNumAtoms()
+    
+    return  Chem.MolFromSmiles(smi, params), atom_origins
 
 def map_reac_to_prod(mol_reac, mol_prod):
     #TODO: add docstring
@@ -66,9 +78,10 @@ class RxnGraph:
         self.f_atoms = []
         self.f_bonds = []
         self.edge_index = []
+        self.atom_origins = []
 
-        self.mol_reac = make_mol(self.smiles_reac)
-        self.mol_prod = make_mol(self.smiles_prod)
+        self.mol_reac, self.reac_origins = make_mol(self.smiles_reac)
+        self.mol_prod, self.prod_origins = make_mol(self.smiles_prod)
         self.ri2pi = map_reac_to_prod(self.mol_reac, self.mol_prod)
         self.n_atoms = self.mol_reac.GetNumAtoms()
 
@@ -211,6 +224,8 @@ class RxnGraph:
         for i in range(self.n_atoms):
             self.f_atoms.append(self.atom_featurizer(self.mol_reac.GetAtomWithIdx(i)))
             self.atom_origin_type.append(AtomOriginType.REACTANT)
+            self.atom_origins.append(self.reac_origins[i])
+
             for j in range(i + 1, self.n_atoms):
                 bond_reac = self.mol_reac.GetBondBetweenAtoms(i, j)
                 if bond_reac:
@@ -225,6 +240,8 @@ class RxnGraph:
         for i in range(self.n_atoms):
             self.f_atoms.append(self.atom_featurizer(self.mol_prod.GetAtomWithIdx(self.ri2pi[i])))
             self.atom_origin_type.append(AtomOriginType.PRODUCT)
+            self.atom_origins.append(self.prod_origins[self.ri2pi[i]] + max(self.reac_origins) + 1)
+
             for j in range(i + 1, self.n_atoms):
                 bond_prod = self.mol_prod.GetBondBetweenAtoms(self.ri2pi[i], self.ri2pi[j])
                 if bond_prod:
@@ -260,6 +277,7 @@ class RxnGraph:
             # Add first dummy node
             dummy1_idx = len(self.f_atoms)
             self.f_atoms.append(dummy_feature.tolist())
+            self.atom_origins.append(-1)  # Use -1 for dummy nodes
             self.atom_origin_type.append(AtomOriginType.DUMMY)
 
             if self.dummy_node == 1:
@@ -274,6 +292,7 @@ class RxnGraph:
                 # Add second dummy node
                 dummy2_idx = len(self.f_atoms)
                 self.f_atoms.append(dummy_feature.tolist())
+                self.atom_origins.append(-1) # Use -1 for dummy nodes
                 self.atom_origin_type.append(AtomOriginType.DUMMY)
 
                 # Connect second dummy node to products only
@@ -352,6 +371,7 @@ class ChemDataset(Dataset):
         data.smiles = self.smiles[key]
         data.is_real_bond = torch.tensor(molgraph.is_real_bond, dtype=torch.bool)
         data.atom_origin_type = torch.tensor(molgraph.atom_origin_type, dtype=torch.long)
+        data.atom_origins = torch.tensor(molgraph.atom_origins, dtype=torch.long)
         return data
 
     def get(self,key):
