@@ -253,7 +253,7 @@ class RxnGraph:
         
         # Add dummy nodes if specified
         if self.dummy_node:
-            dummy_feature = torch.ones(len(self.atom_featurizer(self.mol_reac.GetAtomWithIdx(0))))
+            dummy_feature = torch.zeros(len(self.atom_featurizer(self.mol_reac.GetAtomWithIdx(0))))
             f_bond = [0] * len(self.bond_featurizer(None))
 
             if self.dummy_node == "global":
