@@ -2,6 +2,7 @@ import math
 
 import numpy as np
 import torch
+import wandb
 from omegaconf import DictConfig, OmegaConf
 from sklearn.metrics import mean_absolute_error, root_mean_squared_error
 from torch import nn
@@ -76,6 +77,9 @@ def train(train_loader, val_loader, test_loader, cfg):
     loss = nn.MSELoss(reduction="sum")
     print(model)
 
+    if cfg.wandb:
+        wandb.watch(model, log="all")
+
     model, optimizer, start_epoch, best_val_loss = load_model(
         model, optimizer, cfg.model_path
     )
@@ -108,6 +112,16 @@ def train(train_loader, val_loader, test_loader, cfg):
 
         print(f"Epoch {epoch}, Train RMSE: {train_loss}, Val RMSE: {val_loss}")
 
+        if cfg.wandb:
+            wandb.log(
+                {
+                    "epoch": epoch,
+                    "train_rmse": train_loss,
+                    "val_rmse": val_loss,
+                    "best_val_rmse": best_val_loss,
+                }
+            )
+
         if should_stop:
             print(f"Early stopping at epoch {epoch}")
             break
@@ -119,6 +133,9 @@ def train(train_loader, val_loader, test_loader, cfg):
     test_mae = mean_absolute_error(test_preds, test_loader.dataset.labels)
     print(f"Test RMSE: {test_rmse}")
     print(f"Test MAE: {test_mae}")
+
+    if cfg.wandb:
+        wandb.log({"test_rmse": test_rmse, "test_mae": test_mae})
 
 
 def predict(model, loader, stdzer, device):

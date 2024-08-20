@@ -18,6 +18,9 @@ data.tar.gz
 # DS_Store
 .DS_Store
 
+# Weight & Bias
+wandb/
+
 # Distribution / packaging
 .Python
 build/

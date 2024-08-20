@@ -1,6 +1,7 @@
 import hydra
 import numpy as np
 import torch
+import wandb
 from omegaconf import DictConfig, OmegaConf
 
 from deeprxn.data import Standardizer, construct_loader, load_from_csv
@@ -23,6 +24,12 @@ def main(cfg: DictConfig):
         cfg.device = "cpu"
 
     print(f"Using device: {cfg.device}")
+
+    if cfg.wandb:
+        wandb.init(
+            project="deeprxn",
+            config=OmegaConf.to_container(cfg, resolve=True),
+        )
 
     atom_featurizer = make_featurizer(cfg.features.atom_featurizer)
     bond_featurizer = make_featurizer(cfg.features.bond_featurizer)
@@ -106,6 +113,9 @@ def main(cfg: DictConfig):
         raise ValueError(
             f"Invalid mode: {cfg.mode}. Choose 'train' or 'predict'."
         )
+
+    if cfg.wandb:
+        wandb.finish()
 
 
 if __name__ == "__main__":

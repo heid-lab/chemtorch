@@ -22,6 +22,8 @@ pool_type: global  # global, reactants, products
 separate_nn: false
 pool_real_only: false
 
+wandb: false
+
 model_path: model.pt
 
 hydra:
