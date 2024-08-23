@@ -1,13 +1,13 @@
 import hydra
 import numpy as np
 import torch
-import wandb
 from omegaconf import DictConfig, OmegaConf
 
+import wandb
 from deeprxn.data import Standardizer, construct_loader, load_from_csv
 from deeprxn.featurizer import make_featurizer
 from deeprxn.model import GNN
-from deeprxn.train import load_model, predict, train
+from deeprxn.train import load_model, predict, train, train2
 from deeprxn.utils import set_seed
 
 
@@ -49,6 +49,7 @@ def main(cfg: DictConfig):
         dummy_node=cfg.transformation.dummy_node,
         dummy_connection=cfg.transformation.dummy_connection,
         dummy_dummy_connection=cfg.transformation.dummy_dummy_connection,
+        dummy_feat_init=cfg.transformation.dummy_feat_init,
     )
 
     smiles, labels = load_from_csv(cfg.data.name, "val")
@@ -65,6 +66,7 @@ def main(cfg: DictConfig):
         dummy_node=cfg.transformation.dummy_node,
         dummy_connection=cfg.transformation.dummy_connection,
         dummy_dummy_connection=cfg.transformation.dummy_dummy_connection,
+        dummy_feat_init=cfg.transformation.dummy_feat_init,
     )
 
     smiles, labels = load_from_csv(cfg.data.name, "test")
@@ -81,6 +83,7 @@ def main(cfg: DictConfig):
         dummy_node=cfg.transformation.dummy_node,
         dummy_connection=cfg.transformation.dummy_connection,
         dummy_dummy_connection=cfg.transformation.dummy_dummy_connection,
+        dummy_feat_init=cfg.transformation.dummy_feat_init,
     )
 
     if cfg.mode == "train":

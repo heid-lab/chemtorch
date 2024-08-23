@@ -1,8 +1,16 @@
+_target_: deeprxn.model.GNN
+
+defaults:
+  - _self_
+  - layer_cfg:
+    - dmpnn_conv.yaml
+    - trans_conv.yaml
+  
 num_node_features: null
 num_edge_features: null
+
 depth: 3
-hidden_size: 300
 dropout: 0.02
-pool_type: ${pool_type}
-separate_nn: ${separate_nn}
-pool_real_only: ${pool_real_only}
+pool_type: global
+pool_real_only: false
+hidden_size: 300

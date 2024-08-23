@@ -88,6 +88,7 @@ class RxnGraph:
         dummy_node=None,
         dummy_connection="to_dummy",
         dummy_dummy_connection="bidirectional",
+        dummy_feat_init="zeros",
     ):
         self.smiles_reac, _, self.smiles_prod = smiles.split(">")
         self.f_atoms = []
@@ -104,6 +105,7 @@ class RxnGraph:
         self.bond_featurizer = bond_featurizer
         self.representation = representation
         self.connection_direction = connection_direction
+        self.dummy_feat_init = dummy_feat_init
 
         valid_connection_directions = [
             None,
@@ -336,9 +338,14 @@ class RxnGraph:
 
         # Add dummy nodes if specified
         if self.dummy_node:
-            dummy_feature = torch.zeros(
-                len(self.atom_featurizer(self.mol_reac.GetAtomWithIdx(0)))
-            )
+            if self.dummy_feat_init == "zeros":
+                dummy_feature = torch.zeros(
+                    len(self.atom_featurizer(self.mol_reac.GetAtomWithIdx(0)))
+                )
+            else:
+                dummy_feature = torch.ones(
+                    len(self.atom_featurizer(self.mol_reac.GetAtomWithIdx(0)))
+                )
             f_bond = [0] * len(self.bond_featurizer(None))
 
             if self.dummy_node == "global":
@@ -439,6 +446,7 @@ class ChemDataset(Dataset):
         dummy_node=None,
         dummy_connection="to_dummy",
         dummy_dummy_connection="bidirectional",
+        dummy_feat_init="zeros",
     ):
 
         super(ChemDataset, self).__init__()
@@ -452,6 +460,7 @@ class ChemDataset(Dataset):
         self.dummy_node = dummy_node
         self.dummy_connection = dummy_connection
         self.dummy_dummy_connection = dummy_dummy_connection
+        self.dummy_feat_init = dummy_feat_init
 
     def process_key(self, key):
         # TODO: add docstring
@@ -470,6 +479,7 @@ class ChemDataset(Dataset):
                 self.dummy_node,
                 self.dummy_connection,
                 self.dummy_dummy_connection,
+                self.dummy_feat_init,
             )
         else:
             raise ValueError("Unknown option for mode", self.mode)
@@ -557,6 +567,7 @@ def construct_loader(
     dummy_node=None,
     dummy_connection="to_dummy",
     dummy_dummy_connection="bidirectional",
+    dummy_feat_init="zero",
 ):
     # TODO: add docstring
     dataset = ChemDataset(
@@ -570,6 +581,7 @@ def construct_loader(
         dummy_node,
         dummy_connection,
         dummy_dummy_connection,
+        dummy_feat_init,
     )
     loader = DataLoader(
         dataset=dataset,
