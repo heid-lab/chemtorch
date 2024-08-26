@@ -26,11 +26,14 @@ class GNN(nn.Module):
         hidden_size: int,
         dropout: float,
         layer_cfg: DictConfig,
+        attention: Literal[
+            None, "reactants", "products", "reactants_products"
+        ] = None,
         pool_type: Literal[
             "global", "reactants", "products", "dummy"
         ] = "global",
         pool_real_only: bool = False,  # TODO: look into this
-        react_feat_concat: bool = False,
+        double_features: bool = False,
     ):
         super(GNN, self).__init__()
         self.depth = depth
@@ -39,7 +42,8 @@ class GNN(nn.Module):
         self.pool_type = pool_type
         self.separate_nn = layer_cfg.separate_nn
         self.pool_real_only = pool_real_only
-        self.react_feat_concat = react_feat_concat
+        self.double_features = double_features
+        self.attention = attention
 
         self.edge_init = nn.Linear(
             num_node_features + num_edge_features, self.hidden_size
@@ -52,9 +56,7 @@ class GNN(nn.Module):
         )
 
         ffn_input_size = (
-            self.hidden_size * 2
-            if self.react_feat_concat
-            else self.hidden_size
+            self.hidden_size * 2 if self.double_features else self.hidden_size
         )
         self.ffn = nn.Sequential(
             nn.Dropout(self.dropout),
@@ -64,10 +66,22 @@ class GNN(nn.Module):
             nn.Linear(self.hidden_size, 1),
         )
 
-        self.use_attention = layer_cfg.use_attention
-        if self.use_attention:
-            # self.attention = nn.MultiheadAttention(hidden_size, num_heads)
-            self.attention = TransConvLayer(
+        # self.attention = nn.MultiheadAttention(hidden_size, num_heads) TODO: look into other attention
+        if (
+            self.attention == "reactants"
+            or self.attention == "reactants_products"
+        ):
+            self.attention_reactants = TransConvLayer(
+                layer_cfg.in_channels,
+                layer_cfg.out_channels,
+                layer_cfg.num_heads,
+                layer_cfg.use_weight,
+            )
+        if (
+            self.attention == "products"
+            or self.attention == "reactants_products"
+        ):
+            self.attention_products = TransConvLayer(
                 layer_cfg.in_channels,
                 layer_cfg.out_channels,
                 layer_cfg.num_heads,
@@ -105,16 +119,42 @@ class GNN(nn.Module):
         q = torch.cat([x, s], dim=1)
         h = F.relu(self.edge_to_node(q))
 
-        if self.use_attention and self.pool_type in ["global", "reactants"]:
-            if self.react_feat_concat:
-                original_h, updated_h = self._update_reactants_with_attention(
-                    h, batch, atom_origin_type
+        new_h = h.clone()
+
+        if self.attention:
+            reactant_mask = atom_origin_type == AtomOriginType.REACTANT
+            product_mask = atom_origin_type == AtomOriginType.PRODUCT
+
+            updated_reactants, updated_products = self._attention(
+                new_h, atom_origin_type
+            )
+
+            if self.double_features:
+                new_h_double_features = torch.cat(
+                    [new_h, torch.zeros_like(new_h)], dim=1
                 )
-                h = torch.cat([original_h, updated_h], dim=1)
+                if (
+                    self.attention == "reactants"
+                    or self.attention == "reactants_products"
+                ):
+                    new_h_double_features[
+                        reactant_mask, self.hidden_size :
+                    ] = updated_reactants
+                if (
+                    self.attention == "products"
+                    or self.attention == "reactants_products"
+                ):
+                    new_h_double_features[
+                        product_mask, self.hidden_size :
+                    ] = updated_products
+
+                new_h = new_h_double_features
+
             else:
-                h = self._update_reactants_with_attention(
-                    h, batch, atom_origin_type
-                )
+                new_h[reactant_mask] = updated_reactants
+                new_h[product_mask] = updated_products
+
+        h = new_h
 
         # Pooling
         pooled = self._pool(
@@ -181,10 +221,7 @@ class GNN(nn.Module):
             )
         else:
             mask = atom_types == target_type
-            if self.react_feat_concat:
-                return global_add_pool(h, batch[mask])
-            else:
-                return global_add_pool(h[mask], batch[mask])
+            return global_add_pool(h[mask], batch[mask])
 
     def _pool_global(
         self,
@@ -232,15 +269,16 @@ class GNN(nn.Module):
         edge_batch = batch[row]
         return scatter_add(h[row], edge_batch, dim=0)
 
-    def _update_reactants_with_attention(
+    def _attention(
         self,
         node_features: torch.Tensor,
-        batch: torch.Tensor,
         atom_origin_type: torch.Tensor,
-    ) -> torch.Tensor | Tuple[torch.Tensor, torch.Tensor]:
+    ) -> Tuple[torch.Tensor, torch.Tensor]:
         """
-        Updates reactant features using attention mechanism.
-        If react_feat_concat is True, returns both original and updated features.
+        Applies attention between reactants and products.
+        If bidirectional_attention is True, applies attention in both directions.
+        Otherwise, only updates reactant features based on product features.
+        Returns updated features for both reactants and products.
         """
         reactant_mask = atom_origin_type == AtomOriginType.REACTANT
         product_mask = atom_origin_type == AtomOriginType.PRODUCT
@@ -248,12 +286,24 @@ class GNN(nn.Module):
         reactant_features = node_features[reactant_mask].unsqueeze(0)
         product_features = node_features[product_mask].unsqueeze(0)
 
-        attn_output = self.attention(reactant_features, product_features)
+        updated_reactants = reactant_features.clone()
+        updated_products = product_features.clone()
 
-        if self.react_feat_concat:
-            original_reactant_features = node_features[reactant_mask]
-            return original_reactant_features, attn_output.squeeze(0)
-        else:
-            updated_node_features = node_features.clone()
-            updated_node_features[reactant_mask] = attn_output.squeeze(0)
-            return updated_node_features
+        if (
+            self.attention == "reactants"
+            or self.attention == "reactants_products"
+        ):
+            # Attention: products to reactants
+            updated_reactants = self.attention_reactants(
+                reactant_features, product_features
+            )
+        if (
+            self.attention == "products"
+            or self.attention == "reactants_products"
+        ):
+            # Attention: reactants to products
+            updated_products = self.attention_products(
+                product_features, reactant_features
+            )
+
+        return updated_reactants.squeeze(0), updated_products.squeeze(0)

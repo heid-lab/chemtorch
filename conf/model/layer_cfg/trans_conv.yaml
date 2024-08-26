@@ -1,4 +1,3 @@
-use_attention: False
 in_channels: ${model.hidden_size}
 out_channels: ${model.hidden_size}
 num_heads: 6

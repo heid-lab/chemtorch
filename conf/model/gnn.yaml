@@ -14,4 +14,5 @@ dropout: 0.02
 pool_type: global
 pool_real_only: false
 hidden_size: 300
-react_feat_concat: false
+double_features: false
+attention: null
