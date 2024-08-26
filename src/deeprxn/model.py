@@ -34,6 +34,7 @@ class GNN(nn.Module):
         ] = "global",
         pool_real_only: bool = False,  # TODO: look into this
         double_features: bool = False,
+        fast_attention: bool = True,
     ):
         super(GNN, self).__init__()
         self.depth = depth
@@ -44,6 +45,7 @@ class GNN(nn.Module):
         self.pool_real_only = pool_real_only
         self.double_features = double_features
         self.attention = attention
+        self.fast_attention = fast_attention
 
         self.edge_init = nn.Linear(
             num_node_features + num_edge_features, self.hidden_size
@@ -66,27 +68,42 @@ class GNN(nn.Module):
             nn.Linear(self.hidden_size, 1),
         )
 
-        # self.attention = nn.MultiheadAttention(hidden_size, num_heads) TODO: look into other attention
-        if (
-            self.attention == "reactants"
-            or self.attention == "reactants_products"
-        ):
-            self.attention_reactants = TransConvLayer(
-                layer_cfg.in_channels,
-                layer_cfg.out_channels,
-                layer_cfg.num_heads,
-                layer_cfg.use_weight,
-            )
-        if (
-            self.attention == "products"
-            or self.attention == "reactants_products"
-        ):
-            self.attention_products = TransConvLayer(
-                layer_cfg.in_channels,
-                layer_cfg.out_channels,
-                layer_cfg.num_heads,
-                layer_cfg.use_weight,
-            )
+        if self.fast_attention:  # TODO: maybe make more compact
+            if (
+                self.attention == "reactants"
+                or self.attention == "reactants_products"
+            ):
+                self.attention_reactants = TransConvLayer(
+                    layer_cfg.in_channels,
+                    layer_cfg.out_channels,
+                    layer_cfg.num_heads,
+                    layer_cfg.use_weight,
+                )
+            if (
+                self.attention == "products"
+                or self.attention == "reactants_products"
+            ):
+                self.attention_products = TransConvLayer(
+                    layer_cfg.in_channels,
+                    layer_cfg.out_channels,
+                    layer_cfg.num_heads,
+                    layer_cfg.use_weight,
+                )
+        else:
+            if (
+                self.attention == "reactants"
+                or self.attention == "reactants_products"
+            ):
+                self.attention_reactants = nn.MultiheadAttention(
+                    embed_dim=self.hidden_size, num_heads=layer_cfg.num_heads
+                )
+            if (
+                self.attention == "products"
+                or self.attention == "reactants_products"
+            ):
+                self.attention_products = nn.MultiheadAttention(
+                    embed_dim=self.hidden_size, num_heads=layer_cfg.num_heads
+                )
 
     def forward(self, data: object) -> torch.Tensor:
         """
@@ -293,17 +310,35 @@ class GNN(nn.Module):
             self.attention == "reactants"
             or self.attention == "reactants_products"
         ):
-            # Attention: products to reactants
-            updated_reactants = self.attention_reactants(
-                reactant_features, product_features
-            )
+            if self.fast_attention:
+                # Attention: products to reactants
+                updated_reactants = self.attention_reactants(
+                    reactant_features, product_features
+                )
+            else:
+                # Attention: products to reactants
+                updated_reactants, _ = self.attention_reactants(
+                    reactant_features,
+                    product_features,
+                    product_features,
+                    need_weights=False,
+                )
         if (
             self.attention == "products"
             or self.attention == "reactants_products"
         ):
-            # Attention: reactants to products
-            updated_products = self.attention_products(
-                product_features, reactant_features
-            )
+            if self.fast_attention:
+                # Attention: reactants to products
+                updated_products = self.attention_products(
+                    product_features, reactant_features
+                )
+            else:
+                # Attention: reactants to products
+                updated_products, _ = self.attention_products(
+                    product_features,
+                    reactant_features,
+                    reactant_features,
+                    need_weights=False,
+                )
 
         return updated_reactants.squeeze(0), updated_products.squeeze(0)

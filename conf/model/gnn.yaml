@@ -16,3 +16,4 @@ pool_real_only: false
 hidden_size: 300
 double_features: false
 attention: null
+fast_attention: true
