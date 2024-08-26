@@ -1,4 +1,4 @@
-from typing import Literal, Optional
+from typing import Literal, Optional, Tuple
 
 import torch
 import torch.nn.functional as F
@@ -29,7 +29,8 @@ class GNN(nn.Module):
         pool_type: Literal[
             "global", "reactants", "products", "dummy"
         ] = "global",
-        pool_real_only: bool = False,
+        pool_real_only: bool = False,  # TODO: look into this
+        react_feat_concat: bool = False,
     ):
         super(GNN, self).__init__()
         self.depth = depth
@@ -38,6 +39,7 @@ class GNN(nn.Module):
         self.pool_type = pool_type
         self.separate_nn = layer_cfg.separate_nn
         self.pool_real_only = pool_real_only
+        self.react_feat_concat = react_feat_concat
 
         self.edge_init = nn.Linear(
             num_node_features + num_edge_features, self.hidden_size
@@ -49,9 +51,14 @@ class GNN(nn.Module):
             num_node_features + self.hidden_size, self.hidden_size
         )
 
+        ffn_input_size = (
+            self.hidden_size * 2
+            if self.react_feat_concat
+            else self.hidden_size
+        )
         self.ffn = nn.Sequential(
             nn.Dropout(self.dropout),
-            nn.Linear(self.hidden_size, self.hidden_size),
+            nn.Linear(ffn_input_size, self.hidden_size),
             nn.ReLU(),
             nn.Dropout(self.dropout),
             nn.Linear(self.hidden_size, 1),
@@ -99,9 +106,15 @@ class GNN(nn.Module):
         h = F.relu(self.edge_to_node(q))
 
         if self.use_attention and self.pool_type in ["global", "reactants"]:
-            h = self._update_reactants_with_attention(
-                h, batch, atom_origin_type
-            )
+            if self.react_feat_concat:
+                original_h, updated_h = self._update_reactants_with_attention(
+                    h, batch, atom_origin_type
+                )
+                h = torch.cat([original_h, updated_h], dim=1)
+            else:
+                h = self._update_reactants_with_attention(
+                    h, batch, atom_origin_type
+                )
 
         # Pooling
         pooled = self._pool(
@@ -168,7 +181,10 @@ class GNN(nn.Module):
             )
         else:
             mask = atom_types == target_type
-            return global_add_pool(h[mask], batch[mask])
+            if self.react_feat_concat:
+                return global_add_pool(h, batch[mask])
+            else:
+                return global_add_pool(h[mask], batch[mask])
 
     def _pool_global(
         self,
@@ -221,9 +237,10 @@ class GNN(nn.Module):
         node_features: torch.Tensor,
         batch: torch.Tensor,
         atom_origin_type: torch.Tensor,
-    ) -> torch.Tensor:
+    ) -> torch.Tensor | Tuple[torch.Tensor, torch.Tensor]:
         """
         Updates reactant features using attention mechanism.
+        If react_feat_concat is True, returns both original and updated features.
         """
         reactant_mask = atom_origin_type == AtomOriginType.REACTANT
         product_mask = atom_origin_type == AtomOriginType.PRODUCT
@@ -233,7 +250,10 @@ class GNN(nn.Module):
 
         attn_output = self.attention(reactant_features, product_features)
 
-        updated_node_features = node_features.clone()
-        updated_node_features[reactant_mask] = attn_output.squeeze(0)
-
-        return updated_node_features
+        if self.react_feat_concat:
+            original_reactant_features = node_features[reactant_mask]
+            return original_reactant_features, attn_output.squeeze(0)
+        else:
+            updated_node_features = node_features.clone()
+            updated_node_features[reactant_mask] = attn_output.squeeze(0)
+            return updated_node_features
