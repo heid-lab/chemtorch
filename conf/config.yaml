@@ -4,6 +4,7 @@ defaults:
   - data: e2.yaml
   - features: features.yaml
   - transformation: transformation.yaml
+  - data_loader: data_loader.yaml
   - override hydra/job_logging: disabled
   - override hydra/hydra_logging: disabled
 
@@ -15,7 +16,6 @@ patience: 10
 min_delta: 0.001
 use_cuda: false
 device: cpu
-num_workers: 0
 save_model: false
 
 wandb: false

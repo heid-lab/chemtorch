@@ -31,87 +31,40 @@ def main(cfg: DictConfig):
             config=OmegaConf.to_container(cfg, resolve=True),
         )
 
-    atom_featurizer = make_featurizer(cfg.features.atom_featurizer)
-    bond_featurizer = make_featurizer(cfg.features.bond_featurizer)
-
-    # Load data and construct loaders
-    smiles, labels = load_from_csv(cfg.data.name, "train")
-    train_loader = construct_loader(
-        smiles,
-        labels,
-        atom_featurizer,
-        bond_featurizer,
-        cfg.num_workers,
-        True,
-        mode="rxn",
-        representation=cfg.transformation.representation,
-        connection_direction=cfg.transformation.connection_direction,
-        dummy_node=cfg.transformation.dummy_node,
-        dummy_connection=cfg.transformation.dummy_connection,
-        dummy_dummy_connection=cfg.transformation.dummy_dummy_connection,
-        dummy_feat_init=cfg.transformation.dummy_feat_init,
+    train_loader = hydra.utils.instantiate(
+        cfg.data_loader, shuffle=True, split="train"
     )
-
-    smiles, labels = load_from_csv(cfg.data.name, "val")
-    val_loader = construct_loader(
-        smiles,
-        labels,
-        atom_featurizer,
-        bond_featurizer,
-        cfg.num_workers,
-        False,
-        mode="rxn",
-        representation=cfg.transformation.representation,
-        connection_direction=cfg.transformation.connection_direction,
-        dummy_node=cfg.transformation.dummy_node,
-        dummy_connection=cfg.transformation.dummy_connection,
-        dummy_dummy_connection=cfg.transformation.dummy_dummy_connection,
-        dummy_feat_init=cfg.transformation.dummy_feat_init,
+    val_loader = hydra.utils.instantiate(
+        cfg.data_loader, shuffle=False, split="val"
     )
-
-    smiles, labels = load_from_csv(cfg.data.name, "test")
-    test_loader = construct_loader(
-        smiles,
-        labels,
-        atom_featurizer,
-        bond_featurizer,
-        cfg.num_workers,
-        False,
-        mode="rxn",
-        representation=cfg.transformation.representation,
-        connection_direction=cfg.transformation.connection_direction,
-        dummy_node=cfg.transformation.dummy_node,
-        dummy_connection=cfg.transformation.dummy_connection,
-        dummy_dummy_connection=cfg.transformation.dummy_dummy_connection,
-        dummy_feat_init=cfg.transformation.dummy_feat_init,
+    test_loader = hydra.utils.instantiate(
+        cfg.data_loader, shuffle=False, split="test"
     )
 
     if cfg.mode == "train":
-        cfg.model.num_node_features = train_loader.dataset.num_node_features
-        cfg.model.num_edge_features = train_loader.dataset.num_edge_features
-
         train(train_loader, val_loader, test_loader, cfg)
 
-    elif cfg.mode == "predict":
-        cfg.model.num_node_features = train_loader.dataset.num_node_features
-        cfg.model.num_edge_features = train_loader.dataset.num_edge_features
+    # TODO: fix
+    # elif cfg.mode == "predict":
+    #     cfg.model.num_node_features = train_loader.dataset.num_node_features
+    #     cfg.model.num_edge_features = train_loader.dataset.num_edge_features
 
-        model = GNN(
-            train_loader.dataset.num_node_features,
-            train_loader.dataset.num_edge_features,
-        )
-        model, _, _, _ = load_model(model, None, cfg.model_path)
-        model = model.to(cfg.device)
+    #     model = GNN(
+    #         train_loader.dataset.num_node_features,
+    #         train_loader.dataset.num_edge_features,
+    #     )
+    #     model, _, _, _ = load_model(model, None, cfg.model_path)
+    #     model = model.to(cfg.device)
 
-        # Make predictions on the test set
-        stdzer = Standardizer(
-            np.mean(train_loader.dataset.labels),
-            np.std(train_loader.dataset.labels),
-        )
-        test_preds = predict(model, test_loader, stdzer, cfg.device)
+    #     # Make predictions on the test set
+    #     stdzer = Standardizer(
+    #         np.mean(train_loader.dataset.labels),
+    #         np.std(train_loader.dataset.labels),
+    #     )
+    #     test_preds = predict(model, test_loader, stdzer, cfg.device)
 
-        # Print or save predictions as needed
-        print("Test set predictions:", test_preds)
+    #     # Print or save predictions as needed
+    #     print("Test set predictions:", test_preds)
     else:
         raise ValueError(
             f"Invalid mode: {cfg.mode}. Choose 'train' or 'predict'."

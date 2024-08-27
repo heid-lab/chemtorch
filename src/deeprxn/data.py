@@ -440,15 +440,14 @@ class ChemDataset(Dataset):
         labels,
         atom_featurizer,
         bond_featurizer,
-        mode="mol",
-        representation="CGR",
-        connection_direction="bidirectional",
-        dummy_node=None,
-        dummy_connection="to_dummy",
-        dummy_dummy_connection="bidirectional",
-        dummy_feat_init="zeros",
+        mode,
+        representation,
+        connection_direction,
+        dummy_node,
+        dummy_connection,
+        dummy_dummy_connection,
+        dummy_feat_init,
     ):
-
         super(ChemDataset, self).__init__()
         self.smiles = smiles
         self.labels = labels
@@ -554,22 +553,25 @@ def load_from_csv(dataset_name, split):
 
 
 def construct_loader(
-    smiles,
-    labels,
+    dataset_name,
+    batch_size,
+    num_workers,
+    mode,
+    representation,
+    connection_direction,
+    dummy_node,
+    dummy_connection,
+    dummy_dummy_connection,
+    dummy_feat_init,
     atom_featurizer,
     bond_featurizer,
-    num_workers,
-    shuffle=True,
-    batch_size=50,
-    mode="rxn",
-    representation="CGR",
-    connection_direction="products_to_reactants",
-    dummy_node=None,
-    dummy_connection="to_dummy",
-    dummy_dummy_connection="bidirectional",
-    dummy_feat_init="zero",
+    shuffle,
+    split,
 ):
-    # TODO: add docstring
+    smiles, labels = load_from_csv(dataset_name, split)
+    atom_featurizer = make_featurizer(atom_featurizer)
+    bond_featurizer = make_featurizer(bond_featurizer)
+
     dataset = ChemDataset(
         smiles,
         labels,

@@ -62,6 +62,9 @@ def pred(model, loader, loss, stdzer, device):
 def train(train_loader, val_loader, test_loader, cfg):
     # TODO add docstring
 
+    cfg.model.num_node_features = train_loader.dataset.num_node_features
+    cfg.model.num_edge_features = train_loader.dataset.num_edge_features
+
     resolved_cfg = OmegaConf.to_container(cfg, resolve=True)
     resolved_cfg = OmegaConf.create(resolved_cfg)
     print(OmegaConf.to_yaml(resolved_cfg))

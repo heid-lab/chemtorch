@@ -1,0 +1,13 @@
+_target_: deeprxn.data.construct_loader
+dataset_name: ${data.dataset_name}
+batch_size: 50
+num_workers: 0
+mode: rxn
+representation: ${transformation.representation}
+connection_direction: ${transformation.connection_direction}
+dummy_node: ${transformation.dummy_node}
+dummy_connection: ${transformation.dummy_connection}
+dummy_dummy_connection: ${transformation.dummy_dummy_connection}
+dummy_feat_init: ${transformation.dummy_feat_init}
+atom_featurizer: ${features.atom_featurizer}
+bond_featurizer: ${features.bond_featurizer}
