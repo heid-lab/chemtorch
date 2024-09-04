@@ -20,6 +20,7 @@ pip install rdkit numpy scikit-learn torch pandas
 pip install hydra-core --upgrade
 pip install torch_scatter torch_sparse
 pip install torch_geometric
+pip install wandb
 pip install -e .
 
 ```
@@ -30,6 +31,10 @@ The scripts provided in the `scripts` folder are meant as a small example:
 ```
 python scripts/test.py mode=train data=e2  epochs=30 transformation.representation=CGR
 ```
+
+## Hydra
+https://medium.com/@bezzam/hydra-for-cleaner-python-code-and-better-reproducibility-in-research-c035028101f9 
+https://www.kdnuggets.com/2023/03/hydra-configs-deep-learning-experiments.html
 
 ## Copyright
 

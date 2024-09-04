@@ -14,8 +14,8 @@ learning_rate: 0.001
 mode: train
 patience: 10
 min_delta: 0.001
-use_cuda: false
-device: cpu
+use_cuda: true
+device: gpu
 save_model: false
 
 wandb: false
