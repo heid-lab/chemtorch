@@ -161,9 +161,9 @@ class GNN(nn.Module):
                     self.attention == "products"
                     or self.attention == "reactants_products"
                 ):
-                    new_h_double_features[product_mask, self.hidden_size :] = (
-                        updated_products
-                    )
+                    new_h_double_features[
+                        product_mask, self.hidden_size :
+                    ] = updated_products
 
                 new_h = new_h_double_features
 

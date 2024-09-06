@@ -80,7 +80,10 @@ def train(train_loader, val_loader, test_loader, cfg):
     model = hydra.utils.instantiate(cfg.model)
     model = model.to(device)
 
-    optimizer = torch.optim.Adam(model.parameters(), lr=cfg.learning_rate)
+    optimizer_params = {"lr": cfg.learning_rate}
+    if hasattr(cfg, "weight_decay"):
+        optimizer_params["weight_decay"] = cfg.weight_decay
+    optimizer = torch.optim.Adam(model.parameters(), **optimizer_params)
 
     loss = nn.MSELoss(reduction="sum")
     print(model)
