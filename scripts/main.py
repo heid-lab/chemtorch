@@ -1,13 +1,9 @@
 import hydra
-import numpy as np
 import torch
 from omegaconf import DictConfig, OmegaConf
 
 import wandb
-from deeprxn.data import Standardizer, construct_loader, load_from_csv
-from deeprxn.featurizer import make_featurizer
-from deeprxn.model import GNN
-from deeprxn.train import load_model, predict, train, train2
+from deeprxn.train import train
 from deeprxn.utils import set_seed
 
 
@@ -27,7 +23,7 @@ def main(cfg: DictConfig):
 
     if cfg.wandb:
         wandb.init(
-            project="deeprxn",
+            project=cfg.project_name,
             config=OmegaConf.to_container(cfg, resolve=True),
         )
 
@@ -44,27 +40,8 @@ def main(cfg: DictConfig):
     if cfg.mode == "train":
         train(train_loader, val_loader, test_loader, cfg)
 
-    # TODO: fix
-    # elif cfg.mode == "predict":
-    #     cfg.model.num_node_features = train_loader.dataset.num_node_features
-    #     cfg.model.num_edge_features = train_loader.dataset.num_edge_features
+    # TODO: Implement predict mode
 
-    #     model = GNN(
-    #         train_loader.dataset.num_node_features,
-    #         train_loader.dataset.num_edge_features,
-    #     )
-    #     model, _, _, _ = load_model(model, None, cfg.model_path)
-    #     model = model.to(cfg.device)
-
-    #     # Make predictions on the test set
-    #     stdzer = Standardizer(
-    #         np.mean(train_loader.dataset.labels),
-    #         np.std(train_loader.dataset.labels),
-    #     )
-    #     test_preds = predict(model, test_loader, stdzer, cfg.device)
-
-    #     # Print or save predictions as needed
-    #     print("Test set predictions:", test_preds)
     else:
         raise ValueError(
             f"Invalid mode: {cfg.mode}. Choose 'train' or 'predict'."

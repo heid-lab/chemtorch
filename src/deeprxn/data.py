@@ -1,5 +1,6 @@
 import os
 from enum import IntEnum
+from functools import lru_cache
 
 import pandas as pd
 import torch
@@ -447,6 +448,8 @@ class ChemDataset(Dataset):
         dummy_connection,
         dummy_dummy_connection,
         dummy_feat_init,
+        cache_graphs=False,
+        max_cache_size=None,
     ):
         super(ChemDataset, self).__init__()
         self.smiles = smiles
@@ -460,8 +463,20 @@ class ChemDataset(Dataset):
         self.dummy_connection = dummy_connection
         self.dummy_dummy_connection = dummy_dummy_connection
         self.dummy_feat_init = dummy_feat_init
+        self.cache_graphs = cache_graphs
+        self.graph_cache = {}
 
-    def process_key(self, key):
+        if cache_graphs:
+            if max_cache_size is not None:
+                self.process_key = lru_cache(maxsize=max_cache_size)(
+                    self._process_key
+                )
+            else:
+                self.process_key = lru_cache(maxsize=None)(self._process_key)
+        else:
+            self.process_key = self._process_key
+
+    def _process_key(self, key):
         # TODO: add docstring
         smi = self.smiles[key]
         if self.mode == "mol":
@@ -510,6 +525,10 @@ class ChemDataset(Dataset):
     def get(self, key):
         # TODO: add docstring
         return self.process_key(key)
+
+    def preprocess_all(self):
+        for key in range(len(self.smiles)):
+            self.process_key(key)
 
     def len(self):
         # TODO: add docstring
@@ -567,6 +586,9 @@ def construct_loader(
     bond_featurizer,
     shuffle,
     split,
+    cache_graphs=True,
+    max_cache_size=None,
+    preprocess_all=True,
 ):
     smiles, labels = load_from_csv(dataset_name, split)
     atom_featurizer = make_featurizer(atom_featurizer)
@@ -584,7 +606,13 @@ def construct_loader(
         dummy_connection,
         dummy_dummy_connection,
         dummy_feat_init,
+        cache_graphs=cache_graphs,
+        max_cache_size=max_cache_size,
     )
+
+    if preprocess_all:
+        dataset.preprocess_all()
+
     loader = DataLoader(
         dataset=dataset,
         batch_size=batch_size,

@@ -1,4 +1,5 @@
 import math
+import time
 
 import hydra
 import numpy as np
@@ -14,7 +15,7 @@ from deeprxn.utils import load_model, save_model
 
 
 def train_epoch(model, loader, optimizer, loss, stdzer, device):
-    # TODO: add docstring
+    start_time = time.time()
     model.train()
     loss_all = 0
 
@@ -29,7 +30,8 @@ def train_epoch(model, loader, optimizer, loss, stdzer, device):
         optimizer.step()
         loss_all += loss(stdzer(out, rev=True), data.y)
 
-    return math.sqrt(loss_all / len(loader.dataset))
+    epoch_time = time.time() - start_time
+    return math.sqrt(loss_all / len(loader.dataset)), epoch_time
 
 
 def check_early_stopping(
@@ -92,7 +94,7 @@ def train(train_loader, val_loader, test_loader, cfg):
 
     early_stop_counter = 0
     for epoch in range(start_epoch, cfg.epochs):
-        train_loss = train_epoch(
+        train_loss, epoch_time = train_epoch(
             model, train_loader, optimizer, loss, stdzer, device
         )
         val_preds = pred(model, val_loader, loss, stdzer, device)
@@ -115,7 +117,9 @@ def train(train_loader, val_loader, test_loader, cfg):
                     model, optimizer, epoch, best_val_loss, cfg.model_path
                 )
 
-        print(f"Epoch {epoch}, Train RMSE: {train_loss}, Val RMSE: {val_loss}")
+        print(
+            f"Epoch {epoch}, Train RMSE: {train_loss}, Val RMSE: {val_loss}, Time: {epoch_time:.2f}"
+        )
 
         if cfg.wandb:
             wandb.log(

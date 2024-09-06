@@ -43,7 +43,7 @@ class GNN(nn.Module):
         self.pool_type = pool_type
         self.separate_nn = layer_cfg.separate_nn
         self.pool_real_only = pool_real_only
-        self.double_features = double_features
+        self.double_features = double_features and attention is not None
         self.attention = attention
         self.fast_attention = fast_attention
 
@@ -161,9 +161,9 @@ class GNN(nn.Module):
                     self.attention == "products"
                     or self.attention == "reactants_products"
                 ):
-                    new_h_double_features[
-                        product_mask, self.hidden_size :
-                    ] = updated_products
+                    new_h_double_features[product_mask, self.hidden_size :] = (
+                        updated_products
+                    )
 
                 new_h = new_h_double_features
 

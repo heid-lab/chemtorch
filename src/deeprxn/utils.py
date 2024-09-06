@@ -9,11 +9,15 @@ def set_seed(seed):
     random.seed(seed)
     np.random.seed(seed)
     torch.manual_seed(seed)
-    torch.set_num_threads(1)  # Ensure consistent CPU thread behavior
+    torch.set_num_threads(1)
     if torch.cuda.is_available():
         torch.cuda.manual_seed_all(seed)
         torch.backends.cudnn.deterministic = True
         torch.backends.cudnn.benchmark = False
+        torch.use_deterministic_algorithms(True)
+        os.environ["CUBLAS_WORKSPACE_CONFIG"] = (
+            ":4096:8"  # https://docs.nvidia.com/cuda/cublas/index.html#results-reproducibility
+        )
 
 
 def save_model(model, optimizer, epoch, best_val_loss, model_path):
