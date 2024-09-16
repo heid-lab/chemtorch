@@ -3,16 +3,23 @@ from typing import Optional, Tuple
 import torch
 from torch import nn
 from torch_geometric.nn import MessagePassing
+from torch_geometric.utils import to_dense_batch
+from torch_scatter import scatter_add
 
 
 class DMPNNConv(MessagePassing):
     """
     Directed Message Passing Neural Network Convolution layer.
     EXTRA: allowing for separate processing of real and artificial bonds if specified.
-    TODO: get rid of the try-except block and handle the case where rev_message is not defined.
     """
 
-    def __init__(self, hidden_size: int, separate_nn: bool = False):
+    def __init__(
+        self,
+        hidden_size: int,
+        separate_nn: bool = False,
+        use_attention_agg: bool = True,
+        use_attention_agg_heads: int = 1,
+    ):
         super(DMPNNConv, self).__init__(aggr="add")
         self.separate_nn = separate_nn
         self.lin_real = nn.Linear(hidden_size, hidden_size)
@@ -22,16 +29,59 @@ class DMPNNConv(MessagePassing):
             else self.lin_real
         )
 
+        self.use_attention_agg = use_attention_agg
+        if use_attention_agg:
+            self.attention = nn.MultiheadAttention(
+                hidden_size,
+                num_heads=use_attention_agg_heads,
+                dropout=0.02,
+                batch_first=True,
+            )
+
     def forward(
         self,
         edge_index: torch.Tensor,
         edge_attr: torch.Tensor,
+        incoming_edges_list: Optional[torch.Tensor] = None,
+        incoming_edges_batch: Optional[torch.Tensor] = None,
+        edge_batch: Optional[torch.Tensor] = None,
         is_real_bond: Optional[torch.Tensor] = None,
     ) -> Tuple[torch.Tensor, torch.Tensor]:
         """
         Forward pass of the DMPNNConv layer.
         """
         row, col = edge_index
+        max_edges_per_node = 4
+
+        if self.use_attention_agg:
+            edge_attr_dense, mask_edge_attr_dense = to_dense_batch(
+                edge_attr, batch=edge_batch
+            )
+
+            edge_attr_rearranged = edge_attr[
+                incoming_edges_list
+            ]  # TODO: maybe move to data
+
+            incoming_edges, mask = to_dense_batch(
+                edge_attr_rearranged,
+                batch=incoming_edges_batch,
+                max_num_nodes=max_edges_per_node,
+            )
+
+            edge_attr_dense_updated, _ = self.attention(
+                edge_attr_dense,
+                incoming_edges,
+                incoming_edges,
+                key_padding_mask=~mask,
+                need_weights=False,
+            )
+
+            edge_attr_dense_updated = edge_attr_dense_updated[
+                mask_edge_attr_dense
+            ]
+
+            edge_attr = edge_attr + edge_attr_dense_updated
+
         aggregated_messages = self.propagate(edge_index, edge_attr=edge_attr)
 
         rev_messages = self._compute_reverse_messages(edge_attr)

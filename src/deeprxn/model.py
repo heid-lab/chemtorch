@@ -5,10 +5,11 @@ import torch.nn.functional as F
 from omegaconf import DictConfig
 from torch import nn
 from torch_geometric.nn import global_add_pool
+from torch_geometric.utils import to_dense_batch
 from torch_scatter import scatter_add
 
 from deeprxn.data import AtomOriginType
-from deeprxn.layers import DMPNNConv, TransConvLayer
+from deeprxn.layers import *
 
 
 class GNN(nn.Module):
@@ -34,7 +35,9 @@ class GNN(nn.Module):
         ] = "global",
         pool_real_only: bool = False,  # TODO: look into this
         double_features: bool = False,
-        fast_attention: bool = True,
+        fast_attention: bool = False,  # TODO: update
+        use_attention_agg: bool = False,
+        use_attention_agg_heads: int = 1,
     ):
         super(GNN, self).__init__()
         self.depth = depth
@@ -46,13 +49,22 @@ class GNN(nn.Module):
         self.double_features = double_features and attention is not None
         self.attention = attention
         self.fast_attention = fast_attention
+        self.use_attention_agg = use_attention_agg
+        self.use_attention_agg_heads = use_attention_agg_heads
 
         self.edge_init = nn.Linear(
             num_node_features + num_edge_features, self.hidden_size
         )
         self.convs = torch.nn.ModuleList()
         for _ in range(self.depth):
-            self.convs.append(DMPNNConv(self.hidden_size, self.separate_nn))
+            self.convs.append(
+                DMPNNConv(
+                    self.hidden_size,
+                    self.separate_nn,
+                    self.use_attention_agg,
+                    self.use_attention_agg_heads,
+                )
+            )
         self.edge_to_node = nn.Linear(
             num_node_features + self.hidden_size, self.hidden_size
         )
@@ -95,14 +107,23 @@ class GNN(nn.Module):
                 or self.attention == "reactants_products"
             ):
                 self.attention_reactants = nn.MultiheadAttention(
-                    embed_dim=self.hidden_size, num_heads=layer_cfg.num_heads
+                    embed_dim=self.hidden_size,
+                    num_heads=layer_cfg.num_heads,
+                    dropout=0.02,
+                    batch_first=True,
                 )
             if (
                 self.attention == "products"
                 or self.attention == "reactants_products"
             ):
                 self.attention_products = nn.MultiheadAttention(
-                    embed_dim=self.hidden_size, num_heads=layer_cfg.num_heads
+                    embed_dim=self.hidden_size,
+                    num_heads=layer_cfg.num_heads,
+                    dropout=0.02,
+                    batch_first=True,
+                )
+                print(
+                    f"Initialized MultiheadAttention with {layer_cfg.num_heads} heads"
                 )
 
     def forward(self, data: object) -> torch.Tensor:
@@ -114,6 +135,17 @@ class GNN(nn.Module):
         edge_attr = data.edge_attr
         batch = data.batch
         atom_origin_type = data.atom_origin_type
+        if self.use_attention_agg:
+            incoming_edges_list = data.incoming_edges_list
+            incoming_edges_batch = data.incoming_edges_batch
+            edge_batch = torch.arange(
+                edge_attr.size(0), device=edge_attr.device
+            )
+        else:
+            incoming_edges_list = None
+            incoming_edges_batch = None
+            edge_batch = None
+
         is_real_bond = (
             data.is_real_bond if hasattr(data, "is_real_bond") else None
         )
@@ -125,13 +157,25 @@ class GNN(nn.Module):
 
         # convolutions
         for l in range(self.depth):
-            _, h = self.convs[l](edge_index, h, is_real_bond)
+            _, h = self.convs[l](
+                edge_index,
+                h,
+                incoming_edges_list,
+                incoming_edges_batch,
+                edge_batch,
+                is_real_bond,
+            )
             h += h_0
             h = F.dropout(F.relu(h), self.dropout, training=self.training)
 
         # dmpnn edge -> node aggregation
         s, _ = self.convs[l](
-            edge_index, h, is_real_bond
+            edge_index,
+            h,
+            incoming_edges_list,
+            incoming_edges_batch,
+            edge_batch,
+            is_real_bond,
         )  # only use for summing
         q = torch.cat([x, s], dim=1)
         h = F.relu(self.edge_to_node(q))
@@ -142,38 +186,52 @@ class GNN(nn.Module):
             reactant_mask = atom_origin_type == AtomOriginType.REACTANT
             product_mask = atom_origin_type == AtomOriginType.PRODUCT
 
+            # each should be [num_nodes / 2], except maybe if dummy
             updated_reactants, updated_products = self._attention(
-                new_h, atom_origin_type
+                new_h, atom_origin_type, batch
             )
 
             if self.double_features:
+                # [num_nodes, hidden_size * 2]
                 new_h_double_features = torch.cat(
                     [new_h, torch.zeros_like(new_h)], dim=1
                 )
+
                 if (
                     self.attention == "reactants"
                     or self.attention == "reactants_products"
                 ):
+                    # [only reactants, hidden_size: 2 * hidden_size]
                     new_h_double_features[
                         reactant_mask, self.hidden_size :
                     ] = updated_reactants
+
                 if (
                     self.attention == "products"
                     or self.attention == "reactants_products"
                 ):
-                    new_h_double_features[
-                        product_mask, self.hidden_size :
-                    ] = updated_products
+                    new_h_double_features[product_mask, self.hidden_size :] = (
+                        updated_products
+                    )
 
                 new_h = new_h_double_features
 
             else:
-                new_h[reactant_mask] = updated_reactants
-                new_h[product_mask] = updated_products
+                # sum-based
+                if (
+                    self.attention == "reactants"
+                    or self.attention == "reactants_products"
+                ):
+                    new_h[reactant_mask] += updated_reactants
+                if (
+                    self.attention == "products"
+                    or self.attention == "reactants_products"
+                ):
+                    new_h[product_mask] += updated_products
 
         h = new_h
 
-        # Pooling
+        # [num_nodes, hidden_size (or 2 * hidden_size)] -> [num_batches, hidden_size (or 2 * hidden_size)]
         pooled = self._pool(
             h, batch, edge_index, is_real_bond, atom_origin_type
         )
@@ -290,55 +348,68 @@ class GNN(nn.Module):
         self,
         node_features: torch.Tensor,
         atom_origin_type: torch.Tensor,
+        batch: torch.Tensor,
     ) -> Tuple[torch.Tensor, torch.Tensor]:
         """
-        Applies attention between reactants and products.
-        If bidirectional_attention is True, applies attention in both directions.
-        Otherwise, only updates reactant features based on product features.
+        Applies attention between reactants and products, respecting batch structure.
         Returns updated features for both reactants and products.
         """
-        reactant_mask = atom_origin_type == AtomOriginType.REACTANT
-        product_mask = atom_origin_type == AtomOriginType.PRODUCT
+        # node_features: [num_nodes (in whole batch), hidden_size]
+        # atom_origin_type: [num_nodes (in whole batch)]
 
-        reactant_features = node_features[reactant_mask].unsqueeze(0)
-        product_features = node_features[product_mask].unsqueeze(0)
+        reactant_mask = (
+            atom_origin_type == AtomOriginType.REACTANT
+        )  # should be [num_nodes / 2], except maybe if dummy
+        product_mask = (
+            atom_origin_type == AtomOriginType.PRODUCT
+        )  # should be [num_nodes / 2]
 
-        updated_reactants = reactant_features.clone()
-        updated_products = product_features.clone()
+        # features and batch indices for reactants and products
+        reactant_features = node_features[reactant_mask]
+        product_features = node_features[product_mask]
+        reactant_batch = batch[reactant_mask]
+        product_batch = batch[product_mask]
+
+        # [num_batches, max_nodes_per_batch, hidden_size]
+        # here we get important masks for padding
+        reactant_features_dense, reactant_mask = to_dense_batch(
+            reactant_features, reactant_batch
+        )  # mask is [num_batches, max_nodes_per_batch]
+        product_features_dense, product_mask = to_dense_batch(
+            product_features, product_batch
+        )
 
         if (
             self.attention == "reactants"
             or self.attention == "reactants_products"
         ):
-            if self.fast_attention:
-                # Attention: products to reactants
-                updated_reactants = self.attention_reactants(
-                    reactant_features, product_features
-                )
-            else:
-                # Attention: products to reactants
-                updated_reactants, _ = self.attention_reactants(
-                    reactant_features,
-                    product_features,
-                    product_features,
-                    need_weights=False,
-                )
+            updated_reactants, _ = self.attention_reactants(
+                reactant_features_dense,
+                product_features_dense,
+                product_features_dense,
+                key_padding_mask=~product_mask,
+                need_weights=False,
+            )
+        else:
+            updated_reactants = reactant_features_dense
+
         if (
             self.attention == "products"
             or self.attention == "reactants_products"
         ):
-            if self.fast_attention:
-                # Attention: reactants to products
-                updated_products = self.attention_products(
-                    product_features, reactant_features
-                )
-            else:
-                # Attention: reactants to products
-                updated_products, _ = self.attention_products(
-                    product_features,
-                    reactant_features,
-                    reactant_features,
-                    need_weights=False,
-                )
+            updated_products, _ = self.attention_products(
+                product_features_dense,
+                reactant_features_dense,
+                reactant_features_dense,
+                key_padding_mask=~reactant_mask,
+                need_weights=False,
+            )
+        else:
+            updated_products = product_features_dense
 
-        return updated_reactants.squeeze(0), updated_products.squeeze(0)
+        # unpad
+        # should be [num_nodes / 2], except maybe if dummy
+        updated_reactants = updated_reactants[reactant_mask]
+        updated_products = updated_products[product_mask]
+
+        return updated_reactants, updated_products

@@ -11,7 +11,7 @@ defaults:
 seed: 0
 epochs: 30
 learning_rate: 0.001
-weight_decay: null
+weight_decay: 0
 mode: train
 patience: 10
 min_delta: 0.001
