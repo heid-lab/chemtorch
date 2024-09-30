@@ -279,8 +279,6 @@ class AttentionMessagePassing(MessagePassing):
 
         # used for edge to node agg
         if edge_to_node:
-            # TODO: investigate why this improves results
-            edge_attr = edge_attr + edge_attr
             aggregated_messages = self.propagate(
                 edge_index, edge_attr=edge_attr
             )
