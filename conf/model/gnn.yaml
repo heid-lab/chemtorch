@@ -26,7 +26,7 @@ pool_type: global
 pool_real_only: false
 hidden_size: 300
 double_features: false
-attention: null
+attention: null # reactants_products, reactants, products
 use_attention_agg: false
 use_attention_node_update: false
 use_attention_node_update_heads: 1
