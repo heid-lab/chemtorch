@@ -15,11 +15,7 @@ class DMPNNConv(MessagePassing):
     EXTRA: allowing for separate processing of real and artificial bonds if specified.
     """
 
-    def __init__(
-        self,
-        hidden_size: int,
-        separate_nn: bool = False,
-    ):
+    def __init__(self, hidden_size: int, separate_nn: bool = False):
         super(DMPNNConv, self).__init__(aggr="add")
         self.separate_nn = separate_nn
         self.lin_real = nn.Linear(hidden_size, hidden_size)
@@ -34,6 +30,7 @@ class DMPNNConv(MessagePassing):
         edge_index: torch.Tensor,
         edge_attr: torch.Tensor,
         is_real_bond: Optional[torch.Tensor] = None,
+        edge_to_node: Optional[torch.Tensor] = None,
     ) -> Tuple[torch.Tensor, torch.Tensor]:
         """
         Forward pass of the DMPNNConv layer.
@@ -41,6 +38,9 @@ class DMPNNConv(MessagePassing):
         row, col = edge_index
 
         aggregated_messages = self.propagate(edge_index, edge_attr=edge_attr)
+
+        if edge_to_node:
+            return aggregated_messages, None
 
         rev_messages = self._compute_reverse_messages(edge_attr)
 
