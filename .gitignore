@@ -6,8 +6,11 @@ __pycache__/
 # C extensions
 *.so
 
+# bash files
+*.sh
+
 # Data folder
-data/
+data/*
 
 # Saved models
 saved_models/
@@ -17,6 +20,9 @@ data.tar.gz
 
 # DS_Store
 .DS_Store
+
+# Weight & Bias
+wandb/
 
 # Distribution / packaging
 .Python

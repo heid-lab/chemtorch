@@ -16,19 +16,28 @@ For torch scatter and torch sparse, you need might also need to install specific
 conda create -n deeprxn python=3.10
 conda activate deeprxn
 pip install --upgrade pip setuptools wheel
-pip install rdkit numpy scikit-learn torch pandas typed-argument-parser
+pip install rdkit numpy scikit-learn torch pandas
+pip install hydra-core --upgrade
 pip install torch_scatter torch_sparse
 pip install torch_geometric
+pip install wandb
 pip install -e .
 
 ```
 
+## Data
+Put the data in a data folder.
+
 ## Test
 
-The scripts provided in the `scripts` folder are meant as a small example:
 ```
-python test.py
+python scripts/main.py mode=train data=rdb7 epochs=200 transformation.representation=connected_pair wandb=False transformation.connection_direction=bidirectional model.attention=null
 ```
+
+
+## Hydra
+https://medium.com/@bezzam/hydra-for-cleaner-python-code-and-better-reproducibility-in-research-c035028101f9 
+https://www.kdnuggets.com/2023/03/hydra-configs-deep-learning-experiments.html
 
 ## Copyright
 
