@@ -9,14 +9,18 @@ from torch_geometric.utils import to_dense_batch
 from torch_scatter import scatter_add
 
 from deeprxn.data import AtomOriginType
-from deeprxn.layers import *
+from deeprxn.layers import (
+    AttentionMessagePassing,
+    DMPNNConv,
+    ReactantProductAttention,
+)
+
+# TODO: look into fast attention again
 
 
 class GNN(nn.Module):
     """
-    Graph Neural Network for molecular property prediction.
-    This model uses DMPNN convolutions and supports various pooling methods.
-    Option for attention mechanism is also available.
+    TODO: Add docstring
     """
 
     def __init__(
@@ -26,48 +30,77 @@ class GNN(nn.Module):
         depth: int,
         hidden_size: int,
         dropout: float,
-        layer_cfg: DictConfig,
         attention: Literal[
             None, "reactants", "products", "reactants_products"
-        ] = None,
-        pool_type: Literal[
-            "global", "reactants", "products", "dummy"
-        ] = "global",
-        pool_real_only: bool = False,  # TODO: look into this
-        double_features: bool = False,
-        fast_attention: bool = False,  # TODO: update
-        use_attention_agg: bool = False,
-        use_attention_agg_heads: int = 1,
+        ],
+        pool_type: Literal["global", "reactants", "products", "dummy"],
+        pool_real_only: bool,  # TODO: look into this
+        double_features: bool,
+        use_attention_agg: bool,
+        use_attention_node_update: bool,
+        use_attention_node_update_heads: int,
+        attention_depth: int,
+        dmpnn_conv_cfg: DictConfig,
+        react_prod_att_cfg: DictConfig,
+        att_mess_pass_cfg: DictConfig,
     ):
         super(GNN, self).__init__()
         self.depth = depth
         self.hidden_size = hidden_size
         self.dropout = dropout
         self.pool_type = pool_type
-        self.separate_nn = layer_cfg.separate_nn
         self.pool_real_only = pool_real_only
         self.double_features = double_features and attention is not None
         self.attention = attention
-        self.fast_attention = fast_attention
         self.use_attention_agg = use_attention_agg
-        self.use_attention_agg_heads = use_attention_agg_heads
+        self.use_attention_node_update = use_attention_node_update
+        self.use_attention_node_update_heads = use_attention_node_update_heads
+        self.attention_depth = attention_depth
 
         self.edge_init = nn.Linear(
             num_node_features + num_edge_features, self.hidden_size
         )
+
+        if self.use_attention_agg:
+            self.conv = AttentionMessagePassing(
+                hidden_size=self.hidden_size,
+                separate_nn=att_mess_pass_cfg.separate_nn,
+                num_heads=att_mess_pass_cfg.num_heads,
+                dropout=att_mess_pass_cfg.dropout,
+            )
+        else:
+            self.conv = DMPNNConv(self.hidden_size, dmpnn_conv_cfg.separate_nn)
+
         self.convs = torch.nn.ModuleList()
         for _ in range(self.depth):
-            self.convs.append(
-                DMPNNConv(
-                    self.hidden_size,
-                    self.separate_nn,
-                    self.use_attention_agg,
-                    self.use_attention_agg_heads,
-                )
-            )
+            self.convs.append(self.conv)
+
         self.edge_to_node = nn.Linear(
             num_node_features + self.hidden_size, self.hidden_size
         )
+
+        if self.use_attention_node_update:
+            self.node_update_attention = nn.MultiheadAttention(
+                embed_dim=self.hidden_size,
+                num_heads=use_attention_node_update_heads,
+                dropout=0.02,
+                batch_first=True,
+            )
+            self.node_linear = nn.Linear(num_node_features, self.hidden_size)
+
+        if self.attention:
+            self.att_layers = torch.nn.ModuleList()
+            for _ in range(self.attention_depth):
+                self.att_layers.append(
+                    ReactantProductAttention(
+                        hidden_size=self.hidden_size,
+                        attention=self.attention,
+                        num_heads=react_prod_att_cfg.num_heads,
+                        dropout=react_prod_att_cfg.dropout,
+                        layer_norm=react_prod_att_cfg.layer_norm,
+                        batch_norm=react_prod_att_cfg.batch_norm,
+                    )
+                )
 
         ffn_input_size = (
             self.hidden_size * 2 if self.double_features else self.hidden_size
@@ -80,56 +113,11 @@ class GNN(nn.Module):
             nn.Linear(self.hidden_size, 1),
         )
 
-        if self.fast_attention:  # TODO: maybe make more compact
-            if (
-                self.attention == "reactants"
-                or self.attention == "reactants_products"
-            ):
-                self.attention_reactants = TransConvLayer(
-                    layer_cfg.in_channels,
-                    layer_cfg.out_channels,
-                    layer_cfg.num_heads,
-                    layer_cfg.use_weight,
-                )
-            if (
-                self.attention == "products"
-                or self.attention == "reactants_products"
-            ):
-                self.attention_products = TransConvLayer(
-                    layer_cfg.in_channels,
-                    layer_cfg.out_channels,
-                    layer_cfg.num_heads,
-                    layer_cfg.use_weight,
-                )
-        else:
-            if (
-                self.attention == "reactants"
-                or self.attention == "reactants_products"
-            ):
-                self.attention_reactants = nn.MultiheadAttention(
-                    embed_dim=self.hidden_size,
-                    num_heads=layer_cfg.num_heads,
-                    dropout=0.02,
-                    batch_first=True,
-                )
-            if (
-                self.attention == "products"
-                or self.attention == "reactants_products"
-            ):
-                self.attention_products = nn.MultiheadAttention(
-                    embed_dim=self.hidden_size,
-                    num_heads=layer_cfg.num_heads,
-                    dropout=0.02,
-                    batch_first=True,
-                )
-                print(
-                    f"Initialized MultiheadAttention with {layer_cfg.num_heads} heads"
-                )
-
     def forward(self, data: object) -> torch.Tensor:
         """
         Forward pass of the GNN.
         """
+        # TODO: clean up data extraction and improve efficiency
         x = data.x
         edge_index = data.edge_index
         edge_attr = data.edge_attr
@@ -146,6 +134,20 @@ class GNN(nn.Module):
             incoming_edges_batch = None
             edge_batch = None
 
+        # TODO: check if incoming edges lists are same
+        if self.use_attention_node_update:
+            node_batch = torch.arange(x.size(0), device=x.device)
+            neighboring_nodes_list = data.neighboring_nodes_list
+            neighboring_nodes_batch = data.neighboring_nodes_batch
+            incoming_edges_nodes_list = data.incoming_edges_nodes_list
+            incoming_edges_nodes_batch = data.incoming_edges_nodes_batch
+        else:
+            node_batch = None
+            neighboring_nodes_list = None
+            neighboring_nodes_batch = None
+            incoming_edges_nodes_list = None
+            incoming_edges_nodes_batch = None
+
         is_real_bond = (
             data.is_real_bond if hasattr(data, "is_real_bond") else None
         )
@@ -156,87 +158,126 @@ class GNN(nn.Module):
         h = h_0
 
         # convolutions
-        for l in range(self.depth):
-            _, h = self.convs[l](
-                edge_index,
-                h,
-                incoming_edges_list,
-                incoming_edges_batch,
-                edge_batch,
-                is_real_bond,
-            )
-            h += h_0
-            h = F.dropout(F.relu(h), self.dropout, training=self.training)
+        # TODO: write without if statement
+        if not self.use_attention_agg:
+            # normal dmpnn
+            for l in range(self.depth):
+                _, h = self.convs[l](
+                    edge_index=edge_index,
+                    edge_attr=h,
+                    is_real_bond=is_real_bond,
+                )
+                h += h_0
+                h = F.dropout(F.relu(h), self.dropout, training=self.training)
+        else:
+            for l in range(self.depth):
+                # convolutions using attention
+                _, h = self.convs[l](
+                    edge_index=edge_index,
+                    edge_attr=h,
+                    incoming_edges_list=incoming_edges_list,
+                    incoming_edges_batch=incoming_edges_batch,
+                    edge_batch=edge_batch,
+                    is_real_bond=is_real_bond,
+                )
+                h += h_0
+                h = F.dropout(F.relu(h), self.dropout, training=self.training)
 
-        # dmpnn edge -> node aggregation
-        s, _ = self.convs[l](
-            edge_index,
-            h,
-            incoming_edges_list,
-            incoming_edges_batch,
-            edge_batch,
-            is_real_bond,
-        )  # only use for summing
+        if not self.use_attention_node_update:
+            # dmpnn edge -> node aggregation
+            s, _ = self.convs[l](
+                edge_index, h, edge_to_node=True
+            )  # only use for summing
+        else:
+            x_h_dim = self.node_linear(x)
+
+            # dmpnn edge -> node aggregation, using attention
+            s = self._edge_to_node_agg(
+                x=x_h_dim,
+                node_batch=node_batch,
+                neighboring_nodes_list=neighboring_nodes_list,
+                neighboring_nodes_batch=neighboring_nodes_batch,
+                h=h,
+                incoming_edges_nodes_list=incoming_edges_nodes_list,
+                incoming_edges_nodes_batch=incoming_edges_nodes_batch,
+            )
+
         q = torch.cat([x, s], dim=1)
         h = F.relu(self.edge_to_node(q))
 
-        new_h = h.clone()
-
+        # attention layer
         if self.attention:
-            reactant_mask = atom_origin_type == AtomOriginType.REACTANT
-            product_mask = atom_origin_type == AtomOriginType.PRODUCT
-
-            # each should be [num_nodes / 2], except maybe if dummy
-            updated_reactants, updated_products = self._attention(
-                new_h, atom_origin_type, batch
-            )
-
-            if self.double_features:
-                # [num_nodes, hidden_size * 2]
-                new_h_double_features = torch.cat(
-                    [new_h, torch.zeros_like(new_h)], dim=1
+            for l in range(self.attention_depth):
+                h = self.att_layers[l](
+                    h,
+                    atom_origin_type,
+                    batch,
                 )
 
-                if (
-                    self.attention == "reactants"
-                    or self.attention == "reactants_products"
-                ):
-                    # [only reactants, hidden_size: 2 * hidden_size]
-                    new_h_double_features[
-                        reactant_mask, self.hidden_size :
-                    ] = updated_reactants
-
-                if (
-                    self.attention == "products"
-                    or self.attention == "reactants_products"
-                ):
-                    new_h_double_features[product_mask, self.hidden_size :] = (
-                        updated_products
-                    )
-
-                new_h = new_h_double_features
-
-            else:
-                # sum-based
-                if (
-                    self.attention == "reactants"
-                    or self.attention == "reactants_products"
-                ):
-                    new_h[reactant_mask] += updated_reactants
-                if (
-                    self.attention == "products"
-                    or self.attention == "reactants_products"
-                ):
-                    new_h[product_mask] += updated_products
-
-        h = new_h
-
-        # [num_nodes, hidden_size (or 2 * hidden_size)] -> [num_batches, hidden_size (or 2 * hidden_size)]
+        # [num_nodes, hidden_size] -> [num_batches, hidden_size] (hidden might be *2 if double feat)
         pooled = self._pool(
             h, batch, edge_index, is_real_bond, atom_origin_type
         )
 
         return self.ffn(pooled).squeeze(-1)
+
+    # TODO: look into what exactly happens when there are no incoming edges, specifically data.py
+    def _edge_to_node_agg(
+        self,
+        x: torch.Tensor,
+        node_batch: torch.Tensor,
+        neighboring_nodes_list: torch.Tensor,
+        neighboring_nodes_batch: torch.Tensor,
+        h: torch.Tensor,
+        incoming_edges_nodes_list: torch.Tensor,
+        incoming_edges_nodes_batch: torch.Tensor,
+    ) -> torch.Tensor:
+        """
+        TODO: add doc
+        """
+
+        # returns [num_batches, max_nodes_per_batch, hidden_size]
+        # here there is one node in a batch
+        node_dense, node_mask = to_dense_batch(x, batch=node_batch)
+
+        # get attrs for neighboring nodes
+        neighboring_x = x[neighboring_nodes_list]
+
+        # to_dense_batch
+        # [num_batches, max_nodes_per_batch, hidden_size], [num_batches, max_nodes_per_batch]
+        # the mask indicates for each batch which nodes are real and which are padding
+        neighboring_x_dense, neighboring_x_mask = to_dense_batch(
+            neighboring_x,
+            batch=neighboring_nodes_batch,
+            max_num_nodes=6,
+        )
+
+        # get attrs for incoming edges
+        incoming_h = h[incoming_edges_nodes_list]
+
+        # [num_batches, max_nodes_per_batch, hidden_size], here nodes are edges
+        incoming_h_dense, incoming_h_mask = to_dense_batch(
+            incoming_h,
+            batch=incoming_edges_nodes_batch,
+            max_num_nodes=6,
+        )
+
+        # Q: single nodes, K: respective neighboring nodes, V: respective incoming edges
+        node_dense_updated, _ = self.node_update_attention(
+            node_dense,
+            neighboring_x_dense,
+            incoming_h_dense,
+            key_padding_mask=~neighboring_x_mask,
+            need_weights=False,
+        )
+
+        # unmask
+        s = node_dense_updated[node_mask]
+
+        # residual connection
+        s = x + s
+
+        return s
 
     def _pool(
         self,
@@ -343,73 +384,3 @@ class GNN(nn.Module):
         row, col = row[mask], col[mask]
         edge_batch = batch[row]
         return scatter_add(h[row], edge_batch, dim=0)
-
-    def _attention(
-        self,
-        node_features: torch.Tensor,
-        atom_origin_type: torch.Tensor,
-        batch: torch.Tensor,
-    ) -> Tuple[torch.Tensor, torch.Tensor]:
-        """
-        Applies attention between reactants and products, respecting batch structure.
-        Returns updated features for both reactants and products.
-        """
-        # node_features: [num_nodes (in whole batch), hidden_size]
-        # atom_origin_type: [num_nodes (in whole batch)]
-
-        reactant_mask = (
-            atom_origin_type == AtomOriginType.REACTANT
-        )  # should be [num_nodes / 2], except maybe if dummy
-        product_mask = (
-            atom_origin_type == AtomOriginType.PRODUCT
-        )  # should be [num_nodes / 2]
-
-        # features and batch indices for reactants and products
-        reactant_features = node_features[reactant_mask]
-        product_features = node_features[product_mask]
-        reactant_batch = batch[reactant_mask]
-        product_batch = batch[product_mask]
-
-        # [num_batches, max_nodes_per_batch, hidden_size]
-        # here we get important masks for padding
-        reactant_features_dense, reactant_mask = to_dense_batch(
-            reactant_features, reactant_batch
-        )  # mask is [num_batches, max_nodes_per_batch]
-        product_features_dense, product_mask = to_dense_batch(
-            product_features, product_batch
-        )
-
-        if (
-            self.attention == "reactants"
-            or self.attention == "reactants_products"
-        ):
-            updated_reactants, _ = self.attention_reactants(
-                reactant_features_dense,
-                product_features_dense,
-                product_features_dense,
-                key_padding_mask=~product_mask,
-                need_weights=False,
-            )
-        else:
-            updated_reactants = reactant_features_dense
-
-        if (
-            self.attention == "products"
-            or self.attention == "reactants_products"
-        ):
-            updated_products, _ = self.attention_products(
-                product_features_dense,
-                reactant_features_dense,
-                reactant_features_dense,
-                key_padding_mask=~reactant_mask,
-                need_weights=False,
-            )
-        else:
-            updated_products = product_features_dense
-
-        # unpad
-        # should be [num_nodes / 2], except maybe if dummy
-        updated_reactants = updated_reactants[reactant_mask]
-        updated_products = updated_products[product_mask]
-
-        return updated_reactants, updated_products

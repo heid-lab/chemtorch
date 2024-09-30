@@ -1,10 +1,9 @@
 defaults:
   - _self_
-  - model: gnn.yaml
   - data: e2.yaml
   - features: features.yaml
   - transformation: transformation.yaml
-  - data_loader: data_loader.yaml
+  - model: gnn.yaml
   - override hydra/job_logging: disabled
   - override hydra/hydra_logging: disabled
 

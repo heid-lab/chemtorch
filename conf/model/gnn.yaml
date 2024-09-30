@@ -2,10 +2,21 @@ _target_: deeprxn.model.GNN
 
 defaults:
   - _self_
-  - layer_cfg:
-    - dmpnn_conv.yaml
-    - trans_conv.yaml
-  
+
+dmpnn_conv_cfg:
+  separate_nn: false
+
+react_prod_att_cfg:
+  layer_norm: true
+  batch_norm: false
+  num_heads: 1
+  dropout: 0.02
+
+att_mess_pass_cfg:
+  separate_nn: false
+  num_heads: 1
+  dropout: 0.02
+
 num_node_features: null
 num_edge_features: null
 
@@ -16,6 +27,7 @@ pool_real_only: false
 hidden_size: 300
 double_features: false
 attention: null
-fast_attention: false
 use_attention_agg: false
-use_attention_agg_heads: 1
+use_attention_node_update: false
+use_attention_node_update_heads: 1
+attention_depth: 1

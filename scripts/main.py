@@ -1,8 +1,8 @@
 import hydra
 import torch
+import wandb
 from omegaconf import DictConfig, OmegaConf
 
-import wandb
 from deeprxn.train import train
 from deeprxn.utils import set_seed
 
@@ -11,7 +11,6 @@ from deeprxn.utils import set_seed
 def main(cfg: DictConfig):
     # config mutable
     OmegaConf.set_struct(cfg, False)
-
     set_seed(cfg.seed)
 
     if cfg.use_cuda and torch.cuda.is_available():
@@ -28,13 +27,13 @@ def main(cfg: DictConfig):
         )
 
     train_loader = hydra.utils.instantiate(
-        cfg.data_loader, shuffle=True, split="train"
+        cfg.transformation, shuffle=True, split="train"
     )
     val_loader = hydra.utils.instantiate(
-        cfg.data_loader, shuffle=False, split="val"
+        cfg.transformation, shuffle=False, split="val"
     )
     test_loader = hydra.utils.instantiate(
-        cfg.data_loader, shuffle=False, split="test"
+        cfg.transformation, shuffle=False, split="test"
     )
 
     if cfg.mode == "train":

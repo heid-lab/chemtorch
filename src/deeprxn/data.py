@@ -154,6 +154,110 @@ class RxnGraph:
                 "Invalid representation. Choose 'CGR', 'fully_connected', 'connected_pair'"
             )
 
+        edge_index = (
+            torch.tensor(self.edge_index, dtype=torch.long).t().contiguous()
+        )
+
+        incoming_edges_list = []
+        incoming_edges_batch = []
+        row, col = edge_index
+
+        for i, edge in enumerate(edge_index.t()):
+            target_node = edge[0]
+
+            incoming_edge_indices = (
+                (col == target_node).nonzero(as_tuple=False).view(-1)
+            )
+
+            reverse_edge_mask = row[incoming_edge_indices] != edge[1]
+            incoming_edge_indices = incoming_edge_indices[reverse_edge_mask]
+
+            if len(incoming_edge_indices) > 0:
+                incoming_edges_list.append(incoming_edge_indices)
+                incoming_edges_batch.append(
+                    torch.full_like(incoming_edge_indices, i)
+                )
+            else:
+                incoming_edges_list.append(torch.tensor([i]))
+                incoming_edges_batch.append(torch.tensor([i]))
+
+        self.incoming_edges_batch = torch.cat(incoming_edges_batch)
+        self.incoming_edges_list = torch.cat(incoming_edges_list)
+
+        self._compute_neighboring_nodes(edge_index)
+        self._compute_incoming_edges_to_nodes()
+
+    def _compute_incoming_edges_to_nodes(self):
+        edge_index = (
+            torch.tensor(self.edge_index, dtype=torch.long).t().contiguous()
+        )
+        row, col = edge_index
+
+        incoming_edges_nodes_list = []
+        incoming_edges_nodes_batch = []
+
+        for node_idx in range(
+            self.n_atoms * 2
+        ):  # Iterate over all nodes (reactants and products)
+            incoming_edge_indices = (
+                (col == node_idx).nonzero(as_tuple=False).view(-1)
+            )
+
+            if len(incoming_edge_indices) > 0:
+                incoming_edges_nodes_list.append(incoming_edge_indices)
+                incoming_edges_nodes_batch.append(
+                    torch.full_like(incoming_edge_indices, node_idx)
+                )
+            else:
+                # If no incoming edges, append a placeholder (e.g., -1)
+                incoming_edges_nodes_list.append(torch.tensor([-1]))
+                incoming_edges_nodes_batch.append(torch.tensor([node_idx]))
+
+        self.incoming_edges_nodes_list = torch.cat(incoming_edges_nodes_list)
+        self.incoming_edges_nodes_batch = torch.cat(incoming_edges_nodes_batch)
+
+    def _compute_neighboring_nodes(self, edge_index):
+        row, col = edge_index
+
+        # Initialize lists for neighboring nodes and their batch indicators
+        neighboring_nodes_list = []
+        neighboring_nodes_batch = []
+
+        # Iterate over each node to collect neighbors
+        for node_idx in range(
+            self.n_atoms * 2
+        ):  # Assuming we have reactants and products
+            # Get the indices of the neighbors
+            neighbor_indices = (
+                (row == node_idx).nonzero(as_tuple=False).view(-1)
+            )
+
+            # Get the actual neighbors from col
+            neighbors = col[neighbor_indices]
+
+            if neighbors.numel() > 0:
+                # Append neighbors and their batch indicators (current node index)
+                neighboring_nodes_list.append(neighbors)
+                neighboring_nodes_batch.append(
+                    torch.full_like(neighbors, node_idx)
+                )
+            else:
+                # If no neighbors, append the node itself
+                neighboring_nodes_list.append(torch.tensor([node_idx]))
+                neighboring_nodes_batch.append(torch.tensor([node_idx]))
+
+        # Convert lists to tensors
+        self.neighboring_nodes_list = (
+            torch.cat(neighboring_nodes_list)
+            if neighboring_nodes_list
+            else torch.tensor([])
+        )
+        self.neighboring_nodes_batch = (
+            torch.cat(neighboring_nodes_batch)
+            if neighboring_nodes_batch
+            else torch.tensor([])
+        )
+
     def _get_atom_features(self, i):
         f_atom_reac = self.atom_featurizer(self.mol_reac.GetAtomWithIdx(i))
         f_atom_prod = self.atom_featurizer(
@@ -520,6 +624,12 @@ class ChemDataset(Dataset):
         data.atom_origins = torch.tensor(
             molgraph.atom_origins, dtype=torch.long
         )
+        data.incoming_edges_list = molgraph.incoming_edges_list
+        data.incoming_edges_batch = molgraph.incoming_edges_batch
+        data.neighboring_nodes_list = molgraph.neighboring_nodes_list
+        data.neighboring_nodes_batch = molgraph.neighboring_nodes_batch
+        data.incoming_edges_nodes_list = molgraph.incoming_edges_nodes_list
+        data.incoming_edges_nodes_batch = molgraph.incoming_edges_nodes_batch
         return data
 
     def get(self, key):

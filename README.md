@@ -25,12 +25,15 @@ pip install -e .
 
 ```
 
+## Data
+Put the data in a data folder.
+
 ## Test
 
-The scripts provided in the `scripts` folder are meant as a small example:
 ```
-python scripts/test.py mode=train data=e2  epochs=30 transformation.representation=CGR
+python scripts/main.py mode=train data=rdb7 epochs=200 transformation.representation=connected_pair wandb=False transformation.connection_direction=bidirectional model.attention=null
 ```
+
 
 ## Hydra
 https://medium.com/@bezzam/hydra-for-cleaner-python-code-and-better-reproducibility-in-research-c035028101f9 
