@@ -61,19 +61,21 @@ class GNN(nn.Module):
             num_node_features + num_edge_features, self.hidden_size
         )
 
-        if self.use_attention_agg:
-            self.conv = AttentionMessagePassing(
-                hidden_size=self.hidden_size,
-                separate_nn=att_mess_pass_cfg.separate_nn,
-                num_heads=att_mess_pass_cfg.num_heads,
-                dropout=att_mess_pass_cfg.dropout,
-            )
-        else:
-            self.conv = DMPNNConv(self.hidden_size, dmpnn_conv_cfg.separate_nn)
-
         self.convs = torch.nn.ModuleList()
         for _ in range(self.depth):
-            self.convs.append(self.conv)
+            if self.use_attention_agg:
+                self.convs.append(
+                    AttentionMessagePassing(
+                        hidden_size=self.hidden_size,
+                        separate_nn=att_mess_pass_cfg.separate_nn,
+                        num_heads=att_mess_pass_cfg.num_heads,
+                        dropout=att_mess_pass_cfg.dropout,
+                    )
+                )
+            else:
+                self.convs.append(
+                    DMPNNConv(self.hidden_size, dmpnn_conv_cfg.separate_nn)
+                )
 
         self.edge_to_node = nn.Linear(
             num_node_features + self.hidden_size, self.hidden_size
