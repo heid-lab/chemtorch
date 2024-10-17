@@ -11,7 +11,7 @@ seed: 0
 epochs: 30
 learning_rate: 0.001
 weight_decay: 0
-mode: train
+mode: train # predict
 patience: 10
 min_delta: 0.001
 use_cuda: true
@@ -21,7 +21,7 @@ project_name: deeprxn
 
 wandb: false
 
-model_path: model.pt
+model_path: models/experiment1
 
 hydra:
   output_subdir: null

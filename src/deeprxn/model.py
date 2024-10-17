@@ -11,6 +11,7 @@ from torch_scatter import scatter_add
 from deeprxn.data import AtomOriginType
 from deeprxn.layers import (
     AttentionMessagePassing,
+    AttentionMessagePassingTransEnc,
     DMPNNConv,
     ReactantProductAttention,
 )
@@ -40,9 +41,12 @@ class GNN(nn.Module):
         use_attention_node_update: bool,
         use_attention_node_update_heads: int,
         attention_depth: int,
+        shared_weights: bool,
+        use_att_agg_trans_enc: bool,
         dmpnn_conv_cfg: DictConfig,
         react_prod_att_cfg: DictConfig,
         att_mess_pass_cfg: DictConfig,
+        att_mess_pass_trans_enc_cfg: DictConfig,
     ):
         super(GNN, self).__init__()
         self.depth = depth
@@ -56,26 +60,68 @@ class GNN(nn.Module):
         self.use_attention_node_update = use_attention_node_update
         self.use_attention_node_update_heads = use_attention_node_update_heads
         self.attention_depth = attention_depth
+        self.use_att_agg_trans_enc = use_att_agg_trans_enc
 
         self.edge_init = nn.Linear(
             num_node_features + num_edge_features, self.hidden_size
         )
 
-        self.convs = torch.nn.ModuleList()
-        for _ in range(self.depth):
+        if shared_weights:
             if self.use_attention_agg:
-                self.convs.append(
-                    AttentionMessagePassing(
+                if self.use_att_agg_trans_enc:
+                    self.conv = AttentionMessagePassingTransEnc(
+                        hidden_size=self.hidden_size,
+                        num_heads=att_mess_pass_trans_enc_cfg.num_heads,
+                        dropout=att_mess_pass_trans_enc_cfg.dropout,
+                        layer_norm=att_mess_pass_trans_enc_cfg.layer_norm,
+                        batch_norm=att_mess_pass_trans_enc_cfg.batch_norm,
+                    )
+                else:
+                    self.conv = AttentionMessagePassing(
                         hidden_size=self.hidden_size,
                         separate_nn=att_mess_pass_cfg.separate_nn,
                         num_heads=att_mess_pass_cfg.num_heads,
                         dropout=att_mess_pass_cfg.dropout,
+                        use_message=att_mess_pass_cfg.use_message,
                     )
-                )
             else:
-                self.convs.append(
-                    DMPNNConv(self.hidden_size, dmpnn_conv_cfg.separate_nn)
+                self.conv = DMPNNConv(
+                    self.hidden_size, dmpnn_conv_cfg.separate_nn
                 )
+
+        self.convs = torch.nn.ModuleList()
+        for _ in range(self.depth):
+            if self.use_attention_agg:
+                if shared_weights:
+                    self.convs.append(self.conv)
+                else:
+                    if self.use_att_agg_trans_enc:
+                        self.convs.append(
+                            AttentionMessagePassingTransEnc(
+                                hidden_size=self.hidden_size,
+                                num_heads=att_mess_pass_trans_enc_cfg.num_heads,
+                                dropout=att_mess_pass_trans_enc_cfg.dropout,
+                                layer_norm=att_mess_pass_trans_enc_cfg.layer_norm,
+                                batch_norm=att_mess_pass_trans_enc_cfg.batch_norm,
+                            )
+                        )
+                    else:
+                        self.convs.append(
+                            AttentionMessagePassing(
+                                hidden_size=self.hidden_size,
+                                separate_nn=att_mess_pass_cfg.separate_nn,
+                                num_heads=att_mess_pass_cfg.num_heads,
+                                dropout=att_mess_pass_cfg.dropout,
+                                use_message=att_mess_pass_cfg.use_message,
+                            )
+                        )
+            else:
+                if shared_weights:
+                    self.convs.append(self.conv)
+                else:
+                    self.convs.append(
+                        DMPNNConv(self.hidden_size, dmpnn_conv_cfg.separate_nn)
+                    )
 
         self.edge_to_node = nn.Linear(
             num_node_features + self.hidden_size, self.hidden_size
@@ -91,18 +137,31 @@ class GNN(nn.Module):
             self.node_linear = nn.Linear(num_node_features, self.hidden_size)
 
         if self.attention:
-            self.att_layers = torch.nn.ModuleList()
-            for _ in range(self.attention_depth):
-                self.att_layers.append(
-                    ReactantProductAttention(
-                        hidden_size=self.hidden_size,
-                        attention=self.attention,
-                        num_heads=react_prod_att_cfg.num_heads,
-                        dropout=react_prod_att_cfg.dropout,
-                        layer_norm=react_prod_att_cfg.layer_norm,
-                        batch_norm=react_prod_att_cfg.batch_norm,
-                    )
+            if shared_weights:
+                self.att_layer = ReactantProductAttention(
+                    hidden_size=self.hidden_size,
+                    attention=self.attention,
+                    num_heads=react_prod_att_cfg.num_heads,
+                    dropout=react_prod_att_cfg.dropout,
+                    layer_norm=react_prod_att_cfg.layer_norm,
+                    batch_norm=react_prod_att_cfg.batch_norm,
                 )
+            self.att_layers = torch.nn.ModuleList()
+
+            for _ in range(self.attention_depth):
+                if shared_weights:
+                    self.att_layers.append(self.att_layer)
+                else:
+                    self.att_layers.append(
+                        ReactantProductAttention(
+                            hidden_size=self.hidden_size,
+                            attention=self.attention,
+                            num_heads=react_prod_att_cfg.num_heads,
+                            dropout=react_prod_att_cfg.dropout,
+                            layer_norm=react_prod_att_cfg.layer_norm,
+                            batch_norm=react_prod_att_cfg.batch_norm,
+                        )
+                    )
 
         ffn_input_size = (
             self.hidden_size * 2 if self.double_features else self.hidden_size
@@ -128,8 +187,12 @@ class GNN(nn.Module):
         if self.use_attention_agg:
             incoming_edges_list = data.incoming_edges_list
             incoming_edges_batch = data.incoming_edges_batch
-            edge_batch = torch.arange(
-                edge_attr.size(0), device=edge_attr.device
+            edge_batch = torch.unique(incoming_edges_batch, sorted=False)
+            incoming_edges_batch_from_zero = (
+                data.incoming_edges_batch_from_zero
+            )
+            edge_batch_2 = torch.arange(
+                edge_batch.size(0), device=edge_batch.device
             )
         else:
             incoming_edges_list = None
@@ -178,17 +241,21 @@ class GNN(nn.Module):
                     edge_index=edge_index,
                     edge_attr=h,
                     incoming_edges_list=incoming_edges_list,
-                    incoming_edges_batch=incoming_edges_batch,
                     edge_batch=edge_batch,
+                    incoming_edges_batch_from_zero=incoming_edges_batch_from_zero,
+                    edge_batch_2=edge_batch_2,
                     is_real_bond=is_real_bond,
                 )
-                h += h_0
-                h = F.dropout(F.relu(h), self.dropout, training=self.training)
+                if not self.use_att_agg_trans_enc:
+                    h += h_0
+                    h = F.dropout(
+                        F.relu(h), self.dropout, training=self.training
+                    )
 
         if not self.use_attention_node_update:
             # dmpnn edge -> node aggregation
             s, _ = self.convs[l](
-                edge_index, h, edge_to_node=True
+                edge_index, h, is_real_bond
             )  # only use for summing
         else:
             x_h_dim = self.node_linear(x)
@@ -220,6 +287,11 @@ class GNN(nn.Module):
         pooled = self._pool(
             h, batch, edge_index, is_real_bond, atom_origin_type
         )
+
+        # print(
+        #     "pooled",
+        #     torch.isnan(pooled).any(),
+        # )
 
         return self.ffn(pooled).squeeze(-1)
 

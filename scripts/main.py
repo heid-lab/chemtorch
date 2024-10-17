@@ -3,7 +3,7 @@ import torch
 import wandb
 from omegaconf import DictConfig, OmegaConf
 
-from deeprxn.train import train
+from deeprxn.train import predict_model, train
 from deeprxn.utils import set_seed
 
 
@@ -38,9 +38,8 @@ def main(cfg: DictConfig):
 
     if cfg.mode == "train":
         train(train_loader, val_loader, test_loader, cfg)
-
-    # TODO: Implement predict mode
-
+    elif cfg.mode == "predict":
+        predict_model(test_loader, cfg)
     else:
         raise ValueError(
             f"Invalid mode: {cfg.mode}. Choose 'train' or 'predict'."

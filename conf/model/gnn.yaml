@@ -14,11 +14,21 @@ react_prod_att_cfg:
 
 att_mess_pass_cfg:
   separate_nn: false
+  use_message: true
+  num_heads: 1
+  dropout: 0.02
+
+att_mess_pass_trans_enc_cfg:
+  layer_norm: true
+  batch_norm: false
   num_heads: 1
   dropout: 0.02
 
 num_node_features: null
 num_edge_features: null
+
+shared_weights: false
+use_att_agg_trans_enc: false
 
 depth: 3
 dropout: 0.02

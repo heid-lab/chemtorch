@@ -102,6 +102,7 @@ class RxnGraph:
         self.atom_origin_type = []
         incoming_edges_list = []
         incoming_edges_batch = []
+        incoming_edges_batch_from_zero = []
 
         self.mol_reac, self.reac_origins = make_mol(self.smiles_reac)
         self.mol_prod, self.prod_origins = make_mol(self.smiles_prod)
@@ -164,6 +165,7 @@ class RxnGraph:
 
         row, col = edge_index
 
+        counter = 0
         for i, edge in enumerate(edge_index.t()):
             target_node = edge[0]
 
@@ -179,12 +181,16 @@ class RxnGraph:
                 incoming_edges_batch.append(
                     torch.full_like(incoming_edge_indices, i)
                 )
-            else:
-                incoming_edges_list.append(torch.tensor([i]))
-                incoming_edges_batch.append(torch.tensor([i]))
+                incoming_edges_batch_from_zero.append(
+                    torch.full_like(incoming_edge_indices, counter)
+                )
+                counter += 1
 
         self.incoming_edges_batch = torch.cat(incoming_edges_batch)
         self.incoming_edges_list = torch.cat(incoming_edges_list)
+        self.incoming_edges_batch_from_zero = torch.cat(
+            incoming_edges_batch_from_zero
+        )
 
         self._compute_neighboring_nodes(edge_index)
         self._compute_incoming_edges_to_nodes()
@@ -565,6 +571,9 @@ class ChemDataset(Dataset):
         )
         data.incoming_edges_list = molgraph.incoming_edges_list
         data.incoming_edges_batch = molgraph.incoming_edges_batch
+        data.incoming_edges_batch_from_zero = (
+            molgraph.incoming_edges_batch_from_zero
+        )
         data.neighboring_nodes_list = molgraph.neighboring_nodes_list
         data.neighboring_nodes_batch = molgraph.neighboring_nodes_batch
         data.incoming_edges_nodes_list = molgraph.incoming_edges_nodes_list

@@ -4,14 +4,19 @@ import time
 import hydra
 import numpy as np
 import torch
+import wandb
 from omegaconf import OmegaConf
 from sklearn.metrics import mean_absolute_error, root_mean_squared_error
 from torch import nn
 
-import wandb
 from deeprxn.data import Standardizer
 from deeprxn.model import GNN
-from deeprxn.utils import load_model, save_model
+from deeprxn.utils import (
+    load_model,
+    load_standardizer,
+    save_model,
+    save_standardizer,
+)
 
 
 def train_epoch(model, loader, optimizer, loss, stdzer, device):
@@ -91,14 +96,22 @@ def train(train_loader, val_loader, test_loader, cfg):
     if cfg.wandb:
         wandb.watch(model, log="all")
 
-    model, optimizer, start_epoch, best_val_loss = load_model(
-        model, optimizer, cfg.model_path
-    )
+    # TODO: add support for continuing training
+    # model, optimizer, start_epoch, best_val_loss = load_model(
+    #     model, optimizer, cfg.model_path
+    # )
+    start_epoch = 0
+    best_val_loss = float("inf")
 
     early_stop_counter = 0
     for epoch in range(start_epoch, cfg.epochs):
         train_loss, epoch_time = train_epoch(
-            model, train_loader, optimizer, loss, stdzer, device
+            model,
+            train_loader,
+            optimizer,
+            loss,
+            stdzer,
+            device,
         )
         val_preds = pred(model, val_loader, loss, stdzer, device)
         val_loss = root_mean_squared_error(
@@ -119,6 +132,7 @@ def train(train_loader, val_loader, test_loader, cfg):
                 save_model(
                     model, optimizer, epoch, best_val_loss, cfg.model_path
                 )
+                save_standardizer(mean, std, cfg.model_path)
 
         print(
             f"Epoch {epoch}, Train RMSE: {train_loss}, Val RMSE: {val_loss}, Time: {epoch_time:.2f}"
@@ -138,8 +152,10 @@ def train(train_loader, val_loader, test_loader, cfg):
             print(f"Early stopping at epoch {epoch}")
             break
 
-    # Load the best model for final evaluation
-    model, _, _, _ = load_model(model, optimizer, cfg.model_path)
+    # final evaluation
+    # TODO: look into keeping track of best model state, now we use last model state
+    if cfg.save_model:
+        model, _, _, _ = load_model(model, optimizer, cfg.model_path)
     test_preds = pred(model, test_loader, loss, stdzer, device)
     test_rmse = root_mean_squared_error(test_preds, test_loader.dataset.labels)
     test_mae = mean_absolute_error(test_preds, test_loader.dataset.labels)
@@ -162,104 +178,25 @@ def predict(model, loader, stdzer, device):
     return preds
 
 
-from deeprxn.SGFormer import GCN, SGFormer
-
-
-def train2(train_loader, val_loader, test_loader, cfg):
-    # TODO add docstring
-
-    resolved_cfg = OmegaConf.to_container(cfg, resolve=True)
-    resolved_cfg = OmegaConf.create(resolved_cfg)
-    print(OmegaConf.to_yaml(resolved_cfg))
-
+def predict_model(test_loader, cfg):
+    """Run prediction using a saved model."""
     device = torch.device(cfg.device)
 
-    mean = np.mean(train_loader.dataset.labels)
-    std = np.std(train_loader.dataset.labels)
+    cfg.model.num_node_features = test_loader.dataset.num_node_features
+    cfg.model.num_edge_features = test_loader.dataset.num_edge_features
+    model = hydra.utils.instantiate(cfg.model)
+    model = model.to(device)
+
+    model, _, _, _ = load_model(model, None, cfg.model_path)
+
+    mean, std = load_standardizer(cfg.model_path)
+    if mean is None or std is None:
+        raise ValueError("No standardizer found. Model must be trained first.")
+
     stdzer = Standardizer(mean, std)
 
-    gnn = GNN(**cfg.model).to(device)
+    test_preds = predict(model, test_loader, stdzer, device)
 
-    model = SGFormer(
-        cfg.model.num_node_features,
-        300,
-        1,
-        num_layers=1,
-        alpha=0.5,
-        dropout=0.2,
-        num_heads=1,
-        use_bn=True,
-        use_residual=True,
-        use_graph=True,
-        use_weight=True,
-        use_act=True,
-        graph_weight=0.8,
-        gnn=gnn,
-        aggregate="add",
-    ).to(device)
-
-    optimizer = torch.optim.Adam(
-        [
-            {"params": model.params1, "weight_decay": 0.001},
-            {"params": model.params2, "weight_decay": 5e-4},
-        ],
-        lr=0.01,
-    )
-
-    loss = nn.MSELoss(reduction="sum")
-    print(model)
-
-    if cfg.wandb:
-        wandb.watch(model, log="all")
-
-    model, optimizer, start_epoch, best_val_loss = load_model(
-        model, optimizer, cfg.model_path
-    )
-
-    early_stop_counter = 0
-    for epoch in range(start_epoch, cfg.epochs):
-        train_loss = train_epoch(
-            model, train_loader, optimizer, loss, stdzer, device
-        )
-        val_preds = pred(model, val_loader, loss, stdzer, device)
-        val_loss = root_mean_squared_error(
-            val_preds, val_loader.dataset.labels
-        )
-
-        early_stop_counter, should_stop = check_early_stopping(
-            val_loss,
-            best_val_loss,
-            early_stop_counter,
-            cfg.patience,
-            cfg.min_delta,
-        )
-
-        if val_loss < best_val_loss:
-            best_val_loss = val_loss
-            if cfg.save_model:
-                save_model(
-                    model, optimizer, epoch, best_val_loss, cfg.model_path
-                )
-
-        print(f"Epoch {epoch}, Train RMSE: {train_loss}, Val RMSE: {val_loss}")
-
-        if cfg.wandb:
-            wandb.log(
-                {
-                    "epoch": epoch,
-                    "train_rmse": train_loss,
-                    "val_rmse": val_loss,
-                    "best_val_rmse": best_val_loss,
-                }
-            )
-
-        if should_stop:
-            print(f"Early stopping at epoch {epoch}")
-            break
-
-    # Load the best model for final evaluation
-    model, _, _, _ = load_model(model, optimizer, cfg.model_path)
-    test_preds = pred(model, test_loader, loss, stdzer, device)
     test_rmse = root_mean_squared_error(test_preds, test_loader.dataset.labels)
     test_mae = mean_absolute_error(test_preds, test_loader.dataset.labels)
     print(f"Test RMSE: {test_rmse}")
@@ -267,3 +204,5 @@ def train2(train_loader, val_loader, test_loader, cfg):
 
     if cfg.wandb:
         wandb.log({"test_rmse": test_rmse, "test_mae": test_mae})
+
+    return test_preds
