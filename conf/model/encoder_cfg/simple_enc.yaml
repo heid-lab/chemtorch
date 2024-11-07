@@ -1,0 +1,3 @@
+_target_: deeprxn.encoder.simple_enc.SimpleEncoder
+in_channels: ${eval:'${num_node_features} + ${num_edge_features}'}
+out_channels: ${model.mpnn_cfg.in_channels}

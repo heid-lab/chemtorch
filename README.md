@@ -1,6 +1,23 @@
+<div align="center">
+
 # DeepRxn
 
-DeepRxn software package
+<a href="https://pytorch.org/"><img alt="PyTorch" src="https://img.shields.io/badge/PyTorch-black?logo=PyTorch"></a>
+<a href="https://hydra.cc/docs/intro/"><img alt="Config: Hydra" src="https://img.shields.io/badge/Config-Hydra-89b8cd"></a>
+
+
+![DeepRxn_logo.png](./images/DeepRxn_logo.png)
+
+</div>
+
+## Description
+DeepRxn package
+
+
+## Contents
+- [Installation](#installation)
+- [Data](#data)
+- [Examples](#test---examples)
 
 ## Installation
 

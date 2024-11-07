@@ -1,27 +1,30 @@
 defaults:
-  - _self_
-  - data: e2.yaml
-  - features: features.yaml
-  - transformation: transformation.yaml
-  - model: gnn.yaml
+  - data: data
+  - model: dmpnn
   - override hydra/job_logging: disabled
   - override hydra/hydra_logging: disabled
+  - _self_ # placement of this matters
 
-seed: 0
+wandb: false
+mode: train # train or predict
+project_name: deeprxn
+seed: 0 # use 0
+use_cuda: true
+device: gpu
+
+save_model: false
+model_path: models/experiment1
+train_data_fraction: null
+
 epochs: 30
 learning_rate: 0.001
 weight_decay: 0
-mode: train # predict
+
 patience: 10
 min_delta: 0.001
-use_cuda: true
-device: gpu
-save_model: false
-project_name: deeprxn
 
-wandb: false
-
-model_path: models/experiment1
+num_node_features: ???
+num_edge_features: ???
 
 hydra:
   output_subdir: null

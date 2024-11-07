@@ -1,10 +1,7 @@
+import os
 from enum import IntEnum
 from functools import lru_cache
-from pathlib import Path
-from typing import Literal, Tuple
 
-import hydra
-import numpy as np
 import pandas as pd
 import torch
 import torch_geometric as tg
@@ -13,7 +10,6 @@ from torch_geometric.data import Dataset
 from torch_geometric.loader import DataLoader
 
 from deeprxn.featurizer.featurizer import make_featurizer
-from deeprxn.utils import load_csv_dataset
 
 
 def make_mol(smi):
@@ -494,35 +490,62 @@ class ChemDataset(Dataset):
         labels,
         atom_featurizer,
         bond_featurizer,
-        cache_graphs,
-        max_cache_size,
-        representation_cfg,
+        mode,
+        representation,
+        connection_direction,
+        dummy_node,
+        dummy_connection,
+        dummy_dummy_connection,
+        dummy_feat_init,
+        cache_graphs=False,
+        max_cache_size=None,
     ):
         super(ChemDataset, self).__init__()
         self.smiles = smiles
         self.labels = labels
+        self.mode = mode
         self.atom_featurizer = atom_featurizer
         self.bond_featurizer = bond_featurizer
+        self.representation = representation
+        self.connection_direction = connection_direction
+        self.dummy_node = dummy_node
+        self.dummy_connection = dummy_connection
+        self.dummy_dummy_connection = dummy_dummy_connection
+        self.dummy_feat_init = dummy_feat_init
         self.cache_graphs = cache_graphs
-        self.representation_cfg = representation_cfg
         self.graph_cache = {}
 
         if cache_graphs:
-            self.process_key = lru_cache(maxsize=max_cache_size)(
-                self._process_key
-            )
+            if max_cache_size is not None:
+                self.process_key = lru_cache(maxsize=max_cache_size)(
+                    self._process_key
+                )
+            else:
+                self.process_key = lru_cache(maxsize=None)(self._process_key)
         else:
             self.process_key = self._process_key
 
     def _process_key(self, key):
         # TODO: add docstring
-        smiles = self.smiles[key]
-        molgraph = hydra.utils.instantiate(
-            self.representation_cfg,
-            smiles=smiles,
-            atom_featurizer=self.atom_featurizer,
-            bond_featurizer=self.bond_featurizer,
-        )
+        smi = self.smiles[key]
+        if self.mode == "mol":
+            molgraph = MolGraph(
+                smi, self.atom_featurizer, self.bond_featurizer
+            )
+        elif self.mode == "rxn":
+            molgraph = RxnGraph(
+                smi,
+                self.atom_featurizer,
+                self.bond_featurizer,
+                self.representation,
+                self.connection_direction,
+                self.dummy_node,
+                self.dummy_connection,
+                self.dummy_dummy_connection,
+                self.dummy_feat_init,
+            )
+        else:
+            raise ValueError("Unknown option for mode", self.mode)
         mol = self.molgraph2data(molgraph, key)
         return mol
 
@@ -537,24 +560,24 @@ class ChemDataset(Dataset):
         data.edge_attr = torch.tensor(molgraph.f_bonds, dtype=torch.float)
         data.y = torch.tensor([self.labels[key]], dtype=torch.float)
         data.smiles = self.smiles[key]
-        # data.is_real_bond = torch.tensor(
-        #     molgraph.is_real_bond, dtype=torch.bool
-        # )
+        data.is_real_bond = torch.tensor(
+            molgraph.is_real_bond, dtype=torch.bool
+        )
         data.atom_origin_type = torch.tensor(
             molgraph.atom_origin_type, dtype=torch.long
         )
-        # data.atom_origins = torch.tensor(
-        #     molgraph.atom_origins, dtype=torch.long
-        # )
-        # data.incoming_edges_list = molgraph.incoming_edges_list
-        # data.incoming_edges_batch = molgraph.incoming_edges_batch
-        # data.incoming_edges_batch_from_zero = (
-        #     molgraph.incoming_edges_batch_from_zero
-        # )
-        # data.neighboring_nodes_list = molgraph.neighboring_nodes_list
-        # data.neighboring_nodes_batch = molgraph.neighboring_nodes_batch
-        # data.incoming_edges_nodes_list = molgraph.incoming_edges_nodes_list
-        # data.incoming_edges_nodes_batch = molgraph.incoming_edges_nodes_batch
+        data.atom_origins = torch.tensor(
+            molgraph.atom_origins, dtype=torch.long
+        )
+        data.incoming_edges_list = molgraph.incoming_edges_list
+        data.incoming_edges_batch = molgraph.incoming_edges_batch
+        data.incoming_edges_batch_from_zero = (
+            molgraph.incoming_edges_batch_from_zero
+        )
+        data.neighboring_nodes_list = molgraph.neighboring_nodes_list
+        data.neighboring_nodes_batch = molgraph.neighboring_nodes_batch
+        data.incoming_edges_nodes_list = molgraph.incoming_edges_nodes_list
+        data.incoming_edges_nodes_batch = molgraph.incoming_edges_nodes_batch
         return data
 
     def get(self, key):
@@ -570,36 +593,79 @@ class ChemDataset(Dataset):
         return len(self.smiles)
 
 
+def get_data_paths(data_folder):
+    base_path = os.path.join("data", data_folder)
+    return {
+        "train": os.path.join(base_path, "train.csv"),
+        "val": os.path.join(base_path, "val.csv"),
+        "test": os.path.join(base_path, "test.csv"),
+    }
+
+
+def load_from_csv(dataset_name, split):
+    # TODO: add docstring
+
+    data_path = get_data_paths(dataset_name)
+
+    # barriers_cycloadd, barriers_e2, barriers_rdb7, barriers_rgd1 ,barriers_sn2
+    if dataset_name == "barriers_cycloadd":
+        input_column = "rxn_smiles"
+        target_column = "G_act"
+    elif dataset_name == "barriers_e2":
+        input_column = "AAM"
+        target_column = "ea"
+    elif dataset_name == "barriers_rdb7" or dataset_name == "barriers_rgd1":
+        input_column = "smiles"
+        target_column = "ea"
+    elif dataset_name == "barriers_sn2":
+        input_column = "AAM"
+        target_column = "ea"
+    else:
+        raise ValueError("Unknown dataset", dataset_name)
+
+    data_df = pd.read_csv(data_path[split])
+    smiles = data_df[input_column].values
+    labels = data_df[target_column].values.astype(float)
+    return smiles, labels
+
+
 def construct_loader(
+    dataset_name,
     batch_size,
     num_workers,
+    mode,
+    representation,
+    connection_direction,
+    dummy_node,
+    dummy_connection,
+    dummy_dummy_connection,
+    dummy_feat_init,
+    atom_featurizer,
+    bond_featurizer,
     shuffle,
     split,
-    cache_graphs,
-    max_cache_size,
-    preprocess_all,
-    dataset_cfg,
-    featurizer_cfg,
-    representation_cfg,
+    cache_graphs=True,
+    max_cache_size=None,
+    preprocess_all=True,
 ):
-    smiles, labels = load_csv_dataset(
-        input_column=dataset_cfg.input_column,
-        target_column=dataset_cfg.target_column,
-        data_folder=dataset_cfg.data_folder,
-        split=split,
-    )
-
-    atom_featurizer = make_featurizer(featurizer_cfg.atom_featurizer)
-    bond_featurizer = make_featurizer(featurizer_cfg.bond_featurizer)
+    smiles, labels = load_from_csv(dataset_name, split)
+    atom_featurizer = make_featurizer(atom_featurizer)
+    bond_featurizer = make_featurizer(bond_featurizer)
 
     dataset = ChemDataset(
-        smiles=smiles,
-        labels=labels,
-        atom_featurizer=atom_featurizer,
-        bond_featurizer=bond_featurizer,
+        smiles,
+        labels,
+        atom_featurizer,
+        bond_featurizer,
+        mode,
+        representation,
+        connection_direction,
+        dummy_node,
+        dummy_connection,
+        dummy_dummy_connection,
+        dummy_feat_init,
         cache_graphs=cache_graphs,
         max_cache_size=max_cache_size,
-        representation_cfg=representation_cfg,
     )
 
     if preprocess_all:

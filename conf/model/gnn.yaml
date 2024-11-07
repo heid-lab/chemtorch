@@ -1,4 +1,4 @@
-_target_: deeprxn.model.GNN
+_target_: deeprxn.model.model_old.GNN
 
 defaults:
   - _self_
@@ -24,8 +24,10 @@ att_mess_pass_trans_enc_cfg:
   num_heads: 1
   dropout: 0.02
 
-num_node_features: null
-num_edge_features: null
+num_node_features: ${num_node_features}
+num_edge_features: ${num_edge_features}
+
+return_attention_weights: false
 
 shared_weights: false
 use_att_agg_trans_enc: false
