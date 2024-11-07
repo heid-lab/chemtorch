@@ -4,7 +4,7 @@ import wandb
 from omegaconf import OmegaConf
 from sklearn.metrics import mean_absolute_error, root_mean_squared_error
 
-from deeprxn.representation.data import Standardizer
+from deeprxn.data import Standardizer
 from deeprxn.utils import load_model, load_standardizer
 
 

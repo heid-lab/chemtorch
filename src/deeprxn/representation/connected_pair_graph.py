@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 from enum import Enum
 from typing import Dict, List, Optional, Tuple
 
+from omegaconf import DictConfig
 from rdkit import Chem
 
 from deeprxn.representation.rxn_graph import AtomOriginType, RxnGraphBase
@@ -12,10 +13,11 @@ class ConnectedPairGraph(RxnGraphBase):
 
     def __init__(
         self,
-        reaction_smiles: str,
+        smiles: str,
         atom_featurizer: callable,
         bond_featurizer: callable,
         connection_direction: str = "bidirectional",
+        transform_cfg: Optional[DictConfig] = None,
     ):
         """Initialize connected pair graph.
 
@@ -29,23 +31,16 @@ class ConnectedPairGraph(RxnGraphBase):
                 "reactants_to_products": Reactant to product only
                 "products_to_reactants": Product to reactant only
         """
-        super().__init__(reaction_smiles, atom_featurizer, bond_featurizer)
+        super().__init__(
+            smiles, atom_featurizer, bond_featurizer, transform_cfg
+        )
         self.connection_direction = connection_direction
 
-        # Core graph properties
-        self.f_atoms: List = []  # Atom features
-        self.f_bonds: List = []  # Bond features
-        self.edge_index: List[Tuple[int, int]] = []  # Graph connectivity
-        self.atom_origin_type: List[AtomOriginType] = []  # Atom origin type
-        self.n_atoms = self.mol_reac.GetNumAtoms()
-
-        # Initialize molecules with atom mapping
-        self.mol_reac, self.reac_origins = self._make_mol(self.smiles_reac)
-        self.mol_prod, self.prod_origins = self._make_mol(self.smiles_prod)
-        self.ri2pi = self._map_reac_to_prod()
-
-        # Build connected pair graph
+        # build connected pair graph
         self._build_graph()
+
+        # apply transformations
+        self._apply_transforms()
 
     def _build_reactant_graph(self):
         """Build graph for reactant molecules."""

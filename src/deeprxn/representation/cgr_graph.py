@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Dict, List, Tuple
+from typing import Dict, List, Optional, Tuple
 
 import hydra
 from omegaconf import DictConfig
@@ -16,7 +16,7 @@ class CGRGraph(RxnGraphBase):
         smiles: str,
         atom_featurizer: callable,
         bond_featurizer: callable,
-        transforms=None,
+        transform_cfg: Optional[DictConfig] = None,
     ):
         """Initialize CGR graph.
 
@@ -25,27 +25,15 @@ class CGRGraph(RxnGraphBase):
             atom_featurizer: Function to generate atom features
             bond_featurizer: Function to generate bond features
         """
-        super().__init__(smiles, atom_featurizer, bond_featurizer)
-
-        self.smiles_reac, _, self.smiles_prod = self.smiles.split(">")
-        self.atom_featurizer = atom_featurizer
-        self.bond_featurizer = bond_featurizer
-
-        if transforms is not None:
-            activated_transform = hydra.utils.instantiate(transforms)
-
-        self.f_atoms: List = []  # atom features
-        self.f_bonds: List = []  # bond features
-        self.edge_index: List[Tuple[int, int]] = []
-        self.atom_origin_type: List[AtomOriginType] = []
-
-        # initialize molecules with atom mapping
-        self.mol_reac, self.reac_origins = self._make_mol(self.smiles_reac)
-        self.mol_prod, self.prod_origins = self._make_mol(self.smiles_prod)
-        self.ri2pi = self._map_reac_to_prod()
+        super().__init__(
+            smiles, atom_featurizer, bond_featurizer, transform_cfg
+        )
 
         # build CGR graph
         self._build_graph()
+
+        # apply transformations
+        self._apply_transforms()
 
     def _get_atom_features(self, atom_idx: int) -> List[float]:
         """Generate features for an atom in CGR representation.
@@ -122,9 +110,3 @@ class CGRGraph(RxnGraphBase):
                 # add bond in both directions (i->j and j->i)
                 self.f_bonds.extend([f_bond, f_bond])
                 self.edge_index.extend([(i, j), (j, i)])
-
-    def apply_transforms(self, data):
-        """Apply all activated transforms in sequence."""
-        for transform in self.activated_transforms:
-            data = transform(data)
-        return data

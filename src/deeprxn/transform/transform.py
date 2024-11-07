@@ -1,26 +1,21 @@
 from abc import ABC, abstractmethod
-from typing import Any, Dict
+from typing import List, Optional, Type
+
+from omegaconf import DictConfig
 
 
 class TransformBase(ABC):
-    """Base class for molecular graph transforms."""
+    """Base class for graph transformations."""
 
-    def __init__(self, **kwargs):
-        """Initialize transform with config parameters."""
-        self.config = kwargs
-
-    @abstractmethod
-    def __call__(self, data: Any) -> Any:
-        """Apply transform to input data.
-
-        Args:
-            data: Input data to transform
-
-        Returns:
-            Transformed data
-        """
+    def __init__(self):
         pass
 
-    def __repr__(self) -> str:
-        """String representation of transform."""
-        return f"{self.__class__.__name__}({self.config})"
+    @abstractmethod
+    def __call__(self, graph) -> None:
+        """Apply transformation to the graph in-place."""
+        pass
+
+    @classmethod
+    def get_default_config(cls) -> dict:
+        """Return default configuration for this transform."""
+        return {}

@@ -16,71 +16,6 @@ from deeprxn.featurizer.featurizer import make_featurizer
 from deeprxn.utils import load_csv_dataset
 
 
-def make_mol(smi):
-    params = Chem.SmilesParserParams()
-    params.removeHs = False
-
-    parts = smi.split(".")
-    mols = []
-    atom_origins = []
-    current_atom_idx = 0
-
-    for i, part in enumerate(parts):
-        mol = Chem.MolFromSmiles(part, params)
-        if mol is None:
-            continue
-        atom_origins.extend([i] * mol.GetNumAtoms())
-        current_atom_idx += mol.GetNumAtoms()
-
-    return Chem.MolFromSmiles(smi, params), atom_origins
-
-
-def map_reac_to_prod(mol_reac, mol_prod):
-    # TODO: add docstring
-    prod_map_to_id = dict(
-        [(atom.GetAtomMapNum(), atom.GetIdx()) for atom in mol_prod.GetAtoms()]
-    )
-    reac_id_to_prod_id = dict(
-        [
-            (atom.GetIdx(), prod_map_to_id[atom.GetAtomMapNum()])
-            for atom in mol_reac.GetAtoms()
-        ]
-    )
-    return reac_id_to_prod_id
-
-
-class AtomOriginType(IntEnum):
-    REACTANT = 0
-    PRODUCT = 1
-    DUMMY = 2
-    REACTANT_PRODUCT = 3
-
-
-class MolGraph:
-    # TODO: add docstring
-    def __init__(self, smiles, atom_featurizer, bond_featurizer):
-        self.smiles = smiles
-        self.f_atoms = []
-        self.f_bonds = []
-        self.edge_index = []
-
-        mol = make_mol(self.smiles)
-        n_atoms = mol.GetNumAtoms()
-
-        for a1 in range(n_atoms):
-            f_atom = atom_featurizer(mol.GetAtomWithIdx(a1))
-            self.f_atoms.append(f_atom)
-
-            for a2 in range(a1 + 1, n_atoms):
-                bond = mol.GetBondBetweenAtoms(a1, a2)
-                if bond is None:
-                    continue
-                f_bond = bond_featurizer(bond)
-                self.f_bonds.append(f_bond)
-                self.f_bonds.append(f_bond)
-                self.edge_index.extend([(a1, a2), (a2, a1)])
-
-
 class RxnGraph:
     # TODO: add docstring
     # TODO (maybe): add support for unbalanced reactions?
@@ -497,6 +432,7 @@ class ChemDataset(Dataset):
         cache_graphs,
         max_cache_size,
         representation_cfg,
+        transform_cfg,
     ):
         super(ChemDataset, self).__init__()
         self.smiles = smiles
@@ -505,6 +441,7 @@ class ChemDataset(Dataset):
         self.bond_featurizer = bond_featurizer
         self.cache_graphs = cache_graphs
         self.representation_cfg = representation_cfg
+        self.transform_cfg = transform_cfg
         self.graph_cache = {}
 
         if cache_graphs:
@@ -522,6 +459,7 @@ class ChemDataset(Dataset):
             smiles=smiles,
             atom_featurizer=self.atom_featurizer,
             bond_featurizer=self.bond_featurizer,
+            transform_cfg=self.transform_cfg,
         )
         mol = self.molgraph2data(molgraph, key)
         return mol
@@ -581,6 +519,7 @@ def construct_loader(
     dataset_cfg,
     featurizer_cfg,
     representation_cfg,
+    transform_cfg,
 ):
     smiles, labels = load_csv_dataset(
         input_column=dataset_cfg.input_column,
@@ -600,6 +539,7 @@ def construct_loader(
         cache_graphs=cache_graphs,
         max_cache_size=max_cache_size,
         representation_cfg=representation_cfg,
+        transform_cfg=transform_cfg,
     )
 
     if preprocess_all:

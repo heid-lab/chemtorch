@@ -1,5 +1,7 @@
+# main config 
+
 defaults:
-  - data: data
+  - data: e2_cgr_transformed
   - model: dmpnn
   - override hydra/job_logging: disabled
   - override hydra/hydra_logging: disabled
