@@ -16,7 +16,6 @@ from deeprxn.utils import (
     load_standardizer,
     save_model,
     save_standardizer,
-    subset_dataloader,
 )
 
 
@@ -54,9 +53,6 @@ def check_early_stopping(
 
 def train(train_loader, val_loader, test_loader, cfg):
     # TODO add docstring
-
-    if cfg.train_data_fraction:
-        train_loader = subset_dataloader(train_loader, cfg.train_data_fraction)
 
     OmegaConf.update(
         cfg,

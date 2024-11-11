@@ -27,6 +27,7 @@ def load_csv_dataset(
     input_column: str,
     target_column: str,
     data_folder: str,
+    reduced_dataset: Union[int, float],
     split: Literal["train", "val", "test"] = "train",
     data_root: str = "data",
 ) -> Tuple[np.ndarray, np.ndarray]:
@@ -52,6 +53,12 @@ def load_csv_dataset(
         raise FileNotFoundError(f"Dataset file not found: {data_path}")
 
     data_df = pd.read_csv(data_path)
+    if reduced_dataset < 1 and split == "train":
+        data_df = data_df.sample(
+            int(len(data_df) * reduced_dataset)
+        )
+    elif reduced_dataset > 1 and split == "train":
+        data_df = data_df.sample(int(reduced_dataset))
 
     missing_cols = []
     for col in [input_column, target_column]:
@@ -104,9 +111,7 @@ def load_model(model, optimizer, model_dir):
 class Standardizer:
     """Standardize data by computing (x - mean) / std."""
 
-    def __init__(
-        self, mean: Union[float, np.ndarray], std: Union[float, np.ndarray]
-    ):
+    def __init__(self, mean: Union[float, np.ndarray], std: Union[float, np.ndarray]):
         """Initialize standardizer with mean and standard deviation.
 
         Args:
@@ -147,20 +152,3 @@ def load_standardizer(model_dir):
         params = torch.load(standardizer_path)
         return params["mean"], params["std"]
     return None, None
-
-
-def subset_dataloader(dataloader, fraction):
-    if fraction >= 1.0:
-        return dataloader
-
-    dataset = dataloader.dataset
-    num_samples = int(len(dataset) * fraction)
-    indices = torch.randperm(len(dataset))[:num_samples]
-    subset = torch.utils.data.Subset(dataset, indices)
-
-    return torch.utils.data.DataLoader(
-        subset,
-        batch_size=dataloader.batch_size,
-        shuffle=True,
-        num_workers=dataloader.num_workers,
-    )
