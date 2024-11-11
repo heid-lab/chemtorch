@@ -27,6 +27,7 @@ def load_csv_dataset(
     input_column: str,
     target_column: str,
     data_folder: str,
+    use_fraction: bool,    
     split: Literal["train", "val", "test"] = "train",
     data_root: str = "data",
 ) -> Tuple[np.ndarray, np.ndarray]:
@@ -51,7 +52,11 @@ def load_csv_dataset(
     if not data_path.exists():
         raise FileNotFoundError(f"Dataset file not found: {data_path}")
 
-    data_df = pd.read_csv(data_path)
+    if use_fraction and split == "train":
+        data_df = pd.read_csv(data_path)
+        data_df = data_df.sample(int(len(data_df) * use_fraction)) # select randomly n entries
+    else:    
+        data_df = pd.read_csv(data_path)
 
     missing_cols = []
     for col in [input_column, target_column]:
