@@ -1,7 +1,10 @@
 import os
 import random
+from pathlib import Path
+from typing import Literal, Tuple, Union
 
 import numpy as np
+import pandas as pd
 import torch
 
 
@@ -15,12 +18,67 @@ def set_seed(seed):
         torch.backends.cudnn.deterministic = True
         torch.backends.cudnn.benchmark = False
         torch.use_deterministic_algorithms(True)
-        os.environ[
-            "CUBLAS_WORKSPACE_CONFIG"
-        ] = ":4096:8"  # https://docs.nvidia.com/cuda/cublas/index.html#results-reproducibility
+        os.environ["CUBLAS_WORKSPACE_CONFIG"] = (
+            ":4096:8"  # https://docs.nvidia.com/cuda/cublas/index.html#results-reproducibility
+        )
 
 
-def save_model(model, optimizer, epoch, best_val_loss, model_path):
+def load_csv_dataset(
+    input_column: str,
+    target_column: str,
+    data_folder: str,
+    reduced_dataset: Union[int, float],
+    split: Literal["train", "val", "test"] = "train",
+    data_root: str = "data",
+) -> Tuple[np.ndarray, np.ndarray]:
+    """Load data from a CSV file with configurable input and target columns.
+
+    Args:
+        input_column: Name of the column containing input data (e.g., SMILES strings)
+        target_column: Name of the column containing target values
+        data_folder: Subfolder name containing the dataset
+        split: Which dataset split to load ("train", "val", or "test")
+        data_root: Root directory containing all datasets
+
+    Returns:
+        Tuple of (inputs, targets) as numpy arrays
+
+    Raises:
+        FileNotFoundError: If the CSV file doesn't exist
+        ValueError: If required columns are missing
+    """
+    data_path = Path(data_root) / data_folder / f"{split}.csv"
+
+    if not data_path.exists():
+        raise FileNotFoundError(f"Dataset file not found: {data_path}")
+
+    data_df = pd.read_csv(data_path)
+    if reduced_dataset < 1 and split == "train":
+        data_df = data_df.sample(
+            int(len(data_df) * reduced_dataset)
+        )
+    elif reduced_dataset > 1 and split == "train":
+        data_df = data_df.sample(int(reduced_dataset))
+
+    missing_cols = []
+    for col in [input_column, target_column]:
+        if col not in data_df.columns:
+            missing_cols.append(col)
+
+    if missing_cols:
+        raise ValueError(f"Missing required columns: {missing_cols}")
+
+    inputs = data_df[input_column].values
+    targets = data_df[target_column].values.astype(float)
+
+    return inputs, targets
+
+
+def save_model(model, optimizer, epoch, best_val_loss, model_dir):
+    """Save model and optimizer state to the model directory."""
+    os.makedirs(model_dir, exist_ok=True)
+    model_path = os.path.join(model_dir, "model.pt")
+
     torch.save(
         {
             "epoch": epoch,
@@ -32,8 +90,11 @@ def save_model(model, optimizer, epoch, best_val_loss, model_path):
     )
 
 
-def load_model(model, optimizer, model_path):
-    if os.path.exists(model_path):
+def load_model(model, optimizer, model_dir):
+    """Load model and optimizer state from the model directory."""
+
+    if os.path.exists(model_dir):
+        model_path = os.path.join(model_dir, "model.pt")
         checkpoint = torch.load(model_path)
         model.load_state_dict(checkpoint["model_state_dict"])
         epoch = checkpoint["epoch"]
@@ -45,3 +106,49 @@ def load_model(model, optimizer, model_path):
         return model, optimizer, epoch, best_val_loss
     else:
         return model, optimizer, 0, float("inf")
+
+
+class Standardizer:
+    """Standardize data by computing (x - mean) / std."""
+
+    def __init__(self, mean: Union[float, np.ndarray], std: Union[float, np.ndarray]):
+        """Initialize standardizer with mean and standard deviation.
+
+        Args:
+            mean: Mean value(s) for standardization
+            std: Standard deviation value(s) for standardization
+        """
+        self.mean = mean
+        self.std = std
+
+    def __call__(
+        self, x: Union[torch.Tensor, np.ndarray], rev: bool = False
+    ) -> Union[torch.Tensor, np.ndarray]:
+        """Apply standardization or reverse standardization.
+
+        Args:
+            x: Input data to standardize
+            rev: If True, reverse the standardization
+
+        Returns:
+            Standardized or reverse standardized data
+        """
+        if rev:
+            return (x * self.std) + self.mean
+        return (x - self.mean) / self.std
+
+
+def save_standardizer(mean, std, model_dir):
+    """Save standardizer parameters to the model directory."""
+    os.makedirs(model_dir, exist_ok=True)
+    standardizer_path = os.path.join(model_dir, "standardizer.pt")
+    torch.save({"mean": mean, "std": std}, standardizer_path)
+
+
+def load_standardizer(model_dir):
+    """Load standardizer parameters from the model directory."""
+    standardizer_path = os.path.join(model_dir, "standardizer.pt")
+    if os.path.exists(standardizer_path):
+        params = torch.load(standardizer_path)
+        return params["mean"], params["std"]
+    return None, None

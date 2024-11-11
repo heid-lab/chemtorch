@@ -1,0 +1,4 @@
+_target_: deeprxn.representation.connected_pair_graph.ConnectedPairGraph
+_recursive_: False
+
+connection_direction: null

@@ -1,0 +1,3 @@
+atom_featurizer: atom_rdkit_organic
+
+bond_featurizer: bond_rdkit_base

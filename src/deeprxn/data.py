@@ -1,7 +1,10 @@
-import os
 from enum import IntEnum
 from functools import lru_cache
+from pathlib import Path
+from typing import Literal, Tuple
 
+import hydra
+import numpy as np
 import pandas as pd
 import torch
 import torch_geometric as tg
@@ -9,72 +12,8 @@ from rdkit import Chem
 from torch_geometric.data import Dataset
 from torch_geometric.loader import DataLoader
 
-from deeprxn.featurizer import make_featurizer
-
-
-def make_mol(smi):
-    params = Chem.SmilesParserParams()
-    params.removeHs = False
-
-    parts = smi.split(".")
-    mols = []
-    atom_origins = []
-    current_atom_idx = 0
-
-    for i, part in enumerate(parts):
-        mol = Chem.MolFromSmiles(part, params)
-        if mol is None:
-            continue
-        atom_origins.extend([i] * mol.GetNumAtoms())
-        current_atom_idx += mol.GetNumAtoms()
-
-    return Chem.MolFromSmiles(smi, params), atom_origins
-
-
-def map_reac_to_prod(mol_reac, mol_prod):
-    # TODO: add docstring
-    prod_map_to_id = dict(
-        [(atom.GetAtomMapNum(), atom.GetIdx()) for atom in mol_prod.GetAtoms()]
-    )
-    reac_id_to_prod_id = dict(
-        [
-            (atom.GetIdx(), prod_map_to_id[atom.GetAtomMapNum()])
-            for atom in mol_reac.GetAtoms()
-        ]
-    )
-    return reac_id_to_prod_id
-
-
-class AtomOriginType(IntEnum):
-    REACTANT = 0
-    PRODUCT = 1
-    DUMMY = 2
-    REACTANT_PRODUCT = 3
-
-
-class MolGraph:
-    # TODO: add docstring
-    def __init__(self, smiles, atom_featurizer, bond_featurizer):
-        self.smiles = smiles
-        self.f_atoms = []
-        self.f_bonds = []
-        self.edge_index = []
-
-        mol = make_mol(self.smiles)
-        n_atoms = mol.GetNumAtoms()
-
-        for a1 in range(n_atoms):
-            f_atom = atom_featurizer(mol.GetAtomWithIdx(a1))
-            self.f_atoms.append(f_atom)
-
-            for a2 in range(a1 + 1, n_atoms):
-                bond = mol.GetBondBetweenAtoms(a1, a2)
-                if bond is None:
-                    continue
-                f_bond = bond_featurizer(bond)
-                self.f_bonds.append(f_bond)
-                self.f_bonds.append(f_bond)
-                self.edge_index.extend([(a1, a2), (a2, a1)])
+from deeprxn.featurizer.featurizer import make_featurizer
+from deeprxn.utils import load_csv_dataset
 
 
 class RxnGraph:
@@ -102,6 +41,7 @@ class RxnGraph:
         self.atom_origin_type = []
         incoming_edges_list = []
         incoming_edges_batch = []
+        incoming_edges_batch_from_zero = []
 
         self.mol_reac, self.reac_origins = make_mol(self.smiles_reac)
         self.mol_prod, self.prod_origins = make_mol(self.smiles_prod)
@@ -164,6 +104,7 @@ class RxnGraph:
 
         row, col = edge_index
 
+        counter = 0
         for i, edge in enumerate(edge_index.t()):
             target_node = edge[0]
 
@@ -179,12 +120,16 @@ class RxnGraph:
                 incoming_edges_batch.append(
                     torch.full_like(incoming_edge_indices, i)
                 )
-            else:
-                incoming_edges_list.append(torch.tensor([i]))
-                incoming_edges_batch.append(torch.tensor([i]))
+                incoming_edges_batch_from_zero.append(
+                    torch.full_like(incoming_edge_indices, counter)
+                )
+                counter += 1
 
         self.incoming_edges_batch = torch.cat(incoming_edges_batch)
         self.incoming_edges_list = torch.cat(incoming_edges_list)
+        self.incoming_edges_batch_from_zero = torch.cat(
+            incoming_edges_batch_from_zero
+        )
 
         self._compute_neighboring_nodes(edge_index)
         self._compute_incoming_edges_to_nodes()
@@ -484,62 +429,38 @@ class ChemDataset(Dataset):
         labels,
         atom_featurizer,
         bond_featurizer,
-        mode,
-        representation,
-        connection_direction,
-        dummy_node,
-        dummy_connection,
-        dummy_dummy_connection,
-        dummy_feat_init,
-        cache_graphs=False,
-        max_cache_size=None,
+        cache_graphs,
+        max_cache_size,
+        representation_cfg,
+        transform_cfg,
     ):
         super(ChemDataset, self).__init__()
         self.smiles = smiles
         self.labels = labels
-        self.mode = mode
         self.atom_featurizer = atom_featurizer
         self.bond_featurizer = bond_featurizer
-        self.representation = representation
-        self.connection_direction = connection_direction
-        self.dummy_node = dummy_node
-        self.dummy_connection = dummy_connection
-        self.dummy_dummy_connection = dummy_dummy_connection
-        self.dummy_feat_init = dummy_feat_init
         self.cache_graphs = cache_graphs
+        self.representation_cfg = representation_cfg
+        self.transform_cfg = transform_cfg
         self.graph_cache = {}
 
         if cache_graphs:
-            if max_cache_size is not None:
-                self.process_key = lru_cache(maxsize=max_cache_size)(
-                    self._process_key
-                )
-            else:
-                self.process_key = lru_cache(maxsize=None)(self._process_key)
+            self.process_key = lru_cache(maxsize=max_cache_size)(
+                self._process_key
+            )
         else:
             self.process_key = self._process_key
 
     def _process_key(self, key):
         # TODO: add docstring
-        smi = self.smiles[key]
-        if self.mode == "mol":
-            molgraph = MolGraph(
-                smi, self.atom_featurizer, self.bond_featurizer
-            )
-        elif self.mode == "rxn":
-            molgraph = RxnGraph(
-                smi,
-                self.atom_featurizer,
-                self.bond_featurizer,
-                self.representation,
-                self.connection_direction,
-                self.dummy_node,
-                self.dummy_connection,
-                self.dummy_dummy_connection,
-                self.dummy_feat_init,
-            )
-        else:
-            raise ValueError("Unknown option for mode", self.mode)
+        smiles = self.smiles[key]
+        molgraph = hydra.utils.instantiate(
+            self.representation_cfg,
+            smiles=smiles,
+            atom_featurizer=self.atom_featurizer,
+            bond_featurizer=self.bond_featurizer,
+            transform_cfg=self.transform_cfg,
+        )
         mol = self.molgraph2data(molgraph, key)
         return mol
 
@@ -554,21 +475,24 @@ class ChemDataset(Dataset):
         data.edge_attr = torch.tensor(molgraph.f_bonds, dtype=torch.float)
         data.y = torch.tensor([self.labels[key]], dtype=torch.float)
         data.smiles = self.smiles[key]
-        data.is_real_bond = torch.tensor(
-            molgraph.is_real_bond, dtype=torch.bool
-        )
+        # data.is_real_bond = torch.tensor(
+        #     molgraph.is_real_bond, dtype=torch.bool
+        # )
         data.atom_origin_type = torch.tensor(
             molgraph.atom_origin_type, dtype=torch.long
         )
-        data.atom_origins = torch.tensor(
-            molgraph.atom_origins, dtype=torch.long
-        )
-        data.incoming_edges_list = molgraph.incoming_edges_list
-        data.incoming_edges_batch = molgraph.incoming_edges_batch
-        data.neighboring_nodes_list = molgraph.neighboring_nodes_list
-        data.neighboring_nodes_batch = molgraph.neighboring_nodes_batch
-        data.incoming_edges_nodes_list = molgraph.incoming_edges_nodes_list
-        data.incoming_edges_nodes_batch = molgraph.incoming_edges_nodes_batch
+        # data.atom_origins = torch.tensor(
+        #     molgraph.atom_origins, dtype=torch.long
+        # )
+        # data.incoming_edges_list = molgraph.incoming_edges_list
+        # data.incoming_edges_batch = molgraph.incoming_edges_batch
+        # data.incoming_edges_batch_from_zero = (
+        #     molgraph.incoming_edges_batch_from_zero
+        # )
+        # data.neighboring_nodes_list = molgraph.neighboring_nodes_list
+        # data.neighboring_nodes_batch = molgraph.neighboring_nodes_batch
+        # data.incoming_edges_nodes_list = molgraph.incoming_edges_nodes_list
+        # data.incoming_edges_nodes_batch = molgraph.incoming_edges_nodes_batch
         return data
 
     def get(self, key):
@@ -584,79 +508,40 @@ class ChemDataset(Dataset):
         return len(self.smiles)
 
 
-def get_data_paths(data_folder):
-    base_path = os.path.join("data", data_folder)
-    return {
-        "train": os.path.join(base_path, "train.csv"),
-        "val": os.path.join(base_path, "val.csv"),
-        "test": os.path.join(base_path, "test.csv"),
-    }
-
-
-def load_from_csv(dataset_name, split):
-    # TODO: add docstring
-
-    data_path = get_data_paths(dataset_name)
-
-    # barriers_cycloadd, barriers_e2, barriers_rdb7, barriers_rgd1 ,barriers_sn2
-    if dataset_name == "barriers_cycloadd":
-        input_column = "rxn_smiles"
-        target_column = "G_act"
-    elif dataset_name == "barriers_e2":
-        input_column = "AAM"
-        target_column = "ea"
-    elif dataset_name == "barriers_rdb7" or dataset_name == "barriers_rgd1":
-        input_column = "smiles"
-        target_column = "ea"
-    elif dataset_name == "barriers_sn2":
-        input_column = "AAM"
-        target_column = "ea"
-    else:
-        raise ValueError("Unknown dataset", dataset_name)
-
-    data_df = pd.read_csv(data_path[split])
-    smiles = data_df[input_column].values
-    labels = data_df[target_column].values.astype(float)
-    return smiles, labels
-
-
 def construct_loader(
-    dataset_name,
     batch_size,
     num_workers,
-    mode,
-    representation,
-    connection_direction,
-    dummy_node,
-    dummy_connection,
-    dummy_dummy_connection,
-    dummy_feat_init,
-    atom_featurizer,
-    bond_featurizer,
     shuffle,
     split,
-    cache_graphs=True,
-    max_cache_size=None,
-    preprocess_all=True,
+    cache_graphs,
+    max_cache_size,
+    preprocess_all,
+    dataset_cfg,
+    featurizer_cfg,
+    representation_cfg,
+    transform_cfg,
 ):
-    smiles, labels = load_from_csv(dataset_name, split)
-    atom_featurizer = make_featurizer(atom_featurizer)
-    bond_featurizer = make_featurizer(bond_featurizer)
+
+    smiles, labels = load_csv_dataset(
+        input_column=dataset_cfg.input_column,
+        target_column=dataset_cfg.target_column,
+        data_folder=dataset_cfg.data_folder,
+        reduced_dataset=dataset_cfg.reduced_dataset,
+        split=split,
+    )
+
+    atom_featurizer = make_featurizer(featurizer_cfg.atom_featurizer)
+    bond_featurizer = make_featurizer(featurizer_cfg.bond_featurizer)
 
     dataset = ChemDataset(
-        smiles,
-        labels,
-        atom_featurizer,
-        bond_featurizer,
-        mode,
-        representation,
-        connection_direction,
-        dummy_node,
-        dummy_connection,
-        dummy_dummy_connection,
-        dummy_feat_init,
+        smiles=smiles,
+        labels=labels,
+        atom_featurizer=atom_featurizer,
+        bond_featurizer=bond_featurizer,
         cache_graphs=cache_graphs,
         max_cache_size=max_cache_size,
+        representation_cfg=representation_cfg,
+        transform_cfg=transform_cfg,
     )
 
     if preprocess_all:

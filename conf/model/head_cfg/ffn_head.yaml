@@ -1,0 +1,7 @@
+_target_: deeprxn.head.ffn_head.FFNHead
+in_channels: ${model.hidden_channels}
+out_channels: 1
+hidden_channels: ${model.hidden_channels}
+num_layers: 2
+dropout: 0.02
+activation: relu

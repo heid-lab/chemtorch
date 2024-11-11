@@ -1,0 +1,2 @@
+pool_type: global # global, reactants, products, dummy
+aggr: add # add, mean, max, min
