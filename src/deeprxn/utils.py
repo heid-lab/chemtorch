@@ -27,7 +27,7 @@ def load_csv_dataset(
     input_column: str,
     target_column: str,
     data_folder: str,
-    reduced_dataset: bool,
+    reduced_dataset: Union[int, float],
     split: Literal["train", "val", "test"] = "train",
     data_root: str = "data",
 ) -> Tuple[np.ndarray, np.ndarray]:
