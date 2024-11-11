@@ -152,20 +152,3 @@ def load_standardizer(model_dir):
         params = torch.load(standardizer_path)
         return params["mean"], params["std"]
     return None, None
-
-
-def subset_dataloader(dataloader, fraction):
-    if fraction >= 1.0:
-        return dataloader
-
-    dataset = dataloader.dataset
-    num_samples = int(len(dataset) * fraction)
-    indices = torch.randperm(len(dataset))[:num_samples]
-    subset = torch.utils.data.Subset(dataset, indices)
-
-    return torch.utils.data.DataLoader(
-        subset,
-        batch_size=dataloader.batch_size,
-        shuffle=True,
-        num_workers=dataloader.num_workers,
-    )
