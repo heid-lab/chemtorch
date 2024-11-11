@@ -521,14 +521,12 @@ def construct_loader(
     representation_cfg,
     transform_cfg,
 ):
-    
-    dataset_cfg.use_fraction = dataset_cfg.get("use_fraction", False)  # Default to False if not in the YAML
-    
+
     smiles, labels = load_csv_dataset(
         input_column=dataset_cfg.input_column,
         target_column=dataset_cfg.target_column,
         data_folder=dataset_cfg.data_folder,
-        use_fraction=dataset_cfg.use_fraction,
+        reduced_dataset=dataset_cfg.reduced_dataset,
         split=split,
     )
 

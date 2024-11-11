@@ -27,7 +27,7 @@ def load_csv_dataset(
     input_column: str,
     target_column: str,
     data_folder: str,
-    use_fraction: bool,    
+    reduced_dataset: bool,
     split: Literal["train", "val", "test"] = "train",
     data_root: str = "data",
 ) -> Tuple[np.ndarray, np.ndarray]:
@@ -52,11 +52,13 @@ def load_csv_dataset(
     if not data_path.exists():
         raise FileNotFoundError(f"Dataset file not found: {data_path}")
 
-    if use_fraction != 1 and split == "train":
-        data_df = pd.read_csv(data_path)
-        data_df = data_df.sample(int(len(data_df) * use_fraction)) # select randomly n entries
-    else:    
-        data_df = pd.read_csv(data_path)
+    data_df = pd.read_csv(data_path)
+    if reduced_dataset < 1 and split == "train":
+        data_df = data_df.sample(
+            int(len(data_df) * reduced_dataset)
+        )
+    elif reduced_dataset > 1 and split == "train":
+        data_df = data_df.sample(int(reduced_dataset))
 
     missing_cols = []
     for col in [input_column, target_column]:
@@ -109,9 +111,7 @@ def load_model(model, optimizer, model_dir):
 class Standardizer:
     """Standardize data by computing (x - mean) / std."""
 
-    def __init__(
-        self, mean: Union[float, np.ndarray], std: Union[float, np.ndarray]
-    ):
+    def __init__(self, mean: Union[float, np.ndarray], std: Union[float, np.ndarray]):
         """Initialize standardizer with mean and standard deviation.
 
         Args:

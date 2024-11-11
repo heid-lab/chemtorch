@@ -2,4 +2,4 @@ _target_: deeprxn.data.load_csv_dataset
 input_column: "AAM"
 target_column: "ea"
 data_folder: "barriers_e2"
-use_fraction: 0.5
+reduced_dataset: 1
