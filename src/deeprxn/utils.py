@@ -52,7 +52,7 @@ def load_csv_dataset(
     if not data_path.exists():
         raise FileNotFoundError(f"Dataset file not found: {data_path}")
 
-    if use_fraction and split == "train":
+    if use_fraction != 1 and split == "train":
         data_df = pd.read_csv(data_path)
         data_df = data_df.sample(int(len(data_df) * use_fraction)) # select randomly n entries
     else:    
