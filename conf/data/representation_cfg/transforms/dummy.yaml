@@ -1,5 +1,0 @@
-_target_: deeprxn.transform.dummy.DummyTransform
-dummy_node: global # global, reactant_product, all_separate
-dummy_connection: to_dummy # bidirectional
-dummy_dummy_connection: bidirectional # null
-dummy_feat_init: zeros # ones
