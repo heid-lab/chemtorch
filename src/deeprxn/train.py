@@ -54,23 +54,6 @@ def check_early_stopping(
 def train(train_loader, val_loader, test_loader, cfg):
     # TODO add docstring
 
-    OmegaConf.update(
-        cfg,
-        "num_node_features",
-        train_loader.dataset.num_node_features,
-        merge=True,
-    )
-    OmegaConf.update(
-        cfg,
-        "num_edge_features",
-        train_loader.dataset.num_edge_features,
-        merge=True,
-    )
-
-    resolved_cfg = OmegaConf.to_container(cfg, resolve=True)
-    resolved_cfg = OmegaConf.create(resolved_cfg)
-    print(OmegaConf.to_yaml(resolved_cfg))
-
     device = torch.device(cfg.device)
 
     mean = np.mean(train_loader.dataset.labels)

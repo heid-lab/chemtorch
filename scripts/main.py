@@ -25,13 +25,7 @@ def main(cfg: DictConfig):
 
     print(f"Using device: {cfg.device}")
 
-    print(OmegaConf.to_yaml(cfg))
-
-    if cfg.wandb:
-        wandb.init(
-            project=cfg.project_name,
-            config=OmegaConf.to_container(cfg, resolve=True),
-        )
+    # print(OmegaConf.to_yaml(cfg))
 
     train_loader = hydra.utils.instantiate(
         cfg.data, shuffle=True, split="train"
@@ -40,6 +34,29 @@ def main(cfg: DictConfig):
     test_loader = hydra.utils.instantiate(
         cfg.data, shuffle=False, split="test"
     )
+
+    OmegaConf.update(
+        cfg,
+        "num_node_features",
+        train_loader.dataset.num_node_features,
+        merge=True,
+    )
+    OmegaConf.update(
+        cfg,
+        "num_edge_features",
+        train_loader.dataset.num_edge_features,
+        merge=True,
+    )
+
+    resolved_cfg = OmegaConf.to_container(cfg, resolve=True)
+    resolved_cfg = OmegaConf.create(resolved_cfg)
+    print(OmegaConf.to_yaml(resolved_cfg))
+
+    if cfg.wandb:
+        wandb.init(
+            project=cfg.project_name,
+            config=OmegaConf.to_container(cfg, resolve=True),
+        )
 
     if cfg.mode == "train":
         train(train_loader, val_loader, test_loader, cfg)
