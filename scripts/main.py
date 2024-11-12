@@ -2,9 +2,9 @@ import operator
 
 import hydra
 import torch
-import wandb
 from omegaconf import DictConfig, OmegaConf
 
+import wandb
 from deeprxn.predict import predict_model
 from deeprxn.train import train
 from deeprxn.utils import set_seed
@@ -50,13 +50,14 @@ def main(cfg: DictConfig):
 
     resolved_cfg = OmegaConf.to_container(cfg, resolve=True)
     resolved_cfg = OmegaConf.create(resolved_cfg)
-    print(OmegaConf.to_yaml(resolved_cfg))
 
     if cfg.wandb:
         wandb.init(
             project=cfg.project_name,
-            config=OmegaConf.to_container(cfg, resolve=True),
+            config=resolved_cfg,
         )
+
+    print(OmegaConf.to_yaml(resolved_cfg))
 
     if cfg.mode == "train":
         train(train_loader, val_loader, test_loader, cfg)

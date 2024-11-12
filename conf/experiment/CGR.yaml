@@ -5,10 +5,10 @@ defaults:
 
 wandb: true
 mode: train
-project_name: deeprxn
+project_name: CGR
 seed: 0
-use_cuda: false
-device: cpu
+use_cuda: true
+device: gpu
 
 save_model: false
 model_path: models/experiment1
