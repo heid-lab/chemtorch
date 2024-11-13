@@ -1,9 +1,8 @@
 
-program: scripts/main.py
+program: scripts/main.py  # Executing the main.py script
 
 project: deeprxn
 
-run_cap: 5
 method: bayes   # also possible: grid
 metric:
   goal: minimize
