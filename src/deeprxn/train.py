@@ -4,11 +4,11 @@ import time
 import hydra
 import numpy as np
 import torch
-import wandb
 from omegaconf import OmegaConf
 from sklearn.metrics import mean_absolute_error, root_mean_squared_error
 from torch import nn
 
+import wandb
 from deeprxn.data import Standardizer
 from deeprxn.predict import predict
 from deeprxn.utils import (
@@ -19,12 +19,14 @@ from deeprxn.utils import (
 )
 
 
-def train_epoch(model, loader, optimizer, loss, stdzer, device):
+def train_epoch(
+    model, train_loader, optimizer, scheduler, loss, stdzer, device
+):
     start_time = time.time()
     model.train()
     loss_all = 0
 
-    for data in loader:
+    for data in train_loader:
         data = data.to(device)
         optimizer.zero_grad()
 
@@ -35,8 +37,10 @@ def train_epoch(model, loader, optimizer, loss, stdzer, device):
         optimizer.step()
         loss_all += loss(stdzer(out, rev=True), data.y)
 
+    scheduler.step()
+
     epoch_time = time.time() - start_time
-    return math.sqrt(loss_all / len(loader.dataset)), epoch_time
+    return math.sqrt(loss_all / len(train_loader.dataset)), epoch_time
 
 
 def check_early_stopping(
@@ -63,10 +67,10 @@ def train(train_loader, val_loader, test_loader, cfg):
     model = hydra.utils.instantiate(cfg.model)
     model = model.to(device)
 
-    optimizer_params = {"lr": cfg.learning_rate}
-    if hasattr(cfg, "weight_decay"):
-        optimizer_params["weight_decay"] = cfg.weight_decay
-    optimizer = torch.optim.Adam(model.parameters(), **optimizer_params)
+    optimizer_partial = hydra.utils.instantiate(cfg.optimizer)
+    optimizer = optimizer_partial(params=model.parameters())
+    scheduler_partial = hydra.utils.instantiate(cfg.scheduler)
+    scheduler = scheduler_partial(optimizer)
 
     loss = nn.MSELoss(reduction="sum")
     print(model)
@@ -84,12 +88,13 @@ def train(train_loader, val_loader, test_loader, cfg):
     early_stop_counter = 0
     for epoch in range(start_epoch, cfg.epochs):
         train_loss, epoch_time = train_epoch(
-            model,
-            train_loader,
-            optimizer,
-            loss,
-            stdzer,
-            device,
+            model=model,
+            train_loader=train_loader,
+            optimizer=optimizer,
+            scheduler=scheduler,
+            loss=loss,
+            stdzer=stdzer,
+            device=device,
         )
         val_preds = predict(model, val_loader, stdzer, device)
         val_loss = root_mean_squared_error(

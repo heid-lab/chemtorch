@@ -91,14 +91,19 @@ class RxnGraphBase(ABC):
 
     def _map_reac_to_prod(self) -> Dict[int, int]:
         """Map reactant atom indices to product atom indices."""
-        prod_map_to_id = {
-            atom.GetAtomMapNum(): atom.GetIdx()
-            for atom in self.mol_prod.GetAtoms()
-        }
-        return {
-            atom.GetIdx(): prod_map_to_id[atom.GetAtomMapNum()]
-            for atom in self.mol_reac.GetAtoms()
-        }
+        prod_map_to_id = dict(
+            [
+                (atom.GetAtomMapNum(), atom.GetIdx())
+                for atom in self.mol_prod.GetAtoms()
+            ]
+        )
+        reac_id_to_prod_id = dict(
+            [
+                (atom.GetIdx(), prod_map_to_id[atom.GetAtomMapNum()])
+                for atom in self.mol_reac.GetAtoms()
+            ]
+        )
+        return reac_id_to_prod_id
 
     @abstractmethod
     def _build_graph(self):

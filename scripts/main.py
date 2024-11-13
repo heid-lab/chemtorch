@@ -49,7 +49,6 @@ def main(cfg: DictConfig):
     )
 
     resolved_cfg = OmegaConf.to_container(cfg, resolve=True)
-    # resolved_cfg = OmegaConf.create(resolved_cfg)
 
     if cfg.wandb:
         wandb.init(

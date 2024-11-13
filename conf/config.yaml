@@ -1,8 +1,10 @@
 # main config 
 
 defaults:
-  - data: e2_cgr_transformed
+  - data: e2_cgr
   - model: dmpnn
+  - optimizer: adam
+  - scheduler: constant
   - override hydra/job_logging: disabled
   - override hydra/hydra_logging: disabled
   - _self_ # placement of this matters
@@ -18,9 +20,6 @@ save_model: false
 model_path: models/experiment1
 
 epochs: 30
-learning_rate: 0.001
-weight_decay: 0
-
 patience: 10
 min_delta: 0.001
 

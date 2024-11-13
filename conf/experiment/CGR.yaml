@@ -2,6 +2,8 @@
 defaults:
   - override /data: rdb7_cgr
   - override /model: dmpnn_opt
+  - override /data/transform_cfg:
+    - dummy
 
 wandb: true
 mode: train
@@ -16,6 +18,11 @@ model_path: models/experiment1
 epochs: 1000
 learning_rate: 0.0001
 weight_decay: 0
+
+model:
+  shared_weights: false
+  pool_cfg:
+    aggr: add
 
 patience: 25
 min_delta: 0.001
