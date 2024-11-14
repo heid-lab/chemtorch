@@ -1,5 +1,0 @@
-_target_: deeprxn.representation.cgr_graph.CGRGraph
-_recursive_: False
-
-defaults:
-  - transforms: dummy

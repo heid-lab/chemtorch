@@ -2,3 +2,4 @@ _target_: deeprxn.data.load_csv_dataset
 input_column: "smiles"
 target_column: "ea"
 data_folder: "barriers_rdb7"
+reduced_dataset: 1

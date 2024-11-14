@@ -90,13 +90,11 @@ class CGRGraph(RxnGraphBase):
         - Atom features combine reactant state and change
         - Bond features combine reactant state and change
         """
-        n_atoms = self.mol_reac.GetNumAtoms()
-
-        for i in range(n_atoms):
+        for i in range(self.n_atoms):
             self.f_atoms.append(self._get_atom_features(i))
             self.atom_origin_type.append(AtomOriginType.REACTANT_PRODUCT)
 
-            for j in range(i + 1, n_atoms):
+            for j in range(i + 1, self.n_atoms):
                 bond_reac = self.mol_reac.GetBondBetweenAtoms(i, j)
                 bond_prod = self.mol_prod.GetBondBetweenAtoms(
                     self.ri2pi[i], self.ri2pi[j]

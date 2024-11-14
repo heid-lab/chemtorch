@@ -6,7 +6,7 @@ from torch_geometric.nn import MessagePassing
 from torch_geometric.nn.norm import LayerNorm
 from torch_geometric.utils import to_dense_batch
 
-from deeprxn.representation.data import AtomOriginType
+from deeprxn.representation.rxn_graph import AtomOriginType
 
 
 class DMPNNConv(MessagePassing):

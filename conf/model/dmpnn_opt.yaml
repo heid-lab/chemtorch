@@ -12,18 +12,18 @@ defaults:
 num_node_features: ${num_node_features}
 num_edge_features: ${num_edge_features}
 shared_weights: true
-mpnn_depth: 3
-hidden_channels: 300
+mpnn_depth: 6
+hidden_channels: 1800
 
 # easily override defaults
 mpnn_cfg:
   separate_nn: false
-  dropout: 0.02
+  dropout: 0.05
 
 pool_cfg:
   aggr: add
 
 head_cfg:
   num_layers: 2
-  dropout: 0.02
+  dropout: 0.05
   activation: relu

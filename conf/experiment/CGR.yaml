@@ -1,0 +1,37 @@
+# @package _global_
+defaults:
+  - override /data: rdb7_cgr
+  - override /model: dmpnn_opt
+  - override /data/transform_cfg:
+    - dummy
+
+wandb: true
+mode: train
+project_name: CGR
+seed: 0
+use_cuda: true
+device: gpu
+
+save_model: false
+model_path: models/experiment1
+
+epochs: 1000
+learning_rate: 0.0001
+weight_decay: 0
+
+model:
+  shared_weights: false
+  pool_cfg:
+    aggr: add
+
+patience: 25
+min_delta: 0.001
+
+num_node_features: ???
+num_edge_features: ???
+
+hydra:
+  output_subdir: null
+  run:
+    dir: .
+
