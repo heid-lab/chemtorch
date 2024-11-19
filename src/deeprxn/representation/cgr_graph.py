@@ -1,8 +1,7 @@
-from abc import ABC, abstractmethod
-from typing import Dict, List, Optional, Tuple
+from typing import List
 
-import hydra
-from omegaconf import DictConfig
+import torch
+import torch_geometric as tg
 from rdkit import Chem
 
 from deeprxn.representation.rxn_graph import AtomOriginType, RxnGraphBase
@@ -14,9 +13,9 @@ class CGRGraph(RxnGraphBase):
     def __init__(
         self,
         smiles: str,
+        label: float,
         atom_featurizer: callable,
         bond_featurizer: callable,
-        transform_cfg: Optional[DictConfig] = None,
     ):
         """Initialize CGR graph.
 
@@ -26,14 +25,15 @@ class CGRGraph(RxnGraphBase):
             bond_featurizer: Function to generate bond features
         """
         super().__init__(
-            smiles, atom_featurizer, bond_featurizer, transform_cfg
+            smiles=smiles,
+            label=label,
+            atom_featurizer=atom_featurizer,
+            bond_featurizer=bond_featurizer,
         )
 
-        # build CGR graph
-        self._build_graph()
+        self.n_atoms = self.mol_reac.GetNumAtoms()
 
-        # apply transformations
-        self._apply_transforms()
+        self._build_graph()
 
     def _get_atom_features(self, atom_idx: int) -> List[float]:
         """Generate features for an atom in CGR representation.
@@ -108,3 +108,18 @@ class CGRGraph(RxnGraphBase):
                 # add bond in both directions (i->j and j->i)
                 self.f_bonds.extend([f_bond, f_bond])
                 self.edge_index.extend([(i, j), (j, i)])
+
+    def to_pyg_data(self) -> tg.data.Data:
+        """Convert the molecular graph to a PyTorch Geometric Data object."""
+        data = tg.data.Data()
+        data.x = torch.tensor(self.f_atoms, dtype=torch.float)
+        data.edge_index = (
+            torch.tensor(self.edge_index, dtype=torch.long).t().contiguous()
+        )
+        data.edge_attr = torch.tensor(self.f_bonds, dtype=torch.float)
+        data.y = torch.tensor([self.label], dtype=torch.float)
+        data.smiles = self.smiles
+        data.atom_origin_type = torch.tensor(
+            self.atom_origin_type, dtype=torch.long
+        )
+        return data
