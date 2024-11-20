@@ -56,9 +56,10 @@ class ChemDataset(Dataset):
             molgraph.to_pyg_data()
         )  # TODO: look into making representations inherit from PyG Data
 
-        for _, config in self.transform_cfg.items():
-            transform = hydra.utils.instantiate(config)
-            molgraph_tg_data_obj = transform(molgraph_tg_data_obj)
+        if self.transform_cfg is not None:
+            for _, config in self.transform_cfg.items():
+                transform = hydra.utils.instantiate(config)
+                molgraph_tg_data_obj = transform(molgraph_tg_data_obj)
 
         return molgraph_tg_data_obj
 
