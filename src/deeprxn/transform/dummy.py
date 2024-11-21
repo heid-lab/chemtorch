@@ -1,133 +1,148 @@
-from enum import Enum
 from typing import List, Optional
 
 import torch
-from omegaconf import DictConfig
+from torch_geometric.data import Data
 
-from deeprxn.representation.cgr_graph import CGRGraph
-from deeprxn.representation.connected_pair_graph import ConnectedPairGraph
-from deeprxn.representation.rxn_graph import AtomOriginType, RxnGraphBase
+from deeprxn.representation.rxn_graph import AtomOriginType
 from deeprxn.transform.transform import TransformBase
 
 
 class DummyNodeTransform(TransformBase):
-    """Transform for adding dummy nodes to reaction graphs."""
-
     def __init__(
         self,
         mode: str,
-        connection_type: Optional[str] = None,
+        connection_type: Optional[str] = "to_dummy",
         dummy_dummy_connection: Optional[str] = None,
         feature_init: str = "zeros",
     ):
-        super().__init__()
         self.mode = mode
         self.connection_type = connection_type
         self.dummy_dummy_connection = dummy_dummy_connection
         self.feature_init = feature_init
 
-    def __call__(self, graph) -> None:
+    def forward(self, data: Data) -> Data:
         """Apply dummy node transform to the graph."""
-        if isinstance(graph, CGRGraph) and self.mode != "global":
-            raise ValueError("CGR graphs only support global dummy node mode")
 
-        # feature dimensions from existing atoms/bonds
-        node_feat_dim = len(graph.f_atoms[0])
-        bond_feat_dim = len(graph.f_bonds[0]) if graph.f_bonds else 0
-
-        # dummy feature vector
-        dummy_feature = (
-            torch.zeros(node_feat_dim)
-            if self.feature_init == "zeros"
-            else torch.ones(node_feat_dim)
+        node_feat_dim = data.x.size(1)
+        feature_init_fn = (
+            torch.zeros if self.feature_init == "zeros" else torch.ones
         )
+        dummy_feature = feature_init_fn(1, node_feat_dim, device=data.x.device)
 
-        # dummy bond feature vector
-        dummy_bond = [0] * bond_feat_dim
+        dummy_bond = None
+        if hasattr(data, "edge_attr"):
+            dummy_bond = feature_init_fn(
+                1, data.edge_attr.size(1), device=data.edge_attr.device
+            )
 
         if self.mode == "global":
-            self._add_global_dummy(graph, dummy_feature, dummy_bond)
+            self._add_global_dummy(data, dummy_feature, dummy_bond)
         elif self.mode == "reactant_product":
-            self._add_reactant_product_dummies(
-                graph, dummy_feature, dummy_bond
-            )
+            self._add_reactant_product_dummies(data, dummy_feature, dummy_bond)
         else:
             raise ValueError(f"Unknown dummy node mode: {self.mode}")
 
+        return data
+
     def _connect_dummy_to_node(
         self,
-        graph,
+        data: Data,
         dummy_idx: int,
         node_idx: int,
-        bond_feat: List[float],
+        dummy_bond: Optional[torch.Tensor],
     ) -> None:
-        """Helper method to connect dummy node to a regular node."""
-        if self.connection_type in [
-            "bidirectional",
-            "from_dummy",
-        ]:
-            graph.f_bonds.append(bond_feat)
-            graph.edge_index.append((dummy_idx, node_idx))
+        new_edges = []
+        new_features = []
 
-        if self.connection_type in [
-            "bidirectional",
-            "to_dummy",
-        ]:
-            graph.f_bonds.append(bond_feat)
-            graph.edge_index.append((node_idx, dummy_idx))
+        if self.connection_type in ["bidirectional", "from_dummy"]:
+            new_edges.append(
+                torch.tensor(
+                    [[dummy_idx], [node_idx]], device=data.edge_index.device
+                )
+            )
+            if hasattr(data, "edge_attr") and dummy_bond is not None:
+                new_features.append(dummy_bond)
+
+        if self.connection_type in ["bidirectional", "to_dummy"]:
+            new_edges.append(
+                torch.tensor(
+                    [[node_idx], [dummy_idx]], device=data.edge_index.device
+                )
+            )
+            if hasattr(data, "edge_attr") and dummy_bond is not None:
+                new_features.append(dummy_bond)
+
+        if new_edges:
+            data.edge_index = torch.cat([data.edge_index, *new_edges], dim=1)
+            if hasattr(data, "edge_attr") and dummy_bond is not None:
+                data.edge_attr = torch.cat(
+                    [data.edge_attr, *new_features], dim=0
+                )
 
     def _add_global_dummy(
         self,
-        graph,
+        data: Data,
         dummy_feature: torch.Tensor,
-        dummy_bond: List[float],
+        dummy_bond: Optional[torch.Tensor],
     ) -> None:
         """Add a single global dummy node."""
-        dummy_idx = len(graph.f_atoms)
-        graph.f_atoms.append(dummy_feature.tolist())
-        graph.atom_origin_type.append(AtomOriginType.DUMMY)
+        data.x = torch.cat([data.x, dummy_feature], dim=0)
+        dummy_idx = data.x.size(0) - 1
 
-        n_connections = (
-            graph.n_atoms * 2
-            if isinstance(graph, ConnectedPairGraph)
-            else graph.n_atoms
+        for i in range(dummy_idx):
+            self._connect_dummy_to_node(data, dummy_idx, i, dummy_bond)
+
+        data.atom_origin_type = torch.cat(
+            [
+                data.atom_origin_type,
+                torch.tensor(
+                    [AtomOriginType.DUMMY], device=data.atom_origin_type.device
+                ),
+            ]
         )
-
-        for i in range(n_connections):
-            self._connect_dummy_to_node(graph, dummy_idx, i, dummy_bond)
 
     def _add_reactant_product_dummies(
         self,
-        graph,
+        data: Data,
         dummy_feature: torch.Tensor,
-        dummy_bond: List[float],
+        dummy_bond: Optional[torch.Tensor],
     ) -> None:
-        """Add separate dummy nodes for reactants and products."""
-        # reactant dummy
-        dummy_reactant_idx = len(graph.f_atoms)
-        graph.f_atoms.append(dummy_feature.tolist())
-        graph.atom_origin_type.append(AtomOriginType.DUMMY)
+        n_atoms = (
+            data.x.size(0) // 2
+        )  # assuming equal split between reactants and products
 
-        # product dummy
-        dummy_product_idx = len(graph.f_atoms)
-        graph.f_atoms.append(dummy_feature.tolist())
-        graph.atom_origin_type.append(AtomOriginType.DUMMY)
+        data.x = torch.cat([data.x, dummy_feature, dummy_feature], dim=0)
+        dummy_reactant_idx = data.x.size(0) - 2
+        dummy_product_idx = data.x.size(0) - 1
 
-        # connect to respective parts
-        for i in range(graph.n_atoms):
+        for i in range(n_atoms):
             self._connect_dummy_to_node(
-                graph, dummy_reactant_idx, i, dummy_bond
+                data, dummy_reactant_idx, i, dummy_bond
             )
             self._connect_dummy_to_node(
-                graph, dummy_product_idx, i + graph.n_atoms, dummy_bond
+                data, dummy_product_idx, i + n_atoms, dummy_bond
             )
 
-        # connect dummies if specified
         if self.dummy_dummy_connection == "bidirectional":
-            graph.f_bonds.extend([dummy_bond, dummy_bond])
-            graph.edge_index.extend(
+            dummy_edges = torch.tensor(
                 [
-                    (dummy_reactant_idx, dummy_product_idx),
-                    (dummy_product_idx, dummy_reactant_idx),
-                ]
-            )
+                    [dummy_reactant_idx, dummy_product_idx],
+                    [dummy_product_idx, dummy_reactant_idx],
+                ],
+                device=data.edge_index.device,
+            ).t()
+            data.edge_index = torch.cat([data.edge_index, dummy_edges], dim=1)
+            if hasattr(data, "edge_attr") and dummy_bond is not None:
+                data.edge_attr = torch.cat(
+                    [data.edge_attr, dummy_bond.repeat(2, 1)], dim=0
+                )
+
+        data.atom_origin_type = torch.cat(
+            [
+                data.atom_origin_type,
+                torch.tensor(
+                    [AtomOriginType.DUMMY, AtomOriginType.DUMMY],
+                    device=data.atom_origin_type.device,
+                ),
+            ]
+        )

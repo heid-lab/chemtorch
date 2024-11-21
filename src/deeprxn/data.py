@@ -1,12 +1,7 @@
-from enum import IntEnum
 from functools import lru_cache
-from pathlib import Path
-from typing import Literal, Tuple
 
 import hydra
 import torch
-import torch_geometric as tg
-from rdkit import Chem
 from torch_geometric.data import Dataset
 from torch_geometric.loader import DataLoader
 
@@ -49,46 +44,24 @@ class ChemDataset(Dataset):
     def _process_key(self, key):
         # TODO: add docstring
         smiles = self.smiles[key]
+        label = self.labels[key]
         molgraph = hydra.utils.instantiate(
             self.representation_cfg,
             smiles=smiles,
+            label=label,
             atom_featurizer=self.atom_featurizer,
             bond_featurizer=self.bond_featurizer,
-            transform_cfg=self.transform_cfg,
         )
-        mol = self.molgraph2data(molgraph, key)
-        return mol
+        molgraph_tg_data_obj = (
+            molgraph.to_pyg_data()
+        )  # TODO: look into making representations inherit from PyG Data
 
-    def molgraph2data(self, molgraph, key):
-        data = tg.data.Data()
-        data.x = torch.tensor(molgraph.f_atoms, dtype=torch.float)
-        data.edge_index = (
-            torch.tensor(molgraph.edge_index, dtype=torch.long)
-            .t()
-            .contiguous()
-        )
-        data.edge_attr = torch.tensor(molgraph.f_bonds, dtype=torch.float)
-        data.y = torch.tensor([self.labels[key]], dtype=torch.float)
-        data.smiles = self.smiles[key]
-        # data.is_real_bond = torch.tensor(
-        #     molgraph.is_real_bond, dtype=torch.bool
-        # )
-        data.atom_origin_type = torch.tensor(
-            molgraph.atom_origin_type, dtype=torch.long
-        )
-        # data.atom_origins = torch.tensor(
-        #     molgraph.atom_origins, dtype=torch.long
-        # )
-        # data.incoming_edges_list = molgraph.incoming_edges_list
-        # data.incoming_edges_batch = molgraph.incoming_edges_batch
-        # data.incoming_edges_batch_from_zero = (
-        #     molgraph.incoming_edges_batch_from_zero
-        # )
-        # data.neighboring_nodes_list = molgraph.neighboring_nodes_list
-        # data.neighboring_nodes_batch = molgraph.neighboring_nodes_batch
-        # data.incoming_edges_nodes_list = molgraph.incoming_edges_nodes_list
-        # data.incoming_edges_nodes_batch = molgraph.incoming_edges_nodes_batch
-        return data
+        if self.transform_cfg is not None:
+            for _, config in self.transform_cfg.items():
+                transform = hydra.utils.instantiate(config)
+                molgraph_tg_data_obj = transform(molgraph_tg_data_obj)
+
+        return molgraph_tg_data_obj
 
     def get(self, key):
         # TODO: add docstring

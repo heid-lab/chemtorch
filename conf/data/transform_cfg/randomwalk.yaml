@@ -1,0 +1,4 @@
+randomwalk:
+  _target_: deeprxn.transform.randomwalkpe.RandomWalkPETransform
+  walk_length: 8
+  attr_name: random_walk_pe
