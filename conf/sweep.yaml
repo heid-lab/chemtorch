@@ -1,0 +1,33 @@
+
+program: scripts/main.py  # Executing the main.py script
+
+project: deeprxn
+
+method: bayes   # also possible: grid
+metric:
+  goal: minimize
+  name: val_loss
+
+parameters:
+  epochs:
+    values: [50, 100, 150, 200]
+  learning_rate:
+    values: [0.001, 0.0001, 0.00001]
+  model.mpnn_cfg.dropout:
+    values: [0.005, 0.05, 0.1, 0.2, 0.3]
+  model.mpnn_depth:
+    values: [3,4,5,6]
+  model.hidden_channels:
+    values: [300, 600, 900, 1200]
+
+early_terminate:
+  type: hyperband
+  s: 2  # Specify the total number of brackets (required for max_iter)
+  eta: 3 # Specify the bracket multiplier schedule (default: 3).
+  max_iter: 27 # Specify the maximum number of iterations.
+
+command:
+  - ${env}
+  - python
+  - ${program}
+  - ${args_no_hyphens}
