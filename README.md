@@ -17,7 +17,8 @@ DeepRxn package
 ## Contents
 - [Installation](#installation)
 - [Data](#data)
-- [Examples](#test---examples)
+- [Code Structure](#code-structure)
+- [Hydra](#configuration-with-hydra)
 
 ## Installation
 
@@ -45,32 +46,63 @@ pip install -e .
 ## Data
 Put the data in a data folder.
 
-## Test - examples
-CGR
-```
-python scripts/main.py mode=train data=e2 epochs=200 transformation.representation=CGR
-```
-Connected pair, here connection_direction is important. This variable controls how we connect the pair. Choose 'null' for no connection.
-```
-python scripts/main.py mode=train data=e2 epochs=200 transformation.representation=connected_pair transformation.connection_direction=bidirectional
-```
-![connected_pair](images/connected_pair_bidirectional.png)
+## Code Structure
+The main idea of the code structure is to have easily exchangeable components which are identified by having their own folders. Each folder has their respective config folder in `conf`. Each component has a base class which has to be followed.
 
-We can also add dummy nodes. Check out the transformation.yaml for more options.
-```
-python scripts/main.py mode=train data=e2 epochs=200 transformation.representation=connected_pair transformation.connection_direction=null transformation.dummy_node=global transformation.dummy_connection=bidirectional
-```
-![dummy](images/connected_pair_dummy.png)
+Example data flow:
+- `data.py` loads data and returns a dataloader, it uses:
+    - `featurizer`: gets/computes features
+    - `representation`: the data and features are put in a representation
+    - `transform`: transforms data objects by (1) precomputing positional/structural encodings and/or (2) transforming the graph structure (e.g., adding dummy node)
 
-Let's use attention (check out the code or config files for options). Here we use three attention layers after the message passing. We also access the layers' parameters heads and dropout.
+A model follows the following design:
+- A `model` defines (1) some model specific code which is not covered by components + (2) its components:
+    - `encoder`: Encodes features and possible positional/structural encodings
+    - Layers: `mpnn_layer` and/or `att_layer`: backbone of the model
+    - `pool`: pooling function
+    - `head`: task-specific prediction head
+- `act`: activation functions to be used
+
 ```
-python scripts/main.py mode=train data=e2 epochs=200 transformation.representation=connected_pair transformation.connection_direction=null model.attention=reactants_products model.attention_depth=3 model.react_prod_att_cfg.num_heads=6 model.react_prod_att_cfg.dropout=0.1
+deeprxn/
+├── act/                    (activation functions, config in conf/model/)
+├── att_layer/              (attention layers, config in conf/model/)
+├── encoder/                (encoders, config in conf/model/)
+├── featurizer/             (featurizers, config in conf/data/)
+├── head/                   (prediction heads, config in conf/model/)
+├── model/                  (models, config in conf/model/)
+├── mpnn_layer/             (message passing layers, config in conf/model/)
+├── pool/                   (pooling functions, config in conf/model/)
+├── representation/         (representations, config in conf/data/)
+├── transform/              (transformations, config in conf/data/)
+├── data.py
+├── predict.py
+├── train.py
+└── utils.py
 ```
 
-Another example:
-```
-python scripts/main.py mode=train data=e2 epochs=200 transformation.representation=connected_pair transformation.connection_direction=null model.attention=reactants_products model.use_attention_agg=true model.use_attention_node_update=true
-```
+## Configuration with Hydra
+In the `conf` folder:
+- `*.yaml`: Main config files
+- `data/`: Data configs
+    - `dataset_cfg/`: Dataset configs
+    - `featurizer_cfg/`: Featurizer configs
+    - `representation_cfg/`: Representation configs
+    - `transform_cfg/`: Transformation configs
+    - `*.yaml`: Possible data configs to be passed in the main config
+        - E.g., `e2_feat1_cgr_dummy.yaml` could specifiy which dataset, features, representation, and transformation to use.
+- `model/`: Model configs
+    - `act_cfg/`: Activation function configs
+    - `att_layer_cfg/`: Attention layer configs
+    - `encoder_cfg/`: Encoder configs
+    - `head_cfg/`: Prediction head configs
+    - `mpnn_cfg/`: Message passing layer configs
+    - `pool_cfg/`: Pooling function configs
+    - `*.yaml`: Possible model configs to be passed in the main config
+        - E.g., `dmpnn_opt.yaml` could specifiy a model architecture with specific hyperparameters for a regression task
+
+https://medium.com/@bezzam/hydra-for-cleaner-python-code-and-better-reproducibility-in-research-c035028101f9 
+https://www.kdnuggets.com/2023/03/hydra-configs-deep-learning-experiments.html
 
 
 ## Weights and Biases
@@ -78,16 +110,6 @@ Set wandb=True to log the results to Weights and Biases. You need to have an acc
 ```
 export WANDB_API_KEY="YOUR KEY HERE"
 ```
-
-## Configuration with Hydra
-- `config.yaml`: Main configuration file
-- `data/*.yaml`: Dataset-specific configurations
-- `features.yaml`: Featurization settings
-- `transformation.yaml`: Data transformation and loading settings
-- `model/*.yaml`: Model architecture configurations
-
-https://medium.com/@bezzam/hydra-for-cleaner-python-code-and-better-reproducibility-in-research-c035028101f9 
-https://www.kdnuggets.com/2023/03/hydra-configs-deep-learning-experiments.html
 
 ## Copyright
 
