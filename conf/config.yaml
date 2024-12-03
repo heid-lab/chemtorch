@@ -22,6 +22,8 @@ model_path: models/experiment1
 epochs: 30
 patience: 10
 min_delta: 0.001
+clip_grad_norm: true
+clip_grad_norm_value: 1
 
 num_node_features: ???
 num_edge_features: ???

@@ -1,12 +1,10 @@
-import torch
-import torch.nn.functional as F
 from torch import nn
 from torch_geometric.data import Batch
 
 from deeprxn.encoder.encoder_base import Encoder
 
 
-class SimpleEncoder(Encoder):
+class LinearNodeEncoder(Encoder):
 
     def __init__(
         self,
@@ -15,13 +13,8 @@ class SimpleEncoder(Encoder):
     ):
         super().__init__(in_channels, out_channels)
 
-        self.edge_init = nn.Linear(in_channels, out_channels)
+        self.encoder = nn.Linear(in_channels, out_channels)
 
     def forward(self, batch: Batch) -> Batch:
-        row, col = batch.edge_index
-        batch.h_0 = F.relu(
-            self.edge_init(torch.cat([batch.x[row], batch.edge_attr], dim=1))
-        )
-        batch.h = batch.h_0
-
+        batch.x = self.encoder(batch.x)
         return batch

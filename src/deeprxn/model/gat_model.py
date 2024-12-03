@@ -8,9 +8,9 @@ from omegaconf import DictConfig
 from torch_geometric.data import Batch
 
 from deeprxn.head.head import FFNHead
-from deeprxn.model.model import Model
+from deeprxn.model.model_base import Model
 from deeprxn.mpnn_layer.gat_layer import GATLayer
-from deeprxn.mpnn_layer.mpnn_layer import Layer
+from deeprxn.mpnn_layer.mpnn_layer_base import Layer
 from deeprxn.pool.pool import GlobalPool
 
 

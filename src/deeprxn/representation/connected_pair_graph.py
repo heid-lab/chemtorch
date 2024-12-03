@@ -44,11 +44,12 @@ class ConnectedPairGraph(RxnGraphBase):
         self.n_atoms_prod = self.mol_prod.GetNumAtoms()
         self.n_atoms = self.n_atoms_reac + self.n_atoms_prod
 
+        # track number of unique reactant molecules for offset
+        self.n_reactant_compounds = max(self.reac_origins) + 1
+        self.atom_compound_idx: List[int] = []  # TODO: make optional?
+
         # build connected pair graph
         self._build_graph()
-
-        # # apply transformations
-        # self._apply_transforms()
 
     def _build_reactant_graph(self):
         """Build graph for reactant molecules."""
@@ -58,6 +59,7 @@ class ConnectedPairGraph(RxnGraphBase):
                 self.atom_featurizer(self.mol_reac.GetAtomWithIdx(i))
             )
             self.atom_origin_type.append(AtomOriginType.REACTANT)
+            self.atom_compound_idx.append(self.reac_origins[i])
 
             # Add reactant bonds
             for j in range(i + 1, self.n_atoms_reac):
@@ -79,6 +81,9 @@ class ConnectedPairGraph(RxnGraphBase):
                 )
             )
             self.atom_origin_type.append(AtomOriginType.PRODUCT)
+            self.atom_compound_idx.append(
+                self.prod_origins[self.ri2pi[i]] + self.n_reactant_compounds
+            )
 
             # Add product bonds
             for j in range(i + 1, self.n_atoms_prod):
@@ -135,5 +140,8 @@ class ConnectedPairGraph(RxnGraphBase):
         data.smiles = self.smiles
         data.atom_origin_type = torch.tensor(
             self.atom_origin_type, dtype=torch.long
+        )
+        data.atom_compound_idx = torch.tensor(
+            self.atom_compound_idx, dtype=torch.long
         )
         return data

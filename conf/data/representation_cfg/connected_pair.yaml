@@ -1,4 +1,3 @@
 _target_: deeprxn.representation.connected_pair_graph.ConnectedPairGraph
 _recursive_: False
-
 connection_direction: bidirectional # bidirectional, reactants_to_products, products_to_reactants

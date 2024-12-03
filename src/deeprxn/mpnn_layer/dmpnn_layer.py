@@ -5,7 +5,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch_geometric.data import Batch
 
-from deeprxn.mpnn_layer.mpnn_layer import MPNNLayer
+from deeprxn.mpnn_layer.mpnn_layer_base import MPNNLayer
 
 
 class DMPNNLayer(MPNNLayer):

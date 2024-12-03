@@ -7,7 +7,7 @@ import torch_geometric as tg
 from omegaconf import DictConfig
 from rdkit import Chem
 
-from deeprxn.transform.transform import TransformBase
+from deeprxn.transform.transform_base import TransformBase
 
 
 class AtomOriginType(IntEnum):
@@ -38,7 +38,6 @@ class RxnGraphBase(ABC):
         self.label = label
         self.atom_featurizer = atom_featurizer
         self.bond_featurizer = bond_featurizer
-        # self.transforms = self._init_transforms(transform_cfg)
 
         self.smiles_reac, _, self.smiles_prod = self.smiles.split(">")
 
@@ -52,24 +51,6 @@ class RxnGraphBase(ABC):
         self.edge_index: List[Tuple[int, int]] = []
         self.atom_origin_type: List[AtomOriginType] = []
         self.n_atoms = None
-
-    # def _init_transforms(
-    #     self, transform_cfg: Optional[DictConfig]
-    # ) -> List[TransformBase]:
-    #     """Initialize transformation objects from config."""
-    #     if transform_cfg is None:
-    #         return []
-
-    #     transforms = []
-    #     for _, config in transform_cfg.items():
-    #         transform = hydra.utils.instantiate(config)
-    #         transforms.append(transform)
-    #     return transforms
-
-    # def _apply_transforms(self):
-    #     """Apply all registered transformations in order."""
-    #     for transform in self.transforms:
-    #         transform(self)
 
     @staticmethod
     def _make_mol(smi: str) -> Tuple[Chem.Mol, List[int]]:

@@ -1,9 +1,12 @@
-from typing import List
+from typing import List, Optional
 
+import hydra
 import torch
 import torch_geometric as tg
+from omegaconf import DictConfig
 from rdkit import Chem
 
+from deeprxn.representation.connected_pair_graph import ConnectedPairGraph
 from deeprxn.representation.rxn_graph import AtomOriginType, RxnGraphBase
 
 
@@ -16,6 +19,7 @@ class CGRGraph(RxnGraphBase):
         label: float,
         atom_featurizer: callable,
         bond_featurizer: callable,
+        pre_transform_cfg: Optional[DictConfig] = None,
     ):
         """Initialize CGR graph.
 
@@ -32,8 +36,67 @@ class CGRGraph(RxnGraphBase):
         )
 
         self.n_atoms = self.mol_reac.GetNumAtoms()
+        self.pre_transform_cfg = pre_transform_cfg
+        self.pre_transform_features = {}
+        self.merged_transform_features = {}
+
+        if self.pre_transform_cfg is not None:
+            self._apply_pre_transforms()
+            self._merge_transform_features()
 
         self._build_graph()
+
+    def _apply_pre_transforms(self):
+        """Apply pre-transforms and store resulting features."""
+        temp_data = self._create_temp_rxn_graph()
+        n_reac = self.mol_reac.GetNumAtoms()
+
+        for _, config in self.pre_transform_cfg.items():
+            transform = hydra.utils.instantiate(config)
+            temp_data = transform(temp_data)
+            if hasattr(temp_data, transform.attr_name):
+                feat = getattr(temp_data, transform.attr_name)
+                self.pre_transform_features[transform.attr_name] = feat
+
+    def _merge_transform_features(self):
+        """Merge transform features according to atom mapping."""
+        n_reac = self.mol_reac.GetNumAtoms()
+
+        for attr_name, features in self.pre_transform_features.items():
+            reac_features = features[:n_reac]
+            prod_features = features[n_reac:]
+
+            merged = torch.zeros(
+                reac_features.shape[0],
+                reac_features.shape[1] * 2,
+                dtype=reac_features.dtype,
+                device=reac_features.device,
+            )
+
+            for i in range(self.n_atoms):
+                prod_idx = self.ri2pi[i]
+                f_reac = reac_features[i]
+                f_prod = prod_features[prod_idx]
+                # f_diff = f_prod - f_reac TODO: look into adding this as an optiob
+                merged[i] = torch.cat([f_reac, f_prod], dim=0)
+
+            self.merged_transform_features[attr_name] = merged
+
+    def _create_temp_rxn_graph(self) -> tg.data.Data:
+        """Create temporary reaction graph for pre-transforms.
+
+        Returns:
+            PyG Data object containing separate reactant/product graphs
+        """
+        # Create temporary connected pair graph without connections
+        temp_graph = ConnectedPairGraph(
+            smiles=self.smiles,
+            label=self.label,
+            atom_featurizer=self.atom_featurizer,
+            bond_featurizer=self.bond_featurizer,
+            connection_direction=None,  # No connections between reactants/products
+        )
+        return temp_graph.to_pyg_data()
 
     def _get_atom_features(self, atom_idx: int) -> List[float]:
         """Generate features for an atom in CGR representation.
@@ -80,7 +143,9 @@ class CGRGraph(RxnGraphBase):
             else [0] * len(self.bond_featurizer(None))
         )
         f_bond_diff = [y - x for x, y in zip(f_bond_reac, f_bond_prod)]
-        return f_bond_reac + f_bond_diff
+        return (
+            f_bond_reac + f_bond_diff
+        )  # concatenate the reactant and product bond features
 
     def _build_graph(self):
         """Build CGR representation.
@@ -122,4 +187,6 @@ class CGRGraph(RxnGraphBase):
         data.atom_origin_type = torch.tensor(
             self.atom_origin_type, dtype=torch.long
         )
+        for attr_name, features in self.merged_transform_features.items():
+            setattr(data, attr_name, features)
         return data

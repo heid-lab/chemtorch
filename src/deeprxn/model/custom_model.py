@@ -6,7 +6,7 @@ from omegaconf import DictConfig
 from torch_geometric.data import Batch
 from torch_geometric.nn.aggr import SumAggregation
 
-from deeprxn.model.model import Model
+from deeprxn.model.model_base import Model
 
 
 class CustomModel(Model):

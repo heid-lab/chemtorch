@@ -6,7 +6,7 @@ from torch_geometric.data import Batch
 from torch_geometric.nn.norm import LayerNorm
 from torch_geometric.utils import to_dense_batch
 
-from deeprxn.att_layer.att_layer import AttLayer
+from deeprxn.att_layer.att_layer_base import AttLayer
 from deeprxn.representation.rxn_graph import AtomOriginType
 
 

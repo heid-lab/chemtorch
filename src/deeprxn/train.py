@@ -20,7 +20,15 @@ from deeprxn.utils import (
 
 
 def train_epoch(
-    model, train_loader, optimizer, scheduler, loss, stdzer, device
+    model,
+    train_loader,
+    optimizer,
+    scheduler,
+    loss,
+    stdzer,
+    device,
+    clip_grad_norm,
+    clip_grad_norm_value,
 ):
     start_time = time.time()
     model.train()
@@ -34,6 +42,10 @@ def train_epoch(
         result = loss(out, stdzer(data.y))
         result.backward()
 
+        if clip_grad_norm:
+            torch.nn.utils.clip_grad_norm_(
+                model.parameters(), clip_grad_norm_value
+            )
         optimizer.step()
         loss_all += loss(stdzer(out, rev=True), data.y)
 
@@ -95,6 +107,8 @@ def train(train_loader, val_loader, test_loader, cfg):
             loss=loss,
             stdzer=stdzer,
             device=device,
+            clip_grad_norm=cfg.clip_grad_norm_value,
+            clip_grad_norm_value=cfg.clip_grad_norm_value,
         )
         val_preds = predict(model, val_loader, stdzer, device)
         val_loss = root_mean_squared_error(

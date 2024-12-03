@@ -2,7 +2,7 @@ import torch
 from torch_geometric.data import Batch
 from torch_geometric.nn import GATConv
 
-from deeprxn.mpnn_layer.mpnn_layer import MPNNLayer
+from deeprxn.mpnn_layer.mpnn_layer_base import MPNNLayer
 
 
 class GATLayer(MPNNLayer):

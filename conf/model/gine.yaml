@@ -1,0 +1,16 @@
+_target_: deeprxn.model.gine.GINE
+_recursive_: False
+
+defaults:
+  - encoder_cfg: linear_enc
+  - mpnn_cfg: gine_layer
+  - att_layer_cfg: null
+  - pool_cfg: global_pool
+  - head_cfg: ffn_head
+  - _self_
+
+num_node_features: ${num_node_features}
+num_edge_features: ${num_edge_features}
+shared_weights: false
+mpnn_depth: 3
+hidden_channels: 300
