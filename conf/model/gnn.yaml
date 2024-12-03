@@ -29,14 +29,14 @@ num_edge_features: ${num_edge_features}
 
 return_attention_weights: false
 
-shared_weights: false
+shared_weights: true
 use_att_agg_trans_enc: false
 
-depth: 3
-dropout: 0.02
+depth: 6
+dropout: 0.05
 pool_type: global
 pool_real_only: false
-hidden_size: 300
+hidden_size: 1800
 double_features: false
 attention: null # reactants_products, reactants, products
 use_attention_agg: false
