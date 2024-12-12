@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
-from enum import Enum
 from typing import Dict, List, Optional, Tuple
 
+import hydra
 import torch
 import torch_geometric as tg
 from omegaconf import DictConfig
@@ -19,6 +19,7 @@ class ConnectedPairGraph(RxnGraphBase):
         atom_featurizer: callable,
         bond_featurizer: callable,
         connection_direction: str = "bidirectional",
+        pre_transform_cfg: Optional[Dict[str, DictConfig]] = None,
     ):
         """Initialize connected pair graph.
 
@@ -39,6 +40,8 @@ class ConnectedPairGraph(RxnGraphBase):
             bond_featurizer=bond_featurizer,
         )
         self.connection_direction = connection_direction
+        self.pre_transform_cfg = pre_transform_cfg
+        self.component_features = {}
 
         self.n_atoms_reac = self.mol_reac.GetNumAtoms()
         self.n_atoms_prod = self.mol_prod.GetNumAtoms()
@@ -48,18 +51,143 @@ class ConnectedPairGraph(RxnGraphBase):
         self.n_reactant_compounds = max(self.reac_origins) + 1
         self.atom_compound_idx: List[int] = []  # TODO: make optional?
 
+        # Track the mapping between original indices and final graph indices
+        self.original_to_graph_indices: Dict[Tuple[int, int], int] = (
+            {}
+        )  # (compound_idx, local_idx) -> graph_idx
+
+        if self.pre_transform_cfg is not None:
+            self._apply_component_transforms()
+
         # build connected pair graph
         self._build_graph()
 
+    def _create_component_graph(
+        self, mol, atom_indices, compound_idx
+    ) -> tg.data.Data:
+        """Create a graph for a single component."""
+        data = tg.data.Data()
+
+        x = []
+        for idx in atom_indices:
+            x.append(self.atom_featurizer(mol.GetAtomWithIdx(idx)))
+        data.x = torch.tensor(x, dtype=torch.float)
+
+        edges = []
+        edge_features = []
+
+        if len(atom_indices) > 1:
+            global_to_local = {
+                global_idx: local_idx
+                for local_idx, global_idx in enumerate(atom_indices)
+            }
+
+            for i, global_i in enumerate(atom_indices):
+                for j, global_j in enumerate(atom_indices[i + 1 :], i + 1):
+                    bond = mol.GetBondBetweenAtoms(global_i, global_j)
+                    if bond:
+                        local_i = global_to_local[global_i]
+                        local_j = global_to_local[global_j]
+                        edges.extend([[local_i, local_j], [local_j, local_i]])
+                        f_bond = self.bond_featurizer(bond)
+                        edge_features.extend([f_bond, f_bond])
+
+        data.edge_index = (
+            torch.tensor(edges, dtype=torch.long).t().contiguous()
+            if edges
+            else torch.zeros((2, 0), dtype=torch.long)
+        )
+        data.edge_attr = (
+            torch.tensor(edge_features, dtype=torch.float)
+            if edge_features
+            else torch.zeros(
+                (0, len(self.bond_featurizer(None))), dtype=torch.float
+            )
+        )
+        data.num_nodes = len(atom_indices)
+        data.global_indices = torch.tensor(atom_indices, dtype=torch.long)
+        data.compound_idx = compound_idx
+
+        return data
+
+    @staticmethod
+    def _get_component_indices(origins) -> Dict[int, List[int]]:
+        """Get atom indices for each component in a molecule."""
+        component_indices = {}
+        for atom_idx, origin in enumerate(origins):
+            if origin not in component_indices:
+                component_indices[origin] = []
+            component_indices[origin].append(atom_idx)
+        return component_indices
+
+    def _update_index_mapping(
+        self, compound_idx: int, local_idx: int, graph_idx: int
+    ):
+        """Update the mapping between original and graph indices."""
+        self.original_to_graph_indices[(compound_idx, local_idx)] = graph_idx
+
+    def _apply_component_transforms(self):
+        """Apply transforms to each component separately."""
+        for _, config in self.pre_transform_cfg.items():
+            transform = hydra.utils.instantiate(config)
+            attr_names = transform.attr_name
+            if isinstance(attr_names, str):
+                attr_names = [attr_names]
+
+            # Process reactant components
+            for compound_idx, indices in self._get_component_indices(
+                self.reac_origins
+            ).items():
+                data = self._create_component_graph(
+                    self.mol_reac, indices, compound_idx
+                )
+                data = transform(data)
+                for attr_name in attr_names:
+                    if hasattr(data, attr_name):
+                        if compound_idx not in self.component_features:
+                            self.component_features[compound_idx] = {}
+                        self.component_features[compound_idx][attr_name] = {
+                            "features": getattr(data, attr_name),
+                            "indices": indices,
+                            "offset": 0,
+                        }
+
+            # Process product components
+            for compound_idx, indices in self._get_component_indices(
+                self.prod_origins
+            ).items():
+                data = self._create_component_graph(
+                    self.mol_prod,
+                    indices,
+                    compound_idx + self.n_reactant_compounds,
+                )
+                data = transform(data)
+                for attr_name in attr_names:
+                    if hasattr(data, attr_name):
+                        compound_key = compound_idx + self.n_reactant_compounds
+                        if compound_key not in self.component_features:
+                            self.component_features[compound_key] = {}
+                        self.component_features[compound_key][attr_name] = {
+                            "features": getattr(data, attr_name),
+                            "indices": indices,
+                            "offset": self.n_atoms_reac,
+                        }
+
     def _build_reactant_graph(self):
         """Build graph for reactant molecules."""
+        current_idx = 0
+
         # Add reactant atom features
         for i in range(self.n_atoms_reac):
             self.f_atoms.append(
                 self.atom_featurizer(self.mol_reac.GetAtomWithIdx(i))
             )
             self.atom_origin_type.append(AtomOriginType.REACTANT)
-            self.atom_compound_idx.append(self.reac_origins[i])
+            compound_idx = self.reac_origins[i]
+            self.atom_compound_idx.append(compound_idx)
+
+            self._update_index_mapping(compound_idx, i, current_idx)
+            current_idx += 1
 
             # Add reactant bonds
             for j in range(i + 1, self.n_atoms_reac):
@@ -72,18 +200,21 @@ class ConnectedPairGraph(RxnGraphBase):
     def _build_product_graph(self):
         """Build graph for product molecules."""
         offset = self.n_atoms_reac  # Offset for product atom indices
+        current_idx = offset
 
         # Add product atom features
         for i in range(self.n_atoms_prod):
+            prod_idx = self.ri2pi[i]
             self.f_atoms.append(
-                self.atom_featurizer(
-                    self.mol_prod.GetAtomWithIdx(self.ri2pi[i])
-                )
+                self.atom_featurizer(self.mol_prod.GetAtomWithIdx(prod_idx))
             )
             self.atom_origin_type.append(AtomOriginType.PRODUCT)
-            self.atom_compound_idx.append(
-                self.prod_origins[self.ri2pi[i]] + self.n_reactant_compounds
+            compound_idx = (
+                self.prod_origins[prod_idx] + self.n_reactant_compounds
             )
+            self.atom_compound_idx.append(compound_idx)
+            self._update_index_mapping(compound_idx, prod_idx, current_idx)
+            current_idx += 1
 
             # Add product bonds
             for j in range(i + 1, self.n_atoms_prod):
@@ -144,4 +275,34 @@ class ConnectedPairGraph(RxnGraphBase):
         data.atom_compound_idx = torch.tensor(
             self.atom_compound_idx, dtype=torch.long
         )
+        # Handle pre-transform attributes using the index mapping
+        for attr_name in set(
+            attr
+            for comp_features in self.component_features.values()
+            for attr in comp_features.keys()
+        ):
+            feature_dim = next(
+                feat["features"].shape[1]
+                for comp_features in self.component_features.values()
+                for name, feat in comp_features.items()
+                if name == attr_name
+            )
+            combined_features = torch.zeros(
+                (self.n_atoms, feature_dim), dtype=torch.float
+            )
+
+            for comp_idx, comp_features in self.component_features.items():
+                if attr_name in comp_features:
+                    feat_data = comp_features[attr_name]
+                    for local_idx, orig_idx in enumerate(feat_data["indices"]):
+                        graph_idx = self.original_to_graph_indices.get(
+                            (comp_idx, orig_idx), None
+                        )
+                        if graph_idx is not None:
+                            combined_features[graph_idx] = feat_data[
+                                "features"
+                            ][local_idx]
+
+            setattr(data, attr_name, combined_features)
+
         return data

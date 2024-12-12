@@ -12,6 +12,8 @@ __pycache__/
 # Data folder
 data/*
 
+conf/*.yaml
+
 # Saved models
 saved_models/
 

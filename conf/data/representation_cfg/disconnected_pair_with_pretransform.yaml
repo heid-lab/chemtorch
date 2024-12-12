@@ -1,0 +1,7 @@
+_target_: deeprxn.representation.connected_pair_graph.ConnectedPairGraph
+_recursive_: False
+connection_direction: null
+defaults:
+  - pre_transform_cfg:
+    - randomwalk
+    - lapPE
