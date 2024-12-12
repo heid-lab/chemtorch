@@ -15,6 +15,9 @@ data/*
 # Saved models
 saved_models/
 
+# yaml files in experiment
+conf/experiment/*.yaml
+
 # data.tar.gz
 data.tar.gz
 
