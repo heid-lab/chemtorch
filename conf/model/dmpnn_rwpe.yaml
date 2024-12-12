@@ -1,9 +1,9 @@
-_target_: deeprxn.model.dmpnn.DMPNN
+_target_: deeprxn.model.dmpnn_rwpe.DMPNNRWPE
 _recursive_: False
 
 defaults:
   - encoder_cfg:
-    - simple_enc
+    - rwpe_enc_dmpnn
   - layer_cfg: /mpnn_cfg/dmpnn_layer
   - att_layer_cfg: null
   - pool_cfg: global_pool

@@ -8,7 +8,7 @@ defaults:
     - equivstable_enc
     #- rwpe_enc
     #- lappe_enc
-  - layer_cfg: /mpnn_cfg/gine_layer
+  - layer_cfg: /mpnn_cfg/gatedgcn_layer
   - att_layer_cfg: null
   - pool_cfg: global_pool
   - head_cfg: ffn_head
@@ -29,5 +29,5 @@ encoder_cfg:
 num_node_features: ${num_node_features}
 num_edge_features: ${num_edge_features}
 shared_weights: false
-depth: 10
+mpnn_depth: 8
 hidden_channels: 64

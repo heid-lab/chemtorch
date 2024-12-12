@@ -9,7 +9,7 @@ from torch_geometric.nn.aggr import SumAggregation
 from deeprxn.model.model_base import Model
 
 
-class GINE(Model):
+class DMPNNRWPE(Model):
     """Custom model using configurable components."""
 
     def __init__(
@@ -17,16 +17,16 @@ class GINE(Model):
         num_node_features: int,
         num_edge_features: int,
         hidden_channels: int,
-        depth: int,
+        mpnn_depth: int,
         shared_weights: bool,
         encoder_cfg: DictConfig,
-        layer_cfg: DictConfig,
+        mpnn_cfg: DictConfig,
         pool_cfg: DictConfig,
         head_cfg: DictConfig,
     ):
         """Initialize Custom model."""
         super().__init__()
-        self.depth = depth
+        self.mpnn_depth = mpnn_depth
 
         self.encoders = nn.ModuleList()
         for _, config in encoder_cfg.items():
@@ -34,18 +34,21 @@ class GINE(Model):
 
         self.layers = nn.ModuleList()
         if shared_weights:
-            layer = hydra.utils.instantiate(layer_cfg)
-            for _ in range(self.depth):
+            layer = hydra.utils.instantiate(mpnn_cfg)
+            for _ in range(self.mpnn_depth):
                 self.layers.append(layer)
         else:
-            for _ in range(self.depth):
-                self.layers.append(hydra.utils.instantiate(layer_cfg))
+            for _ in range(self.mpnn_depth):
+                self.layers.append(hydra.utils.instantiate(mpnn_cfg))
 
-        # self.aggregation = SumAggregation()
+        self.aggregation = SumAggregation()
 
-        # self.edge_to_node = nn.Linear(
-        #     num_node_features + hidden_channels, hidden_channels
-        # )
+        self.edge_to_node = nn.Linear(
+            num_node_features
+            + hidden_channels
+            + encoder_cfg.in_channels_pe * 2,
+            hidden_channels,
+        )
 
         self.pool = hydra.utils.instantiate(pool_cfg)
         self.head = hydra.utils.instantiate(head_cfg)
@@ -59,10 +62,10 @@ class GINE(Model):
         for layer in self.layers:
             batch = layer(batch)
 
-        # s = self.aggregation(batch.h, batch.edge_index[1])
+        s = self.aggregation(batch.h, batch.edge_index[1])
 
-        # batch.q = torch.cat([batch.x, s, batch.pos_enc], dim=1)
-        # batch.x = F.relu(self.edge_to_node(batch.q))
+        batch.q = torch.cat([batch.x, s], dim=1)
+        batch.x = F.relu(self.edge_to_node(batch.q))
 
         batch.x = self.pool(batch)
         preds = self.head(batch)

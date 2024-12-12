@@ -9,7 +9,7 @@ from torch_geometric.nn.aggr import SumAggregation
 from deeprxn.model.model_base import Model
 
 
-class GINE(Model):
+class GPS(Model):
     """Custom model using configurable components."""
 
     def __init__(

@@ -1,3 +1,4 @@
-_target_: deeprxn.encoder.linear_edge_enc.LinearEdgeEncoder
-in_channels: ${eval:'${num_node_features} + ${num_edge_features}'}
-out_channels: ${model.mpnn_cfg.in_channels}
+linear_edge_enc: 
+  _target_: deeprxn.encoder.linear_edge_enc.LinearEdgeEncoder
+  in_channels: ${num_edge_features}
+  out_channels: ${model.layer_cfg.mpnn_cfg.in_channels}

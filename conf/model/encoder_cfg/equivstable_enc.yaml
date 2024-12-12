@@ -1,0 +1,5 @@
+equivstable_enc: 
+  _target_: deeprxn.encoder.equivstable_enc.EquivStableEncoder
+  in_channels: ${data.representation_cfg.pre_transform_cfg.lapPE.max_freqs}
+  out_channels: ${model.layer_cfg.mpnn_cfg.in_channels}
+  raw_norm_type: null

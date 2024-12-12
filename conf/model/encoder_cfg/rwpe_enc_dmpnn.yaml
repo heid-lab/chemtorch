@@ -1,0 +1,5 @@
+rwpe_enc_dmpnn:
+  _target_: deeprxn.encoder.rwpe_enc_dmpnn.RWEncoderDMPNN
+  in_channels: ${eval:'${num_node_features} + ${num_edge_features}'}
+  out_channels: ${model.layer_cfg.mpnn_cfg.in_channels}
+  in_channels_pe: ${data.representation_cfg.pre_transform_cfg.randomwalk.walk_length}

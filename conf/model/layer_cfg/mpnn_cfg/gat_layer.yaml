@@ -1,0 +1,6 @@
+_target_: deeprxn.layer.mpnn_layer.gat_layer.GATLayer
+in_channels: 300
+out_channels: 300
+heads: 1
+dropout: 0.02
+concat: false

@@ -2,8 +2,9 @@ _target_: deeprxn.model.dmpnn.DMPNN
 _recursive_: False
 
 defaults:
-  - encoder_cfg: simple_enc
-  - mpnn_cfg: dmpnn_layer
+  - encoder_cfg:
+    - simple_enc
+  - layer_cfg: /mpnn_cfg/dmpnn_layer
   - att_layer_cfg: null
   - pool_cfg: global_pool
   - head_cfg: ffn_head

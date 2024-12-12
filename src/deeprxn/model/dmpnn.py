@@ -28,7 +28,9 @@ class DMPNN(Model):
         super().__init__()
         self.mpnn_depth = mpnn_depth
 
-        self.encoder = hydra.utils.instantiate(encoder_cfg)
+        self.encoders = nn.ModuleList()
+        for _, config in encoder_cfg.items():
+            self.encoders.append(hydra.utils.instantiate(config))
 
         self.layers = nn.ModuleList()
         if shared_weights:
@@ -51,7 +53,8 @@ class DMPNN(Model):
     def forward(self, batch: Batch) -> Batch:
         """Forward pass through Custom model."""
 
-        batch = self.encoder(batch)
+        for encoder in self.encoders:
+            batch = encoder(batch)
 
         for layer in self.layers:
             batch = layer(batch)

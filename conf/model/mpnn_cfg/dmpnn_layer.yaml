@@ -1,5 +1,0 @@
-_target_: deeprxn.mpnn_layer.dmpnn_layer.DMPNNLayer
-in_channels: ${model.hidden_channels}
-out_channels: ${model.hidden_channels}
-separate_nn: false
-dropout: 0.02

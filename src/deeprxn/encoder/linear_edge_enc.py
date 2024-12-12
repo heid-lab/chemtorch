@@ -11,7 +11,7 @@ class LinearEdgeEncoder(Encoder):
         in_channels: int,
         out_channels: int,
     ):
-        super().__init__(in_channels, out_channels)
+        super().__init__()
 
         self.encoder = nn.Linear(in_channels, out_channels)
 

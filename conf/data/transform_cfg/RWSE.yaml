@@ -1,0 +1,4 @@
+RWSE:
+  _target_: deeprxn.transform.RWSE.RWSE
+  times: 20
+  attr_name: wandomwalkpe

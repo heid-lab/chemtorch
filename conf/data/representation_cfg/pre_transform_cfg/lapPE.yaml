@@ -1,0 +1,7 @@
+lapPE:
+  _target_: deeprxn.transform.lapPE.LapPE
+  eigvec_norm: L2
+  max_freqs: 1
+  attr_name: [EigVals, EigVecs]
+  laplacian_norm_type: null
+  is_undirected: false # TODO: can probably determine this automatically
