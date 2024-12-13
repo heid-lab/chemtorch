@@ -20,7 +20,7 @@ class RWEncoder(Encoder):
         super().__init__()
 
         # dim_in = in_channels
-        dim_pe = in_channels * 2  # in_channels_pe * 2
+        dim_pe = in_channels  # * 2  # in_channels_pe * 2
         self.raw_norm = nn.BatchNorm1d(dim_pe)
 
         # self.linear_x = nn.Linear(dim_in, out_channels - out_channels_pe)

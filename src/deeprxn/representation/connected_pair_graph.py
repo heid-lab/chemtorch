@@ -19,6 +19,7 @@ class ConnectedPairGraph(RxnGraphBase):
         atom_featurizer: callable,
         bond_featurizer: callable,
         connection_direction: str = "bidirectional",
+        in_channel_multiplier: int = 1,
         pre_transform_cfg: Optional[Dict[str, DictConfig]] = None,
     ):
         """Initialize connected pair graph.
@@ -281,15 +282,20 @@ class ConnectedPairGraph(RxnGraphBase):
             for comp_features in self.component_features.values()
             for attr in comp_features.keys()
         ):
-            feature_dim = next(
-                feat["features"].shape[1]
+            # Get the shape from the first non-empty feature tensor
+            sample_features = next(
+                feat["features"]
                 for comp_features in self.component_features.values()
                 for name, feat in comp_features.items()
                 if name == attr_name
             )
-            combined_features = torch.zeros(
-                (self.n_atoms, feature_dim), dtype=torch.float
-            )
+
+            # Initialize combined_features with the correct shape
+            feature_shape = list(
+                sample_features.shape[1:]
+            )  # Get all dimensions except the first
+            combined_shape = [self.n_atoms] + feature_shape
+            combined_features = torch.zeros(combined_shape, dtype=torch.float)
 
             for comp_idx, comp_features in self.component_features.items():
                 if attr_name in comp_features:
@@ -299,9 +305,14 @@ class ConnectedPairGraph(RxnGraphBase):
                             (comp_idx, orig_idx), None
                         )
                         if graph_idx is not None:
-                            combined_features[graph_idx] = feat_data[
-                                "features"
-                            ][local_idx]
+                            if len(feature_shape) == 1:
+                                combined_features[graph_idx] = feat_data[
+                                    "features"
+                                ][local_idx]
+                            else:
+                                combined_features[graph_idx, :] = feat_data[
+                                    "features"
+                                ][local_idx, :]
 
             setattr(data, attr_name, combined_features)
 

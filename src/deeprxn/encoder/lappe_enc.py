@@ -50,7 +50,7 @@ class LapPE(Encoder):
                 "Batch object does not have EigVals or EigVecs attribute"
             )
 
-        EigVals = getattr(batch, "EigVals").unsqueeze(2)
+        EigVals = getattr(batch, "EigVals")  # .unsqueeze(2)
         EigVecs = getattr(batch, "EigVecs")
 
         # print(EigVecs.shape)

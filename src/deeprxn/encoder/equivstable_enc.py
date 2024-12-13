@@ -18,11 +18,11 @@ class EquivStableEncoder(Encoder):
         max_freqs = in_channels  # Num. eigenvectors (frequencies)
 
         if raw_norm_type == "batchnorm":
-            self.raw_norm = nn.BatchNorm1d(max_freqs * 2)
+            self.raw_norm = nn.BatchNorm1d(max_freqs)
         else:
             self.raw_norm = None
 
-        self.linear_encoder_eigenvec = nn.Linear(max_freqs * 2, out_channels)
+        self.linear_encoder_eigenvec = nn.Linear(max_freqs, out_channels)
 
     def forward(self, batch):
         if not (hasattr(batch, "EigVals") and hasattr(batch, "EigVecs")):

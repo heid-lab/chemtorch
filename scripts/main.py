@@ -1,5 +1,3 @@
-import operator
-
 import hydra
 import torch
 from omegaconf import DictConfig, OmegaConf
@@ -48,6 +46,8 @@ def main(cfg: DictConfig):
         merge=True,
     )
 
+    # https://omegaconf.readthedocs.io/en/2.3_branch/usage.html#utility-functions
+    # check out
     resolved_cfg = OmegaConf.to_container(cfg, resolve=True)
 
     if cfg.wandb:

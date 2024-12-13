@@ -94,6 +94,15 @@ class LapPE(TransformBase):
             EigVals = evals.unsqueeze(0)
         EigVals = EigVals.repeat(N, 1).unsqueeze(2)
 
+        # print(f"Eigenvalues: {EigVals.shape}")
+        # print(EigVals)
+        # print(f"Eigenvectors: {EigVecs.shape}")
+        # print(EigVecs)
+        # lol = torch.cat((EigVecs.unsqueeze(2), EigVals), dim=2)
+        # print(f"Concatenated: {lol.shape}")
+        # print(lol)
+        # assert False
+
         return EigVals, EigVecs
 
     def eigvec_normalizer(

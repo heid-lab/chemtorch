@@ -18,6 +18,7 @@ class CGRGraph(RxnGraphBase):
         label: float,
         atom_featurizer: callable,
         bond_featurizer: callable,
+        in_channel_multiplier: int = 2,
         pre_transform_cfg: Optional[DictConfig] = None,
     ):
         """Initialize CGR graph.
@@ -161,16 +162,28 @@ class CGRGraph(RxnGraphBase):
         return component_indices
 
     def _merge_transform_features(self):
-        """Merge transform features according to atom mapping."""
+        """Merge transform features according to atom mapping while preserving dimensions."""
         # Initialize merged features dictionary
         for compound_data in self.component_features.values():
             for attr_name in compound_data.keys():
                 if attr_name not in self.merged_transform_features:
+                    feat_shape = compound_data[attr_name]["features"].shape
+                    # Initialize with correct dimensionality
+                    if len(feat_shape) == 2:  # e.g., EigVecs (N, max_freqs)
+                        merged_shape = (self.n_atoms, feat_shape[1] * 2)
+                    elif (
+                        len(feat_shape) == 3
+                    ):  # e.g., EigVals (N, max_freqs, 1)
+                        merged_shape = (
+                            self.n_atoms,
+                            feat_shape[1] * 2,
+                            feat_shape[2],
+                        )
+                    else:  # Standard case
+                        merged_shape = (self.n_atoms, feat_shape[1] * 2)
+
                     self.merged_transform_features[attr_name] = torch.zeros(
-                        self.n_atoms,
-                        compound_data[attr_name]["features"].shape[1]
-                        * 2,  # *2 for reac+prod
-                        dtype=torch.float,
+                        merged_shape, dtype=torch.float
                     )
 
         # Merge features
@@ -210,25 +223,27 @@ class CGRGraph(RxnGraphBase):
                             break
 
                 if reac_feat is not None and prod_feat is not None:
-                    # Normalize dimensions before concatenation
-                    if reac_feat.dim() == 1:
-                        reac_feat = reac_feat.unsqueeze(-1)
-                    if prod_feat.dim() == 1:
-                        prod_feat = prod_feat.unsqueeze(-1)
-
-                    # Ensure consistent dimensions
+                    # Ensure features have same shape
                     assert (
                         reac_feat.shape == prod_feat.shape
                     ), f"Feature shapes mismatch: {reac_feat.shape} vs {prod_feat.shape}"
 
-                    # Flatten if needed
-                    if reac_feat.dim() > 1:
-                        reac_feat = reac_feat.reshape(-1)
-                        prod_feat = prod_feat.reshape(-1)
-
-                    self.merged_transform_features[attr_name][i] = torch.cat(
-                        [reac_feat, prod_feat]
-                    )
+                    # Handle different dimensionalities
+                    if len(reac_feat.shape) == 1:  # 1D case
+                        self.merged_transform_features[attr_name][i] = (
+                            torch.cat([reac_feat, prod_feat])
+                        )
+                    elif (
+                        len(reac_feat.shape) == 2
+                    ):  # 2D case (e.g., EigVals with shape (max_freqs, 1))
+                        # Concatenate along the first dimension
+                        self.merged_transform_features[attr_name][i] = (
+                            torch.cat([reac_feat, prod_feat], dim=0)
+                        )
+                    else:
+                        raise ValueError(
+                            f"Unsupported feature dimensionality: {len(reac_feat.shape)}"
+                        )
 
     def _get_atom_features(self, atom_idx: int) -> List[float]:
         """Generate features for an atom in CGR representation.
