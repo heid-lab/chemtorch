@@ -1,0 +1,6 @@
+_target_: deeprxn.representation.cgr_graph.CGRGraph
+_recursive_: False
+in_channel_multiplier: 2
+defaults:
+  - pre_transform_cfg:
+    - randomwalk
