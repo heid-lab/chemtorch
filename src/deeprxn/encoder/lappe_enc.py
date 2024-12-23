@@ -13,12 +13,13 @@ class LapPE(Encoder):
         out_channels: int,  # dim_pe
         model_type: str,
         n_layers: int = 2,
+        as_variable: bool = False,
         raw_norm_type=None,
     ):
         super().__init__()
 
         self.model_type = model_type
-
+        self.as_variable = as_variable
         self.linear_A = nn.Linear(2, out_channels)
 
         if raw_norm_type == "batchnorm":
@@ -96,6 +97,9 @@ class LapPE(Encoder):
         )
 
         pos_enc = torch.sum(pos_enc, 1, keepdim=False)  # (Num nodes) x dim_pe
-        batch.x = torch.cat((batch.x, pos_enc), 1)
+        if self.as_variable:
+            batch.lappe = pos_enc
+        else:
+            batch.x = torch.cat((batch.x, pos_enc), 1)
 
         return batch

@@ -1,7 +1,5 @@
 import hydra
-import torch
 import torch.nn as nn
-import torch.nn.functional as F
 from omegaconf import DictConfig
 from torch_geometric.data import Batch
 from torch_geometric.nn.aggr import SumAggregation
@@ -41,12 +39,6 @@ class GPS(Model):
             for _ in range(self.depth):
                 self.layers.append(hydra.utils.instantiate(layer_cfg))
 
-        # self.aggregation = SumAggregation()
-
-        # self.edge_to_node = nn.Linear(
-        #     num_node_features + hidden_channels, hidden_channels
-        # )
-
         self.pool = hydra.utils.instantiate(pool_cfg)
         self.head = hydra.utils.instantiate(head_cfg)
 
@@ -58,11 +50,6 @@ class GPS(Model):
 
         for layer in self.layers:
             batch = layer(batch)
-
-        # s = self.aggregation(batch.h, batch.edge_index[1])
-
-        # batch.q = torch.cat([batch.x, s, batch.pos_enc], dim=1)
-        # batch.x = F.relu(self.edge_to_node(batch.q))
 
         batch.x = self.pool(batch)
         preds = self.head(batch)

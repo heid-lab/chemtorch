@@ -13,11 +13,10 @@ class RWEncoder(Encoder):
         self,
         in_channels: int,
         out_channels: int,
-        # in_channels_edge: int,
-        # in_channels_pe: int,
-        # out_channels_pe: int,
+        as_variable: bool = False,
     ):
         super().__init__()
+        self.as_variable = as_variable
 
         # dim_in = in_channels
         dim_pe = in_channels  # * 2  # in_channels_pe * 2
@@ -40,6 +39,9 @@ class RWEncoder(Encoder):
         pos_enc = self.raw_norm(pos_enc)
         pos_enc = self.pe_encoder(pos_enc)
         # h = self.linear_x(batch.x)
-        batch.x = torch.cat([batch.x, pos_enc], dim=1)
+        if self.as_variable:
+            batch.randomwalkpe = pos_enc
+        else:
+            batch.x = torch.cat([batch.x, pos_enc], dim=1)
 
         return batch

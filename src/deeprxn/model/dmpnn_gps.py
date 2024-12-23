@@ -9,7 +9,7 @@ from torch_geometric.nn.aggr import SumAggregation
 from deeprxn.model.model_base import Model
 
 
-class DMPNN(Model):
+class DMPNNGPS(Model):
     """Custom model using configurable components."""
 
     def __init__(
@@ -41,12 +41,6 @@ class DMPNN(Model):
             for _ in range(self.depth):
                 self.layers.append(hydra.utils.instantiate(layer_cfg))
 
-        self.aggregation = SumAggregation()
-
-        self.edge_to_node = nn.Linear(
-            num_node_features + hidden_channels, hidden_channels
-        )
-
         self.pool = hydra.utils.instantiate(pool_cfg)
         self.head = hydra.utils.instantiate(head_cfg)
 
@@ -58,11 +52,6 @@ class DMPNN(Model):
 
         for layer in self.layers:
             batch = layer(batch)
-
-        s = self.aggregation(batch.h, batch.edge_index[1])
-
-        batch.q = torch.cat([batch.x, s], dim=1)
-        batch.x = F.relu(self.edge_to_node(batch.q))
 
         batch.x = self.pool(batch)
         preds = self.head(batch)

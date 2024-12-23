@@ -6,7 +6,7 @@ from torch_geometric.data import Batch
 from deeprxn.encoder.encoder_base import Encoder
 
 
-class SimpleEncoder(Encoder):
+class NodeToEdgeEncoder(Encoder):
 
     def __init__(
         self,

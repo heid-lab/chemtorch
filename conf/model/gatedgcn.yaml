@@ -28,5 +28,5 @@ encoder_cfg:
 num_node_features: ${num_node_features}
 num_edge_features: ${num_edge_features}
 shared_weights: false
-depth: 3
+depth: 10
 hidden_channels: 128
