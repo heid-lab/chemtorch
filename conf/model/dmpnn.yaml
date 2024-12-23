@@ -3,7 +3,7 @@ _recursive_: False
 
 defaults:
   - encoder_cfg:
-    - simple_enc
+    - node_to_edge_enc
   - layer_cfg: /mpnn_cfg/dmpnn_layer
   - att_layer_cfg: null
   - pool_cfg: global_pool
