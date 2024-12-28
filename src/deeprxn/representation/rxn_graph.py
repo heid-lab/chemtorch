@@ -17,6 +17,13 @@ class AtomOriginType(IntEnum):
     REACTANT_PRODUCT = 3
 
 
+class EdgeOriginType(IntEnum):
+    REACTANT = 0
+    PRODUCT = 1
+    DUMMY = 2
+    REACTANT_PRODUCT = 3
+
+
 class RxnGraphBase(ABC):
     """Base class for reaction graphs."""
 
@@ -50,6 +57,7 @@ class RxnGraphBase(ABC):
         self.f_bonds: List = []  # bond features
         self.edge_index: List[Tuple[int, int]] = []
         self.atom_origin_type: List[AtomOriginType] = []
+        self.edge_origin_type: List[EdgeOriginType] = []
         self.n_atoms = None
 
     @staticmethod

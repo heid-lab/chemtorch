@@ -6,7 +6,11 @@ import torch
 import torch_geometric as tg
 from omegaconf import DictConfig
 
-from deeprxn.representation.rxn_graph import AtomOriginType, RxnGraphBase
+from deeprxn.representation.rxn_graph import (
+    AtomOriginType,
+    EdgeOriginType,
+    RxnGraphBase,
+)
 
 
 class ConnectedPairGraph(RxnGraphBase):
@@ -19,6 +23,7 @@ class ConnectedPairGraph(RxnGraphBase):
         atom_featurizer: callable,
         bond_featurizer: callable,
         connection_direction: str = "bidirectional",
+        concat_origin_feature: bool = False,
         in_channel_multiplier: int = 1,
         pre_transform_cfg: Optional[Dict[str, DictConfig]] = None,
     ):
@@ -41,6 +46,7 @@ class ConnectedPairGraph(RxnGraphBase):
             bond_featurizer=bond_featurizer,
         )
         self.connection_direction = connection_direction
+        self.concat_origin_feature = concat_origin_feature
         self.pre_transform_cfg = pre_transform_cfg
         self.component_features = {}
 
@@ -110,6 +116,20 @@ class ConnectedPairGraph(RxnGraphBase):
         data.compound_idx = compound_idx
 
         return data
+
+    @staticmethod
+    def _get_node_type_encoding(origin_type: AtomOriginType) -> List[float]:
+        """Convert atom origin type to one-hot encoding."""
+        encoding = [0.0] * len(AtomOriginType)
+        encoding[origin_type.value] = 1.0
+        return encoding
+
+    @staticmethod
+    def _get_edge_type_encoding(origin_type: EdgeOriginType) -> List[float]:
+        """Convert edge origin type to one-hot encoding."""
+        encoding = [0.0] * len(EdgeOriginType)
+        encoding[origin_type.value] = 1.0
+        return encoding
 
     @staticmethod
     def _get_component_indices(origins) -> Dict[int, List[int]]:
@@ -197,6 +217,9 @@ class ConnectedPairGraph(RxnGraphBase):
                     f_bond = self.bond_featurizer(bond)
                     self.f_bonds.extend([f_bond, f_bond])
                     self.edge_index.extend([(i, j), (j, i)])
+                    self.edge_origin_type.extend(
+                        [EdgeOriginType.REACTANT, EdgeOriginType.REACTANT]
+                    )
 
     def _build_product_graph(self):
         """Build graph for product molecules."""
@@ -228,6 +251,9 @@ class ConnectedPairGraph(RxnGraphBase):
                     self.edge_index.extend(
                         [(i + offset, j + offset), (j + offset, i + offset)]
                     )
+                    self.edge_origin_type.extend(
+                        [EdgeOriginType.PRODUCT, EdgeOriginType.PRODUCT]
+                    )
 
     def _connect_graphs(self):
         """Add edges connecting corresponding atoms in reactants and products."""
@@ -243,12 +269,20 @@ class ConnectedPairGraph(RxnGraphBase):
             if self.connection_direction == "bidirectional":
                 self.f_bonds.extend([f_bond, f_bond])
                 self.edge_index.extend([(i, i + offset), (i + offset, i)])
+                self.edge_origin_type.extend(
+                    [
+                        EdgeOriginType.REACTANT_PRODUCT,
+                        EdgeOriginType.REACTANT_PRODUCT,
+                    ]
+                )
             elif self.connection_direction == "reactants_to_products":
                 self.f_bonds.append(f_bond)
                 self.edge_index.append((i, i + offset))
+                self.edge_origin_type.append(EdgeOriginType.REACTANT_PRODUCT)
             elif self.connection_direction == "products_to_reactants":
                 self.f_bonds.append(f_bond)
                 self.edge_index.append((i + offset, i))
+                self.edge_origin_type.append(EdgeOriginType.REACTANT_PRODUCT)
 
     def _build_graph(self):
         """Build connected pair representation.
@@ -276,6 +310,28 @@ class ConnectedPairGraph(RxnGraphBase):
         data.atom_compound_idx = torch.tensor(
             self.atom_compound_idx, dtype=torch.long
         )
+        data.edge_origin_type = torch.tensor(
+            self.edge_origin_type, dtype=torch.long
+        )
+        node_encodings = torch.tensor(
+            [self._get_node_type_encoding(t) for t in self.atom_origin_type],
+            dtype=torch.float,
+        )
+
+        edge_encodings = torch.tensor(
+            [self._get_edge_type_encoding(t) for t in self.edge_origin_type],
+            dtype=torch.float,
+        )
+
+        if self.concat_origin_feature == True:
+            # Concatenate with existing features
+            data.x = torch.cat([data.x, node_encodings], dim=1)
+            data.edge_attr = torch.cat([data.edge_attr, edge_encodings], dim=1)
+        else:
+            # Store separately
+            data.node_origin_encoding = node_encodings
+            data.edge_origin_encoding = edge_encodings
+
         # Handle pre-transform attributes using the index mapping
         for attr_name in set(
             attr
