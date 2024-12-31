@@ -76,8 +76,9 @@ def train(train_loader, val_loader, test_loader, cfg):
     std = np.std(train_loader.dataset.labels)
     stdzer = Standardizer(mean, std)
 
-    if hasattr(
-        cfg.data.transform_cfg, "batched_degree_statistics"
+    transform_cfg = getattr(cfg.data, "transform_cfg", None)
+    if transform_cfg and hasattr(
+        transform_cfg, "batched_degree_statistics"
     ):  # TODO: generalize
         model = hydra.utils.instantiate(
             cfg.model, dataset_precomputed=train_loader.dataset.statistics
