@@ -5,3 +5,4 @@ lapPE:
   attr_name: [EigVals, EigVecs]
   laplacian_norm_type: null
   is_undirected: false # TODO: can probably determine this automatically
+  type: graph

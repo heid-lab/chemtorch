@@ -41,6 +41,20 @@ class ChemDataset(Dataset):
         else:
             self.process_key = self._process_key
 
+        self.graph_transforms = []
+        self.dataset_transforms = []
+        if self.transform_cfg is not None:
+            for _, config in self.transform_cfg.items():
+                transform = hydra.utils.instantiate(config)
+                if (
+                    config.type == "graph"
+                ):  # TODO: look into making all transforms being performed on dataset
+                    self.graph_transforms.append(transform)
+                elif config.type == "dataset":
+                    self.dataset_transforms.append(transform)
+                else:
+                    assert False, f"Unknown transform type: {config.type}"
+
     def _process_key(self, key):
         # TODO: add docstring
         smiles = self.smiles[key]
@@ -57,8 +71,7 @@ class ChemDataset(Dataset):
         )  # TODO: look into making representations inherit from PyG Data
 
         if self.transform_cfg is not None:
-            for _, config in self.transform_cfg.items():
-                transform = hydra.utils.instantiate(config)
+            for transform in self.graph_transforms:
                 molgraph_tg_data_obj = transform(molgraph_tg_data_obj)
 
         return molgraph_tg_data_obj
@@ -124,6 +137,22 @@ def construct_loader(
         sampler=None,
         generator=torch.Generator().manual_seed(0),
     )
+
+    dataset_statistics = {}
+    if dataset.dataset_transforms is not None:
+        for batch in loader:
+            for transform in dataset.dataset_transforms:
+                batch = transform(batch)
+
+        for transform in dataset.dataset_transforms:  # TODO: make this nicer
+            if transform.needs_second_dataloader:
+                stats = transform.finalize(loader)
+            else:
+                stats = transform.finalize()
+            dataset_statistics.update(stats)
+
+    dataset.statistics = dataset_statistics
+
     return loader
 
 

@@ -17,10 +17,18 @@ class GPSLayer(MPNNLayer):
         batch_norm,
         dropout,
         log_attn_weights=False,
+        dataset_precomputed=None,
     ):
         super().__init__(in_channels, out_channels)
 
-        self.local_gnn = hydra.utils.instantiate(mpnn_cfg)
+        if dataset_precomputed:
+            self.local_gnn = hydra.utils.instantiate(
+                mpnn_cfg,
+                dataset_precomputed=dataset_precomputed,
+                _convert_="partial",
+            )
+        else:
+            self.local_gnn = hydra.utils.instantiate(mpnn_cfg)
         self.self_attn = hydra.utils.instantiate(att_layer_cfg)
         self.layer_norm = layer_norm
         self.batch_norm = batch_norm

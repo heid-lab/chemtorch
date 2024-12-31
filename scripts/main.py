@@ -47,6 +47,13 @@ def main(cfg: DictConfig):
         merge=True,
     )
 
+    OmegaConf.update(
+        cfg,
+        "model_path",
+        f"{cfg.model_path}_{cfg.project_name}_{cfg.data.dataset_cfg.data_folder}_{cfg.seed}",
+        merge=True,
+    )
+
     # https://omegaconf.readthedocs.io/en/2.3_branch/usage.html#utility-functions
     # check out
     resolved_cfg = OmegaConf.to_container(cfg, resolve=True)

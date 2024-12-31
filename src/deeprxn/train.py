@@ -4,11 +4,11 @@ import time
 import hydra
 import numpy as np
 import torch
+import wandb
 from omegaconf import OmegaConf
 from sklearn.metrics import mean_absolute_error, root_mean_squared_error
 from torch import nn
 
-import wandb
 from deeprxn.data import Standardizer
 from deeprxn.predict import predict
 from deeprxn.utils import (
@@ -76,7 +76,14 @@ def train(train_loader, val_loader, test_loader, cfg):
     std = np.std(train_loader.dataset.labels)
     stdzer = Standardizer(mean, std)
 
-    model = hydra.utils.instantiate(cfg.model)
+    if hasattr(
+        cfg.data.transform_cfg, "batched_degree_statistics"
+    ):  # TODO: generalize
+        model = hydra.utils.instantiate(
+            cfg.model, dataset_precomputed=train_loader.dataset.statistics
+        )
+    else:
+        model = hydra.utils.instantiate(cfg.model)
     model = model.to(device)
 
     optimizer_partial = hydra.utils.instantiate(cfg.optimizer)

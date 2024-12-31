@@ -21,6 +21,7 @@ class GPS(Model):
         layer_cfg: DictConfig,
         pool_cfg: DictConfig,
         head_cfg: DictConfig,
+        dataset_precomputed=None,
     ):
         """Initialize Custom model."""
         super().__init__()
@@ -32,12 +33,23 @@ class GPS(Model):
 
         self.layers = nn.ModuleList()
         if shared_weights:
-            layer = hydra.utils.instantiate(layer_cfg)
+            if dataset_precomputed:
+                layer = hydra.utils.instantiate(
+                    layer_cfg, dataset_precomputed=dataset_precomputed
+                )
+            else:
+                layer = hydra.utils.instantiate(layer_cfg)
             for _ in range(self.depth):
                 self.layers.append(layer)
         else:
             for _ in range(self.depth):
-                self.layers.append(hydra.utils.instantiate(layer_cfg))
+                if dataset_precomputed:
+                    layer = hydra.utils.instantiate(
+                        layer_cfg, dataset_precomputed=dataset_precomputed
+                    )
+                else:
+                    layer = hydra.utils.instantiate(layer_cfg)
+                self.layers.append(layer)
 
         self.pool = hydra.utils.instantiate(pool_cfg)
         self.head = hydra.utils.instantiate(head_cfg)

@@ -23,6 +23,7 @@ class LapPE(TransformBase):
         attr_name,
         is_undirected=False,
         laplacian_norm_type=None,
+        type: str = "graph",
     ) -> None:
         self.eigvec_norm = eigvec_norm
         self.max_freqs = max_freqs

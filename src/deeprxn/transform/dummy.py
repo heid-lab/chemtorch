@@ -14,6 +14,7 @@ class DummyNodeTransform(TransformBase):
         connection_type: Optional[str] = "to_dummy",
         dummy_dummy_connection: Optional[str] = None,
         feature_init: str = "zeros",
+        type: str = "graph",
     ):
         self.mode = mode
         self.connection_type = connection_type

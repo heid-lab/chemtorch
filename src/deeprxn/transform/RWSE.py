@@ -14,6 +14,7 @@ class RWSE(TransformBase):
     def __init__(
         self,
         times: int = 20,
+        type: str = "graph",
     ) -> None:
         self.times = times
 

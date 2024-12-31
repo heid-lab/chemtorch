@@ -25,6 +25,7 @@ class RandomWalkPETransform(TransformBase):
         self,
         walk_length: int,
         attr_name=None,
+        type: str = "graph",
     ) -> None:
         self.walk_length = walk_length
         self.attr_name = attr_name

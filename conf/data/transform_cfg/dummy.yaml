@@ -4,3 +4,4 @@ dummy:
   connection_type: to_dummy
   dummy_dummy_connection: null
   feature_init: zeros
+  type: graph
