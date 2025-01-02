@@ -1,6 +1,7 @@
-_target_: torch.optim.lr_scheduler.CosineAnnealingWarmRestarts
-_partial_: true
-T_0: 30  # First cycle length
-T_mult: 2  # Each cycle is twice as long as the previous
-eta_min: 1e-6
-last_epoch: -1
+scheduler:
+  _target_: torch.optim.lr_scheduler.CosineAnnealingWarmRestarts
+  _partial_: true
+  T_0: 30  # First cycle length
+  T_mult: 2  # Each cycle is twice as long as the previous
+  eta_min: 1e-6
+  last_epoch: -1

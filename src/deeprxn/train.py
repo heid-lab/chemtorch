@@ -23,7 +23,6 @@ def train_epoch(
     model,
     train_loader,
     optimizer,
-    scheduler,
     loss,
     stdzer,
     device,
@@ -48,8 +47,6 @@ def train_epoch(
             )
         optimizer.step()
         loss_all += loss(stdzer(out, rev=True), data.y)
-
-    scheduler.step()
 
     epoch_time = time.time() - start_time
     return math.sqrt(loss_all / len(train_loader.dataset)), epoch_time
@@ -87,9 +84,11 @@ def train(train_loader, val_loader, test_loader, cfg):
         model = hydra.utils.instantiate(cfg.model)
     model = model.to(device)
 
+    requires_metric = getattr(cfg.scheduler, "requires_metric", False)
+
     optimizer_partial = hydra.utils.instantiate(cfg.optimizer)
     optimizer = optimizer_partial(params=model.parameters())
-    scheduler_partial = hydra.utils.instantiate(cfg.scheduler)
+    scheduler_partial = hydra.utils.instantiate(cfg.scheduler.scheduler)
     scheduler = scheduler_partial(optimizer)
 
     loss = nn.MSELoss(reduction="sum")
@@ -98,10 +97,6 @@ def train(train_loader, val_loader, test_loader, cfg):
     if cfg.wandb:
         wandb.watch(model, log="all")
 
-    # TODO: add support for continuing training
-    # model, optimizer, start_epoch, best_val_loss = load_model(
-    #     model, optimizer, cfg.model_path
-    # )
     start_epoch = 0
     best_val_loss = float("inf")
 
@@ -111,7 +106,6 @@ def train(train_loader, val_loader, test_loader, cfg):
             model=model,
             train_loader=train_loader,
             optimizer=optimizer,
-            scheduler=scheduler,
             loss=loss,
             stdzer=stdzer,
             device=device,
@@ -122,6 +116,16 @@ def train(train_loader, val_loader, test_loader, cfg):
         val_loss = root_mean_squared_error(
             val_preds, val_loader.dataset.labels
         )
+
+        try:
+            if requires_metric:
+                scheduler.step(val_loss)
+            else:
+                scheduler.step()
+        except TypeError as e:
+            raise TypeError(
+                f"Scheduler step failed. Check if requires_metric is properly configured: {e}"
+            )
 
         early_stop_counter, should_stop = check_early_stopping(
             val_loss,

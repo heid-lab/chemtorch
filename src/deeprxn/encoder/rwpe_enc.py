@@ -13,19 +13,20 @@ class RWEncoder(Encoder):
         self,
         in_channels: int,
         out_channels: int,
+        transform_type: str = "normal",
         as_variable: bool = False,
     ):
         super().__init__()
         self.as_variable = as_variable
 
-        # dim_in = in_channels
-        dim_pe = in_channels  # * 2  # in_channels_pe * 2
-        self.raw_norm = nn.BatchNorm1d(dim_pe)
+        in_channels = (
+            in_channels // 2 if transform_type == "difference" else in_channels
+        )
 
-        # self.linear_x = nn.Linear(dim_in, out_channels - out_channels_pe)
-        # self.linear_edge_attr = nn.Linear(in_channels_edge, out_channels)
+        self.raw_norm = nn.BatchNorm1d(in_channels)
+        self.transform_type = transform_type
 
-        self.pe_encoder = nn.Linear(dim_pe, out_channels)  # out_channels_pe
+        self.pe_encoder = nn.Linear(in_channels, out_channels)
 
     def forward(self, batch: Batch) -> Batch:
 
@@ -35,6 +36,15 @@ class RWEncoder(Encoder):
             )
 
         pos_enc = getattr(batch, "randomwalkpe")
+
+        if self.transform_type == "reactant_difference":
+            mid = pos_enc.shape[-1] // 2
+            reactant, product = pos_enc[..., :mid], pos_enc[..., mid:]
+            pos_enc = torch.cat([reactant, product - reactant], dim=-1)
+        if self.transform_type == "difference":
+            mid = pos_enc.shape[-1] // 2
+            reactant, product = pos_enc[..., :mid], pos_enc[..., mid:]
+            pos_enc = product - reactant
 
         pos_enc = self.raw_norm(pos_enc)
         pos_enc = self.pe_encoder(pos_enc)
