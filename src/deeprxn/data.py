@@ -139,7 +139,8 @@ def construct_loader(
     )
 
     dataset_statistics = {}
-    if dataset.dataset_transforms is not None:
+    if dataset.dataset_transforms:
+        original_state = loader.generator.get_state()
         for batch in loader:
             for transform in dataset.dataset_transforms:
                 batch = transform(batch)
@@ -150,6 +151,8 @@ def construct_loader(
             else:
                 stats = transform.finalize()
             dataset_statistics.update(stats)
+
+        loader.generator.set_state(original_state)
 
     dataset.statistics = dataset_statistics
 
