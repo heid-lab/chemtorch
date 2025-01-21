@@ -22,7 +22,7 @@ pretrained_path: null
 
 epochs: 30
 patience: 10
-min_delta: 0.001
+min_delta: 0.01
 clip_grad_norm: true
 clip_grad_norm_value: 1
 

@@ -1,4 +1,5 @@
 from functools import lru_cache
+from typing import Literal, Optional
 
 import hydra
 import torch
@@ -90,18 +91,26 @@ class ChemDataset(Dataset):
 
 
 def construct_loader(
-    batch_size,
-    num_workers,
-    shuffle,
-    split,
-    cache_graphs,
-    max_cache_size,
-    preprocess_all,
-    dataset_cfg,
-    featurizer_cfg,
-    representation_cfg,
-    transform_cfg=None,
-):
+    batch_size: int,
+    num_workers: int,
+    shuffle: bool,
+    split: Literal["train", "val", "test"],
+    cache_graphs: bool,
+    max_cache_size: int,
+    preprocess_all: bool,
+    dataset_cfg: dict,
+    featurizer_cfg: dict,
+    representation_cfg: dict,
+    transform_cfg: Optional[dict] = None,
+) -> DataLoader:
+    """Construct a PyTorch Geometric DataLoader with specified configuration."""
+
+    split_params = {
+        "train_ratio": dataset_cfg.get("train_ratio", 0.8),
+        "val_ratio": dataset_cfg.get("val_ratio", 0.1),
+        "test_ratio": dataset_cfg.get("test_ratio", 0.1),
+        "use_pickle": dataset_cfg.get("use_pickle", False),
+    }
 
     smiles, labels = load_csv_dataset(
         input_column=dataset_cfg.input_column,
@@ -109,6 +118,7 @@ def construct_loader(
         data_folder=dataset_cfg.data_folder,
         reduced_dataset=dataset_cfg.reduced_dataset,
         split=split,
+        **split_params,
     )
 
     atom_featurizer = make_featurizer(featurizer_cfg.atom_featurizer)

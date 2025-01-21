@@ -1,0 +1,9 @@
+_target_: deeprxn.data.load_csv_dataset
+input_column: "rxn_smiles"
+target_column: "ea"
+data_folder: "barriers_rdb7low"
+reduced_dataset: 1
+train_ratio: 0.9
+val_ratio: 0.05
+test_ratio: 0.05
+use_pickle: true
