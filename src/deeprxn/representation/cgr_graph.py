@@ -19,6 +19,7 @@ class CGRGraph(RxnGraphBase):
         atom_featurizer: callable,
         bond_featurizer: callable,
         in_channel_multiplier: int = 2,
+        concat_transform_features: bool = False,
         pre_transform_cfg: Optional[DictConfig] = None,
     ):
         """Initialize CGR graph.
@@ -37,6 +38,7 @@ class CGRGraph(RxnGraphBase):
 
         self.n_atoms = self.mol_reac.GetNumAtoms()
         self.pre_transform_cfg = pre_transform_cfg
+        self.concat_transform_features = concat_transform_features
         self.component_features = {}
         self.merged_transform_features = {}
 
@@ -334,7 +336,12 @@ class CGRGraph(RxnGraphBase):
         data.atom_origin_type = torch.tensor(
             self.atom_origin_type, dtype=torch.long
         )
-        for attr_name, features in self.merged_transform_features.items():
-            setattr(data, attr_name, features)
+
+        if self.concat_transform_features:
+            for features in self.merged_transform_features.values():
+                data.x = torch.cat([data.x, features], dim=1)
+        else:
+            for attr_name, features in self.merged_transform_features.items():
+                setattr(data, attr_name, features)
 
         return data
