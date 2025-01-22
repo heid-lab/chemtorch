@@ -20,19 +20,26 @@ class NodeOriginsEncoder(Encoder):
 
     def forward(self, batch: Batch) -> Batch:
 
-        if not hasattr(batch, "node_origin_encoding"):
+        if not hasattr(batch, "atom_origin_type"):
             raise ValueError(
-                "Batch object does not have node_origin_encoding attribute"
+                "Batch object does not have atom_origin_type attribute"
             )
 
-        node_origin_encoding = getattr(batch, "node_origin_encoding")
+        atom_origin_type = getattr(batch, "atom_origin_type")
 
-        node_origin_encoding = self.raw_norm(node_origin_encoding)
-        node_origin_encoding = self.linear(node_origin_encoding)
+        one_hot = torch.zeros(
+            (atom_origin_type.size(0), 2),
+            device=atom_origin_type.device,
+            dtype=torch.float,
+        )
+        one_hot.scatter_(1, atom_origin_type.unsqueeze(1), 1)
+
+        encoded = self.raw_norm(one_hot)
+        encoded = self.linear(encoded)
 
         if self.as_variable:
-            batch.node_origin_encoding = node_origin_encoding
+            batch.atom_origin_type_encoded = encoded
         else:
-            batch.x = torch.cat([batch.x, node_origin_encoding], dim=1)
+            batch.x = torch.cat([batch.x, encoded], dim=1)
 
         return batch
