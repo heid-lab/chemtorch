@@ -1,0 +1,13 @@
+_target_: deeprxn.layer.deeprxn_layer.DeepRXNLayer
+_recursive_: False
+
+defaults:
+  - mpnn_cfg: gatedgcn_layer
+  - att_layer_cfg: deeprxn_att_layer
+
+layer_norm: False
+batch_norm: True
+dropout: 0.0
+
+in_channels: ${model.hidden_channels}
+out_channels: ${model.hidden_channels}

@@ -1,0 +1,51 @@
+_target_: deeprxn.model.gps_double.GPSDouble
+_recursive_: False
+
+defaults:
+  - encoder_cfg:
+    - linear_node_enc
+    - linear_edge_enc
+    #- equivstable_enc
+    - rwpe_enc
+    #- lappe_enc
+  - layer_cfg: gps_layer_double
+  - pool_cfg: global_pool
+  - head_cfg: ffn_head
+  - _self_
+
+ffn_mode: concat
+when_concat: after_pool
+different_att: false
+att_depth: 1
+
+att_layer_cfg:
+  _target_: deeprxn.layer.att_layer.gps_double_att.GPSDoubleAttLayer
+  in_channels: ${model.hidden_channels}
+  out_channels: ${model.hidden_channels}
+  hidden_size: ${model.hidden_channels}
+  num_heads: 4
+  dropout: 0.02
+  layer_norm: false
+  batch_norm: true
+  with_nn: true
+
+
+encoder_cfg:
+  linear_node_enc:
+    out_channels: 104
+  linear_edge_enc:
+    out_channels: ${model.hidden_channels}
+  rwpe_enc:
+    out_channels: 24
+    as_variable: false
+
+head_cfg:
+  in_channels: 256
+  hidden_channels: 256
+
+
+num_node_features: ${num_node_features}
+num_edge_features: ${num_edge_features}
+shared_weights: false
+depth: 10
+hidden_channels: 128
