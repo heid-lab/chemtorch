@@ -1,5 +1,5 @@
 node_origins_enc: 
   _target_: deeprxn.encoder.node_origins_enc.NodeOriginsEncoder
-  in_channels: 4
+  in_channels: 2
   out_channels: ${model.layer_cfg.mpnn_cfg.in_channels}
 

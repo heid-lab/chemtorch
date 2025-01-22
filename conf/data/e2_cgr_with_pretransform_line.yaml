@@ -4,8 +4,8 @@ _recursive_: False
 defaults:
   - dataset_cfg: e2
   - featurizer_cfg: featurizer
-  - representation_cfg: undirected_line_cpg
-  - transform_cfg: randomwalk
+  - representation_cfg: cgr_with_pretransform_line
+  - transform_cfg: null
   - _self_
 
 batch_size: 50

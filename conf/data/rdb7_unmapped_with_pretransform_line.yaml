@@ -4,8 +4,9 @@ _recursive_: False
 defaults:
   - dataset_cfg: rdb7
   - featurizer_cfg: featurizer
-  - representation_cfg: line_cpg
-  - transform_cfg: randomwalk
+  - representation_cfg: undirected_line_cpg
+  - transform_cfg:
+    - randomwalk
   - _self_
 
 batch_size: 50

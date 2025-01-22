@@ -6,4 +6,4 @@ concat_origin_feature: false
 defaults:
   - pre_transform_cfg:
     - randomwalk
-    - lapPE
+    #- lapPE

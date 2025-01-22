@@ -2,11 +2,15 @@ _target_: deeprxn.data.construct_loader
 _recursive_: False
 
 defaults:
-  - dataset_cfg: e2
+  - dataset_cfg: rdb7
   - featurizer_cfg: featurizer
-  - representation_cfg: undirected_line_cpg
-  - transform_cfg: randomwalk
+  - representation_cfg: cgr_with_pretransform_line
+  - transform_cfg: null
   - _self_
+
+
+representation_cfg:
+  save_transform_features: true
 
 batch_size: 50
 num_workers: 0
