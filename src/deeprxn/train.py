@@ -18,6 +18,8 @@ from deeprxn.utils import (
     save_standardizer,
 )
 
+# torch.autograd.set_detect_anomaly(True)
+
 
 def train_epoch(
     model,
