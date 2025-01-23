@@ -26,6 +26,7 @@ class UndirectedLineConnectedPairGraph(RxnGraphBase):
         concat_origin_feature: bool = False,
         in_channel_multiplier: int = 1,
         pre_transform_cfg: Optional[Dict[str, DictConfig]] = None,
+        enthalpy=None,
     ):
         """
 
@@ -36,6 +37,7 @@ class UndirectedLineConnectedPairGraph(RxnGraphBase):
             label=label,
             atom_featurizer=atom_featurizer,
             bond_featurizer=bond_featurizer,
+            enthalpy=enthalpy,
         )
         self.connection_direction = connection_direction
         self.pre_transform_cfg = pre_transform_cfg
@@ -439,5 +441,8 @@ class UndirectedLineConnectedPairGraph(RxnGraphBase):
         data.atom_compound_idx = torch.tensor(
             self.atom_compound_idx, dtype=torch.long
         )
+
+        if self.enthalpy is not None:
+            data.enthalpy = torch.tensor([self.enthalpy], dtype=torch.float)
 
         return data

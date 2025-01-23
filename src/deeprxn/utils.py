@@ -2,7 +2,7 @@ import os
 import pickle
 import random
 from pathlib import Path
-from typing import Literal, Tuple, Union
+from typing import Literal, Optional, Tuple, Union
 
 import numpy as np
 import pandas as pd
@@ -35,7 +35,9 @@ def load_csv_dataset(
     val_ratio: float = 0.1,
     test_ratio: float = 0.1,
     use_pickle: bool = False,
-) -> Tuple[np.ndarray, np.ndarray]:
+    use_enthalpy: bool = False,
+    enthalpy_column: Optional[str] = None,
+):
     """ """
     base_path = Path(data_root) / data_folder
     split_files = {s: base_path / f"{s}.csv" for s in ["train", "val", "test"]}
@@ -96,7 +98,15 @@ def load_csv_dataset(
         data_df = data_df.sample(int(reduced_dataset))
 
     missing_cols = []
-    for col in [input_column, target_column]:
+    required_cols = [input_column, target_column]
+    if use_enthalpy:
+        if not enthalpy_column:
+            raise ValueError(
+                "enthalpy_column must be specified when use_enthalpy is True"
+            )
+        required_cols.append(enthalpy_column)
+
+    for col in required_cols:
         if col not in data_df.columns:
             missing_cols.append(col)
 
@@ -105,6 +115,10 @@ def load_csv_dataset(
 
     inputs = data_df[input_column].values
     targets = data_df[target_column].values.astype(float)
+
+    if use_enthalpy:
+        enthalpy = data_df[enthalpy_column].values.astype(float)
+        return inputs, targets, enthalpy
 
     return inputs, targets
 

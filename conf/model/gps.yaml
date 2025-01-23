@@ -10,7 +10,7 @@ defaults:
     #- lappe_enc
   - layer_cfg: gps_layer
   - pool_cfg: global_pool
-  - head_cfg: ffn_head
+  - head_cfg: ffn_enthalpy_head
   - _self_
 
 encoder_cfg:

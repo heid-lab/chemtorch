@@ -21,6 +21,7 @@ class CGRGraph(RxnGraphBase):
         in_channel_multiplier: int = 2,
         concat_transform_features: bool = False,
         pre_transform_cfg: Optional[DictConfig] = None,
+        enthalpy=None,
     ):
         """Initialize CGR graph.
 
@@ -34,6 +35,7 @@ class CGRGraph(RxnGraphBase):
             label=label,
             atom_featurizer=atom_featurizer,
             bond_featurizer=bond_featurizer,
+            enthalpy=enthalpy,
         )
 
         self.n_atoms = self.mol_reac.GetNumAtoms()
@@ -336,6 +338,9 @@ class CGRGraph(RxnGraphBase):
         data.atom_origin_type = torch.tensor(
             self.atom_origin_type, dtype=torch.long
         )
+
+        if self.enthalpy is not None:
+            data.enthalpy = torch.tensor([self.enthalpy], dtype=torch.float)
 
         if self.concat_transform_features:
             for features in self.merged_transform_features.values():

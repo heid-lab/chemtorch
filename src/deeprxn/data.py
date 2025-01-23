@@ -24,6 +24,7 @@ class ChemDataset(Dataset):
         max_cache_size,
         representation_cfg,
         transform_cfg,
+        enthalpy=None,
     ):
         super(ChemDataset, self).__init__()
         self.smiles = smiles
@@ -33,6 +34,7 @@ class ChemDataset(Dataset):
         self.cache_graphs = cache_graphs
         self.representation_cfg = representation_cfg
         self.transform_cfg = transform_cfg
+        self.enthalpy = enthalpy
         self.graph_cache = {}
 
         if cache_graphs:
@@ -60,10 +62,14 @@ class ChemDataset(Dataset):
         # TODO: add docstring
         smiles = self.smiles[key]
         label = self.labels[key]
+        enthalpy_value = (
+            self.enthalpy[key] if self.enthalpy is not None else None
+        )
         molgraph = hydra.utils.instantiate(
             self.representation_cfg,
             smiles=smiles,
             label=label,
+            enthalpy=enthalpy_value,
             atom_featurizer=self.atom_featurizer,
             bond_featurizer=self.bond_featurizer,
         )
@@ -110,9 +116,11 @@ def construct_loader(
         "val_ratio": dataset_cfg.get("val_ratio", 0.1),
         "test_ratio": dataset_cfg.get("test_ratio", 0.1),
         "use_pickle": dataset_cfg.get("use_pickle", False),
+        "use_enthalpy": dataset_cfg.get("use_enthalpy", False),
+        "enthalpy_column": dataset_cfg.get("enthalpy_column", None),
     }
 
-    smiles, labels = load_csv_dataset(
+    data = load_csv_dataset(
         input_column=dataset_cfg.input_column,
         target_column=dataset_cfg.target_column,
         data_folder=dataset_cfg.data_folder,
@@ -120,6 +128,10 @@ def construct_loader(
         split=split,
         **split_params,
     )
+
+    smiles = data[0]
+    labels = data[1]
+    enthalpy = data[2] if len(data) > 2 else None
 
     atom_featurizer = make_featurizer(featurizer_cfg.atom_featurizer)
     bond_featurizer = make_featurizer(featurizer_cfg.bond_featurizer)
@@ -133,6 +145,7 @@ def construct_loader(
         max_cache_size=max_cache_size,
         representation_cfg=representation_cfg,
         transform_cfg=transform_cfg,
+        enthalpy=enthalpy,
     )
 
     if preprocess_all:

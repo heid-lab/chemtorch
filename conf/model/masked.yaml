@@ -11,7 +11,7 @@ defaults:
     #- lappe_enc
   - layer_cfg: masked_att_layer
   - pool_cfg: pma
-  - head_cfg: ffn_head
+  - head_cfg: ffn_enthalpy_head
   - _self_
 
 layers: [local, local, local, local, local, local, inter, inter] #["intra","inter","compound","local_inter","local_compound_inter","local_compound",
@@ -23,8 +23,8 @@ pool_cfg:
   num_decoder_blocks: 1
 
 head_cfg:
-  in_channels: 256
-  hidden_channels: 256
+  in_channels: 257
+  hidden_channels: 257
 
 encoder_cfg:
   linear_node_enc:
