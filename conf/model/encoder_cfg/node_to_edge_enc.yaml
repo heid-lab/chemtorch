@@ -1,4 +1,4 @@
 node_to_edge_enc:
   _target_: deeprxn.encoder.node_to_edge_enc.NodeToEdgeEncoder
   in_channels: ${eval:'${num_node_features} + ${num_edge_features}'}
-  out_channels: ${model.mpnn_cfg.in_channels}
+  out_channels: ${model.layer_cfg.in_channels}

@@ -5,19 +5,18 @@ defaults:
   - encoder_cfg:
     - node_to_edge_enc
   - layer_cfg: /mpnn_cfg/dmpnn_layer
-  - att_layer_cfg: null
   - pool_cfg: global_pool
   - head_cfg: ffn_head
   - _self_
 
 num_node_features: ${num_node_features}
 num_edge_features: ${num_edge_features}
-shared_weights: true
-mpnn_depth: 3
+shared_weights: false
+depth: 3
 hidden_channels: 300
 
 # easily override defaults
-mpnn_cfg:
+layer_cfg:
   separate_nn: false
   dropout: 0.02
 
