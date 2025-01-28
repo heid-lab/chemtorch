@@ -1,0 +1,45 @@
+_target_: deeprxn.model.masked.Masked
+_recursive_: False
+
+defaults:
+  - encoder_cfg:
+    #- node_origins_enc
+    #- linear_edge_enc
+    #- equivstable_enc
+    - rwpe_enc
+    - node_to_edge_enc
+    #- lappe_enc
+  - layer_cfg: masked_att_layer
+  - /model/layer_cfg/mpnn_cfg/dmpnn_layer@dmpnn_layer_cfg
+  - pool_cfg: pma
+  - head_cfg: ffn_head
+  - _self_
+
+dmpnn_depth: 4
+
+#["intra","inter","compound","local_inter","local_compound_inter","local_compound",
+layers: [local_compound, local_compound, inter, inter]
+separate: true
+separate_pool: false
+residual: false
+
+encoder_cfg:
+  node_to_edge_enc:
+    in_channels: 79
+    out_channels: 128
+  rwpe_enc:
+    in_channels: 20
+    out_channels: 24
+
+pool_cfg:
+  num_decoder_blocks: 1
+
+head_cfg:
+  in_channels: 256
+  hidden_channels: 256 
+
+
+num_node_features: ${num_node_features}
+num_edge_features: ${num_edge_features}
+shared_weights: false
+hidden_channels: 128

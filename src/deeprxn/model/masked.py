@@ -1,6 +1,7 @@
 import hydra
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 import torch_geometric as tg
 from omegaconf import DictConfig
 from torch_geometric.data import Batch
@@ -20,7 +21,7 @@ class Masked(Model):
         hidden_channels: int,
         separate: bool,
         separate_pool: bool,
-        depth: int,
+        dmpnn_depth: int,
         layers,
         shared_weights: bool,
         residual: bool,
@@ -28,18 +29,36 @@ class Masked(Model):
         layer_cfg: DictConfig,
         pool_cfg: DictConfig,
         head_cfg: DictConfig,
+        dmpnn_layer_cfg=None,
         dataset_precomputed=None,
     ):
         """Initialize Custom model."""
         super().__init__()
-        self.depth = depth
+        self.dmpnn_depth = dmpnn_depth
         self.separate = separate
         self.separate_pool = separate_pool
         self.residual = residual
+        rwpe_enc_out = 0
 
         self.encoders = nn.ModuleList()
         for _, config in encoder_cfg.items():
             self.encoders.append(hydra.utils.instantiate(config))
+            if (
+                config._target_ == "deeprxn.encoder.rwpe_enc.RWEncoder"
+            ):  # TODO generalize
+                rwpe_enc_out = config.out_channels
+
+        if dmpnn_layer_cfg is not None:
+            self.dmpnn_layers = nn.ModuleList()
+            for _ in range(self.dmpnn_depth):
+                self.dmpnn_layers.append(
+                    hydra.utils.instantiate(dmpnn_layer_cfg)
+                )
+            self.aggregation = SumAggregation()
+            self.edge_to_node = nn.Linear(
+                num_node_features + hidden_channels + rwpe_enc_out,
+                hidden_channels,
+            )
 
         self.layers = nn.ModuleList()
         for layer in layers:
@@ -62,6 +81,13 @@ class Masked(Model):
 
         for encoder in self.encoders:
             batch = encoder(batch)
+
+        if hasattr(self, "dmpnn_layers"):
+            for dmpnn_layer in self.dmpnn_layers:
+                batch = dmpnn_layer(batch)
+            s = self.aggregation(batch.h, batch.edge_index[1])
+            batch.q = torch.cat([batch.x, s], dim=1)
+            batch.x = F.relu(self.edge_to_node(batch.q))
 
         for layer in self.layers:
             if self.residual:
