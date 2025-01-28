@@ -1,13 +1,9 @@
 from abc import ABC, abstractmethod
 from enum import IntEnum
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Tuple
 
-import hydra
 import torch_geometric as tg
-from omegaconf import DictConfig
 from rdkit import Chem
-
-from deeprxn.transform.transform_base import TransformBase
 
 
 class AtomOriginType(IntEnum):

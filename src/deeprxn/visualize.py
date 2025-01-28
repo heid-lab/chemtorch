@@ -9,7 +9,7 @@ from sklearn.manifold import MDS
 from sklearn.preprocessing import MinMaxScaler
 from torch_geometric.utils import subgraph
 
-from deeprxn.representation.rxn_graph import AtomOriginType
+from deeprxn.representation.rxn_graph_base import AtomOriginType
 
 
 class SimilarityColorMapper:

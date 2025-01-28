@@ -4,7 +4,7 @@ import torch_geometric.nn as pyg_nn
 from torch_geometric.utils import to_dense_batch
 
 from deeprxn.layer.mpnn_layer.mpnn_layer_base import MPNNLayer
-from deeprxn.representation.rxn_graph import AtomOriginType
+from deeprxn.representation.rxn_graph_base import AtomOriginType
 
 
 class DeepRXNLayer20(MPNNLayer):

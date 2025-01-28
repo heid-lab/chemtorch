@@ -3,7 +3,7 @@ from typing import Dict, List, Optional
 import torch
 from torch_geometric.data import Data
 
-from deeprxn.representation.rxn_graph import AtomOriginType
+from deeprxn.representation.rxn_graph_base import AtomOriginType
 from deeprxn.transform.transform_base import TransformBase
 
 

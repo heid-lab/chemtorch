@@ -10,7 +10,7 @@ from torch_geometric.nn import (
     global_mean_pool,
 )
 
-from deeprxn.representation.rxn_graph import AtomOriginType
+from deeprxn.representation.rxn_graph_base import AtomOriginType
 
 
 class Pool(nn.Module):

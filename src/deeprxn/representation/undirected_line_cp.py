@@ -1,12 +1,11 @@
-from abc import ABC, abstractmethod
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional
 
 import hydra
 import torch
 import torch_geometric as tg
 from omegaconf import DictConfig
 
-from deeprxn.representation.rxn_graph import (
+from deeprxn.representation.rxn_graph_base import (
     AtomOriginType,
     EdgeOriginType,
     RxnGraphBase,

@@ -6,10 +6,10 @@ import torch_geometric as tg
 from omegaconf import DictConfig
 from rdkit import Chem
 
-from deeprxn.representation.rxn_graph import AtomOriginType, RxnGraphBase
+from deeprxn.representation.rxn_graph_base import AtomOriginType, RxnGraphBase
 
 
-class LineCGRGraph(RxnGraphBase):
+class LineCGR(RxnGraphBase):
     """Line graph representation of Condensed Graph of Reaction (CGR)."""
 
     def __init__(

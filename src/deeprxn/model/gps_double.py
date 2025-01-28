@@ -7,7 +7,10 @@ from torch_geometric.data import Batch
 from torch_geometric.nn.aggr import SumAggregation
 
 from deeprxn.model.model_base import Model
-from deeprxn.representation.rxn_graph import AtomOriginType, EdgeOriginType
+from deeprxn.representation.rxn_graph_base import (
+    AtomOriginType,
+    EdgeOriginType,
+)
 
 
 class GPSDouble(Model):

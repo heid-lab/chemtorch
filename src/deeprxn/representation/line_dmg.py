@@ -1,20 +1,19 @@
-from abc import ABC, abstractmethod
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional
 
 import hydra
 import torch
 import torch_geometric as tg
 from omegaconf import DictConfig
 
-from deeprxn.representation.rxn_graph import (
+from deeprxn.representation.rxn_graph_base import (
     AtomOriginType,
     EdgeOriginType,
     RxnGraphBase,
 )
 
 
-class LineConnectedPairGraph(RxnGraphBase):
-    """Line graph representation with separate reactant and product graphs."""
+class LineDMG(RxnGraphBase):
+    """Line graph representation of Dual Molecular Graph (DMG)."""
 
     def __init__(
         self,

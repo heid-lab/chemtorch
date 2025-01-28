@@ -1,4 +1,3 @@
-from abc import ABC, abstractmethod
 from typing import Dict, List, Optional, Tuple
 
 import hydra
@@ -6,15 +5,15 @@ import torch
 import torch_geometric as tg
 from omegaconf import DictConfig
 
-from deeprxn.representation.rxn_graph import (
+from deeprxn.representation.rxn_graph_base import (
     AtomOriginType,
     EdgeOriginType,
     RxnGraphBase,
 )
 
 
-class ConnectedPairGraph(RxnGraphBase):
-    """Connected pair representation with separate reactant and product graphs."""
+class DualMolecularGraph(RxnGraphBase):
+    """Dual Molecular Graph (DMG) representation."""
 
     def __init__(
         self,
@@ -28,7 +27,7 @@ class ConnectedPairGraph(RxnGraphBase):
         pre_transform_cfg: Optional[Dict[str, DictConfig]] = None,
         enthalpy=None,
     ):
-        """Initialize connected pair graph.
+        """Initialize graph.
 
         Args:
             reaction_smiles: SMARTS reaction string with atom mapping
