@@ -99,4 +99,5 @@ class DMPNNLayer(MPNNLayer):
                 edge_attr.view(edge_attr.size(0) // 2, 2, -1), dims=[1]
             ).view(edge_attr.size(0), -1)
         except:
+            print("Error in _compute_reverse_messages")
             return torch.zeros_like(edge_attr)
