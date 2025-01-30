@@ -564,3 +564,72 @@ def visualize_graphs(data):
     ax.set_title("Reaction Representation", fontsize=20)
     plt.tight_layout()
     plt.show()
+
+
+import matplotlib.pyplot as plt
+import networkx as nx
+import torch
+
+from deeprxn.representation.rxn_graph_base import (
+    AtomOriginType,
+    EdgeOriginType,
+)
+
+
+def visualize_cgr(data):
+    """Visualize a Condensed Graph of Reaction (CGR).
+
+    Args:
+        data: PyG Data object containing the CGR representation
+    """
+    # Create NetworkX graph
+    G = nx.DiGraph()
+    G.add_nodes_from(range(len(data.x)))
+    edge_list = data.edge_index.t().tolist()
+    G.add_edges_from(edge_list)
+
+    # Calculate layout
+    pos = nx.spring_layout(G, seed=42)
+
+    # Setup visualization
+    fig, ax = plt.subplots(figsize=(12, 8))
+
+    # Color nodes based on atom origin type
+    atom_colors = []
+    for atom_type in data.atom_origin_type:
+        if atom_type == AtomOriginType.REACTANT:
+            atom_colors.append("#1f77b4")  # blue for reactants
+        elif atom_type == AtomOriginType.PRODUCT:
+            atom_colors.append("#2ca02c")  # green for products
+        else:
+            atom_colors.append("#7f7f7f")  # gray for dummy nodes
+
+    # Draw nodes
+    nx.draw_networkx_nodes(G, pos, node_color=atom_colors, node_size=500)
+
+    # Create labels
+    labels = {}
+    for i in range(len(data.x)):
+        labels[i] = f"{i}"
+    nx.draw_networkx_labels(G, pos, labels, font_size=10)
+
+    # Draw edges with different styles
+    nx.draw_networkx_edges(
+        G,
+        pos,
+        edgelist=edge_list,
+        edge_color="black",
+        arrows=True,
+        arrowsize=20,
+    )
+
+    # Add legend
+    ax.plot([], [], "o", color="#1f77b4", label="Reactant Atoms")
+    ax.plot([], [], "o", color="#2ca02c", label="Product Atoms")
+    ax.plot([], [], "k-", label="Molecular Bonds")
+    ax.plot([], [], "r--", label="Reaction Changes")
+
+    plt.legend(loc="center left", bbox_to_anchor=(1, 0.5))
+    plt.title("Condensed Graph of Reaction (CGR)", fontsize=16)
+    plt.tight_layout()
+    plt.show()

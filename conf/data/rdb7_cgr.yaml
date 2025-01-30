@@ -2,7 +2,7 @@ _target_: deeprxn.data.construct_loader
 _recursive_: False
 
 defaults:
-  - dataset_cfg: rdb7
+  - dataset_cfg: rdb7new
   - featurizer_cfg: featurizer
   - representation_cfg: cgr
   - transform_cfg: null

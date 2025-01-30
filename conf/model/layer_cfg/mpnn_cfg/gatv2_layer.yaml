@@ -1,4 +1,4 @@
-_target_: deeprxn.layer.mpnn_layer.gat_layer.GATLayer
+_target_: deeprxn.layer.mpnn_layer.gatv2_layer.GATv2Layer
 in_channels: ${model.hidden_channels}
 out_channels: ${eval:'${model.hidden_channels} // ${.heads}'}
 heads: 1

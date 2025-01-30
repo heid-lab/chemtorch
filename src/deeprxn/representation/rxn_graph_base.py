@@ -46,7 +46,7 @@ class RxnGraphBase(ABC):
 
         self.smiles_reac, _, self.smiles_prod = self.smiles.split(">")
 
-        # initialize molecules with atom mapping
+        # initialize molecules with atom mapping TODO: refactor
         self.mol_reac, self.reac_origins = self._make_mol(self.smiles_reac)
         self.mol_prod, self.prod_origins = self._make_mol(self.smiles_prod)
         self.ri2pi = self._map_reac_to_prod()
@@ -70,7 +70,7 @@ class RxnGraphBase(ABC):
 
         for i, part in enumerate(parts):
             mol = Chem.MolFromSmiles(part, params)
-            if mol is None:
+            if mol is None:  # TODO: look into this
                 continue
             atom_origins.extend([i] * mol.GetNumAtoms())
             current_atom_idx += mol.GetNumAtoms()

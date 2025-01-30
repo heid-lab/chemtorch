@@ -1,4 +1,4 @@
-_target_: deeprxn.representation.line_cpg.LineConnectedPairGraph
+_target_: deeprxn.representation.line_dmg.LineDMG
 _recursive_: False
 in_channel_multiplier: 1
 connection_direction: null

@@ -12,7 +12,7 @@ from deeprxn.representation.rxn_graph_base import (
 )
 
 
-class DualMolecularGraph(RxnGraphBase):
+class DMG(RxnGraphBase):
     """Dual Molecular Graph (DMG) representation."""
 
     def __init__(

@@ -6,7 +6,11 @@ import torch_geometric as tg
 from omegaconf import DictConfig
 from rdkit import Chem
 
-from deeprxn.representation.rxn_graph_base import AtomOriginType, RxnGraphBase
+from deeprxn.representation.rxn_graph_base import (
+    AtomOriginType,
+    EdgeOriginType,
+    RxnGraphBase,
+)
 
 
 class CGR(RxnGraphBase):
@@ -18,7 +22,7 @@ class CGR(RxnGraphBase):
         label: float,
         atom_featurizer: callable,
         bond_featurizer: callable,
-        in_channel_multiplier: int = 2,
+        in_channel_multiplier: int = 2,  # TODO: look into this
         concat_transform_features: bool = False,
         pre_transform_cfg: Optional[DictConfig] = None,
         enthalpy=None,
@@ -324,6 +328,12 @@ class CGR(RxnGraphBase):
                 # add bond in both directions (i->j and j->i)
                 self.f_bonds.extend([f_bond, f_bond])
                 self.edge_index.extend([(i, j), (j, i)])
+                self.edge_origin_type.extend(
+                    [
+                        EdgeOriginType.REACTANT_PRODUCT,
+                        EdgeOriginType.REACTANT_PRODUCT,
+                    ]
+                )
 
     def to_pyg_data(self) -> tg.data.Data:
         """Convert the molecular graph to a PyTorch Geometric Data object."""

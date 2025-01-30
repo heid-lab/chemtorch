@@ -1,0 +1,9 @@
+_target_: deeprxn.representation.line_cgr.LineCGR
+_recursive_: False
+in_channel_multiplier: 2
+#concat_transform_features: False
+use_directed: False
+# defaults:
+#     - pre_transform_cfg:
+#         - randomwalk
+#      #- lapPE

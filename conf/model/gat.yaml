@@ -1,25 +1,29 @@
-_target_: deeprxn.model.dmpnn_rwpe.DMPNNRWPE
+_target_: deeprxn.model.gat.GAT
 _recursive_: False
 
 defaults:
   - encoder_cfg:
-    - rwpe_enc_dmpnn
-  - layer_cfg: /mpnn_cfg/dmpnn_layer
-  - att_layer_cfg: null
+    - linear_node_enc
+  - layer_cfg: /mpnn_cfg/gatv2_layer
   - pool_cfg: global_pool
   - head_cfg: ffn_head
   - _self_
 
 num_node_features: ${num_node_features}
 num_edge_features: ${num_edge_features}
-shared_weights: true
-mpnn_depth: 3
-hidden_channels: 300
+shared_weights: false
+depth: 4
+hidden_channels: 900
+layer_norm: false
+batch_norm: true
 
-# easily override defaults
-mpnn_cfg:
-  separate_nn: false
+encoder_cfg:
+  linear_node_enc:
+    out_channels: 900
+
+layer_cfg:
   dropout: 0.02
+  heads: 1
 
 pool_cfg:
   aggr: add

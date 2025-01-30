@@ -1,17 +1,13 @@
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Set, Tuple, Union
 
-import hydra
 import torch
 import torch_geometric as tg
-from omegaconf import DictConfig
 from rdkit import Chem
 
 from deeprxn.representation.rxn_graph_base import AtomOriginType, RxnGraphBase
 
 
 class LineCGR(RxnGraphBase):
-    """Line graph representation of Condensed Graph of Reaction (CGR)."""
-
     def __init__(
         self,
         smiles: str,
@@ -19,14 +15,9 @@ class LineCGR(RxnGraphBase):
         atom_featurizer: callable,
         bond_featurizer: callable,
         in_channel_multiplier: int = 2,
-        pre_transform_cfg: Optional[DictConfig] = None,
-        save_transform_features: bool = False,
+        use_directed: bool = True,
         enthalpy=None,
     ):
-        """
-
-        Args:
-        """
         super().__init__(
             smiles=smiles,
             label=label,
@@ -36,304 +27,163 @@ class LineCGR(RxnGraphBase):
         )
 
         self.n_atoms = self.mol_reac.GetNumAtoms()
-        self.pre_transform_cfg = pre_transform_cfg
-        self.save_transform_features = save_transform_features
-        self.component_features = {}
-        self.merged_transform_features = {}
+        self.use_directed = use_directed
 
+        # Compute feature lengths for zero vectors
+        dummy_atom = None  # Dummy atom for feature length
+        dummy_bond = None  # Dummy bond for feature length
+        atom_feat_len = len(atom_featurizer(dummy_atom))
+        bond_feat_len = len(bond_featurizer(dummy_bond))
+        self.reactant_feat_length = (
+            atom_feat_len + bond_feat_len + atom_feat_len
+        )
+        self.product_feat_length = (
+            self.reactant_feat_length
+        )  # Same featurizers
+
+        # Existing graph construction
         self.line_nodes = []
         self.line_edges = []
         self.line_node_features = []
         self.line_edge_features = []
         self.atom_origin_type = []
-
-        self.zero_bond_features = [0] * len(self.bond_featurizer(None))
-
-        if self.pre_transform_cfg is not None:
-            self._apply_component_transforms()
-            self._merge_transform_features()
-
+        self.zero_reactant = [0.0] * self.reactant_feat_length
+        self.zero_product = [0.0] * self.product_feat_length
         self._build_graph()
 
-    @staticmethod
-    def _get_component_indices(origins) -> Dict[int, List[int]]:
-        """Get atom indices for each component in a molecule."""
-        component_indices = {}
-        for atom_idx, origin in enumerate(origins):
-            if origin not in component_indices:
-                component_indices[origin] = []
-            component_indices[origin].append(atom_idx)
-        return component_indices
+    def _build_graph(self):
+        """Build line graph according to new approach."""
+        cgr_edges = self._get_cgr_edges()
+        reactant_line_features = self._get_reactant_line_features()
+        product_line_features = self._get_product_line_features()
 
-    def _create_component_graph(
-        self, mol, atom_indices, compound_idx
-    ) -> tg.data.Data:
-        """Create a graph for a single component."""
-        data = tg.data.Data()
-
-        x = []
-        for idx in atom_indices:
-            x.append(self.atom_featurizer(mol.GetAtomWithIdx(idx)))
-        data.x = torch.tensor(x, dtype=torch.float)
-
-        edges = []
-        edge_features = []
-
-        if len(atom_indices) > 1:
-            global_to_local = {
-                global_idx: local_idx
-                for local_idx, global_idx in enumerate(atom_indices)
-            }
-
-            for i, global_i in enumerate(atom_indices):
-                for j, global_j in enumerate(atom_indices[i + 1 :], i + 1):
-                    bond = mol.GetBondBetweenAtoms(global_i, global_j)
-                    if bond:
-                        local_i = global_to_local[global_i]
-                        local_j = global_to_local[global_j]
-                        edges.extend([[local_i, local_j], [local_j, local_i]])
-                        f_bond = self.bond_featurizer(bond)
-                        edge_features.extend([f_bond, f_bond])
-
-        data.edge_index = (
-            torch.tensor(edges, dtype=torch.long).t().contiguous()
-            if edges
-            else torch.zeros((2, 0), dtype=torch.long)
-        )
-        data.edge_attr = (
-            torch.tensor(edge_features, dtype=torch.float)
-            if edge_features
-            else torch.zeros(
-                (0, len(self.bond_featurizer(None))), dtype=torch.float
+        # Create line nodes (CGR edges) and their features
+        self.line_nodes = cgr_edges
+        self.line_node_features = []
+        for edge in cgr_edges:
+            # Get reactant and product features, default to zeros if not present
+            reactant_feat = reactant_line_features.get(
+                edge, self.zero_reactant
             )
+            product_feat = product_line_features.get(edge, self.zero_product)
+            combined_feat = reactant_feat + product_feat
+            self.line_node_features.append(combined_feat)
+
+        # Create line edges (adjacency in line graph)
+        self.line_edges, self.line_edge_features = self._create_line_edges(
+            cgr_edges
         )
-        data.num_nodes = len(atom_indices)
-        data.global_indices = torch.tensor(atom_indices, dtype=torch.long)
-        data.compound_idx = compound_idx
 
-        return data
-
-    def _apply_component_transforms(self):
-        """Apply transforms to each component."""
-        for _, config in self.pre_transform_cfg.items():
-            transform = hydra.utils.instantiate(config)
-            attr_names = transform.attr_name
-            if isinstance(attr_names, str):
-                attr_names = [attr_names]
-
-            for compound_idx, indices in self._get_component_indices(
-                self.reac_origins
-            ).items():
-                data = self._create_component_graph(
-                    self.mol_reac, indices, compound_idx
-                )
-                data = transform(data)
-                for attr_name in attr_names:
-                    if hasattr(data, attr_name):
-                        if compound_idx not in self.component_features:
-                            self.component_features[compound_idx] = {}
-                        self.component_features[compound_idx][attr_name] = {
-                            "features": getattr(data, attr_name),
-                            "indices": indices,
-                            "is_reactant": True,
-                        }
-
-            n_reactant_compounds = max(self.reac_origins) + 1
-            for compound_idx, indices in self._get_component_indices(
-                self.prod_origins
-            ).items():
-                data = self._create_component_graph(
-                    self.mol_prod, indices, compound_idx
-                )
-                data = transform(data)
-                for attr_name in attr_names:
-                    if hasattr(data, attr_name):
-                        if (
-                            compound_idx + n_reactant_compounds
-                            not in self.component_features
-                        ):
-                            self.component_features[
-                                compound_idx + n_reactant_compounds
-                            ] = {}
-                        self.component_features[
-                            compound_idx + n_reactant_compounds
-                        ][attr_name] = {
-                            "features": getattr(data, attr_name),
-                            "indices": indices,
-                            "is_reactant": False,
-                        }
-
-    def _merge_transform_features(self):
-        """Merge transform features according to atom mapping while preserving CGR structure."""
-        for compound_data in self.component_features.values():
-            for attr_name in compound_data.keys():
-                if attr_name not in self.merged_transform_features:
-                    feat_shape = compound_data[attr_name]["features"].shape
-                    if len(feat_shape) == 2:  # e.g., EigVecs (N, max_freqs)
-                        merged_shape = (self.n_atoms, feat_shape[1] * 2)
-                    elif (
-                        len(feat_shape) == 3
-                    ):  # e.g., EigVals (N, max_freqs, 1)
-                        merged_shape = (
-                            self.n_atoms,
-                            feat_shape[1] * 2,
-                            feat_shape[2],
-                        )
-                    else:  # Standard case
-                        merged_shape = (self.n_atoms, feat_shape[1] * 2)
-
-                    self.merged_transform_features[attr_name] = torch.zeros(
-                        merged_shape, dtype=torch.float
-                    )
-
-        for attr_name in self.merged_transform_features.keys():
-            for i in range(self.n_atoms):
-                reac_feat = None
-                prod_feat = None
-
-                for compound_data in self.component_features.values():
-                    if (
-                        attr_name in compound_data
-                        and compound_data[attr_name]["is_reactant"]
-                    ):
-                        if i in compound_data[attr_name]["indices"]:
-                            local_idx = compound_data[attr_name][
-                                "indices"
-                            ].index(i)
-                            reac_feat = compound_data[attr_name]["features"][
-                                local_idx
-                            ]
-
-                prod_idx = self.ri2pi[i]
-                for compound_data in self.component_features.values():
-                    if (
-                        attr_name in compound_data
-                        and not compound_data[attr_name]["is_reactant"]
-                    ):
-                        if prod_idx in compound_data[attr_name]["indices"]:
-                            local_idx = compound_data[attr_name][
-                                "indices"
-                            ].index(prod_idx)
-                            prod_feat = compound_data[attr_name]["features"][
-                                local_idx
-                            ]
-
-                if reac_feat is not None and prod_feat is not None:
-                    # feat_diff = prod_feat - reac_feat
-                    if len(reac_feat.shape) == 1:
-                        self.merged_transform_features[attr_name][i] = (
-                            torch.cat([reac_feat, prod_feat])
-                        )
-                    else:
-                        self.merged_transform_features[attr_name][i] = (
-                            torch.cat([reac_feat, prod_feat], dim=0)
-                        )
-
-    def _get_atom_features(self, atom_idx: int) -> List[float]:
-        f_atom_reac = self.atom_featurizer(
-            self.mol_reac.GetAtomWithIdx(atom_idx)
-        )
-        f_atom_prod = self.atom_featurizer(
-            self.mol_prod.GetAtomWithIdx(self.ri2pi[atom_idx])
-        )
-        f_atom_diff = [y - x for x, y in zip(f_atom_reac, f_atom_prod)]
-        return f_atom_reac + f_atom_diff
-
-    def _get_bond_features(
-        self, bond_reac: Optional[Chem.Bond], bond_prod: Optional[Chem.Bond]
-    ) -> List[float]:
-        f_bond_reac = (
-            self.bond_featurizer(bond_reac)
-            if bond_reac
-            else self.zero_bond_features
-        )
-        f_bond_prod = (
-            self.bond_featurizer(bond_prod)
-            if bond_prod
-            else self.zero_bond_features
-        )
-        f_bond_diff = [y - x for x, y in zip(f_bond_reac, f_bond_prod)]
-        return f_bond_reac + f_bond_diff
-
-    def _build_line_graph(self):
-        edge_map = {}
-        current_idx = 0
-        atoms_with_bonds = set()
-
+    def _get_cgr_edges(self) -> List[Union[Tuple[int, int], frozenset]]:
+        """Collect all unique edges present in CGR (reactant OR product bonds)."""
+        edges: Set[Union[Tuple[int, int], frozenset]] = set()
         for i in range(self.n_atoms):
-            for j in range(i + 1, self.n_atoms):
+            for j in range(self.n_atoms):
+                if i == j:
+                    continue
+
                 bond_reac = self.mol_reac.GetBondBetweenAtoms(i, j)
                 bond_prod = self.mol_prod.GetBondBetweenAtoms(
                     self.ri2pi[i], self.ri2pi[j]
                 )
 
-                if bond_reac is not None or bond_prod is not None:
-                    for src, tgt in [(i, j), (j, i)]:
-                        source_atom_features = self._get_atom_features(src)
-                        bond_features = self._get_bond_features(
-                            bond_reac, bond_prod
-                        )
+                if bond_reac or bond_prod:
+                    if self.use_directed:
+                        edges.add((i, j))
+                    else:
+                        edges.add(frozenset({i, j}))
+        return list(edges)
 
-                        if not self.save_transform_features:
-                            transform_features = []
-                            for (
-                                attr_name,
-                                features,
-                            ) in self.merged_transform_features.items():
-                                transform_features.extend(
-                                    features[src].tolist()
-                                )
-                            node_features = (
-                                source_atom_features
-                                + bond_features
-                                + transform_features
-                            )
-                        else:
-                            node_features = (
-                                source_atom_features + bond_features
-                            )
+    def _get_reactant_line_features(
+        self,
+    ) -> Dict[Union[Tuple[int, int], frozenset], List[float]]:
+        """Generate features for reactant line graph nodes."""
+        features = {}
+        for bond in self.mol_reac.GetBonds():
+            i = bond.GetBeginAtomIdx()
+            j = bond.GetEndAtomIdx()
+            if self.use_directed:
+                key = (i, j)
+                features[key] = self._get_reactant_line_node_feature(i, j)
+            else:
+                key = frozenset({i, j})
+                features[key] = self._get_reactant_line_node_feature(i, j)
+        return features
 
-                        self.line_nodes.append((src, tgt))
-                        self.line_node_features.append(node_features)
-                        self.atom_origin_type.append(
-                            AtomOriginType.REACTANT_PRODUCT
-                        )
-                        edge_map[(src, tgt)] = current_idx
-                        current_idx += 1
-                        atoms_with_bonds.add(src)
+    def _get_reactant_line_node_feature(self, i: int, j: int) -> List[float]:
+        """Feature for reactant line graph node (i,j)."""
+        atom_i_feat = self.atom_featurizer(self.mol_reac.GetAtomWithIdx(i))
+        bond = self.mol_reac.GetBondBetweenAtoms(i, j)
+        bond_feat = (
+            self.bond_featurizer(bond)
+            if bond
+            else [0.0] * len(self.bond_featurizer(None))
+        )
+        atom_j_feat = self.atom_featurizer(self.mol_reac.GetAtomWithIdx(j))
+        return atom_i_feat + bond_feat + atom_j_feat
 
-        for i in range(self.n_atoms):
-            if i not in atoms_with_bonds:
-                atom_features = self._get_atom_features(i)
+    def _get_product_line_features(
+        self,
+    ) -> Dict[Union[Tuple[int, int], frozenset], List[float]]:
+        """Generate features for product line graph nodes (mapped to reactant indices)."""
+        features = {}
+        pi2ri = {v: k for k, v in self.ri2pi.items()}
+        for bond in self.mol_prod.GetBonds():
+            pi = bond.GetBeginAtomIdx()
+            pj = bond.GetEndAtomIdx()
+            i = pi2ri[pi]
+            j = pi2ri[pj]
+            if self.use_directed:
+                key = (i, j)
+            else:
+                key = frozenset({i, j})
+            features[key] = self._get_product_line_node_feature(pi, pj)
+        return features
 
-                transform_features = []
-                for (
-                    attr_name,
-                    features,
-                ) in self.merged_transform_features.items():
-                    transform_features.extend(features[i].tolist())
+    def _get_product_line_node_feature(self, pi: int, pj: int) -> List[float]:
+        """Feature for product line graph node (pi,pj) mapped to (i,j)."""
+        atom_pi_feat = self.atom_featurizer(self.mol_prod.GetAtomWithIdx(pi))
+        bond = self.mol_prod.GetBondBetweenAtoms(pi, pj)
+        bond_feat = (
+            self.bond_featurizer(bond)
+            if bond
+            else [0.0] * len(self.bond_featurizer(None))
+        )
+        atom_pj_feat = self.atom_featurizer(self.mol_prod.GetAtomWithIdx(pj))
+        return atom_pi_feat + bond_feat + atom_pj_feat
 
-                node_features = (
-                    atom_features
-                    + self.zero_bond_features
-                    + transform_features
-                )
+    def _create_line_edges(
+        self, cgr_edges: List[Union[Tuple[int, int], frozenset]]
+    ) -> Tuple[List[Tuple[int, int]], List[List[float]]]:
+        """Create line graph edges between adjacent CGR edges."""
+        edges = []
+        features = []
+        for idx_a, edge_a in enumerate(cgr_edges):
+            for idx_b, edge_b in enumerate(cgr_edges):
+                if idx_a == idx_b:
+                    continue
 
-                self.line_nodes.append((i, i))
-                self.line_node_features.append(node_features)
-                self.atom_origin_type.append(AtomOriginType.REACTANT_PRODUCT)
-                edge_map[(i, i)] = current_idx
-                current_idx += 1
+                if self._edges_adjacent(edge_a, edge_b):
+                    edges.append((idx_a, idx_b))
+                    if not self.use_directed:
+                        edges.append((idx_b, idx_a))
+                    features.append([1.0])
+        return edges, features
 
-        for (src1, tgt1), idx1 in edge_map.items():
-            for (src2, tgt2), idx2 in edge_map.items():
-                if tgt1 == src2 and idx1 != idx2:
-                    self.line_edges.append((idx1, idx2))
-                    self.line_edge_features.append([1.0])
-
-    def _build_graph(self):
-        """Build line CGR representation."""
-        self._build_line_graph()
+    def _edges_adjacent(
+        self,
+        edge_a: Union[Tuple[int, int], frozenset],
+        edge_b: Union[Tuple[int, int], frozenset],
+    ) -> bool:
+        """Check if two CGR edges share a common atom."""
+        if self.use_directed:
+            # Directed: edge_a's dest matches edge_b's src
+            return edge_a[1] == edge_b[0]
+        else:
+            # Undirected: any shared atom between edges
+            a_set = set(edge_a)
+            b_set = set(edge_b)
+            return not a_set.isdisjoint(b_set)
 
     def to_pyg_data(self) -> tg.data.Data:
         """Convert to PyTorch Geometric Data object."""
@@ -354,9 +204,5 @@ class LineCGR(RxnGraphBase):
 
         if self.enthalpy is not None:
             data.enthalpy = torch.tensor([self.enthalpy], dtype=torch.float)
-
-        if self.save_transform_features:
-            for attr_name, features in self.merged_transform_features.items():
-                setattr(data, attr_name, features)
 
         return data
