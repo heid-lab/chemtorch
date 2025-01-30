@@ -75,6 +75,7 @@ def train(train_loader, val_loader, test_loader, cfg):
     std = np.std(train_loader.dataset.labels)
     stdzer = Standardizer(mean, std)
 
+    #### for models needing precomputed statistics on the dataset, e.g. PNA
     transform_cfg = getattr(cfg.data, "transform_cfg", None)
     if transform_cfg and hasattr(
         transform_cfg, "batched_degree_statistics"

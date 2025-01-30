@@ -13,6 +13,7 @@ class PNALayer(MPNNLayer):
         dataset_precomputed: dict,
         aggregators=["mean", "min", "max", "std"],
         scalers=["identity", "amplification", "attenuation"],
+        use_edge_attr=True,
     ):
         super().__init__(in_channels, out_channels)
 
@@ -24,13 +25,14 @@ class PNALayer(MPNNLayer):
         self.out_channels = out_channels
         self.aggregators = list(aggregators)
         self.scalers = list(scalers)
+        self.use_edge_attr = use_edge_attr
         self.pna_layer = pyg_nn.PNAConv(
-            in_channels,
-            out_channels,
-            aggregators=aggregators,
-            scalers=scalers,
+            self.in_channels,
+            self.out_channels,
+            aggregators=self.aggregators,
+            scalers=self.scalers,
             deg=self.deg,
-            edge_dim=out_channels,
+            edge_dim=self.in_channels,
             towers=1,  # TODO: look into this
             pre_layers=1,
             post_layers=1,
@@ -38,5 +40,10 @@ class PNALayer(MPNNLayer):
         )
 
     def forward(self, batch):
-        batch.x = self.pna_layer(batch.x, batch.edge_index, batch.edge_attr)
+        if self.use_edge_attr:
+            batch.x = self.pna_layer(
+                batch.x, batch.edge_index, batch.edge_attr
+            )
+        else:
+            batch.x = self.pna_layer(batch.x, batch.edge_index)
         return batch
