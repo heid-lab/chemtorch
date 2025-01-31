@@ -9,7 +9,7 @@ from torch_geometric.nn.aggr import SumAggregation
 from deeprxn.model.model_base import Model
 
 
-class CustomModel(Model):
+class MPNN(Model):
     """Custom model using configurable components."""
 
     def __init__(
@@ -34,38 +34,23 @@ class CustomModel(Model):
 
         self.layers = nn.ModuleList()
         if shared_weights:
-            mpnn_layer = hydra.utils.instantiate(layer_cfg)
-            for _ in range(self.mpnn_depth):
-                self.mpnn_layers.append(mpnn_layer)
+            layer = hydra.utils.instantiate(layer_cfg)
+            for _ in range(self.depth):
+                self.layers.append(layer)
         else:
-            for _ in range(self.mpnn_depth):
-                self.mpnn_layers.append(hydra.utils.instantiate(layer_cfg))
-
-        self.aggregation = SumAggregation()
-
-        self.edge_to_node = nn.Linear(
-            num_node_features + hidden_channels, hidden_channels
-        )
+            for _ in range(self.depth):
+                self.layers.append(hydra.utils.instantiate(layer_cfg))
 
         self.pool = hydra.utils.instantiate(pool_cfg)
         self.head = hydra.utils.instantiate(head_cfg)
 
     def forward(self, batch: Batch) -> Batch:
-        """Forward pass through Custom model."""
-
         for encoder in self.encoders:
             batch = encoder(batch)
 
-        for mpnn_layer in self.mpnn_layers:
-            batch = mpnn_layer(batch)
-
-        s = self.aggregation(batch.h, batch.edge_index[1])
-
-        batch.q = torch.cat([batch.x, s], dim=1)  # TODO: move to layer
-        batch.x = F.relu(self.edge_to_node(batch.q))
-
-        for att_layer in self.att_layers:
-            batch = att_layer(batch)
+        batch.h_0 = batch.x
+        for layer in self.layers:
+            batch = layer(batch)
 
         batch.x = self.pool(batch)
         preds = self.head(batch)

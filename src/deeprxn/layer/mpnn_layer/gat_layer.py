@@ -2,10 +2,10 @@ import torch
 from torch_geometric.data import Batch
 from torch_geometric.nn import GATConv
 
-from deeprxn.layer.mpnn_layer.mpnn_layer_base import MPNNLayer
+from deeprxn.layer.mpnn_layer.mpnn_layer_base import MPNNLayerBase
 
 
-class GATLayer(MPNNLayer):
+class GATLayer(MPNNLayerBase):
     """Graph Attention Network Layer wrapper."""
 
     def __init__(

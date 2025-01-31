@@ -3,10 +3,10 @@ import torch.nn as nn
 import torch_geometric.nn as pyg_nn
 from torch_geometric.nn import Linear as Linear_pyg
 
-from deeprxn.layer.mpnn_layer.mpnn_layer_base import MPNNLayer
+from deeprxn.layer.mpnn_layer.mpnn_layer_base import MPNNLayerBase
 
 
-class GINEConvESLapPE(MPNNLayer):
+class GINEConvESLapPE(MPNNLayerBase):
     """GINEConv Layer with EquivStableLapPE implementation.
 
     Modified torch_geometric.nn.conv.GINEConv layer to perform message scaling

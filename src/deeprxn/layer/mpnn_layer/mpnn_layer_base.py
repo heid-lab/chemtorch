@@ -4,7 +4,7 @@ from torch_geometric.data import Batch
 from torch_geometric.nn import MessagePassing
 
 
-class MPNNLayer(MessagePassing):
+class MPNNLayerBase(MessagePassing):
     """Base class for all graph neural network layers.
 
     All layers should inherit from this class and implement the forward method.
