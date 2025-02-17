@@ -152,6 +152,8 @@ def finetune(train_loader, val_loader, test_loader, pretrained_path: str, cfg):
             f"Epoch {epoch}, Train RMSE: {train_loss}, Val RMSE: {val_loss}, Time: {epoch_time:.2f}"
         )
 
+        current_lr = optimizer.param_groups[0]["lr"]
+
         if cfg.wandb:
             wandb.log(
                 {
@@ -159,6 +161,7 @@ def finetune(train_loader, val_loader, test_loader, pretrained_path: str, cfg):
                     "train_rmse": train_loss,
                     "val_rmse": val_loss,
                     "best_val_rmse": best_val_loss,
+                    "learning_rate": current_lr,
                 }
             )
 

@@ -7,6 +7,7 @@ defaults:
     #- linear_edge_enc
     #- equivstable_enc
     - rwpe_enc
+    #- deg_enc
     - node_to_edge_enc
     #- lappe_enc
   - layer_cfg: masked_att_layer
@@ -15,24 +16,32 @@ defaults:
   - head_cfg: ffn_head
   - _self_
 
-dmpnn_depth: 4
+dmpnn_depth: 6
 
 #["intra","inter","compound","local_inter","local_compound_inter","local_compound",
-layers: [local_compound, local_compound, inter, inter]
+layers: [inter, inter]
 separate: true
 separate_pool: false
 residual: false
+
+layer_cfg:
+  num_heads: 4
 
 encoder_cfg:
   node_to_edge_enc:
     in_channels: 79
     out_channels: 128
+  # deg_enc:
+  #   in_channels: 5
+  #   out_channels: 12
   rwpe_enc:
     in_channels: 20
     out_channels: 24
 
 pool_cfg:
   num_decoder_blocks: 1
+  num_seed_points: 30
+  heads: 4
 
 head_cfg:
   in_channels: 256

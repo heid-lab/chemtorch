@@ -39,6 +39,7 @@ class Masked(Model):
         self.separate_pool = separate_pool
         self.residual = residual
         rwpe_enc_out = 0
+        deg_enc_out = 0
 
         self.encoders = nn.ModuleList()
         for _, config in encoder_cfg.items():
@@ -47,6 +48,10 @@ class Masked(Model):
                 config._target_ == "deeprxn.encoder.rwpe_enc.RWEncoder"
             ):  # TODO generalize
                 rwpe_enc_out = config.out_channels
+            if (
+                config._target_ == "deeprxn.encoder.deg_enc.DegreeEncoder"
+            ):  # TODO generalize
+                deg_enc_out = config.out_channels
 
         if dmpnn_layer_cfg is not None:
             self.dmpnn_layers = nn.ModuleList()
@@ -56,7 +61,10 @@ class Masked(Model):
                 )
             self.aggregation = SumAggregation()
             self.edge_to_node = nn.Linear(
-                num_node_features + hidden_channels + rwpe_enc_out,
+                num_node_features
+                + hidden_channels
+                + rwpe_enc_out
+                + deg_enc_out,
                 hidden_channels,
             )
 
