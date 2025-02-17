@@ -3,7 +3,6 @@ import torch
 import wandb
 from omegaconf import DictConfig, OmegaConf
 
-from deeprxn.finetune import finetune
 from deeprxn.predict import predict_model
 from deeprxn.train import train
 from deeprxn.utils import set_seed
