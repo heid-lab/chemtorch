@@ -11,7 +11,7 @@ from torch_geometric.utils import (
     to_torch_csr_tensor,
 )
 
-from deeprxn.transform.transform import TransformBase
+from deeprxn.transform.transform_base import TransformBase
 
 
 class RandomWalkPETransform(TransformBase):
@@ -24,7 +24,8 @@ class RandomWalkPETransform(TransformBase):
     def __init__(
         self,
         walk_length: int,
-        attr_name="random_walk_pe",
+        attr_name=None,
+        type: str = "graph",
     ) -> None:
         self.walk_length = walk_length
         self.attr_name = attr_name
@@ -63,6 +64,14 @@ class RandomWalkPETransform(TransformBase):
             pe_list.append(get_pe(out))
 
         pe = torch.stack(pe_list, dim=-1)
-        data[self.attr_name] = pe
+
+        if self.attr_name is None:
+            if data.x is not None:
+                x = data.x.view(-1, 1) if data.x.dim() == 1 else data.x
+                data.x = torch.cat([x, pe.to(x.device, x.dtype)], dim=-1)
+            else:
+                data.x = pe
+        else:
+            data[self.attr_name] = pe
 
         return data

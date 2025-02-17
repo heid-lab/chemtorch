@@ -1,21 +1,34 @@
+_target_: deeprxn.model.gat.GAT
+_recursive_: False
+
 defaults:
-  - layer: gat
-  - pool: global
-  - head: ffn_head
+  - encoder_cfg:
+    - linear_node_enc
+  - layer_cfg: /mpnn_cfg/gatv2_layer
+  - pool_cfg: global_pool
+  - head_cfg: ffn_head
   - _self_
 
-_target_: deeprxn.model.gat_model.GATModel
-in_channels: 128
-hidden_channels: 256
-out_channels: 1
-num_layers: 3
+num_node_features: ${num_node_features}
+num_edge_features: ${num_edge_features}
+shared_weights: false
+depth: 4
+hidden_channels: 900
+layer_norm: false
+batch_norm: true
 
-layer:
-  _target_: deeprxn.layer.GATLayer
-  heads: 4
-  dropout: 0.1
-  concat: true
+encoder_cfg:
+  linear_node_enc:
+    out_channels: 900
 
-pool:
-  _target_: deeprxn.pool.GlobalPool
-  aggr: mean
+layer_cfg:
+  dropout: 0.02
+  heads: 1
+
+pool_cfg:
+  aggr: add
+
+head_cfg:
+  num_layers: 2
+  dropout: 0.02
+  activation: relu

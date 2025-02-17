@@ -1,10 +1,9 @@
-import operator
-
 import hydra
 import torch
+import wandb
 from omegaconf import DictConfig, OmegaConf
 
-import wandb
+from deeprxn.finetune import finetune
 from deeprxn.predict import predict_model
 from deeprxn.train import train
 from deeprxn.utils import set_seed
@@ -48,6 +47,15 @@ def main(cfg: DictConfig):
         merge=True,
     )
 
+    OmegaConf.update(
+        cfg,
+        "model_path",
+        f"{cfg.model_path}_{cfg.project_name}_{cfg.data.dataset_cfg.data_folder}_{cfg.seed}",
+        merge=True,
+    )
+
+    # https://omegaconf.readthedocs.io/en/2.3_branch/usage.html#utility-functions
+    # check out
     resolved_cfg = OmegaConf.to_container(cfg, resolve=True)
 
     if cfg.wandb:
@@ -60,6 +68,14 @@ def main(cfg: DictConfig):
 
     if cfg.mode == "train":
         train(train_loader, val_loader, test_loader, cfg)
+    elif cfg.mode == "finetune":
+        if not cfg.pretrained_path:
+            raise ValueError(
+                "pretrained_path must be specified for finetuning"
+            )
+        finetune(
+            train_loader, val_loader, test_loader, cfg.pretrained_path, cfg
+        )
     elif cfg.mode == "predict":
         predict_model(test_loader, cfg)
     else:

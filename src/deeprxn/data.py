@@ -1,4 +1,5 @@
 from functools import lru_cache
+from typing import Literal, Optional
 
 import hydra
 import torch
@@ -23,6 +24,7 @@ class ChemDataset(Dataset):
         max_cache_size,
         representation_cfg,
         transform_cfg,
+        enthalpy=None,
     ):
         super(ChemDataset, self).__init__()
         self.smiles = smiles
@@ -32,6 +34,7 @@ class ChemDataset(Dataset):
         self.cache_graphs = cache_graphs
         self.representation_cfg = representation_cfg
         self.transform_cfg = transform_cfg
+        self.enthalpy = enthalpy
         self.graph_cache = {}
 
         if cache_graphs:
@@ -41,14 +44,32 @@ class ChemDataset(Dataset):
         else:
             self.process_key = self._process_key
 
+        self.graph_transforms = []
+        self.dataset_transforms = []
+        if self.transform_cfg is not None:
+            for _, config in self.transform_cfg.items():
+                transform = hydra.utils.instantiate(config)
+                if (
+                    config.type == "graph"
+                ):  # TODO: look into making all transforms being performed on dataset
+                    self.graph_transforms.append(transform)
+                elif config.type == "dataset":
+                    self.dataset_transforms.append(transform)
+                else:
+                    assert False, f"Unknown transform type: {config.type}"
+
     def _process_key(self, key):
         # TODO: add docstring
         smiles = self.smiles[key]
         label = self.labels[key]
+        enthalpy_value = (
+            self.enthalpy[key] if self.enthalpy is not None else None
+        )
         molgraph = hydra.utils.instantiate(
             self.representation_cfg,
             smiles=smiles,
             label=label,
+            enthalpy=enthalpy_value,
             atom_featurizer=self.atom_featurizer,
             bond_featurizer=self.bond_featurizer,
         )
@@ -57,8 +78,7 @@ class ChemDataset(Dataset):
         )  # TODO: look into making representations inherit from PyG Data
 
         if self.transform_cfg is not None:
-            for _, config in self.transform_cfg.items():
-                transform = hydra.utils.instantiate(config)
+            for transform in self.graph_transforms:
                 molgraph_tg_data_obj = transform(molgraph_tg_data_obj)
 
         return molgraph_tg_data_obj
@@ -77,26 +97,41 @@ class ChemDataset(Dataset):
 
 
 def construct_loader(
-    batch_size,
-    num_workers,
-    shuffle,
-    split,
-    cache_graphs,
-    max_cache_size,
-    preprocess_all,
-    dataset_cfg,
-    featurizer_cfg,
-    representation_cfg,
-    transform_cfg=None,
-):
+    batch_size: int,
+    num_workers: int,
+    shuffle: bool,
+    split: Literal["train", "val", "test"],
+    cache_graphs: bool,
+    max_cache_size: int,
+    preprocess_all: bool,
+    dataset_cfg: dict,
+    featurizer_cfg: dict,
+    representation_cfg: dict,
+    transform_cfg: Optional[dict] = None,
+) -> DataLoader:
+    """Construct a PyTorch Geometric DataLoader with specified configuration."""
 
-    smiles, labels = load_csv_dataset(
+    split_params = {
+        "train_ratio": dataset_cfg.get("train_ratio", 0.8),
+        "val_ratio": dataset_cfg.get("val_ratio", 0.1),
+        "test_ratio": dataset_cfg.get("test_ratio", 0.1),
+        "use_pickle": dataset_cfg.get("use_pickle", False),
+        "use_enthalpy": dataset_cfg.get("use_enthalpy", False),
+        "enthalpy_column": dataset_cfg.get("enthalpy_column", None),
+    }
+
+    data = load_csv_dataset(
         input_column=dataset_cfg.input_column,
         target_column=dataset_cfg.target_column,
         data_folder=dataset_cfg.data_folder,
         reduced_dataset=dataset_cfg.reduced_dataset,
         split=split,
+        **split_params,
     )
+
+    smiles = data[0]
+    labels = data[1]
+    enthalpy = data[2] if len(data) > 2 else None
 
     atom_featurizer = make_featurizer(featurizer_cfg.atom_featurizer)
     bond_featurizer = make_featurizer(featurizer_cfg.bond_featurizer)
@@ -110,6 +145,7 @@ def construct_loader(
         max_cache_size=max_cache_size,
         representation_cfg=representation_cfg,
         transform_cfg=transform_cfg,
+        enthalpy=enthalpy,
     )
 
     if preprocess_all:
@@ -124,6 +160,25 @@ def construct_loader(
         sampler=None,
         generator=torch.Generator().manual_seed(0),
     )
+
+    dataset_statistics = {}
+    if dataset.dataset_transforms:
+        original_state = loader.generator.get_state()
+        for batch in loader:
+            for transform in dataset.dataset_transforms:
+                batch = transform(batch)
+
+        for transform in dataset.dataset_transforms:  # TODO: make this nicer
+            if transform.needs_second_dataloader:
+                stats = transform.finalize(loader)
+            else:
+                stats = transform.finalize()
+            dataset_statistics.update(stats)
+
+        loader.generator.set_state(original_state)
+
+    dataset.statistics = dataset_statistics
+
     return loader
 
 

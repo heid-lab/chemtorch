@@ -1,4 +1,5 @@
-_target_: deeprxn.representation.connected_pair_graph.ConnectedPairGraph
+_target_: deeprxn.representation.dmg.DMG
 _recursive_: False
-
 connection_direction: bidirectional # bidirectional, reactants_to_products, products_to_reactants
+in_channel_multiplier: 1
+concat_origin_feature: false

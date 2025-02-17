@@ -4,11 +4,11 @@ import time
 import hydra
 import numpy as np
 import torch
+import wandb
 from omegaconf import OmegaConf
 from sklearn.metrics import mean_absolute_error, root_mean_squared_error
 from torch import nn
 
-import wandb
 from deeprxn.data import Standardizer
 from deeprxn.predict import predict
 from deeprxn.utils import (
@@ -18,9 +18,18 @@ from deeprxn.utils import (
     save_standardizer,
 )
 
+# torch.autograd.set_detect_anomaly(True)
+
 
 def train_epoch(
-    model, train_loader, optimizer, scheduler, loss, stdzer, device
+    model,
+    train_loader,
+    optimizer,
+    loss,
+    stdzer,
+    device,
+    clip_grad_norm,
+    clip_grad_norm_value,
 ):
     start_time = time.time()
     model.train()
@@ -34,10 +43,12 @@ def train_epoch(
         result = loss(out, stdzer(data.y))
         result.backward()
 
+        if clip_grad_norm:
+            torch.nn.utils.clip_grad_norm_(
+                model.parameters(), clip_grad_norm_value
+            )
         optimizer.step()
         loss_all += loss(stdzer(out, rev=True), data.y)
-
-    scheduler.step()
 
     epoch_time = time.time() - start_time
     return math.sqrt(loss_all / len(train_loader.dataset)), epoch_time
@@ -64,12 +75,23 @@ def train(train_loader, val_loader, test_loader, cfg):
     std = np.std(train_loader.dataset.labels)
     stdzer = Standardizer(mean, std)
 
-    model = hydra.utils.instantiate(cfg.model)
+    #### for models needing precomputed statistics on the dataset, e.g. PNA
+    transform_cfg = getattr(cfg.data, "transform_cfg", None)
+    if transform_cfg and hasattr(
+        transform_cfg, "batched_degree_statistics"
+    ):  # TODO: generalize
+        model = hydra.utils.instantiate(
+            cfg.model, dataset_precomputed=train_loader.dataset.statistics
+        )
+    else:
+        model = hydra.utils.instantiate(cfg.model)
     model = model.to(device)
+
+    requires_metric = getattr(cfg.scheduler, "requires_metric", False)
 
     optimizer_partial = hydra.utils.instantiate(cfg.optimizer)
     optimizer = optimizer_partial(params=model.parameters())
-    scheduler_partial = hydra.utils.instantiate(cfg.scheduler)
+    scheduler_partial = hydra.utils.instantiate(cfg.scheduler.scheduler)
     scheduler = scheduler_partial(optimizer)
 
     loss = nn.MSELoss(reduction="sum")
@@ -78,10 +100,6 @@ def train(train_loader, val_loader, test_loader, cfg):
     if cfg.wandb:
         wandb.watch(model, log="all")
 
-    # TODO: add support for continuing training
-    # model, optimizer, start_epoch, best_val_loss = load_model(
-    #     model, optimizer, cfg.model_path
-    # )
     start_epoch = 0
     best_val_loss = float("inf")
 
@@ -91,15 +109,26 @@ def train(train_loader, val_loader, test_loader, cfg):
             model=model,
             train_loader=train_loader,
             optimizer=optimizer,
-            scheduler=scheduler,
             loss=loss,
             stdzer=stdzer,
             device=device,
+            clip_grad_norm=cfg.clip_grad_norm_value,
+            clip_grad_norm_value=cfg.clip_grad_norm_value,
         )
         val_preds = predict(model, val_loader, stdzer, device)
         val_loss = root_mean_squared_error(
             val_preds, val_loader.dataset.labels
         )
+
+        try:
+            if requires_metric:
+                scheduler.step(val_loss)
+            else:
+                scheduler.step()
+        except TypeError as e:
+            raise TypeError(
+                f"Scheduler step failed. Check if requires_metric is properly configured: {e}"
+            )
 
         early_stop_counter, should_stop = check_early_stopping(
             val_loss,
@@ -121,6 +150,8 @@ def train(train_loader, val_loader, test_loader, cfg):
             f"Epoch {epoch}, Train RMSE: {train_loss}, Val RMSE: {val_loss}, Time: {epoch_time:.2f}"
         )
 
+        current_lr = optimizer.param_groups[0]["lr"]
+
         if cfg.wandb:
             wandb.log(
                 {
@@ -128,6 +159,7 @@ def train(train_loader, val_loader, test_loader, cfg):
                     "train_rmse": train_loss,
                     "val_rmse": val_loss,
                     "best_val_rmse": best_val_loss,
+                    "learning_rate": current_lr,
                 }
             )
 

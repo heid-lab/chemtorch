@@ -1,0 +1,9 @@
+_target_: deeprxn.layer.att_layer.masked_att_layer.MaskedAttLayer
+_partial_: true
+embed_dim: ${model.hidden_channels}
+num_heads: 4
+dropout: 0.05
+batch_first: true
+mode: local # none, local, intra, inter
+layer_norm: true
+batch_norm: false

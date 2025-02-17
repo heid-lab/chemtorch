@@ -9,11 +9,22 @@ __pycache__/
 # bash files
 *.sh
 
-# Data folder
 data/*
+conf/*.yaml
+conf/model/*.yaml
+!conf/model/gat.yaml
+
+conf/data/*.yaml
+!conf/data/rdb7_cgr.yaml
+!conf/data/rdb7_dmg.yaml
+!conf/data/rdb7_line_cgr.yaml
+!conf/data/rdb7_line_dmg.yaml
 
 # Saved models
 saved_models/
+
+# yaml files in experiment
+conf/experiment/*.yaml
 
 # data.tar.gz
 data.tar.gz

@@ -1,2 +1,5 @@
-_target_: deeprxn.representation.cgr_graph.CGRGraph
+_target_: deeprxn.representation.cgr.CGR
+in_channel_multiplier: 2
 _recursive_: False
+pre_transform_cfg: null
+concat_transform_features: False

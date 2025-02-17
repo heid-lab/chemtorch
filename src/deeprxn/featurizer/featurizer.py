@@ -90,6 +90,19 @@ def make_featurizer(
             (lambda item: Bond.IsInRingSize(item, 7), []),
         ]
 
+    elif featurizer_name == "bond_bond_type":
+        l = [
+            (
+                Bond.GetBondType,
+                [
+                    BondType.SINGLE,
+                    BondType.DOUBLE,
+                    BondType.TRIPLE,
+                    BondType.AROMATIC,
+                ],
+            ),
+        ]
+
     else:
         raise NotImplementedError("Option not implemented: " + featurizer_name)
 

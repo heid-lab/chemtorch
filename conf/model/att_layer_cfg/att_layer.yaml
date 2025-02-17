@@ -1,9 +1,0 @@
-_target_: deeprxn.att_layer.react_prod_att_layer.ReactantProductAttLayer
-in_channels: 300
-out_channels: 300
-hidden_size: 300
-attention: reactants # reactants, products, reactants_products
-num_heads: 1
-dropout: 0.02
-layer_norm: true
-batch_norm: false

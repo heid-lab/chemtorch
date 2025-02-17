@@ -6,7 +6,7 @@ from omegaconf import DictConfig
 from torch_geometric.data import Batch
 from torch_geometric.nn.aggr import SumAggregation
 
-from deeprxn.model.model import Model
+from deeprxn.model.model_base import Model
 
 
 class DMPNN(Model):
@@ -17,27 +17,29 @@ class DMPNN(Model):
         num_node_features: int,
         num_edge_features: int,
         hidden_channels: int,
-        mpnn_depth: int,
+        depth: int,
         shared_weights: bool,
         encoder_cfg: DictConfig,
-        mpnn_cfg: DictConfig,
+        layer_cfg: DictConfig,
         pool_cfg: DictConfig,
         head_cfg: DictConfig,
     ):
         """Initialize Custom model."""
         super().__init__()
-        self.mpnn_depth = mpnn_depth
+        self.depth = depth
 
-        self.encoder = hydra.utils.instantiate(encoder_cfg)
+        self.encoders = nn.ModuleList()
+        for _, config in encoder_cfg.items():
+            self.encoders.append(hydra.utils.instantiate(config))
 
         self.layers = nn.ModuleList()
         if shared_weights:
-            layer = hydra.utils.instantiate(mpnn_cfg)
-            for _ in range(self.mpnn_depth):
+            layer = hydra.utils.instantiate(layer_cfg)
+            for _ in range(self.depth):
                 self.layers.append(layer)
         else:
-            for _ in range(self.mpnn_depth):
-                self.layers.append(hydra.utils.instantiate(mpnn_cfg))
+            for _ in range(self.depth):
+                self.layers.append(hydra.utils.instantiate(layer_cfg))
 
         self.aggregation = SumAggregation()
 
@@ -51,7 +53,8 @@ class DMPNN(Model):
     def forward(self, batch: Batch) -> Batch:
         """Forward pass through Custom model."""
 
-        batch = self.encoder(batch)
+        for encoder in self.encoders:
+            batch = encoder(batch)
 
         for layer in self.layers:
             batch = layer(batch)

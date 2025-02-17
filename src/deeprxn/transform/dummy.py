@@ -1,10 +1,10 @@
-from typing import List, Optional
+from typing import Dict, List, Optional
 
 import torch
 from torch_geometric.data import Data
 
-from deeprxn.representation.rxn_graph import AtomOriginType
-from deeprxn.transform.transform import TransformBase
+from deeprxn.representation.rxn_graph_base import AtomOriginType
+from deeprxn.transform.transform_base import TransformBase
 
 
 class DummyNodeTransform(TransformBase):
@@ -14,6 +14,7 @@ class DummyNodeTransform(TransformBase):
         connection_type: Optional[str] = "to_dummy",
         dummy_dummy_connection: Optional[str] = None,
         feature_init: str = "zeros",
+        type: str = "graph",
     ):
         self.mode = mode
         self.connection_type = connection_type
@@ -43,6 +44,43 @@ class DummyNodeTransform(TransformBase):
             raise ValueError(f"Unknown dummy node mode: {self.mode}")
 
         return data
+
+    def _get_pretransform_attributes(
+        self, data: Data
+    ) -> Dict[str, torch.Tensor]:
+        """Get all pretransform attributes and their shapes."""
+        pretransform_attrs = {}
+        for key, value in data:
+            # Skip standard attributes
+            if key in {
+                "x",
+                "edge_index",
+                "edge_attr",
+                "y",
+                "smiles",
+                "atom_origin_type",
+                "batch",
+                "atom_compound_idx",
+            }:
+                continue
+            if isinstance(value, torch.Tensor):
+                pretransform_attrs[key] = value
+        return pretransform_attrs
+
+    def _create_dummy_features(
+        self, attr: torch.Tensor, num_dummies: int
+    ) -> torch.Tensor:
+        """Create dummy features matching the attribute's shape."""
+        feature_init_fn = (
+            torch.zeros if self.feature_init == "zeros" else torch.ones
+        )
+
+        shape = list(attr.shape)
+        shape[0] = (
+            num_dummies  # Replace the first dimension with number of dummy nodes
+        )
+
+        return feature_init_fn(shape, dtype=attr.dtype, device=attr.device)
 
     def _connect_dummy_to_node(
         self,
@@ -92,6 +130,14 @@ class DummyNodeTransform(TransformBase):
         for i in range(dummy_idx):
             self._connect_dummy_to_node(data, dummy_idx, i, dummy_bond)
 
+        # Handle pretransform attributes
+        pretransform_attrs = self._get_pretransform_attributes(data)
+        for attr_name, attr_value in pretransform_attrs.items():
+            dummy_attr = self._create_dummy_features(attr_value, 1)
+            setattr(
+                data, attr_name, torch.cat([attr_value, dummy_attr], dim=0)
+            )
+
         data.atom_origin_type = torch.cat(
             [
                 data.atom_origin_type,
@@ -100,6 +146,17 @@ class DummyNodeTransform(TransformBase):
                 ),
             ]
         )
+
+        if hasattr(data, "atom_compound_idx"):
+            data.atom_compound_idx = torch.cat(
+                [
+                    data.atom_compound_idx,
+                    torch.tensor(
+                        [-1],
+                        device=data.atom_compound_idx.device,
+                    ),
+                ]
+            )
 
     def _add_reactant_product_dummies(
         self,
@@ -121,6 +178,14 @@ class DummyNodeTransform(TransformBase):
             )
             self._connect_dummy_to_node(
                 data, dummy_product_idx, i + n_atoms, dummy_bond
+            )
+
+        # Handle pretransform attributes
+        pretransform_attrs = self._get_pretransform_attributes(data)
+        for attr_name, attr_value in pretransform_attrs.items():
+            dummy_attr = self._create_dummy_features(attr_value, 2)
+            setattr(
+                data, attr_name, torch.cat([attr_value, dummy_attr], dim=0)
             )
 
         if self.dummy_dummy_connection == "bidirectional":
@@ -146,3 +211,14 @@ class DummyNodeTransform(TransformBase):
                 ),
             ]
         )
+
+        if hasattr(data, "atom_compound_idx"):
+            data.atom_compound_idx = torch.cat(
+                [
+                    data.atom_compound_idx,
+                    torch.tensor(
+                        [-1, -1],
+                        device=data.atom_compound_idx.device,
+                    ),
+                ]
+            )

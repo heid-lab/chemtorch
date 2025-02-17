@@ -29,7 +29,8 @@ cd deeprxn
 ```
 We recommend to install the package inside a conda environment (or any other virtual environment of your choice). Follow the pytorch and torch_geometric installation instructions to install for GPUs (here, for CPUs):
 
-For torch scatter and torch sparse, you need might also need to install specific binaries.
+For torch scatter and torch sparse, you need might also need to install specific binaries. (pip install torch-scatter torch-sparse -f https://data.pyg.org/whl/torch-${TORCH}+${CUDA}.html
+where ${TORCH} should be replaced by your PyTorch version (e.g., 2.2.0), and ${CUDA} should be replaced by your CUDA version (e.g., cpu, cu118 or cu121).)
 ```
 conda create -n deeprxn python=3.10
 conda activate deeprxn

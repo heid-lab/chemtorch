@@ -10,18 +10,21 @@ defaults:
   - _self_ # placement of this matters
 
 wandb: false
-mode: train # train or predict
+mode: train # train, finetune or predict
 project_name: deeprxn
 seed: 0 # use 0
 use_cuda: true
 device: gpu
 
 save_model: false
-model_path: models/experiment1
+model_path: pretrained/
+pretrained_path: null
 
 epochs: 30
 patience: 10
-min_delta: 0.001
+min_delta: 0.01
+clip_grad_norm: true
+clip_grad_norm_value: 1
 
 num_node_features: ???
 num_edge_features: ???

@@ -1,0 +1,5 @@
+linear_node_enc:
+  _target_: deeprxn.encoder.linear_node_enc.LinearNodeEncoder
+  in_channels: ${num_node_features}
+  out_channels: ${model.layer_cfg.mpnn_cfg.in_channels}
+  bias: true
