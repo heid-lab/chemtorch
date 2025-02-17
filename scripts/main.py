@@ -74,14 +74,26 @@ def main(cfg: DictConfig):
     print(OmegaConf.to_yaml(resolved_cfg))
 
     if cfg.mode == "train":
-        train(train_loader, val_loader, test_loader, cfg)
+        train(
+            train_loader,
+            val_loader,
+            test_loader,
+            pretrained_path=cfg.pretrained_path,
+            cfg=cfg,
+            finetune=False,
+        )
     elif cfg.mode == "finetune":
         if not cfg.pretrained_path:
             raise ValueError(
                 "pretrained_path must be specified for finetuning"
             )
-        finetune(
-            train_loader, val_loader, test_loader, cfg.pretrained_path, cfg
+        train(
+            train_loader,
+            val_loader,
+            test_loader,
+            pretrained_path=cfg.pretrained_path,
+            cfg=cfg,
+            finetune=True,
         )
     elif cfg.mode == "predict":
         predict_model(test_loader, cfg)
