@@ -63,6 +63,13 @@ def main(cfg: DictConfig):
             project=cfg.project_name,
             config=resolved_cfg,
         )
+        wandb.log(
+            {"train_precompute_time": train_loader.dataset.precompute_time}
+        )
+        # wandb.log({"val_precompute_time": val_loader.dataset.precompute_time})
+        # wandb.log(
+        #     {"test_precompute_time": test_loader.dataset.precompute_time}
+        # )
 
     print(OmegaConf.to_yaml(resolved_cfg))
 

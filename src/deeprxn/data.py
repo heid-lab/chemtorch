@@ -1,3 +1,4 @@
+import time
 from functools import lru_cache
 from typing import Literal, Optional
 
@@ -35,6 +36,7 @@ class ChemDataset(Dataset):
         self.representation_cfg = representation_cfg
         self.transform_cfg = transform_cfg
         self.enthalpy = enthalpy
+        self.precompute_time = 0
         self.graph_cache = {}
 
         if cache_graphs:
@@ -88,8 +90,10 @@ class ChemDataset(Dataset):
         return self.process_key(key)
 
     def preprocess_all(self):
+        start_time = time.time()
         for key in range(len(self.smiles)):
             self.process_key(key)
+        self.precompute_time = time.time() - start_time
 
     def len(self):
         # TODO: add docstring
@@ -161,6 +165,7 @@ def construct_loader(
         generator=torch.Generator().manual_seed(0),
     )
 
+    # this code is needed for PNA
     dataset_statistics = {}
     if dataset.dataset_transforms:
         original_state = loader.generator.get_state()
