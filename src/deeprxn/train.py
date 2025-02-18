@@ -115,7 +115,7 @@ def train(
     )
     print(f"Total parameters: {total_params:,}")
     if cfg.wandb:
-        wandb.log({"total_parameters": total_params})
+        wandb.log({"total_parameters": total_params}, commit=False)
 
     requires_metric = getattr(cfg.scheduler, "requires_metric", False)
 

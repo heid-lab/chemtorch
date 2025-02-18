@@ -30,11 +30,12 @@ class DMPNNLayer(MPNNLayerBase):
         self.dropout = dropout
         self.separate_nn = separate_nn
         self.lin_real = nn.Linear(in_channels, out_channels)
-        self.lin_artificial = (
-            nn.Linear(in_channels, out_channels)
-            if separate_nn
-            else self.lin_real
-        )
+        if separate_nn:
+            self.lin_artificial = (
+                nn.Linear(in_channels, out_channels)
+                if separate_nn
+                else self.lin_real
+            )
 
     def forward(self, batch: Batch) -> Batch:
         """Forward pass of the DMPNNLayer.

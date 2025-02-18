@@ -4,7 +4,7 @@ _recursive_: False
 defaults:
   - encoder_cfg:
     - linear_node_enc
-  - layer_cfg: /mpnn_cfg/gatv2_layer
+  - layer_cfg: /mpnn_cfg/gat_layer
   - pool_cfg: global_pool
   - head_cfg: ffn_head
   - _self_
@@ -19,10 +19,10 @@ batch_norm: true
 
 encoder_cfg:
   linear_node_enc:
-    out_channels: 900
+    out_channels: ${hidden_channels}
 
 layer_cfg:
-  dropout: 0.02
+  dropout: 0.0
   heads: 1
 
 pool_cfg:

@@ -60,10 +60,12 @@ def main(cfg: DictConfig):
     if cfg.wandb:
         wandb.init(
             project=cfg.project_name,
+            group=cfg.group_name,
             config=resolved_cfg,
         )
         wandb.log(
-            {"train_precompute_time": train_loader.dataset.precompute_time}
+            {"train_precompute_time": train_loader.dataset.precompute_time},
+            commit=False,
         )
         # wandb.log({"val_precompute_time": val_loader.dataset.precompute_time})
         # wandb.log(

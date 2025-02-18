@@ -35,6 +35,7 @@ def load_csv_dataset(
     val_ratio: float = 0.1,
     test_ratio: float = 0.1,
     use_pickle: bool = False,
+    seed_index: int = 0,
     use_enthalpy: bool = False,
     enthalpy_column: Optional[str] = None,
 ):
@@ -42,7 +43,7 @@ def load_csv_dataset(
     base_path = Path(data_root) / data_folder
     split_files = {s: base_path / f"{s}.csv" for s in ["train", "val", "test"]}
     single_file = base_path / "data.csv"
-    pickle_file = base_path / "seed0.pkl"
+    pickle_file = base_path / f"seed{seed_index}.pkl"
 
     if all(f.exists() for f in split_files.values()):
         data_path = split_files[split]
