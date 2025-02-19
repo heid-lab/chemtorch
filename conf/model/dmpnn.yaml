@@ -6,23 +6,23 @@ defaults:
     - node_to_edge_enc
   - layer_cfg: /mpnn_cfg/dmpnn_layer
   - pool_cfg: global_pool
-  - head_cfg: ffn_enthalpy_head
+  - head_cfg: ffn_head
   - _self_
 
 num_node_features: ${num_node_features}
 num_edge_features: ${num_edge_features}
-shared_weights: false
-depth: 4
-hidden_channels: 900
+shared_weights: true
+depth: 3
+hidden_channels: 300
 
 layer_cfg:
   separate_nn: false
-  dropout: 0.02
+  dropout: 0.0
 
 pool_cfg:
   aggr: add
 
 head_cfg:
   num_layers: 2
-  dropout: 0.02
-  activation: relu
+  dropout: 0.0
+  activation: leaky_relu

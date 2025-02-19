@@ -1,4 +1,5 @@
 import math
+import os
 import time
 
 import hydra
@@ -66,26 +67,55 @@ def check_early_stopping(
         return counter, False
 
 
-def train(train_loader, val_loader, test_loader, cfg):
+def train(
+    train_loader, val_loader, test_loader, pretrained_path, cfg, finetune=False
+):
     # TODO add docstring
 
     device = torch.device(cfg.device)
+
+    if finetune:
+        model = hydra.utils.instantiate(cfg.model)
+
+        if not os.path.exists(pretrained_path):
+            raise ValueError(
+                f"Pretrained model not found at {pretrained_path}"
+            )
+
+        model, _, _, _ = load_model(model, None, pretrained_path)
+        model = model.to(device)
+
+        try:
+            # try a forward pass with sample data
+            sample_batch = next(iter(train_loader))
+            model(sample_batch.to(device))
+        except Exception as e:
+            raise ValueError(
+                f"Pretrained model incompatible with dataset: {str(e)}"
+            )
+    else:
+        #### for models needing precomputed statistics on the dataset, e.g. PNA
+        transform_cfg = getattr(cfg.data, "transform_cfg", None)
+        if transform_cfg and hasattr(
+            transform_cfg, "batched_degree_statistics"
+        ):  # TODO: generalize
+            model = hydra.utils.instantiate(
+                cfg.model, dataset_precomputed=train_loader.dataset.statistics
+            )
+        else:
+            model = hydra.utils.instantiate(cfg.model)
+        model = model.to(device)
 
     mean = np.mean(train_loader.dataset.labels)
     std = np.std(train_loader.dataset.labels)
     stdzer = Standardizer(mean, std)
 
-    #### for models needing precomputed statistics on the dataset, e.g. PNA
-    transform_cfg = getattr(cfg.data, "transform_cfg", None)
-    if transform_cfg and hasattr(
-        transform_cfg, "batched_degree_statistics"
-    ):  # TODO: generalize
-        model = hydra.utils.instantiate(
-            cfg.model, dataset_precomputed=train_loader.dataset.statistics
-        )
-    else:
-        model = hydra.utils.instantiate(cfg.model)
-    model = model.to(device)
+    total_params = sum(
+        p.numel() for p in model.parameters() if p.requires_grad
+    )
+    print(f"Total parameters: {total_params:,}")
+    if cfg.wandb:
+        wandb.log({"total_parameters": total_params}, commit=False)
 
     requires_metric = getattr(cfg.scheduler, "requires_metric", False)
 

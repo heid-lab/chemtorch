@@ -3,7 +3,6 @@ import torch
 import wandb
 from omegaconf import DictConfig, OmegaConf
 
-from deeprxn.finetune import finetune
 from deeprxn.predict import predict_model
 from deeprxn.train import train
 from deeprxn.utils import set_seed
@@ -61,20 +60,41 @@ def main(cfg: DictConfig):
     if cfg.wandb:
         wandb.init(
             project=cfg.project_name,
+            group=cfg.group_name,
             config=resolved_cfg,
         )
+        wandb.log(
+            {"train_precompute_time": train_loader.dataset.precompute_time},
+            commit=False,
+        )
+        # wandb.log({"val_precompute_time": val_loader.dataset.precompute_time})
+        # wandb.log(
+        #     {"test_precompute_time": test_loader.dataset.precompute_time}
+        # )
 
     print(OmegaConf.to_yaml(resolved_cfg))
 
     if cfg.mode == "train":
-        train(train_loader, val_loader, test_loader, cfg)
+        train(
+            train_loader,
+            val_loader,
+            test_loader,
+            pretrained_path=cfg.pretrained_path,
+            cfg=cfg,
+            finetune=False,
+        )
     elif cfg.mode == "finetune":
         if not cfg.pretrained_path:
             raise ValueError(
                 "pretrained_path must be specified for finetuning"
             )
-        finetune(
-            train_loader, val_loader, test_loader, cfg.pretrained_path, cfg
+        train(
+            train_loader,
+            val_loader,
+            test_loader,
+            pretrained_path=cfg.pretrained_path,
+            cfg=cfg,
+            finetune=True,
         )
     elif cfg.mode == "predict":
         predict_model(test_loader, cfg)

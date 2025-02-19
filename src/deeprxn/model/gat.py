@@ -1,18 +1,13 @@
 import hydra
-import torch
 import torch.nn as nn
-import torch.nn.functional as F
 import torch_geometric.nn as pyg_nn
 from omegaconf import DictConfig
 from torch_geometric.data import Batch
-from torch_geometric.nn.aggr import SumAggregation
 
 from deeprxn.model.model_base import Model
 
 
 class GAT(Model):
-    """Custom model using configurable components."""
-
     def __init__(
         self,
         num_node_features: int,
@@ -27,7 +22,6 @@ class GAT(Model):
         pool_cfg: DictConfig,
         head_cfg: DictConfig,
     ):
-        """Initialize Custom model."""
         super().__init__()
         self.depth = depth
         self.layer_norm = layer_norm
@@ -61,8 +55,6 @@ class GAT(Model):
         self.head = hydra.utils.instantiate(head_cfg)
 
     def forward(self, batch: Batch) -> Batch:
-        """Forward pass through Custom model."""
-
         for encoder in self.encoders:
             batch = encoder(batch)
 
