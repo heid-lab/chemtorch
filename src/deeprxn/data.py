@@ -129,6 +129,7 @@ def construct_loader(
         target_column=dataset_cfg.target_column,
         data_folder=dataset_cfg.data_folder,
         reduced_dataset=dataset_cfg.reduced_dataset,
+        seed_index=dataset_cfg.seed_index,
         split=split,
         **split_params,
     )
