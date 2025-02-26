@@ -23,10 +23,4 @@ class GINELayer(MPNNLayerBase):
 
     def forward(self, batch):
         batch.x = self.model(batch.x, batch.edge_index, batch.edge_attr)
-        # TODO: look into this
-        # batch.x = F.relu(batch.x)
-        # batch.x = F.dropout(batch.x, p=self.dropout, training=self.training)
-
-        # if self.residual:
-        #     batch.x = x_in + batch.x  # residual connection
         return batch

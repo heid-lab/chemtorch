@@ -2,7 +2,6 @@ import hydra
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-import torch_geometric.nn as pyg_nn
 from omegaconf import DictConfig
 from torch_geometric.data import Batch
 from torch_geometric.nn.aggr import SumAggregation
@@ -19,8 +18,6 @@ class PNA(Model):
         num_edge_features: int,
         hidden_channels: int,
         depth: int,
-        layer_norm: bool,
-        batch_norm: bool,
         shared_weights: bool,
         encoder_cfg: DictConfig,
         layer_cfg: DictConfig,
@@ -31,19 +28,6 @@ class PNA(Model):
         """Initialize Custom model."""
         super().__init__()
         self.depth = depth
-        self.layer_norm = layer_norm
-        self.batch_norm = batch_norm
-
-        if layer_norm == batch_norm:
-            raise ValueError(
-                "Only one of layer_norm and batch_norm can be True."
-            )
-
-        if self.layer_norm:
-            self.norm = pyg_nn.norm.LayerNorm(hidden_channels)
-
-        if self.batch_norm:
-            self.norm = nn.BatchNorm1d(hidden_channels)
 
         self.encoders = nn.ModuleList()
         for _, config in encoder_cfg.items():
@@ -74,13 +58,7 @@ class PNA(Model):
             batch = encoder(batch)
 
         for layer in self.layers:
-            pre_layer = batch.x
             batch = layer(batch)
-            batch.x = batch.x + pre_layer
-            if self.layer_norm:
-                batch.x = self.norm(batch.x, batch.batch)
-            if self.batch_norm:
-                batch.x = self.norm(batch.x)
 
         batch.x = self.pool(batch)
         preds = self.head(batch)

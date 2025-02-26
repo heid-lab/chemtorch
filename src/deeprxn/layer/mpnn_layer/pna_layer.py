@@ -2,10 +2,10 @@ import torch.nn as nn
 import torch_geometric.nn as pyg_nn
 from torch_geometric.nn import Linear as Linear_pyg
 
-from deeprxn.layer.mpnn_layer.mpnn_layer_base import MPNNLayer
+from deeprxn.layer.mpnn_layer.mpnn_layer_base import MPNNLayerBase
 
 
-class PNALayer(MPNNLayer):
+class PNALayer(MPNNLayerBase):
     def __init__(
         self,
         in_channels: int,
@@ -13,7 +13,6 @@ class PNALayer(MPNNLayer):
         dataset_precomputed: dict,
         aggregators=["mean", "min", "max", "std"],
         scalers=["identity", "amplification", "attenuation"],
-        use_edge_attr=True,
     ):
         super().__init__(in_channels, out_channels)
 
@@ -25,7 +24,6 @@ class PNALayer(MPNNLayer):
         self.out_channels = out_channels
         self.aggregators = list(aggregators)
         self.scalers = list(scalers)
-        self.use_edge_attr = use_edge_attr
         self.pna_layer = pyg_nn.PNAConv(
             self.in_channels,
             self.out_channels,
@@ -33,17 +31,12 @@ class PNALayer(MPNNLayer):
             scalers=self.scalers,
             deg=self.deg,
             edge_dim=self.in_channels,
-            towers=1,  # TODO: look into this
+            towers=1,
             pre_layers=1,
             post_layers=1,
             divide_input=False,
         )
 
     def forward(self, batch):
-        if self.use_edge_attr:
-            batch.x = self.pna_layer(
-                batch.x, batch.edge_index, batch.edge_attr
-            )
-        else:
-            batch.x = self.pna_layer(batch.x, batch.edge_index)
+        batch.x = self.pna_layer(batch.x, batch.edge_index, batch.edge_attr)
         return batch

@@ -4,7 +4,8 @@ _recursive_: False
 defaults:
   - encoder_cfg:
     - linear_node_enc
-  - layer_cfg: /mpnn_cfg/gat_layer
+    - linear_edge_enc
+  - layer_cfg: block_gat
   - pool_cfg: global_pool
   - head_cfg: ffn_head
   - _self_
@@ -12,18 +13,14 @@ defaults:
 num_node_features: ${num_node_features}
 num_edge_features: ${num_edge_features}
 shared_weights: false
-depth: 4
-hidden_channels: 900
-layer_norm: false
-batch_norm: true
+depth: 3
+hidden_channels: 300
 
 encoder_cfg:
   linear_node_enc:
-    out_channels: ${hidden_channels}
-
-layer_cfg:
-  dropout: 0.0
-  heads: 1
+    out_channels: ${model.hidden_channels}
+  linear_edge_enc:
+    out_channels: ${model.hidden_channels}
 
 pool_cfg:
   aggr: add

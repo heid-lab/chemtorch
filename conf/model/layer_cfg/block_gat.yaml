@@ -1,0 +1,20 @@
+_target_: deeprxn.layer.block_gat.BlockGATLayer
+_recursive_: False
+
+defaults:
+  - mpnn_cfg: gat_layer
+
+hidden_channels: ${model.hidden_channels}
+in_channels: ${model.hidden_channels}
+out_channels: ${model.hidden_channels}
+
+layer_norm: false
+batch_norm: false
+residual: true
+dropout: 0.0
+activation: relu
+ffn: false
+
+mpnn_cfg:
+  dropout: ${model.layer_cfg.dropout}
+  heads: 1

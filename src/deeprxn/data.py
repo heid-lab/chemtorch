@@ -122,6 +122,7 @@ def construct_loader(
         "use_pickle": dataset_cfg.get("use_pickle", False),
         "use_enthalpy": dataset_cfg.get("use_enthalpy", False),
         "enthalpy_column": dataset_cfg.get("enthalpy_column", None),
+        "seed_index": dataset_cfg.get("seed_index", None),
     }
 
     data = load_csv_dataset(
@@ -129,7 +130,6 @@ def construct_loader(
         target_column=dataset_cfg.target_column,
         data_folder=dataset_cfg.data_folder,
         reduced_dataset=dataset_cfg.reduced_dataset,
-        seed_index=dataset_cfg.seed_index,
         split=split,
         **split_params,
     )

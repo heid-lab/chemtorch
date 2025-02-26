@@ -5,10 +5,10 @@ import torch.nn.functional as F
 import torch_geometric.nn as pyg_nn
 from torch_geometric.nn.aggr import SumAggregation
 
-from deeprxn.layer.mpnn_layer.mpnn_layer_base import MPNNLayer
+from deeprxn.layer.mpnn_layer.mpnn_layer_base import MPNNLayerBase
 
 
-class DMPNNDeepRXNLayer(MPNNLayer):
+class DMPNNDeepRXNLayer(MPNNLayerBase):
     def __init__(
         self,
         in_channels,

@@ -16,6 +16,9 @@ seed: 0 # use 0
 use_cuda: true
 device: gpu
 
+under_parameters: null
+group_name: null
+
 save_model: false
 model_path: pretrained/
 pretrained_path: null

@@ -1,4 +1,3 @@
-_target_: deeprxn.layer.mpnn_layer.dmpnn_layer.DMPNNLayer
+_target_: deeprxn.layer.mpnn_layer.gcn_layer.GCNLayer
 in_channels: ${model.hidden_channels}
 out_channels: ${model.hidden_channels}
-separate_nn: false

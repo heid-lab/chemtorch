@@ -1,11 +1,10 @@
-_target_: deeprxn.model.gine.GINE
+_target_: deeprxn.model.gat.GAT
 _recursive_: False
 
 defaults:
   - encoder_cfg:
     - linear_node_enc
-    - linear_edge_enc
-  - layer_cfg: block_gine
+  - layer_cfg: /mpnn_cfg/gatv2_layer
   - pool_cfg: global_pool
   - head_cfg: ffn_head
   - _self_
@@ -16,16 +15,23 @@ shared_weights: false
 depth: 3
 hidden_channels: 300
 
+residual: true
+layer_norm: false
+batch_norm: true
+
 encoder_cfg:
   linear_node_enc:
     out_channels: ${model.hidden_channels}
-  linear_edge_enc:
-    out_channels: ${model.hidden_channels}
+
+layer_cfg:
+  dropout: 0.0
+  heads: 1
 
 pool_cfg:
   aggr: add
 
 head_cfg:
   num_layers: 2
-  dropout: 0.02
-  activation: relu
+  dropout: 0.0
+  activation: leaky_relu
+

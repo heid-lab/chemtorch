@@ -15,7 +15,6 @@ class DMPNNLayer(MPNNLayerBase):
         self,
         in_channels: int,
         out_channels: int,
-        dropout: float = 0.0,
         separate_nn: bool = False,
     ):
         """Initialize DMPNN layer.
@@ -27,7 +26,6 @@ class DMPNNLayer(MPNNLayerBase):
         """
         MPNNLayerBase.__init__(self, in_channels, out_channels)
 
-        self.dropout = dropout
         self.separate_nn = separate_nn
         self.lin_real = nn.Linear(in_channels, out_channels)
         if separate_nn:
@@ -65,11 +63,6 @@ class DMPNNLayer(MPNNLayerBase):
             )
         else:
             batch.h = self.lin_real(aggregated_messages[row] - rev_messages)
-
-        batch.h += batch.h_0
-        batch.h = F.dropout(
-            F.relu(batch.h), self.dropout, training=self.training
-        )
 
         return batch
 
