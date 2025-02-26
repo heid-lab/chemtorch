@@ -3,7 +3,7 @@ from typing import Literal
 import torch
 import torch.nn as nn
 
-ActivationType = Literal["relu", "leaky_relu"]
+ActivationType = Literal["relu", "leaky_relu", "identity"]
 
 
 class Activation(nn.Module):
@@ -22,6 +22,8 @@ class Activation(nn.Module):
             self.act = nn.ReLU(inplace=inplace)
         elif activation_type == "leaky_relu":
             self.act = nn.LeakyReLU(inplace=inplace)
+        elif activation_type == "identity":
+            self.act = nn.Identity()
 
         else:
             raise ValueError(f"Unknown activation type: {activation_type}")

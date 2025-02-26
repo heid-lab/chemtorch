@@ -114,8 +114,25 @@ def train(
         p.numel() for p in model.parameters() if p.requires_grad
     )
     print(f"Total parameters: {total_params:,}")
+
+    under_parameters = getattr(cfg, "under_parameters", None)
+    if under_parameters is not None and total_params > under_parameters:
+        print(
+            f"Model has {total_params:,} parameters, which exceeds the threshold of {under_parameters:,}. Skipping this run."
+        )
+        if cfg.wandb:
+            wandb.log(
+                {
+                    "total_parameters": total_params,
+                    "parameter_threshold_exceeded": True,
+                }
+            )
+            wandb.run.summary["status"] = "parameter_threshold_exceeded"
+        return False
+
     if cfg.wandb:
         wandb.log({"total_parameters": total_params}, commit=False)
+        wandb.run.summary["status"] = "training"
 
     requires_metric = getattr(cfg.scheduler, "requires_metric", False)
 
@@ -209,3 +226,4 @@ def train(
 
     if cfg.wandb:
         wandb.log({"test_rmse": test_rmse, "test_mae": test_mae})
+        wandb.run.summary["status"] = "completed"

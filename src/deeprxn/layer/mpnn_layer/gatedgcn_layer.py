@@ -4,6 +4,7 @@ import torch.nn.functional as F
 import torch_geometric.nn as pyg_nn
 from torch_scatter import scatter
 
+from deeprxn.act.act import Activation, ActivationType
 from deeprxn.layer.mpnn_layer.mpnn_layer_base import MPNNLayerBase
 
 
@@ -20,12 +21,12 @@ class GatedGCNLayer(MPNNLayerBase):
         out_channels,
         dropout,
         residual,
-        # act="relu",
+        act="relu",
         equivstable_pe=False,
         # **kwargs,
     ):
         super().__init__(in_channels, out_channels)
-        self.activation = nn.ReLU
+        self.activation = Activation(activation_type=act)
         self.A = pyg_nn.Linear(in_channels, out_channels, bias=True)
         self.B = pyg_nn.Linear(in_channels, out_channels, bias=True)
         self.C = pyg_nn.Linear(in_channels, out_channels, bias=True)
@@ -38,15 +39,15 @@ class GatedGCNLayer(MPNNLayerBase):
         if self.EquivStablePE:
             self.mlp_r_ij = nn.Sequential(
                 nn.Linear(1, out_channels),
-                self.activation(),
+                self.activation,
                 nn.Linear(out_channels, 1),
                 nn.Sigmoid(),
             )
 
         self.bn_node_x = nn.BatchNorm1d(out_channels)
         self.bn_edge_e = nn.BatchNorm1d(out_channels)
-        self.act_fn_x = self.activation()
-        self.act_fn_e = self.activation()
+        self.act_fn_x = self.activation
+        self.act_fn_e = self.activation
         self.dropout = dropout
         self.residual = residual
         self.e = None

@@ -3,10 +3,10 @@ import torch.nn as nn
 import torch_geometric.nn as pyg_nn
 from torch_geometric.utils import to_dense_batch
 
-from deeprxn.layer.mpnn_layer.mpnn_layer_base import MPNNLayer
+from deeprxn.layer.mpnn_layer.mpnn_layer_base import MPNNLayerBase
 
 
-class DeepRXNLayer(MPNNLayer):
+class DeepRXNLayer(MPNNLayerBase):
     def __init__(
         self,
         in_channels,

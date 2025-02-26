@@ -1,11 +1,11 @@
-_target_: deeprxn.model.gine.GINE
+_target_: deeprxn.model.pna.PNA
 _recursive_: False
 
 defaults:
   - encoder_cfg:
     - linear_node_enc
     - linear_edge_enc
-  - layer_cfg: block_gine
+  - layer_cfg: block_pna
   - pool_cfg: global_pool
   - head_cfg: ffn_head
   - _self_
