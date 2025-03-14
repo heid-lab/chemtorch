@@ -10,12 +10,18 @@ defaults:
     #- lappe_enc
   - layer_cfg: gps_layer
   - pool_cfg: global_pool
-  - head_cfg: ffn_enthalpy_head
+  - head_cfg: ffn_head
   - _self_
+
+num_node_features: ${num_node_features}
+num_edge_features: ${num_edge_features}
+shared_weights: false
+depth: 10
+hidden_channels: 64
 
 encoder_cfg:
   linear_node_enc:
-    out_channels: 104
+    out_channels: ${eval:'${model.hidden_channels} - ${model.encoder_cfg.rwpe_enc.out_channels}'}
   linear_edge_enc:
     out_channels: ${model.hidden_channels}
   rwpe_enc:
@@ -25,8 +31,20 @@ encoder_cfg:
   # equivstable_enc:
   #   out_channels: ${model.hidden_channels}
 
-num_node_features: ${num_node_features}
-num_edge_features: ${num_edge_features}
-shared_weights: false
-depth: 10
-hidden_channels: 128
+layer_cfg:
+  layer_norm: False
+  batch_norm: True
+  dropout: 0.0
+
+  att_layer_cfg:
+    num_heads: 4
+    dropout: 0.5
+
+
+pool_cfg:
+  aggr: add
+
+head_cfg:
+  num_layers: 2
+  dropout: 0.02
+  activation: relu

@@ -16,6 +16,7 @@ class LineCGR(RxnGraphBase):
         bond_featurizer: callable,
         in_channel_multiplier: int = 2,
         use_directed: bool = True,
+        feature_aggregation: Optional[str] = None,
         enthalpy=None,
     ):
         super().__init__(
@@ -28,20 +29,22 @@ class LineCGR(RxnGraphBase):
 
         self.n_atoms = self.mol_reac.GetNumAtoms()
         self.use_directed = use_directed
+        self.feature_aggregation = feature_aggregation
 
-        # Compute feature lengths for zero vectors
-        dummy_atom = None  # Dummy atom for feature length
-        dummy_bond = None  # Dummy bond for feature length
+        dummy_atom = None
+        dummy_bond = None
         atom_feat_len = len(atom_featurizer(dummy_atom))
         bond_feat_len = len(bond_featurizer(dummy_bond))
-        self.reactant_feat_length = (
-            atom_feat_len + bond_feat_len + atom_feat_len
-        )
-        self.product_feat_length = (
-            self.reactant_feat_length
-        )  # Same featurizers
 
-        # Existing graph construction
+        if feature_aggregation in ["sum", "mean", "max"]:
+            self.reactant_feat_length = atom_feat_len + bond_feat_len
+        else:
+            self.reactant_feat_length = (
+                atom_feat_len + bond_feat_len + atom_feat_len
+            )
+
+        self.product_feat_length = self.reactant_feat_length
+
         self.line_nodes = []
         self.line_edges = []
         self.line_node_features = []
@@ -52,16 +55,13 @@ class LineCGR(RxnGraphBase):
         self._build_graph()
 
     def _build_graph(self):
-        """Build line graph according to new approach."""
         cgr_edges = self._get_cgr_edges()
         reactant_line_features = self._get_reactant_line_features()
         product_line_features = self._get_product_line_features()
 
-        # Create line nodes (CGR edges) and their features
         self.line_nodes = cgr_edges
         self.line_node_features = []
         for edge in cgr_edges:
-            # Get reactant and product features, default to zeros if not present
             reactant_feat = reactant_line_features.get(
                 edge, self.zero_reactant
             )
@@ -69,7 +69,6 @@ class LineCGR(RxnGraphBase):
             combined_feat = reactant_feat + product_feat
             self.line_node_features.append(combined_feat)
 
-        # Create line edges (adjacency in line graph)
         self.line_edges, self.line_edge_features = self._create_line_edges(
             cgr_edges
         )
@@ -113,14 +112,24 @@ class LineCGR(RxnGraphBase):
     def _get_reactant_line_node_feature(self, i: int, j: int) -> List[float]:
         """Feature for reactant line graph node (i,j)."""
         atom_i_feat = self.atom_featurizer(self.mol_reac.GetAtomWithIdx(i))
+        atom_j_feat = self.atom_featurizer(self.mol_reac.GetAtomWithIdx(j))
         bond = self.mol_reac.GetBondBetweenAtoms(i, j)
         bond_feat = (
             self.bond_featurizer(bond)
             if bond
             else [0.0] * len(self.bond_featurizer(None))
         )
-        atom_j_feat = self.atom_featurizer(self.mol_reac.GetAtomWithIdx(j))
-        return atom_i_feat + bond_feat + atom_j_feat
+        if self.feature_aggregation == "sum":
+            atom_sum = [a + b for a, b in zip(atom_i_feat, atom_j_feat)]
+            return atom_sum + bond_feat
+        elif self.feature_aggregation == "max":
+            atom_max = [max(a, b) for a, b in zip(atom_i_feat, atom_j_feat)]
+            return atom_max + bond_feat
+        elif self.feature_aggregation == "mean":
+            atom_mean = [(a + b) / 2 for a, b in zip(atom_i_feat, atom_j_feat)]
+            return atom_mean + bond_feat
+        else:
+            return atom_i_feat + bond_feat + atom_j_feat
 
     def _get_product_line_features(
         self,
@@ -143,14 +152,26 @@ class LineCGR(RxnGraphBase):
     def _get_product_line_node_feature(self, pi: int, pj: int) -> List[float]:
         """Feature for product line graph node (pi,pj) mapped to (i,j)."""
         atom_pi_feat = self.atom_featurizer(self.mol_prod.GetAtomWithIdx(pi))
+        atom_pj_feat = self.atom_featurizer(self.mol_prod.GetAtomWithIdx(pj))
         bond = self.mol_prod.GetBondBetweenAtoms(pi, pj)
         bond_feat = (
             self.bond_featurizer(bond)
             if bond
             else [0.0] * len(self.bond_featurizer(None))
         )
-        atom_pj_feat = self.atom_featurizer(self.mol_prod.GetAtomWithIdx(pj))
-        return atom_pi_feat + bond_feat + atom_pj_feat
+        if self.feature_aggregation == "sum":
+            atom_sum = [a + b for a, b in zip(atom_pi_feat, atom_pj_feat)]
+            return atom_sum + bond_feat
+        elif self.feature_aggregation == "max":
+            atom_max = [max(a, b) for a, b in zip(atom_pi_feat, atom_pj_feat)]
+            return atom_max + bond_feat
+        elif self.feature_aggregation == "mean":
+            atom_mean = [
+                (a + b) / 2 for a, b in zip(atom_pi_feat, atom_pj_feat)
+            ]
+            return atom_mean + bond_feat
+        else:
+            return atom_pi_feat + bond_feat + atom_pj_feat
 
     def _create_line_edges(
         self, cgr_edges: List[Union[Tuple[int, int], frozenset]]

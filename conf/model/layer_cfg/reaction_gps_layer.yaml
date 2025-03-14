@@ -13,6 +13,6 @@ in_channels: ${model.hidden_channels}
 out_channels: ${model.hidden_channels}
 
 att_layer_cfg:
-  attention: reactants # reactants or products or reactants_products
+  attention: reactants_products # reactants or products or reactants_products
   num_heads: 4
   dropout: 0.5

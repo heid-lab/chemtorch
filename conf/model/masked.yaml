@@ -11,7 +11,7 @@ defaults:
     #- lappe_enc
   - layer_cfg: masked_att_layer
   - pool_cfg: pma
-  - head_cfg: ffn_enthalpy_head
+  - head_cfg: ffn_head
   - _self_
 
 layers: [local, local, local, local, local, local, inter, inter] #["intra","inter","compound","local_inter","local_compound_inter","local_compound",
@@ -19,12 +19,14 @@ separate: true
 separate_pool: false
 residual: false
 
+dmpnn_depth: 1
+
 pool_cfg:
   num_decoder_blocks: 1
 
 head_cfg:
-  in_channels: 257
-  hidden_channels: 257
+  in_channels: 256
+  hidden_channels: 256
 
 encoder_cfg:
   linear_node_enc:
@@ -45,5 +47,4 @@ encoder_cfg:
 num_node_features: ${num_node_features}
 num_edge_features: ${num_edge_features}
 shared_weights: false
-depth: 10
 hidden_channels: 128

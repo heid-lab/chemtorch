@@ -15,6 +15,7 @@ class GATv2Layer(MPNNLayerBase):
         heads: int = 1,
         dropout: float = 0.0,
         concat: bool = True,
+        use_edge_attr: bool = True,
     ):
         """Initialize GAT layer.
 
@@ -27,12 +28,15 @@ class GATv2Layer(MPNNLayerBase):
         """
         super().__init__(in_channels, out_channels)
 
+        self.use_edge_attr = use_edge_attr
+
         self.gat = GATv2Conv(
             in_channels=in_channels,
             out_channels=out_channels,
             heads=heads,
             dropout=dropout,
             concat=concat,
+            edge_dim=in_channels if use_edge_attr else None,
         )
 
     def forward(self, batch: Batch) -> Batch:
@@ -46,5 +50,8 @@ class GATv2Layer(MPNNLayerBase):
         Returns:
             Updated batch with new node features
         """
-        batch.x = self.gat(batch.x, batch.edge_index)
+        if self.use_edge_attr:
+            batch.x = self.gat(batch.x, batch.edge_index, batch.edge_attr)
+        else:
+            batch.x = self.gat(batch.x, batch.edge_index)
         return batch
