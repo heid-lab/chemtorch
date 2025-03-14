@@ -3,7 +3,7 @@ in_channels: ${model.hidden_channels}
 out_channels: ${model.hidden_channels}
 hidden_size: ${model.hidden_channels}
 attention: reactants_products # reactants, products, reactants_products
-num_heads: 3
+num_heads: 4
 dropout: 0.02
-layer_norm: true
+layer_norm: false
 batch_norm: false

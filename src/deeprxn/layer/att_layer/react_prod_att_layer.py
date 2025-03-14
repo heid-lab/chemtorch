@@ -28,7 +28,7 @@ class ReactantProductAttLayer(AttLayer):
         layer_norm: bool = False,
         batch_norm: bool = False,
     ):
-        AttLayer.__init__(self, in_channels, out_channels)
+        AttLayer.__init__(self)
         self.hidden_size = hidden_size
         self.attention = attention
         self.layer_norm = layer_norm

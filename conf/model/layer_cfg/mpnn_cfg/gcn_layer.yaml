@@ -1,3 +1,4 @@
 _target_: deeprxn.layer.mpnn_layer.gcn_layer.GCNLayer
 in_channels: ${model.hidden_channels}
 out_channels: ${model.hidden_channels}
+use_edge_attr: False

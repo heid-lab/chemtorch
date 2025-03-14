@@ -77,6 +77,8 @@ class MaskedAttLayer(AttLayer):
             "local_inter",
             "local_compound_inter",
             "local_compound",
+            "same_compound",
+            "other_compounds_same_category",
         ]:
             is_reactant = atom_types_dense == AtomOriginType.REACTANT.value
             is_product = atom_types_dense == AtomOriginType.PRODUCT.value
@@ -90,20 +92,52 @@ class MaskedAttLayer(AttLayer):
             ~mask
         )  # this is important due to bug with padding
 
-        if self.mode == "local":  # TODO: check to make more efficient
-            for b in range(batch_size):
-                batch_mask = batch.batch == b
-                batch_nodes = batch_mask.nonzero().squeeze()
+        if self.mode == "local":
+            # Get dimensions and device.
+            batch_size, max_nodes, _ = x_dense.size()
+            device = x_dense.device
 
-                edge_mask = batch_mask[batch.edge_index[0]]
-                batch_edges = batch.edge_index[:, edge_mask]
+            # Compute number of valid nodes per batch (mask is bool with True for valid nodes)
+            # and create cumulative counts to determine the starting index of each batch in the global node list.
+            counts = mask.sum(dim=1).long()  # shape: [batch_size]
+            cum_counts = torch.cat(
+                [torch.tensor([0], device=device), counts.cumsum(dim=0)]
+            )  # shape: [batch_size+1]
 
-                local_edges = batch_edges - batch_nodes[0]
+            # Create a mapping from global node index to its local index within its batch.
+            global_node_indices = torch.arange(batch.x.size(0), device=device)
+            # local index = global index - starting index of its batch.
+            local_indices = global_node_indices - cum_counts[batch.batch]
 
-                attention_mask[b, local_edges[0], local_edges[1]] = True
-                attention_mask[b, local_edges[1], local_edges[0]] = True
+            # For each edge in the global edge index, compute its batch id and local indices.
+            src_global = batch.edge_index[0]
+            tgt_global = batch.edge_index[1]
+            edge_batch = batch.batch[
+                src_global
+            ]  # each edge is assumed to be intra-batch
 
-                attention_mask[b].diagonal()[: mask[b].sum()] = True
+            local_src = local_indices[src_global]
+            local_tgt = local_indices[tgt_global]
+
+            # Set the corresponding entries in the attention mask to True for both directions.
+            attention_mask[edge_batch, local_src, local_tgt] = True
+            attention_mask[edge_batch, local_tgt, local_src] = True
+
+            # Vectorized diagonal setting: create a diagonal mask for each batch that covers the valid nodes.
+            diag_indices = torch.arange(max_nodes, device=device).unsqueeze(
+                0
+            )  # shape: [1, max_nodes]
+            valid_diag = diag_indices < counts.unsqueeze(
+                1
+            )  # shape: [batch_size, max_nodes]
+            diag_eye = (
+                torch.eye(max_nodes, dtype=torch.bool, device=device)
+                .unsqueeze(0)
+                .expand(batch_size, -1, -1)
+            )
+            attention_mask = attention_mask | (
+                diag_eye & valid_diag.unsqueeze(-1)
+            )
 
         if self.mode == "inter":
             attention_mask = torch.logical_or(
@@ -146,30 +180,6 @@ class MaskedAttLayer(AttLayer):
                 attention_mask
                 | (structure_attention & compound_attention)
                 | self_attention
-            )
-
-        if self.mode == "local_inter":
-            for b in range(batch_size):
-                batch_mask = batch.batch == b
-                batch_nodes = batch_mask.nonzero().squeeze()
-
-                edge_mask = batch_mask[batch.edge_index[0]]
-                batch_edges = batch.edge_index[:, edge_mask]
-
-                local_edges = batch_edges - batch_nodes[0]
-
-                attention_mask[b, local_edges[0], local_edges[1]] = True
-                attention_mask[b, local_edges[1], local_edges[0]] = True
-
-                attention_mask[b].diagonal()[: mask[b].sum()] = True
-
-            attention_mask = torch.logical_or(
-                attention_mask,
-                is_reactant.unsqueeze(-1) & is_product.unsqueeze(1),
-            )
-            attention_mask = torch.logical_or(
-                attention_mask,
-                is_product.unsqueeze(-1) & is_reactant.unsqueeze(1),
             )
 
         if self.mode == "local_inter":
@@ -280,6 +290,62 @@ class MaskedAttLayer(AttLayer):
                 | (structure_attention & compound_attention)
                 | self_attention
                 | inter_attention
+            )
+
+        elif self.mode == "same_compound":  # TODO : Double check this
+            compound_idx_dense, _ = to_dense_batch(
+                batch.atom_compound_idx, batch.batch, fill_value=-1
+            )
+
+            same_compound_attention = compound_idx_dense.unsqueeze(
+                -1
+            ) == compound_idx_dense.unsqueeze(1)
+
+            valid_nodes = mask.unsqueeze(-1) & mask.unsqueeze(1)
+            same_compound_attention = same_compound_attention & valid_nodes
+
+            attention_mask = attention_mask | same_compound_attention
+
+        elif self.mode == "other_compounds_same_category":
+            # Self-attention (each node attends to itself)
+            self_attention = torch.eye(
+                max_nodes, dtype=torch.bool, device=device
+            )
+            self_attention = self_attention.unsqueeze(0).expand(
+                batch_size, -1, -1
+            )
+            self_attention = self_attention & mask.unsqueeze(-1)
+
+            # Get compound indices and create different compound mask
+            compound_idx_dense, _ = to_dense_batch(
+                batch.atom_compound_idx, batch.batch, fill_value=-1
+            )
+            different_compound_attention = compound_idx_dense.unsqueeze(
+                -1
+            ) != compound_idx_dense.unsqueeze(1)
+
+            # Create same category mask (reactant-reactant or product-product)
+            reactant_reactant = is_reactant.unsqueeze(
+                -1
+            ) & is_reactant.unsqueeze(1)
+            product_product = is_product.unsqueeze(-1) & is_product.unsqueeze(
+                1
+            )
+            same_category = reactant_reactant | product_product
+
+            # Valid nodes only
+            valid_nodes = mask.unsqueeze(-1) & mask.unsqueeze(1)
+
+            # Combine: different compounds but same category
+            different_compound_same_category = (
+                different_compound_attention & same_category & valid_nodes
+            )
+
+            # Final attention mask
+            attention_mask = (
+                attention_mask
+                | self_attention
+                | different_compound_same_category
             )
 
         if self.mode == "self":

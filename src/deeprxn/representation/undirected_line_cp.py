@@ -24,6 +24,7 @@ class UndirectedLineConnectedPairGraph(RxnGraphBase):
         connection_direction: str = "bidirectional",
         concat_origin_feature: bool = False,
         in_channel_multiplier: int = 1,
+        feature_aggregation: Optional[str] = None,
         pre_transform_cfg: Optional[Dict[str, DictConfig]] = None,
         enthalpy=None,
     ):
@@ -40,6 +41,7 @@ class UndirectedLineConnectedPairGraph(RxnGraphBase):
         )
         self.connection_direction = connection_direction
         self.pre_transform_cfg = pre_transform_cfg
+        self.feature_aggregation = feature_aggregation
 
         self.n_atoms_reac = self.mol_reac.GetNumAtoms()
         self.n_atoms_prod = self.mol_prod.GetNumAtoms()
@@ -212,11 +214,28 @@ class UndirectedLineConnectedPairGraph(RxnGraphBase):
                                 )
                                 bond_features = self.bond_featurizer(bond)
 
-                                node_features = (
-                                    atom_i_features
-                                    + bond_features
-                                    + atom_j_features
-                                )
+                                if self.feature_aggregation == "add":
+                                    atom_sum = [
+                                        a + b
+                                        for a, b in zip(
+                                            atom_i_features, atom_j_features
+                                        )
+                                    ]
+                                    node_features = atom_sum + bond_features
+                                elif self.feature_aggregation == "mean":
+                                    atom_mean = [
+                                        (a + b) / 2
+                                        for a, b in zip(
+                                            atom_i_features, atom_j_features
+                                        )
+                                    ]
+                                    node_features = atom_mean + bond_features
+                                else:
+                                    node_features = (
+                                        atom_i_features
+                                        + bond_features
+                                        + atom_j_features
+                                    )
 
                                 self.line_nodes.append((i, j))
                                 self.line_node_features.append(node_features)
@@ -338,11 +357,28 @@ class UndirectedLineConnectedPairGraph(RxnGraphBase):
                                 )
                                 bond_features = self.bond_featurizer(bond)
 
-                                node_features = (
-                                    atom_i_features
-                                    + bond_features
-                                    + atom_j_features
-                                )
+                                if self.feature_aggregation == "add":
+                                    atom_sum = [
+                                        a + b
+                                        for a, b in zip(
+                                            atom_i_features, atom_j_features
+                                        )
+                                    ]
+                                    node_features = atom_sum + bond_features
+                                elif self.feature_aggregation == "mean":
+                                    atom_mean = [
+                                        (a + b) / 2
+                                        for a, b in zip(
+                                            atom_i_features, atom_j_features
+                                        )
+                                    ]
+                                    node_features = atom_mean + bond_features
+                                else:
+                                    node_features = (
+                                        atom_i_features
+                                        + bond_features
+                                        + atom_j_features
+                                    )
 
                                 self.line_nodes.append((i, j))
                                 self.line_node_features.append(node_features)
@@ -368,9 +404,21 @@ class UndirectedLineConnectedPairGraph(RxnGraphBase):
                 atom_features = self._get_enhanced_atom_features(
                     self.mol_prod, prod_i, product_compound_idx
                 )
-                node_features = (
-                    atom_features + self.zero_edge_features + atom_features
-                )
+                if self.feature_aggregation == "add":
+                    atom_feat = [
+                        a + b for a, b in zip(atom_features, atom_features)
+                    ]
+                    node_features = atom_feat + self.zero_edge_features
+                elif self.feature_aggregation == "mean":
+                    atom_feat = [
+                        (a + b) / 2
+                        for a, b in zip(atom_features, atom_features)
+                    ]
+                    node_features = atom_feat + self.zero_edge_features
+                else:
+                    node_features = (
+                        atom_features + self.zero_edge_features + atom_features
+                    )
 
                 self.line_nodes.append((i, i))
                 self.line_node_features.append(node_features)

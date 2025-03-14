@@ -1,9 +1,12 @@
-from typing import Dict, List, Optional
+from typing import Dict, Optional
 
 import torch
 from torch_geometric.data import Data
 
-from deeprxn.representation.rxn_graph_base import AtomOriginType
+from deeprxn.representation.rxn_graph_base import (
+    AtomOriginType,
+    EdgeOriginType,
+)
 from deeprxn.transform.transform_base import TransformBase
 
 
@@ -20,20 +23,28 @@ class DummyNodeTransform(TransformBase):
         self.connection_type = connection_type
         self.dummy_dummy_connection = dummy_dummy_connection
         self.feature_init = feature_init
+        self.dummy_origin_type = 2
 
     def forward(self, data: Data) -> Data:
-        """Apply dummy node transform to the graph."""
+        if (
+            AtomOriginType.REACTANT_PRODUCT.value in data.atom_origin_type
+            and self.mode == "reactant_product"
+        ):
+            raise ValueError("CGR not supported with reactant/product dummies")
 
         node_feat_dim = data.x.size(1)
         feature_init_fn = (
             torch.zeros if self.feature_init == "zeros" else torch.ones
         )
-        dummy_feature = feature_init_fn(1, node_feat_dim, device=data.x.device)
 
+        # Create dummy features matching existing dimensions
+        dummy_feature = feature_init_fn(1, node_feat_dim, device=data.x.device)
         dummy_bond = None
+
         if hasattr(data, "edge_attr"):
+            bond_feat_dim = data.edge_attr.size(1)
             dummy_bond = feature_init_fn(
-                1, data.edge_attr.size(1), device=data.edge_attr.device
+                1, bond_feat_dim, device=data.edge_attr.device
             )
 
         if self.mode == "global":
@@ -41,18 +52,17 @@ class DummyNodeTransform(TransformBase):
         elif self.mode == "reactant_product":
             self._add_reactant_product_dummies(data, dummy_feature, dummy_bond)
         else:
-            raise ValueError(f"Unknown dummy node mode: {self.mode}")
-
+            raise ValueError(f"Invalid dummy mode: {self.mode}")
         return data
 
     def _get_pretransform_attributes(
         self, data: Data
     ) -> Dict[str, torch.Tensor]:
-        """Get all pretransform attributes and their shapes."""
-        pretransform_attrs = {}
-        for key, value in data:
-            # Skip standard attributes
-            if key in {
+        return {
+            k: v
+            for k, v in data
+            if k
+            not in {
                 "x",
                 "edge_index",
                 "edge_attr",
@@ -61,26 +71,20 @@ class DummyNodeTransform(TransformBase):
                 "atom_origin_type",
                 "batch",
                 "atom_compound_idx",
-            }:
-                continue
-            if isinstance(value, torch.Tensor):
-                pretransform_attrs[key] = value
-        return pretransform_attrs
+            }
+            and isinstance(v, torch.Tensor)
+        }
 
     def _create_dummy_features(
         self, attr: torch.Tensor, num_dummies: int
     ) -> torch.Tensor:
-        """Create dummy features matching the attribute's shape."""
-        feature_init_fn = (
-            torch.zeros if self.feature_init == "zeros" else torch.ones
-        )
-
         shape = list(attr.shape)
-        shape[0] = (
-            num_dummies  # Replace the first dimension with number of dummy nodes
+        shape[0] = num_dummies
+        return (
+            torch.zeros(*shape, dtype=attr.dtype, device=attr.device)
+            if self.feature_init == "zeros"
+            else torch.ones(*shape, dtype=attr.dtype, device=attr.device)
         )
-
-        return feature_init_fn(shape, dtype=attr.dtype, device=attr.device)
 
     def _connect_dummy_to_node(
         self,
@@ -88,33 +92,50 @@ class DummyNodeTransform(TransformBase):
         dummy_idx: int,
         node_idx: int,
         dummy_bond: Optional[torch.Tensor],
-    ) -> None:
+    ):
         new_edges = []
-        new_features = []
+        new_edge_attrs = []
+        new_origin_types = []
 
+        # Handle from_dummy connections
         if self.connection_type in ["bidirectional", "from_dummy"]:
             new_edges.append(
                 torch.tensor(
                     [[dummy_idx], [node_idx]], device=data.edge_index.device
                 )
             )
-            if hasattr(data, "edge_attr") and dummy_bond is not None:
-                new_features.append(dummy_bond)
+            new_origin_types.append(self.dummy_origin_type)
+            if dummy_bond is not None:
+                new_edge_attrs.append(dummy_bond)
 
+        # Handle to_dummy connections
         if self.connection_type in ["bidirectional", "to_dummy"]:
             new_edges.append(
                 torch.tensor(
                     [[node_idx], [dummy_idx]], device=data.edge_index.device
                 )
             )
-            if hasattr(data, "edge_attr") and dummy_bond is not None:
-                new_features.append(dummy_bond)
+            new_origin_types.append(self.dummy_origin_type)
+            if dummy_bond is not None:
+                new_edge_attrs.append(dummy_bond)
 
+        # Update data
         if new_edges:
-            data.edge_index = torch.cat([data.edge_index, *new_edges], dim=1)
+            data.edge_index = torch.cat([data.edge_index] + new_edges, dim=1)
             if hasattr(data, "edge_attr") and dummy_bond is not None:
                 data.edge_attr = torch.cat(
-                    [data.edge_attr, *new_features], dim=0
+                    [data.edge_attr] + new_edge_attrs, dim=0
+                )
+            if hasattr(data, "edge_origin_type"):
+                data.edge_origin_type = torch.cat(
+                    [
+                        data.edge_origin_type,
+                        torch.tensor(
+                            new_origin_types,
+                            dtype=torch.long,
+                            device=data.edge_origin_type.device,
+                        ),
+                    ]
                 )
 
     def _add_global_dummy(
@@ -122,40 +143,40 @@ class DummyNodeTransform(TransformBase):
         data: Data,
         dummy_feature: torch.Tensor,
         dummy_bond: Optional[torch.Tensor],
-    ) -> None:
-        """Add a single global dummy node."""
+    ):
+        # Add dummy node
         data.x = torch.cat([data.x, dummy_feature], dim=0)
         dummy_idx = data.x.size(0) - 1
 
-        for i in range(dummy_idx):
-            self._connect_dummy_to_node(data, dummy_idx, i, dummy_bond)
+        # Connect to all existing nodes
+        for node_idx in range(data.x.size(0) - 1):
+            self._connect_dummy_to_node(data, dummy_idx, node_idx, dummy_bond)
 
-        # Handle pretransform attributes
-        pretransform_attrs = self._get_pretransform_attributes(data)
-        for attr_name, attr_value in pretransform_attrs.items():
-            dummy_attr = self._create_dummy_features(attr_value, 1)
-            setattr(
-                data, attr_name, torch.cat([attr_value, dummy_attr], dim=0)
-            )
-
+        # Update origin tracking
         data.atom_origin_type = torch.cat(
             [
                 data.atom_origin_type,
                 torch.tensor(
-                    [AtomOriginType.DUMMY], device=data.atom_origin_type.device
+                    [AtomOriginType.DUMMY.value],
+                    device=data.atom_origin_type.device,
                 ),
             ]
         )
-
         if hasattr(data, "atom_compound_idx"):
             data.atom_compound_idx = torch.cat(
                 [
                     data.atom_compound_idx,
-                    torch.tensor(
-                        [-1],
-                        device=data.atom_compound_idx.device,
-                    ),
+                    torch.tensor([-1], device=data.atom_compound_idx.device),
                 ]
+            )
+
+        # Extend pre-transform attributes
+        for attr_name, attr_value in self._get_pretransform_attributes(
+            data
+        ).items():
+            dummy_attr = self._create_dummy_features(attr_value, 1)
+            setattr(
+                data, attr_name, torch.cat([attr_value, dummy_attr], dim=0)
             )
 
     def _add_reactant_product_dummies(
@@ -163,31 +184,29 @@ class DummyNodeTransform(TransformBase):
         data: Data,
         dummy_feature: torch.Tensor,
         dummy_bond: Optional[torch.Tensor],
-    ) -> None:
-        n_atoms = (
-            data.x.size(0) // 2
-        )  # assuming equal split between reactants and products
-
+    ):
+        # Add two dummy nodes
         data.x = torch.cat([data.x, dummy_feature, dummy_feature], dim=0)
         dummy_reactant_idx = data.x.size(0) - 2
         dummy_product_idx = data.x.size(0) - 1
 
-        for i in range(n_atoms):
+        # Get reactant/product indices
+        reac_mask = data.atom_origin_type == AtomOriginType.REACTANT
+        prod_mask = data.atom_origin_type == AtomOriginType.PRODUCT
+        reac_indices = torch.where(reac_mask)[0].tolist()
+        prod_indices = torch.where(prod_mask)[0].tolist()
+
+        # Connect dummies to their respective nodes
+        for idx in reac_indices:
             self._connect_dummy_to_node(
-                data, dummy_reactant_idx, i, dummy_bond
+                data, dummy_reactant_idx, idx, dummy_bond
             )
+        for idx in prod_indices:
             self._connect_dummy_to_node(
-                data, dummy_product_idx, i + n_atoms, dummy_bond
+                data, dummy_product_idx, idx, dummy_bond
             )
 
-        # Handle pretransform attributes
-        pretransform_attrs = self._get_pretransform_attributes(data)
-        for attr_name, attr_value in pretransform_attrs.items():
-            dummy_attr = self._create_dummy_features(attr_value, 2)
-            setattr(
-                data, attr_name, torch.cat([attr_value, dummy_attr], dim=0)
-            )
-
+        # Connect dummies to each other if needed
         if self.dummy_dummy_connection == "bidirectional":
             dummy_edges = torch.tensor(
                 [
@@ -201,24 +220,42 @@ class DummyNodeTransform(TransformBase):
                 data.edge_attr = torch.cat(
                     [data.edge_attr, dummy_bond.repeat(2, 1)], dim=0
                 )
+            if hasattr(data, "edge_origin_type"):
+                data.edge_origin_type = torch.cat(
+                    [
+                        data.edge_origin_type,
+                        torch.tensor(
+                            [self.dummy_origin_type] * 2,
+                            device=data.edge_origin_type.device,
+                        ),
+                    ]
+                )
 
+        # Update origin tracking
         data.atom_origin_type = torch.cat(
             [
                 data.atom_origin_type,
                 torch.tensor(
-                    [AtomOriginType.DUMMY, AtomOriginType.DUMMY],
+                    [AtomOriginType.DUMMY.value] * 2,
                     device=data.atom_origin_type.device,
                 ),
             ]
         )
-
         if hasattr(data, "atom_compound_idx"):
             data.atom_compound_idx = torch.cat(
                 [
                     data.atom_compound_idx,
                     torch.tensor(
-                        [-1, -1],
-                        device=data.atom_compound_idx.device,
+                        [-1, -1], device=data.atom_compound_idx.device
                     ),
                 ]
+            )
+
+        # Extend pre-transform attributes
+        for attr_name, attr_value in self._get_pretransform_attributes(
+            data
+        ).items():
+            dummy_attr = self._create_dummy_features(attr_value, 2)
+            setattr(
+                data, attr_name, torch.cat([attr_value, dummy_attr], dim=0)
             )

@@ -10,7 +10,7 @@ from deeprxn.model.model_base import Model
 from deeprxn.representation.rxn_graph_base import AtomOriginType
 
 
-class Hybrid(Model):
+class MaskedDMG(Model):
     """Custom model using configurable components."""
 
     def __init__(
@@ -18,20 +18,15 @@ class Hybrid(Model):
         num_node_features: int,
         num_edge_features: int,
         hidden_channels: int,
-        depth: int,
-        att_depth: int,
+        layers,
         separate: bool,
-        shared_weights: bool,
         encoder_cfg: DictConfig,
         layer_cfg: DictConfig,
-        att_layer_cfg: DictConfig,
         pool_cfg: DictConfig,
         head_cfg: DictConfig,
     ):
         """Initialize Custom model."""
         super().__init__()
-        self.depth = depth
-        self.att_depth = att_depth
         self.separate = separate
 
         self.encoders = nn.ModuleList()
@@ -39,22 +34,9 @@ class Hybrid(Model):
             self.encoders.append(hydra.utils.instantiate(config))
 
         self.layers = nn.ModuleList()
-        if shared_weights:
-            layer = hydra.utils.instantiate(layer_cfg)
-            for _ in range(self.depth):
-                self.layers.append(layer)
-        else:
-            for _ in range(self.depth):
-                self.layers.append(hydra.utils.instantiate(layer_cfg))
-
-        self.att_layers = nn.ModuleList()
-        if shared_weights:
-            layer = hydra.utils.instantiate(att_layer_cfg)
-            for _ in range(self.att_depth):
-                self.att_layers.append(layer)
-        else:
-            for _ in range(self.att_depth):
-                self.att_layers.append(hydra.utils.instantiate(att_layer_cfg))
+        for layer in layers:
+            partial_layer = hydra.utils.instantiate(layer_cfg)
+            self.layers.append(partial_layer(mode=layer))
 
         self.pool = hydra.utils.instantiate(pool_cfg)
         self.head = hydra.utils.instantiate(head_cfg)
@@ -67,9 +49,6 @@ class Hybrid(Model):
 
         for layer in self.layers:
             batch = layer(batch)
-
-        for att_layer in self.att_layers:
-            batch = att_layer(batch)
 
         if self.separate:
             num_graphs = batch.ptr.size(0) - 1

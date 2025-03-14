@@ -26,7 +26,7 @@ class GPSDoubleAttLayer(AttLayer):
         batch_norm: bool = False,
         with_nn: bool = False,
     ):
-        AttLayer.__init__(self, in_channels, out_channels)
+        AttLayer.__init__(self)
         self.hidden_size = hidden_size
         self.layer_norm = layer_norm
         self.batch_norm = batch_norm

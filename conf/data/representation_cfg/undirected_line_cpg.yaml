@@ -3,6 +3,8 @@ _recursive_: False
 in_channel_multiplier: 1
 connection_direction: null
 concat_origin_feature: false
+pre_transform_cfg: null
+feature_aggregation: add
 # defaults:
 #   - pre_transform_cfg:
 #     - randomwalk
