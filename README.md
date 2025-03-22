@@ -27,21 +27,26 @@ Clone this repository and change directory:
 git clone ssh://git@gitlab.tuwien.ac.at:822/e165-03-1_theoretische_materialchemie/deeprxn.git
 cd deeprxn
 ```
-We recommend to install the package inside a conda environment (or any other virtual environment of your choice). Follow the pytorch and torch_geometric installation instructions to install for GPUs (here, for CPUs):
+We recommend to install the package inside a Conda environment (or any other virtual environment of your choice).
 
-For torch scatter and torch sparse, you need might also need to install specific binaries. (pip install torch-scatter torch-sparse -f https://data.pyg.org/whl/torch-${TORCH}+${CUDA}.html
-where ${TORCH} should be replaced by your PyTorch version (e.g., 2.2.0), and ${CUDA} should be replaced by your CUDA version (e.g., cpu, cu118 or cu121).)
+**Note:** For `torch_scatter`and `torch_sparse`, you need might also need to install specific binaries: 
 ```
-conda create -n deeprxn python=3.10
-conda activate deeprxn
-pip install --upgrade pip setuptools wheel
-pip install rdkit numpy scikit-learn torch pandas
-pip install hydra-core --upgrade
-pip install torch_scatter torch_sparse
-pip install torch_geometric
-pip install wandb
-pip install -e .
+pip install torch-scatter torch-sparse -f https://data.pyg.org/whl/torch-${TORCH}+${CUDA}.html
+```
+where `${TORCH}` should be replaced by your PyTorch version (e.g., 2.6.0), and `${CUDA}` should be replaced by your CUDA version (e.g., `cpu`, `cu118` or `cu121`).
 
+Here we is an example installation of PyTorch 2.5.1 for CPU. To install for GPUs, follow the PyTorch and `torch_geometric` installation instructions.
+
+```
+conda create -n deeprxn python=3.10 && \
+conda activate deeprxn && \
+pip install rdkit numpy scikit-learn pandas && \
+pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu && \
+pip install --upgrade hydra-core && \
+pip install torch_geometric && \
+pip install pyg_lib torch_scatter torch_sparse torch_cluster torch_spline_conv -f https://data.pyg.org/whl/torch-2.5.0+cpu.html && \
+pip install wandb && \
+pip install -e .
 ```
 
 ## Data
