@@ -1,3 +1,4 @@
+import itertools
 from typing import Dict, List, Optional
 
 import hydra
@@ -21,10 +22,11 @@ class LineDMG(RxnGraphBase):
         label: float,
         atom_featurizer: callable,
         bond_featurizer: callable,
-        connection_direction: str = "bidirectional",
         concat_origin_feature: bool = False,
         in_channel_multiplier: int = 1,
         pre_transform_cfg: Optional[Dict[str, DictConfig]] = None,
+        use_directed: bool = True,
+        feature_aggregation: Optional[str] = None,
         enthalpy=None,
     ):
         """
@@ -38,8 +40,23 @@ class LineDMG(RxnGraphBase):
             bond_featurizer=bond_featurizer,
             enthalpy=enthalpy,
         )
-        self.connection_direction = connection_direction
         self.pre_transform_cfg = pre_transform_cfg
+        self.use_directed = use_directed
+        self.feature_aggregation = feature_aggregation
+
+        dummy_atom = None
+        dummy_bond = None
+        atom_feat_len = len(atom_featurizer(dummy_atom))
+        bond_feat_len = len(bond_featurizer(dummy_bond))
+        
+        if self.use_directed:
+            self.reactant_feat_length = atom_feat_len + bond_feat_len
+        else:
+            if self.feature_aggregation in ["sum", "mean", "max"]:
+                self.reactant_feat_length = atom_feat_len + bond_feat_len
+            else:
+                self.reactant_feat_length = atom_feat_len * 2 + bond_feat_len
+        self.product_feat_length = self.reactant_feat_length
 
         self.n_atoms_reac = self.mol_reac.GetNumAtoms()
         self.n_atoms_prod = self.mol_prod.GetNumAtoms()
@@ -180,68 +197,127 @@ class LineDMG(RxnGraphBase):
                 self.atom_featurizer(mol.GetAtomWithIdx(atom_idx)),
             )
         return self.atom_featurizer(mol.GetAtomWithIdx(atom_idx))
+    
+    def _add_self_loops(self, is_reactant: bool):
+        """Add self-loops for isolated atoms with direction-aware features."""
+        mol = self.mol_reac if is_reactant else self.mol_prod
+        n_atoms = self.n_atoms_reac if is_reactant else self.n_atoms_prod
+        origins = self.reac_origins if is_reactant else self.prod_origins
+        compound_offset = 0 if is_reactant else self.n_reactant_compounds
+        origin_type = AtomOriginType.REACTANT if is_reactant else AtomOriginType.PRODUCT
+
+        for atom_idx in range(n_atoms):
+            # Get global index for products
+            if not is_reactant:
+                global_idx = self.ri2pi[atom_idx]
+            else:
+                global_idx = atom_idx
+
+            # Check if atom has any bonds
+            has_bonds = any(mol.GetBondBetweenAtoms(global_idx, j) 
+                        for j in range(mol.GetNumAtoms()) if j != global_idx)
+
+            if not has_bonds:
+                compound_idx = origins[global_idx] + compound_offset
+                atom_feat = self._get_enhanced_atom_features(mol, global_idx, compound_idx)
+                
+                if self.use_directed:
+                    features = atom_feat + self.zero_edge_features
+                else:
+                    if self.feature_aggregation in ["sum", "mean", "max"]:
+                        features = atom_feat + self.zero_edge_features
+                    else:
+                        features = atom_feat + atom_feat + self.zero_edge_features
+
+                self.line_nodes.append((atom_idx, atom_idx))
+                self.line_node_features.append(features)
+                self.atom_origin_type.append(origin_type)
+                self.atom_compound_idx.append(compound_idx)
+    
+    def _get_line_node_features(self, atom1_feat: List[float], 
+                               atom2_feat: List[float],
+                               bond_feat: List[float]) -> List[float]:
+        """Create line node features based on directionality and aggregation."""
+        if self.use_directed:
+            # Directed: source atom + bond features
+            return atom1_feat + bond_feat
+        else:
+            # Undirected: apply aggregation if specified
+            if self.feature_aggregation == "sum":
+                return [a+b for a,b in zip(atom1_feat, atom2_feat)] + bond_feat
+            elif self.feature_aggregation == "mean":
+                return [(a+b)/2 for a,b in zip(atom1_feat, atom2_feat)] + bond_feat
+            elif self.feature_aggregation == "max":
+                return [max(a,b) for a,b in zip(atom1_feat, atom2_feat)] + bond_feat
+            else:  # Concatenation
+                return atom1_feat + bond_feat + atom2_feat
 
     def _build_reactant_line_graph(self):
-        """Build line graph for reactant molecules."""
-        edge_map = {}
+        """Build line graph for reactant molecules with undirected edges."""
+        edge_map = {}  # Maps sorted edge tuples to line node indices
         current_idx = 0
+        processed_edges = set()  # Track undirected edges
 
-        atoms_with_bonds = set()
-
+        # Step 1: Create line nodes for reactant edges
         for i in range(self.n_atoms_reac):
-            for j in range(self.n_atoms_reac):
-                if i != j:
-                    bond = self.mol_reac.GetBondBetweenAtoms(i, j)
-                    if bond:
-                        compound_i = self.reac_origins[i]
-                        compound_j = self.reac_origins[j]
-                        if compound_i == compound_j:
-                            source_atom_features = (
-                                self._get_enhanced_atom_features(
-                                    self.mol_reac, i, compound_i
-                                )
-                            )
-                            bond_features = self.bond_featurizer(bond)
+            for j in range(i + 1, self.n_atoms_reac):  # Avoid duplicate checks
+                bond = self.mol_reac.GetBondBetweenAtoms(i, j)
+                if bond:
+                    compound_i = self.reac_origins[i]
+                    compound_j = self.reac_origins[j]
+                    if compound_i != compound_j:
+                        continue
 
-                            node_features = (
-                                source_atom_features + bond_features
-                            )
+                    # Use sorted tuple for undirected edges
+                    edge = tuple(sorted((i, j)))
+                    if edge in processed_edges:
+                        continue
+                    processed_edges.add(edge)
 
-                            self.line_nodes.append((i, j))
-                            self.line_node_features.append(node_features)
-                            self.atom_origin_type.append(
-                                AtomOriginType.REACTANT
-                            )
-                            self.atom_compound_idx.append(compound_i)
-                            edge_map[(i, j)] = current_idx
-                            current_idx += 1
-                            atoms_with_bonds.add(i)
+                    # Get features
+                    atom_i_feat = self._get_enhanced_atom_features(
+                        self.mol_reac, i, compound_i
+                    )
+                    atom_j_feat = self._get_enhanced_atom_features(
+                        self.mol_reac, j, compound_j
+                    )
+                    bond_feat = self.bond_featurizer(bond)
+                    node_features = self._get_line_node_features(
+                        atom_i_feat, atom_j_feat, bond_feat
+                    )
 
-        for i in range(self.n_atoms_reac):
-            if i not in atoms_with_bonds:
-                compound_i = self.reac_origins[i]
-                atom_features = self._get_enhanced_atom_features(
-                    self.mol_reac, i, compound_i
-                )
-                node_features = atom_features + self.zero_edge_features
+                    # Add line node (both directions map to same index)
+                    self.line_nodes.append(edge)
+                    self.line_node_features.append(node_features)
+                    self.atom_origin_type.append(AtomOriginType.REACTANT)
+                    self.atom_compound_idx.append(compound_i)
+                    edge_map[edge] = current_idx
+                    current_idx += 1
 
-                self.line_nodes.append((i, i))  # Self-loop in original graph
-                self.line_node_features.append(node_features)
-                self.atom_origin_type.append(AtomOriginType.REACTANT)
-                self.atom_compound_idx.append(self.reac_origins[i])
-                edge_map[(i, i)] = current_idx
-                current_idx += 1
+        # Step 2: Add self-loops for isolated atoms (same as before)
+        self._add_self_loops(is_reactant=True)
 
-        for (src1, tgt1), idx1 in edge_map.items():
-            for (src2, tgt2), idx2 in edge_map.items():
-                if tgt1 == src2 and idx1 != idx2:
-                    if (
-                        self.atom_compound_idx[idx1]
-                        == self.atom_compound_idx[idx2]
-                    ):
-                        self.line_edges.append((idx1, idx2))
-                        self.line_edge_features.append([1.0, 0.0])
-                        self.edge_origin_type.append(EdgeOriginType.REACTANT)
+        # Step 3: Create line edges (adjacency)
+        processed_pairs = set()
+        edges = list(edge_map.items())
+        
+        for (edge_a, idx1), (edge_b, idx2) in itertools.product(edges, edges):
+            if idx1 == idx2:
+                continue
+
+            # Check adjacency (shared atom in original graph)
+            a_nodes = set(edge_a)
+            b_nodes = set(edge_b)
+            if a_nodes.intersection(b_nodes):
+                # Ensure we process each pair only once
+                pair = tuple(sorted((idx1, idx2)))
+                if pair not in processed_pairs:
+                    self.line_edges.extend([(idx1, idx2), (idx2, idx1)])
+                    self.line_edge_features.extend([[1.0, 0.0], [1.0, 0.0]])
+                    self.edge_origin_type.extend(
+                        [EdgeOriginType.REACTANT, EdgeOriginType.REACTANT]
+                    )
+                    processed_pairs.add(pair)
 
     @staticmethod
     def _get_component_indices(origins) -> Dict[int, List[int]]:
@@ -259,87 +335,79 @@ class LineDMG(RxnGraphBase):
                 component_indices[origin] = []
             component_indices[origin].append(atom_idx)
         return component_indices
-
+    
     def _build_product_line_graph(self):
-        """Build line graph for product molecules."""
+        """Build line graph for product molecules with undirected edges."""
         offset = len(self.line_nodes)
         edge_map = {}
         current_idx = offset
+        processed_edges = set()
 
-        atoms_with_bonds = set()
-
+        # Step 1: Create line nodes for product edges (analogous to reactants)
         for i in range(self.n_atoms_prod):
-            prod_i = self.ri2pi[i]
-            for j in range(self.n_atoms_prod):
-                if i != j:
-                    prod_j = self.ri2pi[j]
-                    bond = self.mol_prod.GetBondBetweenAtoms(prod_i, prod_j)
-                    if bond:
-                        compound_i = self.prod_origins[prod_i]
-                        compound_j = self.prod_origins[prod_j]
-                        if compound_i == compound_j:
-                            product_compound_idx = (
-                                compound_i + self.n_reactant_compounds
-                            )
-                            source_atom_features = (
-                                self._get_enhanced_atom_features(
-                                    self.mol_prod, prod_i, product_compound_idx
-                                )
-                            )
-                            bond_features = self.bond_featurizer(bond)
+            pi = self.ri2pi[i]
+            for j in range(i + 1, self.n_atoms_prod):
+                pj = self.ri2pi[j]
+                bond = self.mol_prod.GetBondBetweenAtoms(pi, pj)
+                if bond:
+                    compound_pi = self.prod_origins[pi]
+                    compound_pj = self.prod_origins[pj]
+                    if compound_pi != compound_pj:
+                        continue
 
-                            node_features = (
-                                source_atom_features + bond_features
-                            )
+                    edge = tuple(sorted((i, j)))
+                    if edge in processed_edges:
+                        continue
+                    processed_edges.add(edge)
 
-                            self.line_nodes.append((i, j))
-                            self.line_node_features.append(node_features)
-                            self.atom_origin_type.append(
-                                AtomOriginType.PRODUCT
-                            )
-                            self.atom_compound_idx.append(
-                                compound_i + self.n_reactant_compounds
-                            )
-                            edge_map[(i, j)] = current_idx
-                            current_idx += 1
-                            atoms_with_bonds.add(i)
+                    # Get both atom features
+                    product_compound_idx = compound_pi + self.n_reactant_compounds
+                    atom_pi_feat = self._get_enhanced_atom_features(
+                        self.mol_prod, pi, product_compound_idx
+                    )
+                    atom_pj_feat = self._get_enhanced_atom_features(
+                        self.mol_prod, pj, product_compound_idx
+                    )
+                    bond_feat = self.bond_featurizer(bond)
+                    node_features = self._get_line_node_features(
+                        atom_pi_feat, atom_pj_feat, bond_feat
+                    )
 
-        for i in range(self.n_atoms_prod):
-            if i not in atoms_with_bonds:
-                prod_i = self.ri2pi[i]
-                compound_i = self.prod_origins[prod_i]
-                product_compound_idx = compound_i + self.n_reactant_compounds
+                    # Create line node
+                    self.line_nodes.append(edge)
+                    self.line_node_features.append(node_features)
+                    self.atom_origin_type.append(AtomOriginType.PRODUCT)
+                    self.atom_compound_idx.append(product_compound_idx)
+                    edge_map[edge] = current_idx
+                    current_idx += 1
 
-                atom_features = self._get_enhanced_atom_features(
-                    self.mol_prod, prod_i, product_compound_idx
-                )
-                node_features = atom_features + self.zero_edge_features
+        # Step 2: Add self-loops for product atoms
+        self._add_self_loops(is_reactant=False)
 
-                self.line_nodes.append((i, i))
-                self.line_node_features.append(node_features)
-                self.atom_origin_type.append(AtomOriginType.PRODUCT)
-                self.atom_compound_idx.append(
-                    self.prod_origins[prod_i] + self.n_reactant_compounds
-                )
-                edge_map[(i, i)] = current_idx
-                current_idx += 1
+        # Step 3: Create line edges (analogous to reactants)
+        processed_pairs = set()
+        edges = list(edge_map.items())
+        
+        for (edge_a, idx1), (edge_b, idx2) in itertools.product(edges, edges):
+            if idx1 == idx2:
+                continue
 
-        for (src1, tgt1), idx1 in edge_map.items():
-            for (src2, tgt2), idx2 in edge_map.items():
-                if tgt1 == src2 and idx1 != idx2:
-                    if (
-                        self.atom_compound_idx[idx1]
-                        == self.atom_compound_idx[idx2]
-                    ):
-                        self.line_edges.append((idx1, idx2))
-                        self.line_edge_features.append([0.0, 1.0])
-                        self.edge_origin_type.append(EdgeOriginType.PRODUCT)
+            a_nodes = set(edge_a)
+            b_nodes = set(edge_b)
+            if a_nodes.intersection(b_nodes):
+                pair = tuple(sorted((idx1, idx2)))
+                if pair not in processed_pairs:
+                    self.line_edges.extend([(idx1, idx2), (idx2, idx1)])
+                    self.line_edge_features.extend([[0.0, 1.0], [0.0, 1.0]])
+                    self.edge_origin_type.extend(
+                        [EdgeOriginType.PRODUCT, EdgeOriginType.PRODUCT]
+                    )
+                    processed_pairs.add(pair)
 
     def _build_graph(self):
         """Build line graph representation."""
         self._build_reactant_line_graph()
         self._build_product_line_graph()
-        # Connection logic between reactant and product line graphs will be added later
 
     def to_pyg_data(self) -> tg.data.Data:
         """Convert the line graph to a PyTorch Geometric Data object."""
@@ -366,5 +434,9 @@ class LineDMG(RxnGraphBase):
 
         if self.enthalpy is not None:
             data.enthalpy = torch.tensor([self.enthalpy], dtype=torch.float)
+
+        # print(data.x.shape)
+        # print(data.edge_index.shape)
+        # print(data.edge_attr.shape)
 
         return data
