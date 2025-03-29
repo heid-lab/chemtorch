@@ -68,6 +68,9 @@ class MaskedAttLayer(AttLayer):
             batch.atom_origin_type, batch.batch, fill_value=-1
         )
 
+        if self.mode == "qm" or self.mode == "qm_inter" or self.mode == "qm_local":
+            qm_dense, qm_mask = to_dense_batch(batch.qm_f, batch.batch, fill_value=0)
+
         batch_size, max_nodes, _ = x_dense.size()
 
         if self.mode in [
@@ -79,6 +82,7 @@ class MaskedAttLayer(AttLayer):
             "local_compound",
             "same_compound",
             "other_compounds_same_category",
+            "qm_inter",
         ]:
             is_reactant = atom_types_dense == AtomOriginType.REACTANT.value
             is_product = atom_types_dense == AtomOriginType.PRODUCT.value
@@ -92,7 +96,7 @@ class MaskedAttLayer(AttLayer):
             ~mask
         )  # this is important due to bug with padding
 
-        if self.mode == "local":
+        if self.mode == "local" or self.mode == "qm_local":
             # Get dimensions and device.
             batch_size, max_nodes, _ = x_dense.size()
             device = x_dense.device
@@ -139,7 +143,7 @@ class MaskedAttLayer(AttLayer):
                 diag_eye & valid_diag.unsqueeze(-1)
             )
 
-        if self.mode == "inter":
+        if self.mode == "inter" or self.mode == "qm_inter":
             attention_mask = torch.logical_or(
                 attention_mask,
                 is_reactant.unsqueeze(-1) & is_product.unsqueeze(1),
@@ -348,7 +352,7 @@ class MaskedAttLayer(AttLayer):
                 | different_compound_same_category
             )
 
-        if self.mode == "self":
+        if self.mode == "self" or self.mode == "qm":
             attention_mask = None
         else:
             attention_mask = attention_mask.repeat_interleave(
@@ -356,14 +360,24 @@ class MaskedAttLayer(AttLayer):
             )
             attention_mask = ~attention_mask
 
-        att_output, _ = self.attention(
-            x_dense,
-            x_dense,
-            x_dense,
-            # key_padding_mask=~mask, TODO: WHY NAN ????????????????????????????
-            attn_mask=attention_mask,
-            need_weights=False,
-        )
+        if self.mode == "qm" or self.mode == "qm_inter" or self.mode == "qm_local":
+            att_output, _ = self.attention(
+                qm_dense,
+                qm_dense,
+                x_dense,
+                # key_padding_mask=~mask, TODO: WHY NAN ????????????????????????????
+                attn_mask=attention_mask,
+                need_weights=False,
+            )
+        else:
+            att_output, _ = self.attention(
+                x_dense,
+                x_dense,
+                x_dense,
+                # key_padding_mask=~mask, TODO: WHY NAN ????????????????????????????
+                attn_mask=attention_mask,
+                need_weights=False,
+            )
 
         att_output = att_output[mask] + batch.x
 

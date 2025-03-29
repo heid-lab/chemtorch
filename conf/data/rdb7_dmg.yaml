@@ -3,7 +3,7 @@ _recursive_: False
 
 defaults:
   - dataset_cfg: rdb7new
-  - featurizer_cfg: featurizer
+  - featurizer_cfg: standard
   - representation_cfg: dmg
   - transform_cfg: null
   - _self_
