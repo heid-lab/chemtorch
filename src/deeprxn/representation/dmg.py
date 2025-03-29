@@ -21,6 +21,7 @@ class DMG(RxnGraphBase):
         label: float,
         atom_featurizer: callable,
         bond_featurizer: callable,
+        qm_featurizer: callable,
         connection_direction: str = "bidirectional",
         concat_origin_feature: bool = False,
         in_channel_multiplier: int = 1,
@@ -50,6 +51,9 @@ class DMG(RxnGraphBase):
         self.concat_origin_feature = concat_origin_feature
         self.pre_transform_cfg = pre_transform_cfg
         self.component_features = {}
+
+        self.qm_featurizer = qm_featurizer
+        self.qm_f = []
 
         self.n_atoms_reac = self.mol_reac.GetNumAtoms()
         self.n_atoms_prod = self.mol_prod.GetNumAtoms()
@@ -204,6 +208,8 @@ class DMG(RxnGraphBase):
             self.f_atoms.append(
                 self.atom_featurizer(self.mol_reac.GetAtomWithIdx(i))
             )
+            if self.qm_featurizer is not None:
+                self.qm_f.append(self.qm_featurizer(self.mol_reac.GetAtomWithIdx(i)))
             self.atom_origin_type.append(AtomOriginType.REACTANT)
             compound_idx = self.reac_origins[i]
             self.atom_compound_idx.append(compound_idx)
@@ -233,6 +239,10 @@ class DMG(RxnGraphBase):
             self.f_atoms.append(
                 self.atom_featurizer(self.mol_prod.GetAtomWithIdx(prod_idx))
             )
+            if self.qm_featurizer is not None:
+                self.qm_f.append(
+                    self.qm_featurizer(self.mol_prod.GetAtomWithIdx(prod_idx))
+                )
             self.atom_origin_type.append(AtomOriginType.PRODUCT)
             compound_idx = (
                 self.prod_origins[prod_idx] + self.n_reactant_compounds
@@ -314,6 +324,10 @@ class DMG(RxnGraphBase):
         data.edge_origin_type = torch.tensor(
             self.edge_origin_type, dtype=torch.long
         )
+
+        if self.qm_featurizer is not None:
+            data.qm_f = torch.tensor(self.qm_f, dtype=torch.float)
+
         node_encodings = torch.tensor(
             [self._get_node_type_encoding(t) for t in self.atom_origin_type],
             dtype=torch.float,

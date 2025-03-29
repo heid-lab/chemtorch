@@ -1,0 +1,6 @@
+defaults:
+  - atom_featurizer_cfg: atom_rdkit_organic
+  - bond_featurizer_cfg: bond_rdkit_base
+  - external_atom_featurizer_cfg: qm_atom
+  - single_featurizer_cfg: null
+  - _self_

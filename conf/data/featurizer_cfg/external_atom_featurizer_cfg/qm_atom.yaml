@@ -1,0 +1,3 @@
+_target_: deeprxn.featurizer.qm_atom.QMAtomFeaturizer
+
+path: data/barriers_rdb7new_3/atom_features.pkl
