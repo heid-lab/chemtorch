@@ -2,7 +2,7 @@ from typing import List, Optional
 
 from rdkit.Chem.rdchem import Bond, BondType
 
-from deeprxn.featurizer.featurizer_base import FeaturizerBase
+from deeprxn.featurizer.bond_featurizer.featurizer_base import FeaturizerBase
 
 
 class RDKitBaseBondFeaturizer(FeaturizerBase):

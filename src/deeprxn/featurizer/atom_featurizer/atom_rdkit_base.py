@@ -2,7 +2,7 @@ from typing import List, Optional
 
 from rdkit.Chem.rdchem import Atom, HybridizationType
 
-from deeprxn.featurizer.featurizer_base import FeaturizerBase
+from deeprxn.featurizer.atom_featurizer.featurizer_base import FeaturizerBase
 
 
 class RDKitBaseAtomFeaturizer(FeaturizerBase):

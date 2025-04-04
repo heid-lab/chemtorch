@@ -22,6 +22,7 @@ class ChemDataset(Dataset):
         atom_featurizer,
         bond_featurizer,
         qm_featurizer,
+        single_featurizer,
         cache_graphs,
         max_cache_size,
         representation_cfg,
@@ -34,6 +35,7 @@ class ChemDataset(Dataset):
         self.atom_featurizer = atom_featurizer
         self.bond_featurizer = bond_featurizer
         self.qm_featurizer = qm_featurizer
+        self.single_featurizer = single_featurizer
         self.cache_graphs = cache_graphs
         self.representation_cfg = representation_cfg
         self.transform_cfg = transform_cfg
@@ -77,6 +79,7 @@ class ChemDataset(Dataset):
             atom_featurizer=self.atom_featurizer,
             bond_featurizer=self.bond_featurizer,
             qm_featurizer=self.qm_featurizer,
+            single_featurizer=self.single_featurizer,
         )
         molgraph_tg_data_obj = (
             molgraph.to_pyg_data()
@@ -143,8 +146,14 @@ def construct_loader(
 
     atom_featurizer = hydra.utils.instantiate(featurizer_cfg.atom_featurizer_cfg)
     bond_featurizer = hydra.utils.instantiate(featurizer_cfg.bond_featurizer_cfg)
-    if featurizer_cfg.external_atom_featurizer_cfg is not None:
+    if hasattr(featurizer_cfg, "external_atom_featurizer_cfg"):
         external_atom_featurizer = hydra.utils.instantiate(featurizer_cfg.external_atom_featurizer_cfg)
+    else:
+        external_atom_featurizer = None
+    if hasattr(featurizer_cfg, "single_featurizer_cfg"):
+        single_featurizer = hydra.utils.instantiate(featurizer_cfg.single_featurizer_cfg)
+    else:
+        single_featurizer = None
 
     dataset = ChemDataset(
         smiles=smiles,
@@ -152,6 +161,7 @@ def construct_loader(
         atom_featurizer=atom_featurizer,
         bond_featurizer=bond_featurizer,
         qm_featurizer=external_atom_featurizer,
+        single_featurizer=single_featurizer,
         cache_graphs=cache_graphs,
         max_cache_size=max_cache_size,
         representation_cfg=representation_cfg,

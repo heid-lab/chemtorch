@@ -14,6 +14,8 @@ class LineCGR(RxnGraphBase):
         label: float,
         atom_featurizer: callable,
         bond_featurizer: callable,
+        qm_featurizer= None,   
+        single_featurizer= None,
         in_channel_multiplier: int = 2,
         use_directed: bool = True,
         feature_aggregation: Optional[str] = None,

@@ -22,23 +22,17 @@ class DMG(RxnGraphBase):
         atom_featurizer: callable,
         bond_featurizer: callable,
         qm_featurizer: callable,
+        single_featurizer: callable,
         connection_direction: str = "bidirectional",
         concat_origin_feature: bool = False,
         in_channel_multiplier: int = 1,
         pre_transform_cfg: Optional[Dict[str, DictConfig]] = None,
         enthalpy=None,
+        extra_zero_fvec: bool = False,
     ):
         """Initialize graph.
 
         Args:
-            reaction_smiles: SMARTS reaction string with atom mapping
-            atom_featurizer: Function to generate atom features
-            bond_featurizer: Function to generate bond features
-            connection_direction: How to connect corresponding atoms:
-                None: No connections
-                "bidirectional": Both directions
-                "reactants_to_products": Reactant to product only
-                "products_to_reactants": Product to reactant only
         """
         super().__init__(
             smiles=smiles,
@@ -51,9 +45,12 @@ class DMG(RxnGraphBase):
         self.concat_origin_feature = concat_origin_feature
         self.pre_transform_cfg = pre_transform_cfg
         self.component_features = {}
+        self.extra_zero_fvec = extra_zero_fvec
 
         self.qm_featurizer = qm_featurizer
         self.qm_f = []
+        self.single_featurizer = single_featurizer
+        self.single_f = []
 
         self.n_atoms_reac = self.mol_reac.GetNumAtoms()
         self.n_atoms_prod = self.mol_prod.GetNumAtoms()
@@ -210,6 +207,10 @@ class DMG(RxnGraphBase):
             )
             if self.qm_featurizer is not None:
                 self.qm_f.append(self.qm_featurizer(self.mol_reac.GetAtomWithIdx(i)))
+            if self.single_featurizer is not None:
+                self.single_f.append(
+                    self.single_featurizer(self.mol_reac.GetAtomWithIdx(i))
+                )
             self.atom_origin_type.append(AtomOriginType.REACTANT)
             compound_idx = self.reac_origins[i]
             self.atom_compound_idx.append(compound_idx)
@@ -242,6 +243,10 @@ class DMG(RxnGraphBase):
             if self.qm_featurizer is not None:
                 self.qm_f.append(
                     self.qm_featurizer(self.mol_prod.GetAtomWithIdx(prod_idx))
+                )
+            if self.single_featurizer is not None:
+                self.single_f.append(
+                    self.single_featurizer(self.mol_prod.GetAtomWithIdx(prod_idx))
                 )
             self.atom_origin_type.append(AtomOriginType.PRODUCT)
             compound_idx = (
@@ -308,7 +313,6 @@ class DMG(RxnGraphBase):
     def to_pyg_data(self) -> tg.data.Data:
         """Convert the molecular graph to a PyTorch Geometric Data object."""
         data = tg.data.Data()
-        data.x = torch.tensor(self.f_atoms, dtype=torch.float)
         data.edge_index = (
             torch.tensor(self.edge_index, dtype=torch.long).t().contiguous()
         )
@@ -325,8 +329,22 @@ class DMG(RxnGraphBase):
             self.edge_origin_type, dtype=torch.long
         )
 
+        data.x = torch.tensor(self.f_atoms, dtype=torch.float)
+        if self.extra_zero_fvec:
+            n, d = data.x.shape
+            new_x = torch.zeros(n, 2 * d)
+            reactant_mask = data.atom_origin_type == AtomOriginType.REACTANT.value
+            product_mask = data.atom_origin_type == AtomOriginType.PRODUCT.value
+            new_x[reactant_mask, d:] = data.x[reactant_mask]
+            new_x[product_mask, :d] = data.x[product_mask]
+            data.x = new_x
+            # print(data.x.shape)
+            # print(data.x)
+
         if self.qm_featurizer is not None:
             data.qm_f = torch.tensor(self.qm_f, dtype=torch.float)
+        if self.single_featurizer is not None:
+            data.single_f = torch.tensor(self.single_f, dtype=torch.float)
 
         node_encodings = torch.tensor(
             [self._get_node_type_encoding(t) for t in self.atom_origin_type],

@@ -1,8 +1,8 @@
 import hydra
 import torch
-import wandb
 from omegaconf import DictConfig, OmegaConf
 
+import wandb
 from deeprxn.predict import predict_model
 from deeprxn.train import train
 from deeprxn.utils import set_seed
@@ -53,6 +53,8 @@ def main(cfg: DictConfig):
         merge=True,
     )
 
+    run_name = getattr(cfg, "run_name", None)
+
     # https://omegaconf.readthedocs.io/en/2.3_branch/usage.html#utility-functions
     # check out
     resolved_cfg = OmegaConf.to_container(cfg, resolve=True)
@@ -61,6 +63,7 @@ def main(cfg: DictConfig):
         wandb.init(
             project=cfg.project_name,
             group=cfg.group_name,
+            name=run_name,
             config=resolved_cfg,
         )
         wandb.log(

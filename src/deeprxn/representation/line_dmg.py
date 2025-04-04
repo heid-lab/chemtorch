@@ -22,6 +22,8 @@ class LineDMG(RxnGraphBase):
         label: float,
         atom_featurizer: callable,
         bond_featurizer: callable,
+        qm_featurizer= None,   
+        single_featurizer= None,
         concat_origin_feature: bool = False,
         in_channel_multiplier: int = 1,
         pre_transform_cfg: Optional[Dict[str, DictConfig]] = None,

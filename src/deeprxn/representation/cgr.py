@@ -22,6 +22,8 @@ class CGR(RxnGraphBase):
         label: float,
         atom_featurizer: callable,
         bond_featurizer: callable,
+        qm_featurizer= None,   
+        single_featurizer= None,
         in_channel_multiplier: int = 2,  # TODO: look into this
         concat_transform_features: bool = False,
         pre_transform_cfg: Optional[DictConfig] = None,

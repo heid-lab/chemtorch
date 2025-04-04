@@ -1,1 +1,1 @@
-_target_: deeprxn.featurizer.bond_bond_type.BondTypeFeaturizer
+_target_: deeprxn.featurizer.bond_featurizer.bond_bond_type.BondTypeFeaturizer

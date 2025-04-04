@@ -1,0 +1,8 @@
+linear_qm_f_enc:
+  _target_: deeprxn.encoder.linear_qm_f_enc.LinearQMFEncoder
+  in_channels: 13
+  out_channels: ${model.layer_cfg.mpnn_cfg.in_channels}
+  bias: true
+  as_variable: true
+  do_both: false
+  both_hidden: ${model.hidden_channels}
