@@ -126,7 +126,6 @@ def construct_loader(
         "val_ratio": dataset_cfg.get("val_ratio", 0.1),
         "test_ratio": dataset_cfg.get("test_ratio", 0.1),
         "use_pickle": dataset_cfg.get("use_pickle", False),
-        "use_enthalpy": dataset_cfg.get("use_enthalpy", False),
         "enthalpy_column": dataset_cfg.get("enthalpy_column", None),
         "seed_index": dataset_cfg.get("seed_index", None),
     }
