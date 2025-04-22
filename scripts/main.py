@@ -1,3 +1,5 @@
+import os
+
 import hydra
 import torch
 from omegaconf import DictConfig, OmegaConf
@@ -5,7 +7,7 @@ from omegaconf import DictConfig, OmegaConf
 import wandb
 from deeprxn.predict import predict_model
 from deeprxn.train import train
-from deeprxn.utils import set_seed
+from deeprxn.utils import load_model, set_seed
 
 OmegaConf.register_new_resolver("eval", eval)
 
@@ -17,21 +19,15 @@ def main(cfg: DictConfig):
     set_seed(cfg.seed)
 
     if cfg.use_cuda and torch.cuda.is_available():
-        cfg.device = "cuda"
+        device = torch.device("cuda")
     else:
-        cfg.device = "cpu"
+        device = torch.device("cpu")
+    print(f"Using device: {device}")
 
-    print(f"Using device: {cfg.device}")
-
-    # print(OmegaConf.to_yaml(cfg))
-
-    train_loader = hydra.utils.instantiate(
-        cfg.data, shuffle=True, split="train"
-    )
+    ############################# data instantiation #############################
+    train_loader = hydra.utils.instantiate(cfg.data, shuffle=True, split="train")
     val_loader = hydra.utils.instantiate(cfg.data, shuffle=False, split="val")
-    test_loader = hydra.utils.instantiate(
-        cfg.data, shuffle=False, split="test"
-    )
+    test_loader = hydra.utils.instantiate(cfg.data, shuffle=False, split="test")
 
     OmegaConf.update(
         cfg,
@@ -43,13 +39,6 @@ def main(cfg: DictConfig):
         cfg,
         "num_edge_features",
         train_loader.dataset.num_edge_features,
-        merge=True,
-    )
-
-    OmegaConf.update(
-        cfg,
-        "model_path",
-        f"{cfg.model_path}_{cfg.project_name}_{cfg.data.dataset_cfg.data_folder}_{cfg.seed}",
         merge=True,
     )
 
@@ -66,45 +55,78 @@ def main(cfg: DictConfig):
             name=run_name,
             config=resolved_cfg,
         )
+        precompute_time = train_loader.dataset.precompute_time + val_loader.dataset.precompute_time + test_loader.dataset.precompute_time
         wandb.log(
-            {"train_precompute_time": train_loader.dataset.precompute_time},
+            {"Precompute_time": precompute_time},
             commit=False,
         )
-        # wandb.log({"val_precompute_time": val_loader.dataset.precompute_time})
-        # wandb.log(
-        #     {"test_precompute_time": test_loader.dataset.precompute_time}
-        # )
 
     print(OmegaConf.to_yaml(resolved_cfg))
 
-    if cfg.mode == "train":
-        train(
-            train_loader,
-            val_loader,
-            test_loader,
-            pretrained_path=cfg.pretrained_path,
-            cfg=cfg,
-            finetune=False,
-        )
-    elif cfg.mode == "finetune":
-        if not cfg.pretrained_path:
+    ############################# model instantiation #############################
+    if cfg.use_loaded_model:
+        model = hydra.utils.instantiate(cfg.model)
+
+        if not os.path.exists(cfg.pretrained_path):
             raise ValueError(
-                "pretrained_path must be specified for finetuning"
+                f"Pretrained model not found at {cfg.pretrained_path}"
             )
-        train(
-            train_loader,
-            val_loader,
-            test_loader,
-            pretrained_path=cfg.pretrained_path,
-            cfg=cfg,
-            finetune=True,
-        )
-    elif cfg.mode == "predict":
-        predict_model(test_loader, cfg)
+
+        model, _, _, _ = load_model(model, None, cfg.pretrained_path)
+        model = model.to(device)
+
+        try:
+            sample_batch = next(iter(train_loader))
+            model(sample_batch.to(device))
+        except Exception as e:
+            raise ValueError(
+                f"Pretrained model incompatible with dataset: {str(e)}"
+            )
     else:
-        raise ValueError(
-            f"Invalid mode: {cfg.mode}. Choose 'train' or 'predict'."
+        #### for models needing precomputed statistics on the dataset, e.g. PNA
+        transform_cfg = getattr(cfg.data, "transform_cfg", None)
+        if transform_cfg and hasattr(
+            transform_cfg, "batched_degree_statistics"
+        ):  # TODO: generalize
+            model = hydra.utils.instantiate(
+                cfg.model, dataset_precomputed=train_loader.dataset.statistics
+            )
+        else:
+            model = hydra.utils.instantiate(cfg.model)
+        model = model.to(device)
+
+    total_params = sum(
+        p.numel() for p in model.parameters() if p.requires_grad
+    )
+    print(f"Total parameters: {total_params:,}")
+
+    under_parameters = getattr(cfg, "under_parameters", None)
+    if under_parameters is not None and total_params > under_parameters:
+        print(
+            f"Model has {total_params:,} parameters, which exceeds the threshold of {under_parameters:,}. Skipping this run."
         )
+        if cfg.wandb:
+            wandb.log(
+                {
+                    "total_parameters": total_params,
+                    "parameter_threshold_exceeded": True,
+                }
+            )
+            wandb.run.summary["status"] = "parameter_threshold_exceeded"
+        return False
+
+    if cfg.wandb:
+        wandb.log({"total_parameters": total_params}, commit=False)
+
+    ############################# task instantiation #############################
+    hydra.utils.instantiate(cfg.task_cfg, 
+                            train_loader=train_loader, 
+                            val_loader=val_loader, 
+                            test_loader=test_loader, 
+                            model=model,
+                            device=device,
+                            )
+    #train()
 
     if cfg.wandb:
         wandb.finish()

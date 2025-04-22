@@ -1,0 +1,2 @@
+_target_: deeprxn.loss.mse.MSELoss
+reduction: sum

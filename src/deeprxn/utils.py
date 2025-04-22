@@ -23,6 +23,16 @@ def set_seed(seed):
             ":4096:8"  # https://docs.nvidia.com/cuda/cublas/index.html#results-reproducibility
         )
 
+def check_early_stopping(
+    current_loss, best_loss, counter, patience, min_delta
+):
+    if current_loss < best_loss - min_delta:
+        return 0, False
+    else:
+        counter += 1
+        if counter >= patience:
+            return counter, True
+        return counter, False
 
 def load_csv_dataset(
     input_column: str,

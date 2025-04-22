@@ -8,6 +8,28 @@ from deeprxn.data import Standardizer
 from deeprxn.utils import load_model, load_standardizer
 
 
+@torch.no_grad()
+def evaluate_epoch(
+    model,
+    loader,
+    loss_fn,
+    device,
+):
+    model.eval()
+    total_loss = 0.0
+    batches_processed = 0
+
+    for data in loader:
+        data = data.to(device)
+        out = model(data)
+        loss = loss_fn(out)
+        total_loss += loss.item()
+        batches_processed += 1
+
+    avg_loss = total_loss / batches_processed if batches_processed > 0 else 0.0
+    return avg_loss
+
+
 def predict(model, loader, stdzer, device):
     model.eval()
     preds = []
@@ -18,6 +40,7 @@ def predict(model, loader, stdzer, device):
             pred = stdzer(out, rev=True)
             preds.extend(pred.cpu().detach().tolist())
     return preds
+
 
 
 def predict_model(test_loader, cfg):

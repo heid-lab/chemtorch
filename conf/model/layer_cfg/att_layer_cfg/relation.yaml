@@ -1,0 +1,6 @@
+_target_: deeprxn.layer.att_layer.relation.Relation
+embed_dim: ${model.hidden_channels}
+num_heads: 4
+dropout: 0.05
+layer_norm: false
+batch_norm: true
