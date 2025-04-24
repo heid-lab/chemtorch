@@ -3,8 +3,8 @@ _recursive_: False
 
 defaults:
   - loss_cfg: mse
-  - optimizer_cfg: adam
-  - scheduler_cfg: constant
+  - optimizer_cfg: adamw
+  - scheduler_cfg: cosine_with_warmup
   - _self_
 
 epochs: 30

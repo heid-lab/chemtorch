@@ -5,8 +5,6 @@ import torch
 from omegaconf import DictConfig, OmegaConf
 
 import wandb
-from deeprxn.predict import predict_model
-from deeprxn.train import train
 from deeprxn.utils import load_model, set_seed
 
 OmegaConf.register_new_resolver("eval", eval)
