@@ -1,0 +1,17 @@
+_target_: deeprxn.task.regression.train
+_recursive_: False
+
+defaults:
+  - loss_cfg: mse
+  - optimizer_cfg: adam
+  - scheduler_cfg: constant
+  - _self_
+
+epochs: 30
+clip_grad_norm: true
+clip_grad_norm_value: 1
+patience: 10
+min_delta: 0.01
+save_model_parameters: false
+model_path: null
+use_wandb: ${wandb}

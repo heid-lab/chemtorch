@@ -71,6 +71,9 @@ class MaskedAttLayer(AttLayer):
         if self.mode == "qm" or self.mode == "qm_inter" or self.mode == "qm_local":
             qm_dense, qm_mask = to_dense_batch(batch.qm_f, batch.batch, fill_value=0)
 
+        if self.mode == "atom" or self.mode == "atom_inter" or self.mode == "conjugated" or self.mode == "conjugated_inter":
+            single_f_dense, _ = to_dense_batch(batch.single_f, batch.batch, fill_value=-1)
+
         batch_size, max_nodes, _ = x_dense.size()
 
         if self.mode in [
@@ -83,6 +86,8 @@ class MaskedAttLayer(AttLayer):
             "same_compound",
             "other_compounds_same_category",
             "qm_inter",
+            "atom_inter",
+            "conjugated_inter",
         ]:
             is_reactant = atom_types_dense == AtomOriginType.REACTANT.value
             is_product = atom_types_dense == AtomOriginType.PRODUCT.value
@@ -142,6 +147,43 @@ class MaskedAttLayer(AttLayer):
             attention_mask = attention_mask | (
                 diag_eye & valid_diag.unsqueeze(-1)
             )
+
+        if self.mode == "atom" or self.mode == "conjugated":
+            self_attention = torch.eye(max_nodes, dtype=torch.bool, device=device)
+            self_attention = self_attention.unsqueeze(0).expand(batch_size, -1, -1)
+            self_attention = self_attention & mask.unsqueeze(-1)
+            same_type_mask = (single_f_dense.unsqueeze(2) == single_f_dense.unsqueeze(1))
+            
+            if same_type_mask.dim() > 3:
+                same_type_mask = same_type_mask.all(dim=-1)
+            
+            valid_nodes = mask.unsqueeze(-1) & mask.unsqueeze(1)
+            same_type_attention = same_type_mask & valid_nodes
+            
+            attention_mask = attention_mask | same_type_attention
+
+        elif self.mode == "atom_inter" or self.mode == "conjugated_inter": # double check
+            self_attention = torch.eye(max_nodes, dtype=torch.bool, device=device)
+            self_attention = self_attention.unsqueeze(0).expand(batch_size, -1, -1)
+            self_attention = self_attention & mask.unsqueeze(-1)
+            
+            attention_mask = attention_mask | self_attention
+            
+            same_type_mask = (single_f_dense.unsqueeze(2) == single_f_dense.unsqueeze(1))
+            
+            if same_type_mask.dim() > 3:
+                same_type_mask = same_type_mask.all(dim=-1)
+            
+            valid_nodes = mask.unsqueeze(-1) & mask.unsqueeze(1)
+            
+            reactant_reactant = is_reactant.unsqueeze(-1) & is_reactant.unsqueeze(1)
+            product_product = is_product.unsqueeze(-1) & is_product.unsqueeze(1)
+            
+            same_type_reactant_reactant = reactant_reactant & same_type_mask & valid_nodes
+            
+            same_type_product_product = product_product & same_type_mask & valid_nodes
+            
+            attention_mask = attention_mask | same_type_reactant_reactant | same_type_product_product
 
         if self.mode == "inter" or self.mode == "qm_inter":
             attention_mask = torch.logical_or(

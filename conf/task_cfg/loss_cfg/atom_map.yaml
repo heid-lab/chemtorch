@@ -1,0 +1,3 @@
+_target_: deeprxn.loss.atom_map.AtomMapContrastiveLoss
+reduction: mean
+temperature: 0.1

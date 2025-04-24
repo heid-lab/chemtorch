@@ -1,25 +1,20 @@
 from typing import List, Optional
 
-from rdkit.Chem.rdchem import Bond, BondType
+from rdkit.Chem.rdchem import Atom
 
-from deeprxn.featurizer.featurizer_base import FeaturizerBase
+from deeprxn.featurizer.atom_featurizer.featurizer_base import FeaturizerBase
 
 
-class BondTypeFeaturizer(FeaturizerBase):
-    """Bond featurizer with standard RDKit features."""
+class AtomicNumberFeaturizer(FeaturizerBase):
+    """Atom featurizer using only atomic number."""
     
     def __init__(self):
         self.features = [
-            (Bond.GetBondType, [
-                    BondType.SINGLE,
-                    BondType.DOUBLE,
-                    BondType.TRIPLE,
-                    BondType.AROMATIC,
-            ],),
+            (Atom.GetAtomicNum, list(range(1, 37)) + [53]),
         ]
     
-    def __call__(self, bond: Optional[Bond]) -> List[float]:
-        if bond is None:
+    def __call__(self, atom: Optional[Atom]) -> List[float]:
+        if atom is None:
             # calculate null feature size
             dim = sum([(len(options) + 1) if options else 1 for _, options in self.features])
             return [0] * dim
@@ -27,9 +22,9 @@ class BondTypeFeaturizer(FeaturizerBase):
         features = []
         for func, options in self.features:
             if options:
-                features.extend(self._one_hot_unk(bond, func, options))
+                features.extend(self._one_hot_unk(atom, func, options))
             else:
-                features.append(func(bond))
+                features.append(func(atom))
         
         return features
     
@@ -38,3 +33,4 @@ class BondTypeFeaturizer(FeaturizerBase):
         option_dict = {j: i for i, j in enumerate(options)}
         x[option_dict.get(func(item), len(option_dict))] = 1
         return x
+

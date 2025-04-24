@@ -21,6 +21,8 @@ class UndirectedLineConnectedPairGraph(RxnGraphBase):
         label: float,
         atom_featurizer: callable,
         bond_featurizer: callable,
+        qm_featurizer= None,   
+        single_featurizer= None,
         connection_direction: str = "bidirectional",
         concat_origin_feature: bool = False,
         in_channel_multiplier: int = 1,

@@ -23,6 +23,16 @@ def set_seed(seed):
             ":4096:8"  # https://docs.nvidia.com/cuda/cublas/index.html#results-reproducibility
         )
 
+def check_early_stopping(
+    current_loss, best_loss, counter, patience, min_delta
+):
+    if current_loss < best_loss - min_delta:
+        return 0, False
+    else:
+        counter += 1
+        if counter >= patience:
+            return counter, True
+        return counter, False
 
 def load_csv_dataset(
     input_column: str,
@@ -36,10 +46,25 @@ def load_csv_dataset(
     test_ratio: float = 0.1,
     use_pickle: bool = False,
     seed_index: int = 0,
-    use_enthalpy: bool = False,
     enthalpy_column: Optional[str] = None,
 ):
-    """ """
+    """
+    Load a dataset from CSV files.
+
+    Args:
+        input_column: Name of the input column in the CSV file.
+        target_column: Name of the target column in the CSV file.
+        data_folder: Folder containing the dataset files.
+        reduced_dataset: Fraction or number of samples to use from the dataset.
+        split: Which split to load: 'train', 'val', or 'test' (default: 'train').
+        data_root: Root directory for the dataset (default: 'data').
+        train_ratio: Ratio of training data (default: 0.8).
+        val_ratio: Ratio of validation data (default: 0.1).
+        test_ratio: Ratio of test data (default: 0.1).
+        use_pickle: Whether to use a pickle file for splitting.
+        seed_index: Seed index in the pickle file's name.
+        enthalpy_column: Name of the enthalpy column in the CSV file.
+    """
     base_path = Path(data_root) / data_folder
     split_files = {s: base_path / f"{s}.csv" for s in ["train", "val", "test"]}
     single_file = base_path / "data.csv"
@@ -75,6 +100,7 @@ def load_csv_dataset(
             data_df = data_df.iloc[split_map[split]]
 
         else:
+            # Why not use torch for dataset shuffling?
             data_df = data_df.sample(frac=1)
 
             n = len(data_df)
@@ -100,11 +126,7 @@ def load_csv_dataset(
 
     missing_cols = []
     required_cols = [input_column, target_column]
-    if use_enthalpy:
-        if not enthalpy_column:
-            raise ValueError(
-                "enthalpy_column must be specified when use_enthalpy is True"
-            )
+    if enthalpy_column:
         required_cols.append(enthalpy_column)
 
     for col in required_cols:
@@ -117,7 +139,7 @@ def load_csv_dataset(
     inputs = data_df[input_column].values
     targets = data_df[target_column].values.astype(float)
 
-    if use_enthalpy:
+    if enthalpy_column:
         enthalpy = data_df[enthalpy_column].values.astype(float)
         return inputs, targets, enthalpy
 

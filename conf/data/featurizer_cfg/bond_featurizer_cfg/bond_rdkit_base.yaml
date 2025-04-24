@@ -1,1 +1,1 @@
-_target_: deeprxn.featurizer.bond_rdkit_base.RDKitBaseBondFeaturizer
+_target_: deeprxn.featurizer.bond_featurizer.bond_rdkit_base.RDKitBaseBondFeaturizer
