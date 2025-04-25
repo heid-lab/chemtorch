@@ -14,7 +14,9 @@ OmegaConf.register_new_resolver("eval", eval)
 def main(cfg: DictConfig):
     # config mutable
     OmegaConf.set_struct(cfg, False)
-    set_seed(cfg.seed)
+
+    if getattr(cfg, "seed", None) is not None:
+        set_seed(cfg.seed)
 
     if cfg.use_cuda and torch.cuda.is_available():
         device = torch.device("cuda")
