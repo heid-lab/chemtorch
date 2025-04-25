@@ -1,8 +1,8 @@
 # main config 
 
 defaults:
-  - data: e2_cgr
-  - model: dmpnn
+  - data_cfg: e2_cgr
+  - model_cfg: dmpnn
   - task_cfg: regression
   - override hydra/job_logging: disabled
   - override hydra/hydra_logging: disabled

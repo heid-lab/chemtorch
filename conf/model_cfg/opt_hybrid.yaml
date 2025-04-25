@@ -1,0 +1,45 @@
+_target_: deeprxn.model.hybrid.Hybrid
+_recursive_: False
+
+defaults:
+  - encoder_cfg:
+    - linear_node_enc
+    - linear_edge_enc
+  - layer_cfg: block_gatedgcn
+  - /model/layer_cfg/att_layer_cfg/react_prod_att_layer@att_layer_cfg
+  - pool_cfg: global_pool
+  - head_cfg: ffn_head
+  - _self_
+
+separate: false
+
+num_node_features: ${num_node_features}
+num_edge_features: ${num_edge_features}
+shared_weights: false
+depth: 12
+att_depth: 3
+hidden_channels: 64
+
+layer_cfg:
+  residual: true
+  dropout: 0.05
+  activation: relu
+  ffn: true
+
+att_layer_cfg:
+  num_heads: 4
+  dropout: 0.0
+
+encoder_cfg:
+  linear_node_enc:
+    out_channels: ${model.hidden_channels}
+  linear_edge_enc:
+    out_channels: ${model.hidden_channels}
+
+pool_cfg:
+  aggr: add
+
+head_cfg:
+  num_layers: 2
+  dropout: 0.02
+  activation: relu

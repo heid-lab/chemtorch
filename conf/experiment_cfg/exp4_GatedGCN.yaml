@@ -1,0 +1,35 @@
+# @package _global_
+defaults:
+  - override /data: pos1_rdb7_cgr
+  - override /model: opt_pos_gatedgcn
+  - override /scheduler: cosine_with_warmup
+  - override /optimizer: adamw
+
+wandb: true
+mode: train
+project_name: exp4
+seed: 0
+use_cuda: true
+device: gpu
+
+group_name: gatedgcn
+      
+save_model: false
+model_path: models/experiment1
+
+epochs: 200
+patience: 30
+
+scheduler:
+  scheduler:
+    lr_lambda:
+      num_warmup_steps: 10
+
+num_node_features: ???
+num_edge_features: ???
+
+hydra:
+  output_subdir: null
+  run:
+    dir: .
+

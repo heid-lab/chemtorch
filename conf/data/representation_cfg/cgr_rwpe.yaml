@@ -1,8 +1,0 @@
-_target_: deeprxn.representation.cgr.CGR
-_recursive_: False
-in_channel_multiplier: 2
-concat_transform_features: False
-
-defaults:
-  - pre_transform_cfg:
-    - randomwalk

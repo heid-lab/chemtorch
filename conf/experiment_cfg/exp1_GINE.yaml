@@ -1,0 +1,38 @@
+# @package _global_
+defaults:
+  - override /data: rdb7_cgr
+  - override /model: opt_gine
+  - override /scheduler: cosine_with_warmup
+  - override /optimizer: adamw
+
+wandb: true
+mode: train
+project_name: exp1_optimal_mpnn
+seed: 0
+use_cuda: true
+device: gpu
+
+group_name: gine
+      
+save_model: false
+model_path: models/experiment1
+
+epochs: 200
+patience: 30
+
+optimizer:
+  lr: 0.0005
+
+scheduler:
+  scheduler:
+    lr_lambda:
+      num_warmup_steps: 10
+
+num_node_features: ???
+num_edge_features: ???
+
+hydra:
+  output_subdir: null
+  run:
+    dir: .
+
