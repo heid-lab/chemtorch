@@ -1,4 +1,4 @@
-_target_: deeprxn.layer.deeprxn_layer_20.DeepRXNLayer20
+_target_: deepreaction.layer.deepreaction_layer_20.deepreactionLayer20
 _recursive_: False
 
 defaults:

@@ -1,9 +1,9 @@
-_target_: deeprxn.layer.dmpnn_deeprxn_layer.DMPNNDeepRXNLayer
+_target_: deepreaction.layer.dmpnn_deepreaction_layer.DMPNNdeepreactionLayer
 _recursive_: False
 
 defaults:
   - mpnn_cfg: dmpnn_layer
-  - att_layer_cfg: deeprxn_att_layer
+  - att_layer_cfg: deepreaction_att_layer
 
 layer_norm: False
 batch_norm: True

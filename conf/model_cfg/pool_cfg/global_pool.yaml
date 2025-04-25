@@ -1,2 +1,2 @@
-_target_: deeprxn.pool.pool.GlobalPool
+_target_: deepreaction.pool.pool.GlobalPool
 aggr: add

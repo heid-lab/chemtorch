@@ -1,5 +1,5 @@
 RWSE:
-  _target_: deeprxn.transform.RWSE.RWSE
+  _target_: deepreaction.transform.RWSE.RWSE
   times: 20
   attr_name: wandomwalkpe
   type: graph

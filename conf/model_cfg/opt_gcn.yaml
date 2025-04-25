@@ -1,4 +1,4 @@
-_target_: deeprxn.model.gcn.GCN
+_target_: deepreaction.model.gcn.GCN
 _recursive_: False
 
 ### summer night

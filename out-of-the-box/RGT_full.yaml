@@ -13,7 +13,7 @@ num_node_features: ???
 num_edge_features: ???
 
 data_cfg:
-  _target_: deeprxn.data.construct_loader
+  _target_: deepreaction.data.construct_loader
   _recursive_: False
   batch_size: 50
   num_workers: 0
@@ -21,7 +21,7 @@ data_cfg:
   max_cache_size: null
   preprocess_all: true
   dataset_cfg:
-    _target_: deeprxn.data.load_csv_dataset
+    _target_: deepreaction.data.load_csv_dataset
     input_column: "rxn_smiles"
     target_column: "ea"
     data_folder: "barriers_rdb7new"
@@ -34,11 +34,11 @@ data_cfg:
     enthalpy_column: "dh"
   featurizer_cfg:
     bond_featurizer_cfg:
-      _target_: deeprxn.featurizer.bond_featurizer.bond_rdkit_base.RDKitBaseBondFeaturizer
+      _target_: deepreaction.featurizer.bond_featurizer.bond_rdkit_base.RDKitBaseBondFeaturizer
     atom_featurizer_cfg:
-      _target_: deeprxn.featurizer.atom_featurizer.atom_rdkit_organic.RDKitOrganicAtomFeaturizer
+      _target_: deepreaction.featurizer.atom_featurizer.atom_rdkit_organic.RDKitOrganicAtomFeaturizer
   representation_cfg:
-    _target_: deeprxn.representation.line_dmg.LineDMG
+    _target_: deepreaction.representation.line_dmg.LineDMG
     _recursive_: False
     in_channel_multiplier: 1
     concat_origin_feature: false
@@ -47,13 +47,13 @@ data_cfg:
     feature_aggregation: null
   transform_cfg:
     randomwalk:
-      _target_: deeprxn.transform.randomwalkpe.RandomWalkPETransform
+      _target_: deepreaction.transform.randomwalkpe.RandomWalkPETransform
       walk_length: 20
       attr_name: randomwalkpe
       type: graph
 
 model_cfg:
-  _target_: deeprxn.model.masked_dmg.MaskedDMG
+  _target_: deepreaction.model.masked_dmg.MaskedDMG
   _recursive_: False
   num_node_features: ${num_node_features}
   num_edge_features: ${num_edge_features}
@@ -62,17 +62,17 @@ model_cfg:
   separate: false
   encoder_cfg:
     linear_node_enc:
-      _target_: deeprxn.encoder.linear_node_enc.LinearNodeEncoder
+      _target_: deepreaction.encoder.linear_node_enc.LinearNodeEncoder
       in_channels: ${num_node_features}
       out_channels: ${eval:'${model_cfg.hidden_channels} - ${model_cfg.encoder_cfg.rwpe_enc.out_channels}'}
       bias: true
     rwpe_enc:
-      _target_: deeprxn.encoder.rwpe_enc.RWEncoder
+      _target_: deepreaction.encoder.rwpe_enc.RWEncoder
       in_channels: ${data_cfg.transform_cfg.randomwalk.walk_length}
       out_channels: 24
       transform_type: normal
   layer_cfg:
-    _target_: deeprxn.layer.att_layer.masked_att_layer.MaskedAttLayer
+    _target_: deepreaction.layer.att_layer.masked_att_layer.MaskedAttLayer
     _partial_: true
     embed_dim: ${model_cfg.hidden_channels}
     mode: local
@@ -82,10 +82,10 @@ model_cfg:
     layer_norm: false
     batch_norm: true
   pool_cfg:
-    _target_: deeprxn.pool.pool.GlobalPool
+    _target_: deepreaction.pool.pool.GlobalPool
     aggr: add
   head_cfg:
-    _target_: deeprxn.head.ffn_head.FFNHead
+    _target_: deepreaction.head.ffn_head.FFNHead
     in_channels: ${model_cfg.hidden_channels}
     out_channels: 1
     hidden_channels: ${model_cfg.hidden_channels}
@@ -94,7 +94,7 @@ model_cfg:
     activation: relu
 
 task_cfg:
-  _target_: deeprxn.task.regression.train
+  _target_: deepreaction.task.regression.train
   _recursive_: False
   clip_grad_norm: true
   clip_grad_norm_value: 1
@@ -105,7 +105,7 @@ task_cfg:
   epochs: 200
   patience: 30
   loss_cfg:
-    _target_: deeprxn.loss.mse.MSELoss
+    _target_: deepreaction.loss.mse.MSELoss
     reduction: sum
   optimizer_cfg:
     _target_: torch.optim.AdamW
@@ -123,7 +123,7 @@ task_cfg:
       _target_: torch.optim.lr_scheduler.LambdaLR
       _partial_: true
       lr_lambda:
-        _target_: deeprxn.scheduler.scheduler.get_cosine_scheduler_with_warmup
+        _target_: deepreaction.scheduler.scheduler.get_cosine_scheduler_with_warmup
         num_warmup_steps: 10
         num_training_steps: ${task_cfg.epochs}
         num_cycles: 0.5

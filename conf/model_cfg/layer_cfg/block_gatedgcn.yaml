@@ -1,4 +1,4 @@
-_target_: deeprxn.layer.block_gatedgcn.BlockGatedGCNLayer
+_target_: deepreaction.layer.block_gatedgcn.BlockGatedGCNLayer
 _recursive_: False
 
 defaults:

@@ -1,4 +1,4 @@
-_target_: deeprxn.data.load_csv_dataset
+_target_: deepreaction.data.load_csv_dataset
 input_column: "AAM"
 target_column: "ea"
 data_folder: "barriers_e2"

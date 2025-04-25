@@ -1,9 +1,9 @@
-_target_: deeprxn.layer.deeprxn_layer.DeepRXNLayer
+_target_: deepreaction.layer.deepreaction_layer.deepreactionLayer
 _recursive_: False
 
 defaults:
   - mpnn_cfg: gatedgcn_layer
-  - att_layer_cfg: deeprxn_att_layer
+  - att_layer_cfg: deepreaction_att_layer
 
 layer_norm: False
 batch_norm: True

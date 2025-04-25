@@ -1,4 +1,4 @@
-_target_: deeprxn.representation.line_dmg.LineDMG
+_target_: deepreaction.representation.line_dmg.LineDMG
 _recursive_: False
 in_channel_multiplier: 1
 concat_origin_feature: false

@@ -1,4 +1,4 @@
-_target_: deeprxn.model.gat.GAT
+_target_: deepreaction.model.gat.GAT
 _recursive_: False
 
 # from opt_GAT

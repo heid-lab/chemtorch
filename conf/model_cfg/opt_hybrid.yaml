@@ -1,4 +1,4 @@
-_target_: deeprxn.model.hybrid.Hybrid
+_target_: deepreaction.model.hybrid.Hybrid
 _recursive_: False
 
 defaults:

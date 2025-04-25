@@ -1,4 +1,4 @@
-_target_: deeprxn.model.gps.GPS
+_target_: deepreaction.model.gps.GPS
 _recursive_: False
 
 defaults:

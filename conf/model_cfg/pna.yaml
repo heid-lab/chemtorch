@@ -1,4 +1,4 @@
-_target_: deeprxn.model.pna.PNA
+_target_: deepreaction.model.pna.PNA
 _recursive_: False
 
 defaults:

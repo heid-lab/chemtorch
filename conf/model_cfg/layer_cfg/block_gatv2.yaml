@@ -1,4 +1,4 @@
-_target_: deeprxn.layer.block_gat.BlockGATLayer
+_target_: deepreaction.layer.block_gat.BlockGATLayer
 _recursive_: False
 
 defaults:

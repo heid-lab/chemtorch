@@ -1,4 +1,4 @@
-_target_: deeprxn.model.gatedgcn.GatedGCN
+_target_: deepreaction.model.gatedgcn.GatedGCN
 _recursive_: False
 
 ### efficient glade

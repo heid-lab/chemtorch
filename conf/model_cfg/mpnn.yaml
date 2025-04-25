@@ -1,4 +1,4 @@
-_target_: deeprxn.model.mpnn.MPNN
+_target_: deepreaction.model.mpnn.MPNN
 _recursive_: False
 
 defaults:

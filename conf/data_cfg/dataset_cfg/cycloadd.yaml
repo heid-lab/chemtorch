@@ -1,4 +1,4 @@
-_target_: deeprxn.data.load_csv_dataset
+_target_: deepreaction.data.load_csv_dataset
 input_column: "rxn_smiles"
 target_column: "G_act"
 data_folder: "barriers_cycloadd"

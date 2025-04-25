@@ -1,5 +1,5 @@
 randomwalk:
-  _target_: deeprxn.transform.randomwalkpe.RandomWalkPETransform
+  _target_: deepreaction.transform.randomwalkpe.RandomWalkPETransform
   walk_length: 20
   attr_name: randomwalkpe
   type: graph

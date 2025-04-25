@@ -9,7 +9,7 @@ defaults:
   - _self_ # placement of this matters
 
 wandb: false
-project_name: deeprxn
+project_name: deepreaction
 seed: 0 # use 0
 use_cuda: true
 device: gpu

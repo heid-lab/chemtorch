@@ -1,4 +1,4 @@
-_target_: deeprxn.model.gine.GINE
+_target_: deepreaction.model.gine.GINE
 _recursive_: False
 
 defaults:

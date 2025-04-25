@@ -1,4 +1,4 @@
-_target_: deeprxn.layer.att_layer.deeprxn_att_layer.DeepRXNAttLayer
+_target_: deepreaction.layer.att_layer.deepreaction_att_layer.deepreactionAttLayer
 in_channels: ${model_cfg.hidden_channels}
 out_channels: ${model_cfg.hidden_channels}
 num_heads: 4
