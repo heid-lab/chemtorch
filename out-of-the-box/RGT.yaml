@@ -1,0 +1,38 @@
+defaults:
+  - data_cfg: rdb7_line_dmg_pos
+  - model_cfg: masked_dmg_line
+  - task_cfg: regression
+  - override hydra/job_logging: disabled
+  - override hydra/hydra_logging: disabled
+  - _self_
+
+wandb: false
+project_name: exp7
+seed: 0
+use_cuda: true
+device: gpu
+
+under_parameters: null
+group_name: masked
+run_name: null
+      
+use_loaded_model: false
+pretrained_path: null
+
+task_cfg:
+  epochs: 200
+  patience: 30
+
+  scheduler_cfg:
+    scheduler:
+      lr_lambda:
+        num_warmup_steps: 10
+
+num_node_features: ???
+num_edge_features: ???
+
+hydra:
+  output_subdir: null
+  run:
+    dir: .
+
