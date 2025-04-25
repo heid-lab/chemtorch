@@ -1,4 +1,4 @@
 deg_enc:
   _target_: deeprxn.encoder.deg_enc.DegreeEncoder
   in_channels: 4
-  out_channels: ${model.layer_cfg.mpnn_cfg.in_channels}
+  out_channels: ${model_cfg.layer_cfg.mpnn_cfg.in_channels}

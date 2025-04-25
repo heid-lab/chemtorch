@@ -1,5 +1,5 @@
 _target_: deeprxn.pool.pma.PMA
-channels: ${model.hidden_channels}
+channels: ${model_cfg.hidden_channels}
 num_seed_points: 1
 heads: 1
 layer_norm: True

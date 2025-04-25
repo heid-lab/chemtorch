@@ -1,5 +1,5 @@
 linear_edge_enc: 
   _target_: deeprxn.encoder.linear_edge_enc.LinearEdgeEncoder
   in_channels: ${num_edge_features}
-  out_channels: ${model.layer_cfg.mpnn_cfg.in_channels}
+  out_channels: ${model_cfg.layer_cfg.mpnn_cfg.in_channels}
   bias: true

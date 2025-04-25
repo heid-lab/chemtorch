@@ -23,9 +23,9 @@ def main(cfg: DictConfig):
     print(f"Using device: {device}")
 
     ############################# data instantiation #############################
-    train_loader = hydra.utils.instantiate(cfg.data, shuffle=True, split="train")
-    val_loader = hydra.utils.instantiate(cfg.data, shuffle=False, split="val")
-    test_loader = hydra.utils.instantiate(cfg.data, shuffle=False, split="test")
+    train_loader = hydra.utils.instantiate(cfg.data_cfg, shuffle=True, split="train")
+    val_loader = hydra.utils.instantiate(cfg.data_cfg, shuffle=False, split="val")
+    test_loader = hydra.utils.instantiate(cfg.data_cfg, shuffle=False, split="test")
 
     OmegaConf.update(
         cfg,
@@ -63,7 +63,7 @@ def main(cfg: DictConfig):
 
     ############################# model instantiation #############################
     if cfg.use_loaded_model:
-        model = hydra.utils.instantiate(cfg.model)
+        model = hydra.utils.instantiate(cfg.model_cfg)
 
         if not os.path.exists(cfg.pretrained_path):
             raise ValueError(
@@ -82,15 +82,15 @@ def main(cfg: DictConfig):
             )
     else:
         #### for models needing precomputed statistics on the dataset, e.g. PNA
-        transform_cfg = getattr(cfg.data, "transform_cfg", None)
+        transform_cfg = getattr(cfg.data_cfg, "transform_cfg", None)
         if transform_cfg and hasattr(
             transform_cfg, "batched_degree_statistics"
         ):  # TODO: generalize
             model = hydra.utils.instantiate(
-                cfg.model, dataset_precomputed=train_loader.dataset.statistics
+                cfg.model_cfg, dataset_precomputed=train_loader.dataset.statistics
             )
         else:
-            model = hydra.utils.instantiate(cfg.model)
+            model = hydra.utils.instantiate(cfg.model_cfg)
         model = model.to(device)
 
     total_params = sum(

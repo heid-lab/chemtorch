@@ -4,9 +4,9 @@ _recursive_: False
 defaults:
   - mpnn_cfg: dmpnn_layer
 
-hidden_channels: ${model.hidden_channels}
-in_channels: ${model.hidden_channels}
-out_channels: ${model.hidden_channels}
+hidden_channels: ${model_cfg.hidden_channels}
+in_channels: ${model_cfg.hidden_channels}
+out_channels: ${model_cfg.hidden_channels}
 
 layer_norm: false
 batch_norm: false

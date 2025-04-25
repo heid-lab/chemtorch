@@ -4,9 +4,9 @@ _recursive_: False
 defaults:
   - mpnn_cfg: gatedgcn_layer
 
-hidden_channels: ${model.hidden_channels}
-in_channels: ${model.hidden_channels}
-out_channels: ${model.hidden_channels}
+hidden_channels: ${model_cfg.hidden_channels}
+in_channels: ${model_cfg.hidden_channels}
+out_channels: ${model_cfg.hidden_channels}
 
 residual: true
 dropout: 0.0
@@ -14,7 +14,7 @@ activation: relu
 ffn: false
 
 mpnn_cfg:
-  residual: ${model.layer_cfg.residual}
-  act: ${model.layer_cfg.activation}
-  dropout: ${model.layer_cfg.dropout}
+  residual: ${model_cfg.layer_cfg.residual}
+  act: ${model_cfg.layer_cfg.activation}
+  dropout: ${model_cfg.layer_cfg.dropout}
 

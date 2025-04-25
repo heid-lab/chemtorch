@@ -1,5 +1,5 @@
 _target_: torch.nn.MultiheadAttention
-embed_dim: ${model.hidden_channels}
+embed_dim: ${model_cfg.hidden_channels}
 num_heads: 4
 dropout: 0.5
 batch_first: true

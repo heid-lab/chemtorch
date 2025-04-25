@@ -9,8 +9,8 @@ layer_norm: False
 batch_norm: True
 dropout: 0.0
 
-in_channels: ${model.hidden_channels}
-out_channels: ${model.hidden_channels}
+in_channels: ${model_cfg.hidden_channels}
+out_channels: ${model_cfg.hidden_channels}
 
 att_layer_cfg:
   attention: reactants_products # reactants or products or reactants_products

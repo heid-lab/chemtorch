@@ -1,6 +1,6 @@
 _target_: deeprxn.layer.mpnn_layer.gatedgcn_layer.GatedGCNLayer
-in_channels: ${model.hidden_channels}
-out_channels: ${model.hidden_channels}
+in_channels: ${model_cfg.hidden_channels}
+out_channels: ${model_cfg.hidden_channels}
 dropout: 0
 residual: true
 equivstable_pe: False

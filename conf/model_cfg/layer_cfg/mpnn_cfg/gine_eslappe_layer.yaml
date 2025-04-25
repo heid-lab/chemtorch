@@ -1,3 +1,3 @@
 _target_: deeprxn.layer.mpnn_layer.gine_eslappe_layer.GINEConvESLapPE
-in_channels: ${model.hidden_channels}
-out_channels: ${model.hidden_channels}
+in_channels: ${model_cfg.hidden_channels}
+out_channels: ${model_cfg.hidden_channels}
