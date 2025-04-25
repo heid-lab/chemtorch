@@ -1,3 +1,3 @@
-_target_: deeprxn.loss.batched_relation_contrastive.RelationLoss
+_target_: deepreaction.loss.batched_relation_contrastive.RelationLoss
 reduction: sum
 weight: 0.01

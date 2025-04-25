@@ -1,4 +1,4 @@
-_target_: deeprxn.loss.relation.RelationLoss
+_target_: deepreaction.loss.relation.RelationLoss
 reduction: sum
 weight: 0.01
 atom_reduction: mean
