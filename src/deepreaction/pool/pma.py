@@ -1,3 +1,5 @@
+# started from code from https://github.com/pyg-team/pytorch_geometric?tab=readme-ov-file, MIT License, Copyright (c) 2023 PyG Team <team@pyg.org>
+
 from typing import Optional
 
 import torch
@@ -6,7 +8,6 @@ from torch.nn import LayerNorm, Linear, MultiheadAttention, Parameter
 from torch_geometric.utils import to_dense_batch
 
 
-# all from torch geometric!!!!!!!
 class MultiheadAttentionBlock(torch.nn.Module):
     def __init__(
         self,
