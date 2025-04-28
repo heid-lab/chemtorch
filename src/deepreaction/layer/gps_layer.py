@@ -1,3 +1,5 @@
+# started from code from https://github.com/rampasek/GraphGPS/tree/main, MIT License, Copyright (c) 2022 Ladislav Rampášek, Michael Galkin, Vijay Prakash Dwivedi, Dominique Beaini
+
 import hydra
 import torch.nn as nn
 import torch_geometric.nn as pyg_nn
