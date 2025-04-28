@@ -1,10 +1,19 @@
-_target_: deeprxn.data.load_csv_dataset
+_target_: deeprxn.dataset.mol_graph_dataset.MolGraphDataset
+
+data_path: "data/barriers_b97d3"
+
 input_column: "rxn_smiles"
 target_column: "ea"
-enthalpy_column: "dh"
-data_folder: "barriers_b97d3"
-reduced_dataset: 1
+
 train_ratio: 0.9
 val_ratio: 0.05
 test_ratio: 0.05
-use_pickle: true
+
+split_index_path: ${data_path}/seed_0.pkl
+
+subsample: null   # TODO: Remove if not used
+
+data_pipeline_cfg:
+  _target_: deeprxn.data.DataPipeline
+  modules:
+    - split_csv_reader 

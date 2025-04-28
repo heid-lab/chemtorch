@@ -1,0 +1,2 @@
+_target_: deeprxn.data.data_reader.split_csv_reader.SplitCSVReader
+data_path: ${dataset.data_path}

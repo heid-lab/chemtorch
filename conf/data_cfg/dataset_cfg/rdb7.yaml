@@ -1,5 +1,18 @@
-_target_: deeprxn.data.load_csv_dataset
+_target_: deeprxn.dataset.mol_graph_dataset.MolGraphDataset
+
+data_path: "data/barriers_rdb7"
+
 input_column: "smiles"
 target_column: "ea"
-data_folder: "barriers_rdb7"
-reduced_dataset: 1
+
+cache_graphs: true
+max_cache_size: null
+preprocess_all: true
+
+subsample: null   # TODO: Remove if not used
+
+data_pipeline_cfg:
+  _target_: deeprxn.data.DataPipeline
+  modules:
+    - single_csv_reader
+    - ration_splitter

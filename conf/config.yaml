@@ -8,23 +8,31 @@ defaults:
   - override hydra/hydra_logging: disabled
   - _self_ # placement of this matters
 
+# WANDB
 wandb: false
 project_name: deeprxn
+group_name: null
+run_name: null
+
+# INITIALIZATION
 seed: 0 # use 0
+
+# DEVICE (redunadant)
 use_cuda: true
 device: gpu
 
-under_parameters: null
-group_name: null
-run_name: null
+# FOR SWEEPING
+parameter_limit: null
 
 # lambda_param: 0.1
 # extra_loss: null
 # margin: 1
 
+# MODEL LOADING
 use_loaded_model: false
 pretrained_path: null
 
+# THIS NEEDS TO GO
 num_node_features: ???
 num_edge_features: ???
 

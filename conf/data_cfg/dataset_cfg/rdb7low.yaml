@@ -1,11 +1,21 @@
-_target_: deeprxn.data.load_csv_dataset
+_target_: deeprxn.dataset.mol_graph_dataset.MolGraphDataset
+
+data_path: "data/barriers_rdb7low"
+
 input_column: "rxn_smiles"
 target_column: "ea"
-data_folder: "barriers_rdb7low"
-reduced_dataset: 1
+
+# For splitting by ratio
 train_ratio: 0.9
 val_ratio: 0.05
 test_ratio: 0.05
-use_pickle: true
-seed_index: 0
-enthalpy_column: "dh"
+
+# For splitting by pre-defined index
+split_index_path: ${data_path}/seed_0.pkl
+
+subsample: null   # TODO: Remove if not used
+
+data_pipeline_cfg:
+  _target_: deeprxn.data.DataPipeline
+  modules:
+    - spit_csv_reader

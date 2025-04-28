@@ -6,14 +6,14 @@ import torch
 import torch_geometric as tg
 from omegaconf import DictConfig
 
-from deeprxn.representation.rxn_graph_base import (
+from deeprxn.representation.reaction_graph import (
     AtomOriginType,
     EdgeOriginType,
-    RxnGraphBase,
+    ReactionGraph,
 )
 
 
-class LineDMG(RxnGraphBase):
+class LineDMG(ReactionGraph):
     """Line graph representation of Dual Molecular Graph (DMG)."""
 
     def __init__(
@@ -29,7 +29,6 @@ class LineDMG(RxnGraphBase):
         pre_transform_cfg: Optional[Dict[str, DictConfig]] = None,
         use_directed: bool = True,
         feature_aggregation: Optional[str] = None,
-        enthalpy=None,
     ):
         """
 
@@ -40,7 +39,6 @@ class LineDMG(RxnGraphBase):
             label=label,
             atom_featurizer=atom_featurizer,
             bond_featurizer=bond_featurizer,
-            enthalpy=enthalpy,
         )
         self.pre_transform_cfg = pre_transform_cfg
         self.use_directed = use_directed
@@ -433,9 +431,6 @@ class LineDMG(RxnGraphBase):
         data.atom_compound_idx = torch.tensor(
             self.atom_compound_idx, dtype=torch.long
         )
-
-        if self.enthalpy is not None:
-            data.enthalpy = torch.tensor([self.enthalpy], dtype=torch.float)
 
         # print(data.x.shape)
         # print(data.edge_index.shape)

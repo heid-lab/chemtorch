@@ -4,10 +4,10 @@ import torch
 import torch_geometric as tg
 from rdkit import Chem
 
-from deeprxn.representation.rxn_graph_base import AtomOriginType, RxnGraphBase
+from deeprxn.representation.reaction_graph import AtomOriginType, ReactionGraph
 
 
-class LineCGR(RxnGraphBase):
+class LineCGR(ReactionGraph):
     def __init__(
         self,
         smiles: str,
@@ -19,14 +19,12 @@ class LineCGR(RxnGraphBase):
         in_channel_multiplier: int = 2,
         use_directed: bool = True,
         feature_aggregation: Optional[str] = None,
-        enthalpy=None,
     ):
         super().__init__(
             smiles=smiles,
             label=label,
             atom_featurizer=atom_featurizer,
             bond_featurizer=bond_featurizer,
-            enthalpy=enthalpy,
         )
 
         self.n_atoms = self.mol_reac.GetNumAtoms()
@@ -224,8 +222,5 @@ class LineCGR(RxnGraphBase):
         data.atom_origin_type = torch.tensor(
             self.atom_origin_type, dtype=torch.long
         )
-
-        if self.enthalpy is not None:
-            data.enthalpy = torch.tensor([self.enthalpy], dtype=torch.float)
 
         return data

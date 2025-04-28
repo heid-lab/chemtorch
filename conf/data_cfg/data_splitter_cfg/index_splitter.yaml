@@ -1,0 +1,2 @@
+_target_: deeprxn.data.data_splitter.index_splitter.IndexSplitter
+split_index_path: ${dataset.split_index_path}

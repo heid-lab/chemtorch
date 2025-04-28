@@ -6,14 +6,14 @@ import torch_geometric as tg
 from omegaconf import DictConfig
 from rdkit import Chem
 
-from deeprxn.representation.rxn_graph_base import (
+from deeprxn.representation.reaction_graph import (
     AtomOriginType,
     EdgeOriginType,
-    RxnGraphBase,
+    ReactionGraph,
 )
 
 
-class CGR(RxnGraphBase):
+class CGR(ReactionGraph):
     """Condensed Graph of Reaction (CGR) representation."""
 
     def __init__(
@@ -27,7 +27,6 @@ class CGR(RxnGraphBase):
         in_channel_multiplier: int = 2,  # TODO: look into this
         concat_transform_features: bool = False,
         pre_transform_cfg: Optional[DictConfig] = None,
-        enthalpy=None,
     ):
         """Initialize CGR graph.
 
@@ -41,7 +40,6 @@ class CGR(RxnGraphBase):
             label=label,
             atom_featurizer=atom_featurizer,
             bond_featurizer=bond_featurizer,
-            enthalpy=enthalpy,
         )
 
         self.n_atoms = self.mol_reac.GetNumAtoms()
@@ -350,9 +348,6 @@ class CGR(RxnGraphBase):
         data.atom_origin_type = torch.tensor(
             self.atom_origin_type, dtype=torch.long
         )
-
-        if self.enthalpy is not None:
-            data.enthalpy = torch.tensor([self.enthalpy], dtype=torch.float)
 
         if self.concat_transform_features:
             for features in self.merged_transform_features.values():

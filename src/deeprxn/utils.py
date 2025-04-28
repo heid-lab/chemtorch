@@ -34,6 +34,11 @@ def check_early_stopping(
             return counter, True
         return counter, False
 
+
+# TODO: SEPERATE CONCENRNS: LOADING AND SPLITTING
+# TODO: SEPERATE CONCERNSE: CSV AND PICKLE
+# TODO: DO NOT LOAD ENTIRE DATASET WHEN ONLY ONE SPLIT IS NEEDED
+# TODO: DO NOT HARDCODE ENTHALPY COLUMN
 def load_csv_dataset(
     input_column: str,
     target_column: str,
@@ -46,7 +51,6 @@ def load_csv_dataset(
     test_ratio: float = 0.1,
     use_pickle: bool = False,
     seed_index: int = 0,
-    enthalpy_column: Optional[str] = None,
 ):
     """
     Load a dataset from CSV files.
@@ -63,7 +67,6 @@ def load_csv_dataset(
         test_ratio: Ratio of test data (default: 0.1).
         use_pickle: Whether to use a pickle file for splitting.
         seed_index: Seed index in the pickle file's name.
-        enthalpy_column: Name of the enthalpy column in the CSV file.
     """
     base_path = Path(data_root) / data_folder
     split_files = {s: base_path / f"{s}.csv" for s in ["train", "val", "test"]}
@@ -124,10 +127,9 @@ def load_csv_dataset(
     elif reduced_dataset > 1 and split == "train":
         data_df = data_df.sample(int(reduced_dataset))
 
+    # TODO: FUNCTIONALIZE VALIDATION
     missing_cols = []
     required_cols = [input_column, target_column]
-    if enthalpy_column:
-        required_cols.append(enthalpy_column)
 
     for col in required_cols:
         if col not in data_df.columns:
@@ -138,10 +140,6 @@ def load_csv_dataset(
 
     inputs = data_df[input_column].values
     targets = data_df[target_column].values.astype(float)
-
-    if enthalpy_column:
-        enthalpy = data_df[enthalpy_column].values.astype(float)
-        return inputs, targets, enthalpy
 
     return inputs, targets
 

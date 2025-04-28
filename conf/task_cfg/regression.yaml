@@ -7,11 +7,20 @@ defaults:
   - scheduler_cfg: cosine_with_warmup
   - _self_
 
+# WHAT IS THIS DOING HERE?
 epochs: 30
+
+# OPTIMIZER STABILITY
 clip_grad_norm: true
 clip_grad_norm_value: 1
+
+# EARLY STOPPING
 patience: 10
 min_delta: 0.01
+
+# MODEL SAVING 
 save_model_parameters: false
 model_path: null
+
+# LOGGING???
 use_wandb: ${wandb}

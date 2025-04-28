@@ -1,215 +1,157 @@
-import time
-from functools import lru_cache
-from typing import Literal, Optional
+from abc import ABC, abstractmethod
+from typing import Any, List, NamedTuple, Union
 
-import hydra
+import numpy as np
 import pandas as pd
 import torch
-from torch_geometric.data import Dataset
-from torch_geometric.loader import DataLoader
 
-from deeprxn.utils import load_csv_dataset
-
-
-class ChemDataset(Dataset):
-    # TODO: add docstring
-    # TODO: add functionality to drop invalid molecules
-    # TODO: add option to cache graphs
-    def __init__(
-        self,
-        smiles,
-        labels,
-        atom_featurizer,
-        bond_featurizer,
-        qm_featurizer,
-        single_featurizer,
-        cache_graphs,
-        max_cache_size,
-        representation_cfg,
-        transform_cfg,
-        enthalpy=None,
-    ):
-        super(ChemDataset, self).__init__()
-        self.smiles = smiles
-        self.labels = labels
-        self.atom_featurizer = atom_featurizer
-        self.bond_featurizer = bond_featurizer
-        self.qm_featurizer = qm_featurizer
-        self.single_featurizer = single_featurizer
-        self.cache_graphs = cache_graphs
-        self.representation_cfg = representation_cfg
-        self.transform_cfg = transform_cfg
-        self.enthalpy = enthalpy
-        self.precompute_time = 0
-        self.graph_cache = {}
-
-        if cache_graphs:
-            self.process_key = lru_cache(maxsize=max_cache_size)(
-                self._process_key
-            )
-        else:
-            self.process_key = self._process_key
-
-        self.graph_transforms = []
-        self.dataset_transforms = []
-        if self.transform_cfg is not None:
-            for _, config in self.transform_cfg.items():
-                transform = hydra.utils.instantiate(config)
-                if (
-                    config.type == "graph"
-                ):  # TODO: look into making all transforms being performed on dataset
-                    self.graph_transforms.append(transform)
-                elif config.type == "dataset":
-                    self.dataset_transforms.append(transform)
-                else:
-                    assert False, f"Unknown transform type: {config.type}"
-
-    def _process_key(self, key):
-        # TODO: add docstring
-        smiles = self.smiles[key]
-        label = self.labels[key]
-        enthalpy_value = (
-            self.enthalpy[key] if self.enthalpy is not None else None
-        )
-        molgraph = hydra.utils.instantiate(
-            self.representation_cfg,
-            smiles=smiles,
-            label=label,
-            enthalpy=enthalpy_value,
-            atom_featurizer=self.atom_featurizer,
-            bond_featurizer=self.bond_featurizer,
-            qm_featurizer=self.qm_featurizer,
-            single_featurizer=self.single_featurizer,
-        )
-        molgraph_tg_data_obj = (
-            molgraph.to_pyg_data()
-        )  # TODO: look into making representations inherit from PyG Data
-
-        if self.transform_cfg is not None:
-            for transform in self.graph_transforms:
-                molgraph_tg_data_obj = transform(molgraph_tg_data_obj)
-
-        return molgraph_tg_data_obj
-
-    def get(self, key):
-        # TODO: add docstring
-        return self.process_key(key)
-
-    def preprocess_all(self):
-        start_time = time.time()
-        for key in range(len(self.smiles)):
-            self.process_key(key)
-        self.precompute_time = time.time() - start_time
-
-    def len(self):
-        # TODO: add docstring
-        return len(self.smiles)
+class DataSplit(NamedTuple):
+    """
+    A named tuple to hold the data splits for training, validation, and testing.
+    """
+    train: pd.DataFrame
+    val: pd.DataFrame
+    test: pd.DataFrame
 
 
-def construct_loader(
-    batch_size: int,
-    num_workers: int,
-    shuffle: bool,
-    split: Literal["train", "val", "test"],
-    cache_graphs: bool,
-    max_cache_size: int,
-    preprocess_all: bool,
-    dataset_cfg: dict,
-    featurizer_cfg: dict,
-    representation_cfg: dict,
-    transform_cfg: Optional[dict] = None,
-) -> DataLoader:
-    """Construct a PyTorch Geometric DataLoader with specified configuration."""
+class DataPipelineModule(ABC):
+    """
+    """
+    def forward(self):
+        """
+        The forward method is called to execute the module's functionality.
+        """
+        raise NotImplementedError("Subclasses should implement this method.")
 
-    split_params = {
-        "train_ratio": dataset_cfg.get("train_ratio", 0.8),
-        "val_ratio": dataset_cfg.get("val_ratio", 0.1),
-        "test_ratio": dataset_cfg.get("test_ratio", 0.1),
-        "use_pickle": dataset_cfg.get("use_pickle", False),
-        "enthalpy_column": dataset_cfg.get("enthalpy_column", None),
-        "seed_index": dataset_cfg.get("seed_index", None),
-    }
+    def __call__(self, *args: Any, **kwargs: Any) -> Any:
+        """
+        Calls the forward method when the module is called.
+        """
+        return self.forward(*args, **kwargs)
 
-    data = load_csv_dataset(
-        input_column=dataset_cfg.input_column,
-        target_column=dataset_cfg.target_column,
-        data_folder=dataset_cfg.data_folder,
-        reduced_dataset=dataset_cfg.reduced_dataset,
-        split=split,
-        **split_params,
-    )
+class DataReader(DataPipelineModule):
+    """
+    Abstract base class for data readers.
+    This class defines the interface for reading data from various sources.
+    """
 
-    smiles = data[0]
-    labels = data[1]
-    enthalpy = data[2] if len(data) > 2 else None
+    @abstractmethod
+    def forward(self):
+        raise NotImplementedError("Subclasses should implement this method.")
 
-    atom_featurizer = hydra.utils.instantiate(featurizer_cfg.atom_featurizer_cfg)
-    bond_featurizer = hydra.utils.instantiate(featurizer_cfg.bond_featurizer_cfg)
-    if hasattr(featurizer_cfg, "external_atom_featurizer_cfg"):
-        external_atom_featurizer = hydra.utils.instantiate(featurizer_cfg.external_atom_featurizer_cfg)
-    else:
-        external_atom_featurizer = None
-    if hasattr(featurizer_cfg, "single_featurizer_cfg"):
-        single_featurizer = hydra.utils.instantiate(featurizer_cfg.single_featurizer_cfg)
-    else:
-        single_featurizer = None
 
-    dataset = ChemDataset(
-        smiles=smiles,
-        labels=labels,
-        atom_featurizer=atom_featurizer,
-        bond_featurizer=bond_featurizer,
-        qm_featurizer=external_atom_featurizer,
-        single_featurizer=single_featurizer,
-        cache_graphs=cache_graphs,
-        max_cache_size=max_cache_size,
-        representation_cfg=representation_cfg,
-        transform_cfg=transform_cfg,
-        enthalpy=enthalpy,
-    )
+class DataSplitter(DataPipelineModule):
+    """
+    Abstract base class for data splitting strategies.
+    """
 
-    if preprocess_all:
-        dataset.preprocess_all()
+    @abstractmethod
+    def forward(self, raw) -> DataSplit:
+        """
+        Splits the raw data into training, validation, and test partitions.
 
-    loader = DataLoader(
-        dataset=dataset,
-        batch_size=batch_size,
-        shuffle=shuffle,
-        num_workers=num_workers,
-        pin_memory=True,
-        sampler=None,
-        generator=torch.Generator().manual_seed(0),
-    )
+        Args:
+            raw: The raw data to be split.
 
-    # this code is needed for PNA
-    dataset_statistics = {}
-    if dataset.dataset_transforms:
-        original_state = loader.generator.get_state()
-        for batch in loader:
-            for transform in dataset.dataset_transforms:
-                batch = transform(batch)
+        Returns:
+            DataSplit: A named tuple containing the train, val, and test dataframes.
+        """
+        raise NotImplementedError("Subclasses should implement this method.")
 
-        for transform in dataset.dataset_transforms:  # TODO: make this nicer
-            if transform.needs_second_dataloader:
-                stats = transform.finalize(loader)
-            else:
-                stats = transform.finalize()
-            dataset_statistics.update(stats)
+    
+class DataPipeline(DataPipelineModule):
+    """
+    A class to manage the data pipeline, which consists of multiple modules.
+    """
+    def __init__(self, modules: List[DataPipelineModule]):
+        """
+        Initializes the DataPipeline with a list of modules.
 
-        loader.generator.set_state(original_state)
+        The modules are executed in the order they are provided in the list.
+        The first module is expected to return the raw data, and the subsequent modules will process this data.
+        The last module is expected to return a DataSplit object.
 
-    dataset.statistics = dataset_statistics
+        Args:
+            modules (List[DataPipelineModule]): A list of modules to be executed in the pipeline.
+        """
+        self.modules = modules 
 
-    return loader
+    def forward(self) -> DataSplit:
+        """
+        Executes the data pipeline by calling the forward method of each module in order.
 
+        Returns:
+            DataSplit: A named tuple containing the train, val, and test dataframes.
+        """
+        data = self.modules[0].forward()
+        for module in self.modules[1:]:
+            data = module.forward(data)
+
+        assert isinstance(data, DataSplit), "Final output must be a DataSplit object"
+        return data
 
 class Standardizer:
-    # TODO: add docstring
-    def __init__(self, mean, std):
+    def __init__(self, mean: Union[float, torch.Tensor, np.ndarray], std: Union[float, torch.Tensor, np.ndarray]) -> None:
+        """
+        Create a standardizer to standardize sample using the given mean and standard deviation.
+
+        Args:
+            mean (Union[float, torch.Tensor, np.ndarray]): Mean value(s) for standardization.
+            std (Union[float, torch.Tensor, np.ndarray]): Standard deviation value(s) for standardization.
+
+        Raises:
+            TypeError: If mean or std are not of type torch.Tensor or np.ndarray, or if they are not of the same type.
+            ValueError: If mean and std do not have the same shape.
+        """
+        self.validate(mean, std)
         self.mean = mean
         self.std = std
 
-    def __call__(self, x, rev=False):
+    def __call__(self, x: Union[torch.Tensor, np.ndarray], rev=False) -> Union[torch.Tensor, np.ndarray]:
+        """
+        Standardize or reverse standardize the input data.
+
+        Args:
+            x (Union[torch.Tensor, np.ndarray]): Input data to standardize.
+            rev (bool): If True, reverse the standardization.
+
+        Returns:
+            Union[torch.Tensor, np.ndarray]: Standardized or reverse standardized data.
+
+        Raises:
+            TypeError: If input data is not of the same type as mean and std.
+            ValueError: If input data does not have the same shape as mean and std.
+        """
+        if not isinstance(self.mean, float):
+            if not isinstance(x, type(self.mean)):
+                raise TypeError("x must be of the same type as mean and std, unless mean and std are floats.")
+            if x.shape != self.mean.shape:
+                raise ValueError("x must have the same shape as mean and std, unless mean and std are floats.")
         if rev:
             return (x * self.std) + self.mean
         return (x - self.mean) / self.std
+
+    @staticmethod
+    def validate(
+        mean: Union[float, torch.Tensor, np.ndarray],
+        std: Union[float, torch.Tensor, np.ndarray],
+    ) -> None:
+        """
+        Validate the mean and standard deviation values.
+
+        Args:
+            mean (Union[float, torch.Tensor, np.ndarray]): Mean value(s) for standardization.
+            std (Union[float, torch.Tensor, np.ndarray]): Standard deviation value(s) for standardization.
+
+        Raises:
+            TypeError: If mean or std are not of type torch.Tensor or np.ndarray, or if they are not of the same type.
+            ValueError: If mean and std do not have the same shape.
+        """
+        if not isinstance(mean, (float, torch.Tensor, np.ndarray)):
+            raise TypeError("Mean must be a torch.Tensor or np.ndarray.")
+        if not isinstance(std, (float, torch.Tensor, np.ndarray)):
+            raise TypeError("Standard deviation must be a float, torch.Tensor or np.ndarray.")
+        if type(mean) != type(std):
+            raise TypeError("Mean and standard deviation must be of the same type.")
+        if not isinstance(mean, float) and mean.shape != std.shape:
+            raise ValueError("Mean and standard deviation must have the same shape.")

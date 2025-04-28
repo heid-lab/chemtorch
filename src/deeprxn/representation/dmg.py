@@ -5,7 +5,7 @@ import torch
 import torch_geometric as tg
 from omegaconf import DictConfig
 
-from deeprxn.representation.rxn_graph_base import (
+from deeprxn.representation.reaction_graph import (
     AtomOriginType,
     EdgeOriginType,
     RxnGraphBase,
@@ -27,7 +27,6 @@ class DMG(RxnGraphBase):
         concat_origin_feature: bool = False,
         in_channel_multiplier: int = 1,
         pre_transform_cfg: Optional[Dict[str, DictConfig]] = None,
-        enthalpy=None,
         extra_zero_fvec: bool = False,
     ):
         """Initialize graph.
@@ -39,7 +38,6 @@ class DMG(RxnGraphBase):
             label=label,
             atom_featurizer=atom_featurizer,
             bond_featurizer=bond_featurizer,
-            enthalpy=enthalpy,
         )
         self.connection_direction = connection_direction
         self.concat_origin_feature = concat_origin_feature
@@ -355,9 +353,6 @@ class DMG(RxnGraphBase):
             [self._get_edge_type_encoding(t) for t in self.edge_origin_type],
             dtype=torch.float,
         )
-
-        if self.enthalpy is not None:
-            data.enthalpy = torch.tensor([self.enthalpy], dtype=torch.float)
 
         if self.concat_origin_feature == True:
             # Concatenate with existing features

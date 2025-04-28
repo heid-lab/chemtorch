@@ -2,9 +2,12 @@ import os
 
 import hydra
 import torch
+from torch.utils.data import DataLoader, Dataset
 from omegaconf import DictConfig, OmegaConf
 
 import wandb
+from deeprxn.data import DataPipeline
+from deeprxn.dataset.mol_graph_dataset import construct_loader
 from deeprxn.utils import load_model, set_seed
 
 OmegaConf.register_new_resolver("eval", eval)
@@ -25,10 +28,77 @@ def main(cfg: DictConfig):
     print(f"Using device: {device}")
 
     ############################# data instantiation #############################
-    train_loader = hydra.utils.instantiate(cfg.data_cfg, shuffle=True, split="train")
-    val_loader = hydra.utils.instantiate(cfg.data_cfg, shuffle=False, split="val")
-    test_loader = hydra.utils.instantiate(cfg.data_cfg, shuffle=False, split="test")
+    data_pipeline: DataPipeline = hydra.utils.instantiate(cfg.data_cfg.dataset_cfg.data_pipeline_cfg)
+    train_df, val_df, test_df = data_pipeline.forward()
 
+    # === Will be remove in next commit ============================================================================
+    # TODO: DO NOT HARD CODE FEATURIZERS
+    atom_featurizer = hydra.utils.instantiate(cfg.data_cfg.featurizer_cfg.atom_featurizer_cfg)
+    bond_featurizer = hydra.utils.instantiate(cfg.data_cfg.featurizer_cfg.bond_featurizer_cfg)
+    if hasattr(cfg.data_cfg.featurizer_cfg, "external_atom_featurizer_cfg"):
+        external_atom_featurizer = hydra.utils.instantiate(cfg.data_cfg.featurizer_cfg.external_atom_featurizer_cfg)
+    else:
+        external_atom_featurizer = None
+    if hasattr(cfg.data_cfg.featurizer_cfg, "single_featurizer_cfg"):
+        single_featurizer = hydra.utils.instantiate(cfg.data_cfg.featurizer_cfg.single_featurizer_cfg)
+    else:
+        single_featurizer = None
+    # ==============================================================================================================
+    
+    dataset_partial: Dataset= hydra.utils.instantiate(cfg.data_cfg.dataset_cfg)
+
+    train_set = dataset_partial(
+        data=train_df,
+        atom_featurizer=atom_featurizer,
+        bond_featurizer=bond_featurizer,
+        external_atom_featurizer=external_atom_featurizer,
+        single_featurizer=single_featurizer)
+
+    val_set = dataset_partial(
+        data=val_df,
+        atom_featurizer=atom_featurizer,
+        bond_featurizer=bond_featurizer,
+        external_atom_featurizer=external_atom_featurizer,
+        single_featurizer=single_featurizer)
+
+    test_set = dataset_partial(
+        data=test_df,
+        atom_featurizer=atom_featurizer,
+        bond_featurizer=bond_featurizer,
+        external_atom_featurizer=external_atom_featurizer,
+        single_featurizer=single_featurizer)
+
+
+    # TODO: Add dataset wide opertaionts (e.g. data augmentation, or dataset statistics needed for PNA)
+    # TODO: Compute endocdings here for whole dataset (not for each batch)
+
+    train_loader = construct_loader(
+        dataset=train_set,
+        batch_size=cfg.data_cfg.batch_size,
+        shuffle=True,
+        num_workers=cfg.data_cfg.num_workers,
+    )
+    val_loader = construct_loader(
+        dataset=val_set,
+        batch_size=cfg.data_cfg.batch_size,
+        shuffle=False,
+        num_workers=cfg.data_cfg.num_workers,
+    )
+    test_loader = construct_loader(
+        dataset=test_set,
+        batch_size=cfg.data_cfg.batch_size,
+        shuffle=False,
+        num_workers=cfg.data_cfg.num_workers,
+    )    
+
+    # TODO: Instantiate dataloaders via hydra
+    # data_loader_partial: DataLoader = hydra.utils.instantiate(cfg.data_cfg.data_loader_cfg)
+    # train_loader = data_loader_partial(dataset=train_set, shuffle=True)
+    # val_loader = data_loader_partial(dataset=val_set, shuffle=False)
+    # test_loader = data_loader_partial(dataset=test_set, shuffle=False)
+
+    
+    # TODO: MOVE THIS TO GRAPH DATASET
     OmegaConf.update(
         cfg,
         "num_node_features",
@@ -83,6 +153,7 @@ def main(cfg: DictConfig):
                 f"Pretrained model incompatible with dataset: {str(e)}"
             )
     else:
+        # TODO: DON'T HARD CODE THIS
         #### for models needing precomputed statistics on the dataset, e.g. PNA
         transform_cfg = getattr(cfg.data_cfg, "transform_cfg", None)
         if transform_cfg and hasattr(
@@ -100,10 +171,10 @@ def main(cfg: DictConfig):
     )
     print(f"Total parameters: {total_params:,}")
 
-    under_parameters = getattr(cfg, "under_parameters", None)
-    if under_parameters is not None and total_params > under_parameters:
+    parameter_limit = getattr(cfg, "parameter_limit", None)
+    if parameter_limit is not None and total_params > parameter_limit:
         print(
-            f"Model has {total_params:,} parameters, which exceeds the threshold of {under_parameters:,}. Skipping this run."
+            f"Model has {total_params:,} parameters, which exceeds the parameter limit of {parameter_limit:,}. Skipping this run."
         )
         if cfg.wandb:
             wandb.log(

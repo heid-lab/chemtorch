@@ -5,7 +5,7 @@ import torch
 import torch_geometric as tg
 from omegaconf import DictConfig
 
-from deeprxn.representation.rxn_graph_base import (
+from deeprxn.representation.reaction_graph import (
     AtomOriginType,
     EdgeOriginType,
     RxnGraphBase,
@@ -28,7 +28,6 @@ class UndirectedLineConnectedPairGraph(RxnGraphBase):
         in_channel_multiplier: int = 1,
         feature_aggregation: Optional[str] = None,
         pre_transform_cfg: Optional[Dict[str, DictConfig]] = None,
-        enthalpy=None,
     ):
         """
 
@@ -39,7 +38,6 @@ class UndirectedLineConnectedPairGraph(RxnGraphBase):
             label=label,
             atom_featurizer=atom_featurizer,
             bond_featurizer=bond_featurizer,
-            enthalpy=enthalpy,
         )
         self.connection_direction = connection_direction
         self.pre_transform_cfg = pre_transform_cfg
@@ -490,8 +488,5 @@ class UndirectedLineConnectedPairGraph(RxnGraphBase):
         data.atom_compound_idx = torch.tensor(
             self.atom_compound_idx, dtype=torch.long
         )
-
-        if self.enthalpy is not None:
-            data.enthalpy = torch.tensor([self.enthalpy], dtype=torch.float)
 
         return data

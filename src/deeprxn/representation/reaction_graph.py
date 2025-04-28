@@ -20,7 +20,7 @@ class EdgeOriginType(IntEnum):
     REACTANT_PRODUCT = 3
 
 
-class RxnGraphBase(ABC):
+class ReactionGraph(ABC):
     """Base class for reaction graphs."""
 
     def __init__(
@@ -29,7 +29,6 @@ class RxnGraphBase(ABC):
         label: float,
         atom_featurizer: callable,
         bond_featurizer: callable,
-        enthalpy: None,
     ):
         """Initialize reaction graph.
 
@@ -42,7 +41,6 @@ class RxnGraphBase(ABC):
         self.label = label
         self.atom_featurizer = atom_featurizer
         self.bond_featurizer = bond_featurizer
-        self.enthalpy = enthalpy
 
         self.smiles_reac, _, self.smiles_prod = self.smiles.split(">")
 

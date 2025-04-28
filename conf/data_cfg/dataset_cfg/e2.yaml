@@ -1,5 +1,14 @@
-_target_: deeprxn.data.load_csv_dataset
+_target_: deeprxn.dataset.mol_graph_dataset.MolGraphDataset
+
+data_folder: "data/barriers_e2"
+
 input_column: "AAM"
 target_column: "ea"
-data_folder: "barriers_e2"
-reduced_dataset: 1
+
+subsample: null   # TODO: Remove if not used
+
+data_pipeline_cfg:
+  _target_: deeprxn.data.DataPipeline
+  modules:
+    - single_csv_reader
+    - ration_splitter

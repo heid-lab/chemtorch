@@ -1,5 +1,14 @@
-_target_: deeprxn.data.load_csv_dataset
+_target_: deeprxn.dataset.mol_graph_dataset.MolGraphDataset
+
+data_path: "data/barriers_cycloadd"
+
 input_column: "rxn_smiles"
 target_column: "G_act"
-data_folder: "barriers_cycloadd"
-reduced_dataset: 1
+
+subsample: null   # TODO: Remove if not used
+
+data_pipeline_cfg:
+  _target_: deeprxn.data.DataPipeline
+  modules:
+    - single_csv_reader
+    - ration_splitter

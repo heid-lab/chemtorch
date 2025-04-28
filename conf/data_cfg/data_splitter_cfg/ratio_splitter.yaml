@@ -1,0 +1,4 @@
+_target_: deeprxn.data.data_splitter.ratio_splitter.RatioSplitter
+train_ratio: ${dataset.train_ratio}
+val_ratio: ${dataset.val_ratio}
+test_ratio: ${dataset.test_ratio}
