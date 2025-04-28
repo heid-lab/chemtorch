@@ -1,19 +1,25 @@
-from typing import Literal
-
-import torch
 import torch.nn as nn
-
-ActivationType = Literal["relu", "leaky_relu", "identity"]
 
 
 class Activation(nn.Module):
+    """Activation function wrapper."""
 
     def __init__(
         self,
-        activation_type: ActivationType = "relu",
-        inplace: bool = False,
-        **kwargs,
+        activation_type="relu",
+        inplace=False,
     ):
+        """Initialize the activation function.
+
+        Parameters
+        ----------
+        activation_type : str, optional
+            The type of activation function, by default "relu".
+            Options: "relu", "leaky_relu", or "identity".
+        inplace : bool, optional
+            Whether to perform the operation in-place, by default False.
+
+        """
         super().__init__()
         self.activation_type = activation_type
         self.inplace = inplace
@@ -28,5 +34,5 @@ class Activation(nn.Module):
         else:
             raise ValueError(f"Unknown activation type: {activation_type}")
 
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
+    def forward(self, x):
         return self.act(x)
