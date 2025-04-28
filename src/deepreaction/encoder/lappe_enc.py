@@ -1,21 +1,39 @@
+# started from code from https://github.com/rampasek/GraphGPS/tree/main, MIT License, Copyright (c) 2022 Ladislav Rampášek, Michael Galkin, Vijay Prakash Dwivedi, Dominique Beaini
 import torch
 from torch import nn
-from torch_geometric.data import Batch
-
-from deepreaction.encoder.encoder_base import Encoder
 
 
-class LapPE(Encoder):
+class LapPE(nn.Module):
+    """Laplacian Positional Encoding for graph neural networks."""
 
     def __init__(
         self,
-        in_channels: int,
-        out_channels: int,  # dim_pe
-        model_type: str,
-        n_layers: int = 2,
-        as_variable: bool = False,
+        in_channels,
+        out_channels,  # dim_pe
+        model_type,
+        n_layers=2,
+        as_variable=False,
         raw_norm_type=None,
     ):
+        """Initialize the Laplacian Positional Encoding.
+
+        Parameters
+        ----------
+        in_channels : int
+            The input channels dimension.
+        out_channels : int
+            The output positional encoding dimension (dim_pe).
+        model_type : str
+            The model type for PE encoder, options are "deepset" or "Transformer".
+        n_layers : int, optional
+            The number of layers in the PE encoder, by default 2.
+        as_variable : bool, optional
+            Whether to add PE as a separate variable in batch, by default False.
+        raw_norm_type : str, optional
+            The normalization type for raw PE, by default None.
+            Options: "batchnorm" or None.
+
+        """
         super().__init__()
 
         self.model_type = model_type
@@ -44,7 +62,7 @@ class LapPE(Encoder):
                 layers.append(activation())
             self.pe_encoder = nn.Sequential(*layers)
 
-    def forward(self, batch: Batch) -> Batch:
+    def forward(self, batch):
 
         if not hasattr(batch, "EigVals") or not hasattr(batch, "EigVecs"):
             raise ValueError(
@@ -54,18 +72,11 @@ class LapPE(Encoder):
         EigVals = getattr(batch, "EigVals")  # .unsqueeze(2)
         EigVecs = getattr(batch, "EigVecs")
 
-        # print(EigVecs.shape)
-        # print(EigVals.shape)
-
         if self.training:
-            # print("halo")
             sign_flip = torch.rand(EigVecs.size(1), device=EigVecs.device)
             sign_flip[sign_flip >= 0.5] = 1.0
             sign_flip[sign_flip < 0.5] = -1.0
             EigVecs = EigVecs * sign_flip.unsqueeze(0)
-
-        # print(EigVecs.shape)
-        # print(EigVals.shape)
 
         pos_enc = torch.cat(
             (EigVecs.unsqueeze(2), EigVals), dim=2
