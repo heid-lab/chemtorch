@@ -1,57 +1,59 @@
-import torch
 import torch.nn as nn
-from torch_geometric.data import Batch
 
-from deepreaction.act.act import Activation, ActivationType
-from deepreaction.head.head import Head
+from deepreaction.act.act import Activation
 
 
-class FFNHead(Head):
-    """Feed forward network head with configurable layers."""
+class FFNHead(nn.Module):
+   """Feed forward network head with configurable layers."""
 
-    def __init__(
-        self,
-        in_channels: int,
-        out_channels: int,
-        hidden_channels: int,
-        num_layers: int = 2,
-        dropout: float = 0.02,
-        activation: ActivationType = "relu",
-    ):
-        super().__init__(in_channels, out_channels)
+   def __init__(
+       self,
+       in_channels,
+       out_channels,
+       hidden_channels,
+       num_layers=2,
+       dropout=0.02,
+       activation="relu",
+   ):
+       """Initialize the feed forward network head.
 
-        # Use our Activation class
-        self.activation = Activation(activation_type=activation)
+       Parameters
+       ----------
+       in_channels : int
+           The input feature dimension.
+       out_channels : int
+           The output feature dimension.
+       hidden_channels : int
+           The hidden layer dimension.
+       num_layers : int, optional
+           The number of linear layers, by default 2.
+       dropout : float, optional
+           Dropout probability, by default 0.02.
+       activation : str, optional
+           Activation function type, by default "relu".
 
-        # Build layers dynamically
-        layers = []
-        current_dim = in_channels
+       """
+       super().__init__()
+       self.activation = Activation(activation_type=activation)
 
-        # Hidden layers
-        for _ in range(num_layers - 1):
-            layers.extend(
-                [
-                    nn.Dropout(dropout),
-                    nn.Linear(current_dim, hidden_channels),
-                    self.activation,
-                ]
-            )
-            current_dim = hidden_channels
+       layers = []
+       current_dim = in_channels
 
-        # Output layer
-        layers.extend(
-            [nn.Dropout(dropout), nn.Linear(current_dim, out_channels)]
-        )
+       for _ in range(num_layers - 1):
+           layers.extend(
+               [
+                   nn.Dropout(dropout),
+                   nn.Linear(current_dim, hidden_channels),
+                   self.activation,
+               ]
+           )
+           current_dim = hidden_channels
 
-        self.ffn = nn.Sequential(*layers)
+       layers.extend(
+           [nn.Dropout(dropout), nn.Linear(current_dim, out_channels)]
+       )
 
-    def forward(self, batch: Batch) -> torch.Tensor:
-        """Forward pass of the FFN head.
+       self.ffn = nn.Sequential(*layers)
 
-        Args:
-            batch: PyG batch with graph embeddings
-
-        Returns:
-            torch.Tensor: Output predictions with shape [batch_size, out_channels]
-        """
-        return self.ffn(batch.x).squeeze(-1)
+   def forward(self, batch):
+       return self.ffn(batch.x).squeeze(-1)
