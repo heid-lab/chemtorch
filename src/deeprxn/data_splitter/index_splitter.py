@@ -39,6 +39,9 @@ class IndexSplitter(DataSplitter):
         Returns:
             DataSplit: A named tuple containing the train, val, and test dataframes.
         """
+        if raw.empty:
+            raise ValueError("Input DataFrame is empty")
+
         return DataSplit(
             train=raw.iloc[self.split_map["train"]],
             val=raw.iloc[self.split_map["val"]],

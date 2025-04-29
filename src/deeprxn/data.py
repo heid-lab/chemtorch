@@ -86,7 +86,8 @@ class DataPipeline(DataPipelineComponent):
         for module in self.components[1:]:
             data = module.forward(data)
 
-        assert isinstance(data, DataSplit), "Final output must be a DataSplit object"
+        if not isinstance(data, DataSplit):
+            raise TypeError("Final output must be a DataSplit object")
         return data
 
 class Standardizer:

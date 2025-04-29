@@ -29,3 +29,21 @@ def test_ratio_splitter(sample_dataframe):
     assert len(data_split.train) == pytest.approx(0.7 * len(sample_dataframe), abs=1)
     assert len(data_split.val) == pytest.approx(0.2 * len(sample_dataframe), abs=1)
     assert len(data_split.test) == pytest.approx(0.1 * len(sample_dataframe), abs=1)
+
+def test_ratio_splitter_invalid_ratios():
+    """Test RatioSplitter with invalid ratios."""
+    with pytest.raises(ValueError, match="Ratios must sum to 1"):
+        RatioSplitter(train_ratio=0.5, val_ratio=0.3, test_ratio=0.3)  # Sum > 1
+
+    with pytest.raises(ValueError, match="Ratios must sum to 1"):
+        RatioSplitter(train_ratio=0.5, val_ratio=0.5, test_ratio=0.2)  # Sum > 1
+
+    with pytest.raises(ValueError, match="Ratios must sum to 1"):
+        RatioSplitter(train_ratio=0.5, val_ratio=0.4, test_ratio=0.0)  # Sum < 1
+
+def test_ratio_splitter_empty_dataframe():
+    """Test RatioSplitter with an empty DataFrame."""
+    splitter = RatioSplitter(train_ratio=0.7, val_ratio=0.2, test_ratio=0.1)
+    empty_df = pd.DataFrame()
+    with pytest.raises(ValueError, match="Input DataFrame is empty"):
+        splitter.forward(empty_df)

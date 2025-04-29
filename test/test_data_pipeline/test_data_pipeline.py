@@ -1,9 +1,17 @@
 import pytest
 import pandas as pd
-from deeprxn.data import DataPipeline, DataSplit
+from deeprxn.data import DataPipeline, DataReader, DataSplit, DataSplitter
 from deeprxn.data_reader.single_csv_reader import SingleCSVReader
 from deeprxn.data_reader.split_csv_reader import SplitCSVReader
 from deeprxn.data_splitter.ratio_splitter import RatioSplitter
+
+class NoOpMockReader(DataReader):
+    def forward(self):
+        return None  # Return invalid data
+
+class NoOpMockSplitter(DataSplitter):
+    def forward(self, raw):
+        return None  # Return invalid data
 
 @pytest.fixture
 def single_csv_file(tmp_path):
@@ -52,3 +60,12 @@ def test_data_pipeline_with_split_csv_reader(split_csv_folder):
     assert not data_split.train.empty
     assert not data_split.val.empty
     assert not data_split.test.empty
+
+
+def test_data_pipeline_invalid_reader():
+    """Test DataPipeline with an invalid reader."""
+    reader = NoOpMockReader()
+    splitter = NoOpMockSplitter()
+    pipeline = DataPipeline(components=[reader, splitter])
+    with pytest.raises(TypeError, match="Final output must be a DataSplit object"):
+        pipeline.forward()

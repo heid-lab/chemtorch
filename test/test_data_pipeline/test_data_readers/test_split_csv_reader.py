@@ -26,3 +26,27 @@ def test_split_csv_reader(split_csv_folder):
     assert not data_split.train.empty
     assert not data_split.val.empty
     assert not data_split.test.empty
+
+
+def test_split_csv_reader_missing_files(tmp_path):
+    """Test SplitCSVReader with missing CSV files."""
+    data_folder = tmp_path / "data"
+    data_folder.mkdir()
+    # Create only one file instead of all three
+    (data_folder / "train.csv").write_text("col1,col2\n1,2\n3,4\n")
+
+    reader = SplitCSVReader(data_folder=str(data_folder))
+    with pytest.raises(FileNotFoundError, match="Missing files"):
+        reader.forward()
+
+
+def test_split_csv_reader_empty_files(tmp_path):
+    """Test SplitCSVReader with empty CSV files."""
+    data_folder = tmp_path / "data"
+    data_folder.mkdir()
+    for split in ["train", "val", "test"]:
+        (data_folder / f"{split}.csv").write_text("")  # Create empty files
+
+    reader = SplitCSVReader(data_folder=str(data_folder))
+    with pytest.raises(pd.errors.EmptyDataError, match="No columns to parse from file"):
+        reader.forward()
