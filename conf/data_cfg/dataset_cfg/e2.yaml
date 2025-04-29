@@ -1,14 +1,19 @@
 _target_: deeprxn.dataset.mol_graph_dataset.MolGraphDataset
 
-data_folder: "data/barriers_e2"
+# === DATA PIPELINE ===================================
+defaults:
+  # Data pipeline components in chronological order
+  - pipeline_components/data_reader_cfg: split_csv_reader
+  - _self_ 
 
+# === DATA PIPELINE COMPONENTS ========================
+data_folder: "deeprxn_datasets/data/e2sn2/e2/barriers"
+
+# === DATASET =========================================
 input_column: "AAM"
-target_column: "ea"
-
-subsample: null   # TODO: Remove if not used
-
-data_pipeline_cfg:
-  _target_: deeprxn.data.DataPipeline
-  modules:
-    - single_csv_reader
-    - ration_splitter
+target_column: "ea" 
+# Additional dataset arguements (see MolGraphDataset for details)
+# subsample: null         
+# cache_graphs: true 
+# max_cache_size: null
+# preprocess_all: true

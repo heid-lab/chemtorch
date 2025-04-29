@@ -79,6 +79,7 @@ def main(cfg: DictConfig):
     # TODO: Add dataset wide opertaionts (e.g. data augmentation, or dataset statistics needed for PNA)
     # TODO: Compute endocdings here for whole dataset (not for each batch)
 
+    # TODO: Instantiate dataloaders via hydra
     train_loader = construct_loader(
         dataset=train_set,
         batch_size=cfg.data_cfg.batch_size,
@@ -98,14 +99,7 @@ def main(cfg: DictConfig):
         num_workers=cfg.data_cfg.num_workers,
     )    
 
-    # TODO: Instantiate dataloaders via hydra
-    # data_loader_partial: DataLoader = hydra.utils.instantiate(cfg.data_cfg.data_loader_cfg)
-    # train_loader = data_loader_partial(dataset=train_set, shuffle=True)
-    # val_loader = data_loader_partial(dataset=val_set, shuffle=False)
-    # test_loader = data_loader_partial(dataset=test_set, shuffle=False)
-
-    
-    # TODO: MOVE THIS TO GRAPH DATASET
+    # TODO: Move this to graph dataset, or even better, to hydra
     OmegaConf.update(
         cfg,
         "num_node_features",
@@ -165,7 +159,7 @@ def main(cfg: DictConfig):
         transform_cfg = getattr(cfg.data_cfg, "transform_cfg", None)
         if transform_cfg and hasattr(
             transform_cfg, "batched_degree_statistics"
-        ):  # TODO: generalize
+        ):
             model = hydra.utils.instantiate(
                 cfg.model_cfg, dataset_precomputed=train_loader.dataset.statistics
             )

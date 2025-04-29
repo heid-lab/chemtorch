@@ -1,18 +1,26 @@
 _target_: deeprxn.dataset.mol_graph_dataset.MolGraphDataset
 
-data_path: "data/barriers_rdb7"
+# === DATA PIPELINE ===================================
+defaults:
+  # Data pipeline components in chronological order
+  - pipeline_components/data_reader_cfg: single_csv_reader
+  - pipeline_components/data_splitter_cfg: ratio_splitter
+  - _self_
 
-input_column: "smiles"
+# === DATA PIPELINE COMPONENTS ========================
+# For single_csv_reader
+data_folder: "deeprxn_datasets/data/rdb7/barriers"
+data_file: "rdb7_full.csv"
+# For ratio_splitter
+train_ratio: 0.9
+val_ratio: 0.05
+test_ratio: 0.05
+
+# === DATASET =========================================
+input_column: "rxn_smiles"
 target_column: "ea"
-
-cache_graphs: true
-max_cache_size: null
-preprocess_all: true
-
-subsample: null   # TODO: Remove if not used
-
-data_pipeline_cfg:
-  _target_: deeprxn.data.DataPipeline
-  modules:
-    - single_csv_reader
-    - ration_splitter
+# Additional dataset arguements (see MolGraphDataset for details)
+# subsample: null         
+# cache_graphs: true 
+# max_cache_size: null
+# preprocess_all: true

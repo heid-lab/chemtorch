@@ -1,14 +1,19 @@
 _target_: deeprxn.dataset.mol_graph_dataset.MolGraphDataset
 
-data_path: "data/barriers_cycloadd"
+# === DATA PIPELINE ===================================
+defaults:
+  # Data pipeline components in chronological order
+  - pipeline_components/data_reader_cfg: split_csv_reader
+  - _self_ 
 
+# === DATA PIPELINE COMPONENTS ========================
+data_folder: "deeprxn_datasets/data/cycloaddition/barriers"
+
+# === DATASET =========================================
 input_column: "rxn_smiles"
 target_column: "G_act"
-
-subsample: null   # TODO: Remove if not used
-
-data_pipeline_cfg:
-  _target_: deeprxn.data.DataPipeline
-  modules:
-    - single_csv_reader
-    - ration_splitter
+# Additional dataset arguements (see MolGraphDataset for details)
+# subsample: null         
+# cache_graphs: true 
+# max_cache_size: null
+# preprocess_all: true
