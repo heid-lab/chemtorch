@@ -1,4 +1,4 @@
-from typing import override
+from typing_extensions import override
 import pandas as pd
 from deeprxn.data import DataSplit, DataSplitter
 
@@ -35,11 +35,11 @@ class RatioSplitter(DataSplitter):
         Returns:
             DataSplit: A named tuple containing the train, val, and test dataframes.
         """
-        assert (
-            self.train_ratio + self.val_ratio + self.test_ratio == 1
-        ), "Ratios must sum to 1"
+        if not (1 - 1e-4 < self.train_ratio + self.val_ratio + self.test_ratio < 1 + 1e-4):
+            raise ValueError(
+                "The sum of train, val, and test ratios must be approximately equal to 1."
+            )
         
-        # TODO: Ensure random seed it set for reproducibility
         random_df = raw.sample(frac=1).reset_index(drop=True)
 
         train_size = int(len(random_df) * self.train_ratio)

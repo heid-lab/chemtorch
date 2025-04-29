@@ -1,5 +1,5 @@
 import pickle
-from typing import override
+from typing_extensions import override
 
 import pandas as pd
 from deeprxn.data import DataSplit, DataSplitter
@@ -29,7 +29,7 @@ class IndexSplitter(DataSplitter):
 
 
     @override
-    def forward(self, raw: pd.Dataframe):
+    def forward(self, raw: pd.DataFrame):
         """
         Splits the raw data into training, validation, and test partitions based on the specified indices.
 

@@ -14,7 +14,7 @@ class DataSplit(NamedTuple):
     test: pd.DataFrame
 
 
-class DataPipelineModule(ABC):
+class DataPipelineComponent(ABC):
     """
     """
     def forward(self):
@@ -29,7 +29,7 @@ class DataPipelineModule(ABC):
         """
         return self.forward(*args, **kwargs)
 
-class DataReader(DataPipelineModule):
+class DataReader(DataPipelineComponent):
     """
     Abstract base class for data readers.
     This class defines the interface for reading data from various sources.
@@ -40,7 +40,7 @@ class DataReader(DataPipelineModule):
         raise NotImplementedError("Subclasses should implement this method.")
 
 
-class DataSplitter(DataPipelineModule):
+class DataSplitter(DataPipelineComponent):
     """
     Abstract base class for data splitting strategies.
     """
@@ -59,32 +59,31 @@ class DataSplitter(DataPipelineModule):
         raise NotImplementedError("Subclasses should implement this method.")
 
     
-class DataPipeline(DataPipelineModule):
+class DataPipeline(DataPipelineComponent):
     """
     A class to manage the data pipeline, which consists of multiple modules.
     """
-    def __init__(self, modules: List[DataPipelineModule]):
+    def __init__(self, components: List[DataPipelineComponent]):
         """
-        Initializes the DataPipeline with a list of modules.
-
-        The modules are executed in the order they are provided in the list.
-        The first module is expected to return the raw data, and the subsequent modules will process this data.
-        The last module is expected to return a DataSplit object.
+        Initializes the DataPipeline with a list of components.
 
         Args:
-            modules (List[DataPipelineModule]): A list of modules to be executed in the pipeline.
+            components (List[DataPipelineComponent]): A list of data pipeline components.
+            The order of the components defines the order in which the steps are executed.
+            The first component should be a DataReader, and the last one should be a DataSplitter.
+            The last component should return a DataSplit object.
         """
-        self.modules = modules 
+        self.components = components 
 
     def forward(self) -> DataSplit:
         """
-        Executes the data pipeline by calling the forward method of each module in order.
+        Executes the data pipeline by calling the forward method of each components in order.
 
         Returns:
             DataSplit: A named tuple containing the train, val, and test dataframes.
         """
-        data = self.modules[0].forward()
-        for module in self.modules[1:]:
+        data = self.components[0].forward()
+        for module in self.components[1:]:
             data = module.forward(data)
 
         assert isinstance(data, DataSplit), "Final output must be a DataSplit object"

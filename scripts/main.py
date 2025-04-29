@@ -28,8 +28,15 @@ def main(cfg: DictConfig):
     print(f"Using device: {device}")
 
     ############################# data instantiation #############################
-    data_pipeline: DataPipeline = hydra.utils.instantiate(cfg.data_cfg.dataset_cfg.data_pipeline_cfg)
-    train_df, val_df, test_df = data_pipeline.forward()
+    pipeline_components = [
+        hydra.utils.instantiate(component_cfg) 
+        for component_cfg in dict(
+            cfg.data_cfg.dataset_cfg.pipeline_components
+        ).values()
+    ]
+    data_pipeline = DataPipeline(pipeline_components)
+
+    data_split = data_pipeline.forward()
 
     # === Will be remove in next commit ============================================================================
     # TODO: DO NOT HARD CODE FEATURIZERS
@@ -48,21 +55,21 @@ def main(cfg: DictConfig):
     dataset_partial: Dataset= hydra.utils.instantiate(cfg.data_cfg.dataset_cfg)
 
     train_set = dataset_partial(
-        data=train_df,
+        data=data_split.train,
         atom_featurizer=atom_featurizer,
         bond_featurizer=bond_featurizer,
         external_atom_featurizer=external_atom_featurizer,
         single_featurizer=single_featurizer)
 
     val_set = dataset_partial(
-        data=val_df,
+        data=data_split.val,
         atom_featurizer=atom_featurizer,
         bond_featurizer=bond_featurizer,
         external_atom_featurizer=external_atom_featurizer,
         single_featurizer=single_featurizer)
 
     test_set = dataset_partial(
-        data=test_df,
+        data=data_split.test,
         atom_featurizer=atom_featurizer,
         bond_featurizer=bond_featurizer,
         external_atom_featurizer=external_atom_featurizer,
