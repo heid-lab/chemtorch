@@ -7,8 +7,7 @@ from torch.utils.data import DataLoader, Dataset
 from omegaconf import DictConfig, OmegaConf
 
 import wandb
-from deeprxn.data_pipeline.data_pipeline import DataPipelineComponent
-from deeprxn.data_pipeline.data_pipeline import DataPipeline
+from deeprxn.data_pipeline.data_pipeline import DataPipelineComponent, SourcePipeline
 from deeprxn.dataset.mol_graph_dataset import construct_loader
 from deeprxn.representation.representation_factory import RepresentationFactory
 from deeprxn.utils import load_model, set_seed
@@ -36,9 +35,10 @@ def main(cfg: DictConfig):
         hydra.utils.instantiate(component_cfg)
         for component_cfg in cfg.data_cfg.dataset_cfg.pipeline_component.values()
     ]
-    data_pipeline = DataPipeline(pipeline_components)
+    source_pipeline = SourcePipeline(pipeline_components)
 
-    data_split = data_pipeline.forward()
+    data_split = source_pipeline.forward()
+    print(f"DEBUG: Source pipeline finished successfully")
 
     representation_factory = RepresentationFactory(
         preconf_repr=hydra.utils.instantiate(cfg.data_cfg.representation_cfg)

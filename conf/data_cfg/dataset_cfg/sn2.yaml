@@ -1,9 +1,10 @@
 _target_: deeprxn.data.dataset.mol_graph_dataset.MolGraphDataset
+_partial_: true
 
 # === DATA PIPELINE ===================================
 defaults:
   # Data pipeline components in chronological order
-  - pipeline_components/data_reader_cfg: split_csv_reader
+  - pipeline_component/data_reader_cfg: split_csv_reader
   - _self_ 
 
 # === DATA PIPELINE COMPONENTS ========================

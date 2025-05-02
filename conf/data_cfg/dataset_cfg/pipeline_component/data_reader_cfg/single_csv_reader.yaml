@@ -1,2 +1,2 @@
-_target_: deeprxn.data_reader.single_csv_reader.SingleCSVReader
+_target_: deeprxn.data_pipeline.data_reader.single_csv_reader.SingleCSVReader
 data_path: ${data_cfg.dataset_cfg.data_folder}/${data_cfg.dataset_cfg.data_file}
