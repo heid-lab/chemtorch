@@ -22,9 +22,7 @@ class CGR(ReactionGraph):
         label: float,
         atom_featurizer: callable,
         bond_featurizer: callable,
-        qm_featurizer= None,   
-        single_featurizer= None,
-        in_channel_multiplier: int = 2,  # TODO: look into this
+        in_channel_multiplier: int = 2,  # TODO: Remove this (only there for hydra interpolation)
         concat_transform_features: bool = False,
         pre_transform_cfg: Optional[DictConfig] = None,
     ):

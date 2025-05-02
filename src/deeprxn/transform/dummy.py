@@ -3,14 +3,14 @@ from typing import Dict, Optional
 import torch
 from torch_geometric.data import Data
 
-from deeprxn.representation.rxn_graph_base import (
+from deeprxn.data_pipeline.data_pipeline import DataPipelineComponent
+from deeprxn.representation.reaction_graph import (
     AtomOriginType,
     EdgeOriginType,
 )
-from deeprxn.transform.transform_base import TransformBase
 
 
-class DummyNodeTransform(TransformBase):
+class DummyNodeTransform(DataPipelineComponent):
     def __init__(
         self,
         mode: str,

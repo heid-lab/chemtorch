@@ -3,10 +3,10 @@ from torch_geometric.data import Data
 from torch_geometric.utils import scatter, to_dense_adj
 from torch_geometric.utils.num_nodes import maybe_num_nodes
 
-from deeprxn.transform.transform_base import TransformBase
+from deeprxn.data_pipeline.data_pipeline import DataPipelineComponent
 
 
-class RWSE(TransformBase):
+class RWSE(DataPipelineComponent):
     """
     # TODO: check out how to cite code
     """

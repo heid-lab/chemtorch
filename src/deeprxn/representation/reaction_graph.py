@@ -5,7 +5,6 @@ from typing import Dict, List, Tuple
 import torch_geometric as tg
 from rdkit import Chem
 
-
 class AtomOriginType(IntEnum):
     REACTANT = 0
     PRODUCT = 1
@@ -37,8 +36,7 @@ class ReactionGraph(ABC):
             atom_featurizer: Function to generate atom features
             bond_featurizer: Function to generate bond features
         """
-        self.smiles = smiles
-        self.label = label
+        super().__init__(smiles, label)
         self.atom_featurizer = atom_featurizer
         self.bond_featurizer = bond_featurizer
 

@@ -11,10 +11,9 @@ from torch_geometric.utils import (
     to_torch_csr_tensor,
 )
 
-from deeprxn.transform.transform_base import TransformBase
+from deeprxn.data_pipeline.data_pipeline import DataPipelineComponent
 
-
-class RandomWalkPETransform(TransformBase):
+class RandomWalkPETransform(DataPipelineComponent):
     """
     This code includes implementations adapted from PyTorch Geometric
     (https://github.com/pyg-team/pytorch_geometric)

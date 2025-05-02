@@ -3,6 +3,8 @@ import pandas as pd
 from abc import ABC, abstractmethod
 from typing import Any, List, NamedTuple
 
+import torch
+
 
 class DataSplit(NamedTuple):
     """
@@ -13,7 +15,9 @@ class DataSplit(NamedTuple):
     test: pd.DataFrame
 
 
-class DataPipelineComponent(ABC):
+# Actually, this class is not needed except for documentation purposes, 
+# since it could simply use nn.Modules for everything.
+class DataPipelineComponent(torch.nn.Module):
     """
     An abstract base class for data pipeline components and pipelines.
 
@@ -47,7 +51,7 @@ class DataPipelineComponent(ABC):
 
 class DataPipeline(DataPipelineComponent):
     """
-    A class representing a data pipeline that consists of multiple components.
+    A general data pipeline that consists of multiple components.
 
     This class allows for the sequential execution of components, where the output
     of one component is passed as input to the next.
@@ -78,7 +82,7 @@ class DataPipeline(DataPipelineComponent):
 class SourcePipeline(DataPipelineComponent):
     def __init__(self, components: List[DataPipelineComponent]):
         """
-        A pipeline to load the raw data source, process it, and split it into partitions.
+        A specialized pipeline to load the raw data source, process it, and split it into partitions.
 
         Args:
             components (List[DataPipelineComponent]): A list of data pipeline components.

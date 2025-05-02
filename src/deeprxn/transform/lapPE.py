@@ -8,10 +8,10 @@ from torch_geometric.utils import (
     to_undirected,
 )
 
-from deeprxn.transform.transform_base import TransformBase
+from deeprxn.data_pipeline.data_pipeline import DataPipelineComponent
 
 
-class LapPE(TransformBase):
+class LapPE(DataPipelineComponent):
     """
     # TODO: check out how to cite code
     """
