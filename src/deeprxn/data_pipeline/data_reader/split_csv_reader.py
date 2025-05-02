@@ -1,7 +1,8 @@
 import os
 import pandas as pd
 from typing_extensions import override
-from deeprxn.data import DataReader, DataSplit
+from deeprxn.data_pipeline.data_reader.data_reader import DataReader
+from deeprxn.data_pipeline.data_pipeline import DataSplit
 
 
 class SplitCSVReader(DataReader):

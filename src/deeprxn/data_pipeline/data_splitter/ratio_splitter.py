@@ -1,6 +1,7 @@
 from typing_extensions import override
 import pandas as pd
-from deeprxn.data import DataSplit, DataSplitter
+from deeprxn.data_pipeline.data_splitter.data_splitter import DataSplitter
+from deeprxn.data_pipeline.data_pipeline import DataSplit
 
 
 class RatioSplitter(DataSplitter):

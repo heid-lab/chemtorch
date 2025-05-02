@@ -1,6 +1,6 @@
 import pytest
 import pandas as pd
-from deeprxn.data_reader.single_csv_reader import SingleCSVReader
+from deeprxn.data_pipeline.data_reader.single_csv_reader import SingleCSVReader
 
 @pytest.fixture
 def single_csv_file(tmp_path):

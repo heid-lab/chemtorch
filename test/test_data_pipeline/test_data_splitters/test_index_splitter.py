@@ -1,8 +1,8 @@
 import pickle
 import pandas as pd
 import pytest
-from deeprxn.data import DataSplit
-from deeprxn.data_splitter.index_splitter import IndexSplitter
+from deeprxn.data_pipeline.data_pipeline import DataSplit
+from deeprxn.data_pipeline.data_splitter.index_splitter import IndexSplitter
 
 
 @pytest.fixture

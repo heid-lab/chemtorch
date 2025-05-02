@@ -1,7 +1,7 @@
 import os
 from typing_extensions import override
 import pandas as pd
-from deeprxn.data import DataReader
+from deeprxn.data_pipeline.data_reader.data_reader import DataReader
 
 
 class SingleCSVReader(DataReader):

@@ -1,7 +1,7 @@
 import pandas as pd
 import pytest
-from deeprxn.data import DataSplit
-from deeprxn.data_reader.split_csv_reader import SplitCSVReader
+from deeprxn.data_pipeline.data_pipeline import DataSplit
+from deeprxn.data_pipeline.data_reader.split_csv_reader import SplitCSVReader
 
 
 @pytest.fixture

@@ -1,9 +1,11 @@
 import pytest
 import pandas as pd
-from deeprxn.data import DataPipeline, DataReader, DataSplit, DataSplitter
-from deeprxn.data_reader.single_csv_reader import SingleCSVReader
-from deeprxn.data_reader.split_csv_reader import SplitCSVReader
-from deeprxn.data_splitter.ratio_splitter import RatioSplitter
+from deeprxn.data_pipeline.data_reader.data_reader import DataReader
+from deeprxn.data_pipeline.data_splitter.data_splitter import DataSplitter
+from deeprxn.data_pipeline.data_pipeline import SourcePipeline, DataSplit
+from deeprxn.data_pipeline.data_reader.single_csv_reader import SingleCSVReader
+from deeprxn.data_pipeline.data_reader.split_csv_reader import SplitCSVReader
+from deeprxn.data_pipeline.data_splitter.ratio_splitter import RatioSplitter
 
 class NoOpMockReader(DataReader):
     def forward(self):
@@ -34,11 +36,11 @@ def split_csv_folder(tmp_path):
         df.to_csv(folder_path / f"{split}.csv", index=False)
     return str(folder_path)
 
-def test_data_pipeline_with_single_csv_reader(single_csv_file):
+def test_source_pipeline_with_single_csv_reader(single_csv_file):
     """Test the data pipeline with SingleCSVReader and RatioSplitter."""
     reader = SingleCSVReader(data_path=single_csv_file)
     splitter = RatioSplitter(train_ratio=0.8, val_ratio=0.1, test_ratio=0.1)
-    pipeline = DataPipeline(components=[reader, splitter])
+    pipeline = SourcePipeline(components=[reader, splitter])
     data_split = pipeline.forward()
     assert isinstance(data_split, DataSplit)
     assert isinstance(data_split.train, pd.DataFrame)
@@ -48,10 +50,10 @@ def test_data_pipeline_with_single_csv_reader(single_csv_file):
     assert not data_split.val.empty
     assert not data_split.test.empty
 
-def test_data_pipeline_with_split_csv_reader(split_csv_folder):
+def test_source_pipeline_with_split_csv_reader(split_csv_folder):
     """Test the data pipeline with SplitCSVReader."""
     reader = SplitCSVReader(data_folder=split_csv_folder)
-    pipeline = DataPipeline(components=[reader])
+    pipeline = SourcePipeline(components=[reader])
     data_split = pipeline.forward()
     assert isinstance(data_split, DataSplit)
     assert isinstance(data_split.train, pd.DataFrame)
@@ -62,10 +64,10 @@ def test_data_pipeline_with_split_csv_reader(split_csv_folder):
     assert not data_split.test.empty
 
 
-def test_data_pipeline_invalid_reader():
+def test_source_pipeline_invalid_reader():
     """Test DataPipeline with an invalid reader."""
     reader = NoOpMockReader()
     splitter = NoOpMockSplitter()
-    pipeline = DataPipeline(components=[reader, splitter])
+    pipeline = SourcePipeline(components=[reader, splitter])
     with pytest.raises(TypeError, match="Final output must be a DataSplit object"):
         pipeline.forward()

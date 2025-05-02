@@ -1,4 +1,5 @@
 import os
+from typing import List
 
 import hydra
 import torch
@@ -6,8 +7,10 @@ from torch.utils.data import DataLoader, Dataset
 from omegaconf import DictConfig, OmegaConf
 
 import wandb
-from deeprxn.data import DataPipeline
+from deeprxn.data_pipeline.data_pipeline import DataPipelineComponent
+from deeprxn.data_pipeline.data_pipeline import DataPipeline
 from deeprxn.dataset.mol_graph_dataset import construct_loader
+from deeprxn.representation.representation_factory import RepresentationFactory
 from deeprxn.utils import load_model, set_seed
 
 OmegaConf.register_new_resolver("eval", eval)
@@ -28,58 +31,34 @@ def main(cfg: DictConfig):
     print(f"Using device: {device}")
 
     ############################# data instantiation #############################
-    pipeline_components = [
-        hydra.utils.instantiate(component_cfg) 
-        for component_cfg in dict(
-            cfg.data_cfg.dataset_cfg.pipeline_components
-        ).values()
+    # TODO: Instantiate data pipeline as a whole using hydra
+    pipeline_components: List[DataPipelineComponent] = [
+        hydra.utils.instantiate(component_cfg)
+        for component_cfg in cfg.data_cfg.dataset_cfg.pipeline_component.values()
     ]
     data_pipeline = DataPipeline(pipeline_components)
 
     data_split = data_pipeline.forward()
 
-    # === Will be remove in next commit ============================================================================
-    # TODO: DO NOT HARD CODE FEATURIZERS
-    atom_featurizer = hydra.utils.instantiate(cfg.data_cfg.featurizer_cfg.atom_featurizer_cfg)
-    bond_featurizer = hydra.utils.instantiate(cfg.data_cfg.featurizer_cfg.bond_featurizer_cfg)
-    if hasattr(cfg.data_cfg.featurizer_cfg, "external_atom_featurizer_cfg"):
-        external_atom_featurizer = hydra.utils.instantiate(cfg.data_cfg.featurizer_cfg.external_atom_featurizer_cfg)
-    else:
-        external_atom_featurizer = None
-    if hasattr(cfg.data_cfg.featurizer_cfg, "single_featurizer_cfg"):
-        single_featurizer = hydra.utils.instantiate(cfg.data_cfg.featurizer_cfg.single_featurizer_cfg)
-    else:
-        single_featurizer = None
-    # ==============================================================================================================
-    
-    dataset_partial: Dataset= hydra.utils.instantiate(cfg.data_cfg.dataset_cfg)
+    representation_factory = RepresentationFactory(
+        preconf_repr=hydra.utils.instantiate(cfg.data_cfg.representation_cfg)
+    )
 
-    train_set = dataset_partial(
-        data=data_split.train,
-        atom_featurizer=atom_featurizer,
-        bond_featurizer=bond_featurizer,
-        external_atom_featurizer=external_atom_featurizer,
-        single_featurizer=single_featurizer)
+    # TODO: Add dataset factory? 
+    dataset_partial: Dataset = hydra.utils.instantiate(
+        cfg.data_cfg.dataset_cfg,
+        representation_factory=representation_factory,
+        transform_cfg=getattr(cfg.data_cfg, "transform_cfg", None)  # catches transform_cfg: null
+    )
 
-    val_set = dataset_partial(
-        data=data_split.val,
-        atom_featurizer=atom_featurizer,
-        bond_featurizer=bond_featurizer,
-        external_atom_featurizer=external_atom_featurizer,
-        single_featurizer=single_featurizer)
-
-    test_set = dataset_partial(
-        data=data_split.test,
-        atom_featurizer=atom_featurizer,
-        bond_featurizer=bond_featurizer,
-        external_atom_featurizer=external_atom_featurizer,
-        single_featurizer=single_featurizer)
-
+    train_set = dataset_partial(data=data_split.train)
+    val_set = dataset_partial(data=data_split.val)
+    test_set = dataset_partial(data=data_split.test)
 
     # TODO: Add dataset wide opertaionts (e.g. data augmentation, or dataset statistics needed for PNA)
     # TODO: Compute endocdings here for whole dataset (not for each batch)
 
-    # TODO: Instantiate dataloaders via hydra
+    # TODO: Preconfigure dataloader via hydra and instantiate using factory
     train_loader = construct_loader(
         dataset=train_set,
         batch_size=cfg.data_cfg.batch_size,
