@@ -10,7 +10,7 @@ from sklearn.metrics import mean_absolute_error, root_mean_squared_error
 from torch import nn
 
 import wandb
-from deeprxn.data import Standardizer
+from deeprxn.standardizer import Standardizer
 
 from deeprxn.utils import (
     check_early_stopping,
