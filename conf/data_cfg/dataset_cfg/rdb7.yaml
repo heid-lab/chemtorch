@@ -1,4 +1,4 @@
-_target_: deeprxn.dataset.mol_graph_dataset.MolGraphDataset
+_target_: deeprxn.dataset.graph_dataset.GraphDataset
 _partial_: true
 
 # === DATA PIPELINE ===================================
@@ -18,10 +18,11 @@ val_ratio: 0.05
 test_ratio: 0.05
 
 # === DATASET =========================================
-input_column: "smiles"
-target_column: "dE0"
-# Additional dataset arguements (see MolGraphDataset for details)
-# subsample: null         
+column_mapping:
+  smiles: "smiles"
+  label: "dE0"
+# Additional dataset arguements (see GraphDataset for details)
+# preprocess_all: true
 # cache_graphs: true 
 # max_cache_size: null
-# preprocess_all: true
+# subsample: null         
