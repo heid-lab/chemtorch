@@ -42,8 +42,8 @@ class LineDMG(ReactionGraph):
 
         dummy_atom = None
         dummy_bond = None
-        atom_feat_len = len(atom_featurizer(dummy_atom))
-        bond_feat_len = len(bond_featurizer(dummy_bond))
+        atom_feat_len = len(self.atom_featurizer(dummy_atom))
+        bond_feat_len = len(self.bond_featurizer(dummy_bond))
         
         if self.use_directed:
             self.reactant_feat_length = atom_feat_len + bond_feat_len

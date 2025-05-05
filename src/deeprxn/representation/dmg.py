@@ -42,9 +42,9 @@ class DMG(ReactionGraph):
         self.component_features = {}
         self.extra_zero_fvec = extra_zero_fvec
 
-        self.qm_featurizer = qm_featurizer
+        self.qm_featurizer = hydra.utils.instantiate(featurizer_cfg.external_atom_featurizer_cfg)
         self.qm_f = []
-        self.single_featurizer = single_featurizer
+        self.single_featurizer = hydra.utils.instantiate(featurizer_cfg.single_featurizer_cfg)
         self.single_f = []
 
         self.n_atoms_reac = self.mol_reac.GetNumAtoms()
