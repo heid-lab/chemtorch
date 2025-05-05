@@ -7,7 +7,7 @@ from torch_geometric.nn.norm import LayerNorm
 from torch_geometric.utils import to_dense_batch
 
 from deeprxn.layer.att_layer.att_layer_base import AttLayer
-from deeprxn.representation.rxn_graph_base import AtomOriginType
+from deeprxn.representation.reaction_graph import AtomOriginType
 
 
 class DeepRXNAttLayer(AttLayer):

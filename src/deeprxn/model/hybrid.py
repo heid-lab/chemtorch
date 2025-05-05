@@ -7,7 +7,7 @@ from omegaconf import DictConfig
 from torch_geometric.data import Batch
 
 from deeprxn.model.model_base import Model
-from deeprxn.representation.rxn_graph_base import AtomOriginType
+from deeprxn.representation.reaction_graph import AtomOriginType
 
 
 class Hybrid(Model):

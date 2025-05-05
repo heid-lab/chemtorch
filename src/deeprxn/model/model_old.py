@@ -14,7 +14,7 @@ from deeprxn.mpnn_layer.layers import (
     DMPNNConv,
     ReactantProductAttention,
 )
-from deeprxn.representation.rxn_graph_base import AtomOriginType
+from deeprxn.representation.reaction_graph import AtomOriginType
 
 # TODO: look into fast attention again
 

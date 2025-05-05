@@ -9,7 +9,7 @@ from torch_geometric.nn.aggr import SumAggregation
 from torch_geometric.utils import to_dense_batch
 
 from deeprxn.model.model_base import Model
-from deeprxn.representation.rxn_graph_base import AtomOriginType
+from deeprxn.representation.reaction_graph import AtomOriginType
 
 
 class GatedGCNReaction(Model):

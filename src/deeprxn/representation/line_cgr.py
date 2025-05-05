@@ -4,7 +4,7 @@ import torch
 import torch_geometric as tg
 from rdkit import Chem
 
-from deeprxn.representation.reaction_graph import AtomOriginType, ReactionGraph
+from deeprxn.representation.reaction_graph import ReactionGraph
 
 
 class LineCGR(ReactionGraph):
