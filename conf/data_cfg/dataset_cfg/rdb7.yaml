@@ -4,8 +4,8 @@ _partial_: true
 # === DATA PIPELINE ===================================
 defaults:
   # Data pipeline components in chronological order
-  - pipeline_component/data_reader_cfg: single_csv_reader
-  - pipeline_component/data_splitter_cfg: ratio_splitter
+  - source_pipeline_cfg/data_reader_cfg: single_csv_reader
+  - source_pipeline_cfg/data_splitter_cfg: ratio_splitter
   - _self_
 
 # === DATA PIPELINE COMPONENTS ========================

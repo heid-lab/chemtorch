@@ -7,9 +7,10 @@ from torch.utils.data import DataLoader, Dataset
 from omegaconf import DictConfig, OmegaConf
 
 import wandb
-from deeprxn.data_pipeline.data_pipeline import DataPipelineComponent, SourcePipeline
+from deeprxn.data_pipeline.data_pipeline import DataPipeline, DataSourcePipeline
+from deeprxn.data_pipeline.representation_factory.graph_representaion_factory import GraphRepresentationFactory
 from deeprxn.dataset.mol_graph_dataset import construct_loader
-from deeprxn.representation.representation_factory import RepresentationFactory
+from deeprxn.dataset.row_parser import RowParser
 from deeprxn.utils import load_model, set_seed
 
 OmegaConf.register_new_resolver("eval", eval)
@@ -29,14 +30,12 @@ def main(cfg: DictConfig):
         device = torch.device("cpu")
     print(f"Using device: {device}")
 
-    ############################# data instantiation #############################
-    # TODO: Instantiate data pipeline as a whole using hydra
-    pipeline_components: List[DataPipelineComponent] = [
+    ##### SOURCE PIPELINE ########################################################
+    # TODO: Instantiate source pipeline as a whole using hydra
+    source_pipeline = DataSourcePipeline([
         hydra.utils.instantiate(component_cfg)
-        for component_cfg in cfg.data_cfg.dataset_cfg.pipeline_component.values()
-    ]
-    source_pipeline = SourcePipeline(pipeline_components)
-
+        for component_cfg in cfg.data_cfg.dataset_cfg.source_pipeline_cfg.values()
+    ])
     data_split = source_pipeline.forward()
     print(f"DEBUG: Source pipeline finished successfully")
 
