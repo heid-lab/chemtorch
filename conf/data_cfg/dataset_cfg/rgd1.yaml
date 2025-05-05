@@ -5,6 +5,7 @@ _partial_: true
 defaults:
   # Data pipeline components in chronological order
   - source_pipeline_cfg/data_reader_cfg: split_csv_reader
+  - source_pipeline_cfg/column_mapper_cfg: column_filter_rename
   - _self_ 
 
 # === DATA PIPELINE COMPONENTS ========================

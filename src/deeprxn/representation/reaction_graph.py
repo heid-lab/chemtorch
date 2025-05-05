@@ -32,11 +32,13 @@ class ReactionGraph(ABC):
         """Initialize reaction graph.
 
         Args:
-            smiles: reaction string with atom mapping
+            smiles: SMILES string of the reaction
+            label: Label for the reaction (e.g., reaction energy)
             atom_featurizer: Function to generate atom features
             bond_featurizer: Function to generate bond features
         """
-        super().__init__(smiles, label)
+        self.smiles = smiles
+        self.label = label
         self.atom_featurizer = atom_featurizer
         self.bond_featurizer = bond_featurizer
 

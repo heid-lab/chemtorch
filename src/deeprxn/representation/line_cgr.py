@@ -1,5 +1,7 @@
 from typing import Dict, List, Optional, Set, Tuple, Union
 
+import hydra
+from omegaconf import DictConfig
 import torch
 import torch_geometric as tg
 from rdkit import Chem
@@ -12,19 +14,16 @@ class LineCGR(ReactionGraph):
         self,
         smiles: str,
         label: float,
-        atom_featurizer: callable,
-        bond_featurizer: callable,
-        qm_featurizer= None,   
-        single_featurizer= None,
-        in_channel_multiplier: int = 2,
+        featurizer_cfg: DictConfig,      # TODO: Remove dependency on hydra
+        in_channel_multiplier: int = 2,  # TODO: Remove this (only there for hydra interpolation)
         use_directed: bool = True,
         feature_aggregation: Optional[str] = None,
     ):
         super().__init__(
             smiles=smiles,
             label=label,
-            atom_featurizer=atom_featurizer,
-            bond_featurizer=bond_featurizer,
+            atom_featurizer=hydra.utils.instantiate(featurizer_cfg.atom_featurizer_cfg),
+            bond_featurizer=hydra.utils.instantiate(featurizer_cfg.bond_featurizer_cfg),
         )
 
         self.n_atoms = self.mol_reac.GetNumAtoms()
@@ -33,8 +32,8 @@ class LineCGR(ReactionGraph):
 
         dummy_atom = None
         dummy_bond = None
-        atom_feat_len = len(atom_featurizer(dummy_atom))
-        bond_feat_len = len(bond_featurizer(dummy_bond))
+        atom_feat_len = len(self.atom_featurizer(dummy_atom))
+        bond_feat_len = len(self.bond_featurizer(dummy_bond))
 
         if feature_aggregation in ["sum", "mean", "max"]:
             self.reactant_feat_length = atom_feat_len + bond_feat_len

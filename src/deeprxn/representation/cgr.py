@@ -19,25 +19,20 @@ class CGR(ReactionGraph):
     def __init__(
         self,
         smiles: str,
-        label: float,
-        atom_featurizer: callable,
-        bond_featurizer: callable,
+        label: float, 
+        featurizer_cfg: DictConfig,      # TODO: Remove dependency on hydra
         in_channel_multiplier: int = 2,  # TODO: Remove this (only there for hydra interpolation)
         concat_transform_features: bool = False,
         pre_transform_cfg: Optional[DictConfig] = None,
     ):
         """Initialize CGR graph.
 
-        Args:
-            reaction_smiles: reaction string with atom mapping
-            atom_featurizer: Function to generate atom features
-            bond_featurizer: Function to generate bond features
         """
         super().__init__(
             smiles=smiles,
             label=label,
-            atom_featurizer=atom_featurizer,
-            bond_featurizer=bond_featurizer,
+            atom_featurizer=hydra.utils.instantiate(featurizer_cfg.atom_featurizer_cfg),
+            bond_featurizer=hydra.utils.instantiate(featurizer_cfg.bond_featurizer_cfg),
         )
 
         self.n_atoms = self.mol_reac.GetNumAtoms()

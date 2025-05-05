@@ -1,4 +1,4 @@
-from typing import Callable, Any
+from typing import Callable, Any, Dict
 from torch_geometric.data import Data
 from deeprxn.data_pipeline.data_pipeline import DataPipelineComponent
 
@@ -21,15 +21,18 @@ class GraphRepresentationFactory(DataPipelineComponent):
         """
         self.preconf_repr = preconf_repr
 
-    def forward(self, **kwargs) -> Data:
+    def forward(self, sample: Dict[str, Any]) -> Data:
         """
         Create a new representation instance and convert it to a PyTorch Geometric Data object.
 
         Args:
-            **kwargs: Keyword arguments to be passed to the representation.
+            sample (Dict[str, Any]): A dictionary containing the data to instantiate the
+                preconfigured representation.
+                The keys should match the expected arguments of the representation's constructor.
 
         Returns:
             Data: A PyTorch Geometric Data object created from the representation.
         """
-        representation = self.preconf_repr(**kwargs)
-        return representation.to_pyg_data()
+        representation = self.preconf_repr(**sample)
+        graph = representation.to_pyg_data()
+        return graph

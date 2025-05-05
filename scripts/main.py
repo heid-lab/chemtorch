@@ -1,16 +1,14 @@
+from functools import partial
 import os
-from typing import List
 
 import hydra
 import torch
-from torch.utils.data import DataLoader, Dataset
-from omegaconf import DictConfig, OmegaConf
-
 import wandb
-from deeprxn.data_pipeline.data_pipeline import DataPipeline, DataSourcePipeline
+from omegaconf import DictConfig, OmegaConf
+from torch_geometric.loader import DataLoader
+
+from deeprxn.data_pipeline.data_pipeline import DataPipeline, DataSourcePipeline, DataSplit
 from deeprxn.data_pipeline.representation_factory.graph_representaion_factory import GraphRepresentationFactory
-from deeprxn.dataset.mol_graph_dataset import construct_loader
-from deeprxn.dataset.row_parser import RowParser
 from deeprxn.utils import load_model, set_seed
 
 OmegaConf.register_new_resolver("eval", eval)
@@ -36,47 +34,79 @@ def main(cfg: DictConfig):
         hydra.utils.instantiate(component_cfg)
         for component_cfg in cfg.data_cfg.dataset_cfg.source_pipeline_cfg.values()
     ])
-    data_split = source_pipeline.forward()
+    dataframes = source_pipeline.forward()  # data split of train, val, test dataframes
     print(f"DEBUG: Source pipeline finished successfully")
 
-    representation_factory = RepresentationFactory(
-        preconf_repr=hydra.utils.instantiate(cfg.data_cfg.representation_cfg)
-    )
+    ##### SAMPLE PROCESSING PIPELINE #############################################
+    # TODO: Generalize pipeline to non-graph representations
+    sample_transforms = []
+    if cfg.data_cfg.get("sample_transform_cfg", None):
+        sample_transforms = [
+            hydra.utils.instantiate(sample_transform_cfg)
+            for sample_transform_cfg in cfg.data_cfg.sample_transform_cfg
+        ]
 
-    # TODO: Add dataset factory? 
-    dataset_partial: Dataset = hydra.utils.instantiate(
+    sample_processing_pipeline = DataPipeline([
+        GraphRepresentationFactory(
+            preconf_repr=hydra.utils.instantiate(
+                cfg.data_cfg.representation_cfg
+            )),
+        *sample_transforms  # Add sample transforms if they exist
+    ])
+    print(f"DEBUG: Sample processing pipeline instantiated successfully")
+
+    ##### DATASET PROCESSING PIPELINE ############################################
+    dataset_transforms = []
+    if cfg.data_cfg.get("dataset_transform_cfg", None):
+        dataset_transforms = [
+            hydra.utils.instantiate(dataset_transform)
+            for dataset_transform in cfg.data_cfg.dataset_transform_cfg
+        ]
+
+    dataset_processing_pipeline = DataPipeline(dataset_transforms)
+    print(f"DEBUG: Dataset processing pipeline instantiated successfully")
+
+    ##### DATASETS ###############################################################
+    dataset_partial = hydra.utils.instantiate(
         cfg.data_cfg.dataset_cfg,
-        representation_factory=representation_factory,
-        transform_cfg=getattr(cfg.data_cfg, "transform_cfg", None)  # catches transform_cfg: null
+        sample_processing_pipeline=sample_processing_pipeline,
     )
+    datasets = DataSplit(
+        *map(
+            lambda df: dataset_processing_pipeline.forward(
+                dataset_partial(data=df)
+            ),
+            dataframes
+        )
+    )
+    print(f"DEBUG: Datasets instantiated successfully")
 
-    train_set = dataset_partial(data=data_split.train)
-    val_set = dataset_partial(data=data_split.val)
-    test_set = dataset_partial(data=data_split.test)
-
-    # TODO: Add dataset wide opertaionts (e.g. data augmentation, or dataset statistics needed for PNA)
-    # TODO: Compute endocdings here for whole dataset (not for each batch)
-
+    ##### DATALOADERS ###########################################################
     # TODO: Preconfigure dataloader via hydra and instantiate using factory
-    train_loader = construct_loader(
-        dataset=train_set,
+    dataloader_partial = partial(
+        DataLoader,
         batch_size=cfg.data_cfg.batch_size,
-        shuffle=True,
         num_workers=cfg.data_cfg.num_workers,
+        pin_memory=True,
+        sampler=None,
+        generator=torch.Generator().manual_seed(0), # TODO: Do not hardcode seed!
     )
-    val_loader = construct_loader(
-        dataset=val_set,
-        batch_size=cfg.data_cfg.batch_size,
-        shuffle=False,
-        num_workers=cfg.data_cfg.num_workers,
-    )
-    test_loader = construct_loader(
-        dataset=test_set,
-        batch_size=cfg.data_cfg.batch_size,
-        shuffle=False,
-        num_workers=cfg.data_cfg.num_workers,
-    )    
 
+    train_loader = dataloader_partial(
+        dataset=datasets.train,
+        shuffle=True,
+    )
+    val_loader = dataloader_partial(
+        dataset=datasets.val,
+        shuffle=False,
+    )
+    test_loader = dataloader_partial(
+        dataset=datasets.test,
+        shuffle=False,
+    )    
+    print(f"DEBUG: Dataloaders instantiated successfully")
+
+    ##### INITIALIZE W&B ##########################################################
     # TODO: Move this to graph dataset, or even better, to hydra
     OmegaConf.update(
         cfg,

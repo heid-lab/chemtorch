@@ -23,6 +23,8 @@ class GraphDataset(Dataset):
         cache_graphs: bool = True,
         max_cache_size: Optional[int] = None,
         subsample: Optional[int | float] = None,
+        *args,      # ingore any additional positional arguments
+        **kwargs,   # ignore any additional keyword arguments
     ):
         """
         Initialize the GraphDataset with the provided data and processing pipeline.
@@ -36,7 +38,17 @@ class GraphDataset(Dataset):
             cache_graphs (bool): Whether to cache processed graphs (if not precomputing).
             max_cache_size (Optional[int]): Maximum size of the cache (if caching is enabled).
             subsample (Optional[int | float]): The subsample size or fraction.
+            *args: Additional positional arguments, ignored.
+            **kwargs: Additional keyword arguments, ignored.
+
+        Raises:
+            ValueError: If the data does not contain a 'label' column.
+            ValueError: If the subsample is not an int or a float.
+            ValueError: If the dataset is not precomputed and caching is not enabled.
         """
+        if "label" not in data.columns:
+            raise ValueError(f"Dataframe must contain a 'label' column, received columns: {data.columns}")
+
         self.data = self._subsample_data(data, subsample)
         self.sample_processing_pipeline = sample_processing_pipeline
         self.precompute_all = precompute_all
@@ -73,9 +85,19 @@ class GraphDataset(Dataset):
             Data: A PyTorch Geometric `Data` object representing the molecular graph.
         """
         if self.precompute_all:
-            return self.graphs[idx]
+            return self.precomputed_graphs[idx]
         else:
             return self.process_sample(idx)
+
+
+    def get_labels(self):
+        """
+        Retrieve the labels for the dataset.
+
+        Returns:
+            pd.Series: The labels for the dataset.
+        """
+        return self.data["label"].values
 
 
     def _process_sample(self, idx) -> Data:

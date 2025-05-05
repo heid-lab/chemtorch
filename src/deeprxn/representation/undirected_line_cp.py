@@ -19,13 +19,10 @@ class UndirectedLineConnectedPairGraph(RxnGraphBase):
         self,
         smiles: str,
         label: float,
-        atom_featurizer: callable,
-        bond_featurizer: callable,
-        qm_featurizer= None,   
-        single_featurizer= None,
+        featurizer_cfg: DictConfig,      # TODO: Remove dependency on hydra
+        in_channel_multiplier: int = 1,  # TODO: Remove this (only there for hydra interpolation)
         connection_direction: str = "bidirectional",
         concat_origin_feature: bool = False,
-        in_channel_multiplier: int = 1,
         feature_aggregation: Optional[str] = None,
         pre_transform_cfg: Optional[Dict[str, DictConfig]] = None,
     ):
@@ -36,8 +33,8 @@ class UndirectedLineConnectedPairGraph(RxnGraphBase):
         super().__init__(
             smiles=smiles,
             label=label,
-            atom_featurizer=atom_featurizer,
-            bond_featurizer=bond_featurizer,
+            atom_featurizer=hydra.utils.instantiate(featurizer_cfg.atom_featurizer_cfg),
+            bond_featurizer=hydra.utils.instantiate(featurizer_cfg.bond_featurizer_cfg),
         )
         self.connection_direction = connection_direction
         self.pre_transform_cfg = pre_transform_cfg

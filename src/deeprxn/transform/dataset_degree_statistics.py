@@ -2,6 +2,7 @@ from typing import Any, Dict
 import torch
 from torch_geometric.utils import degree
 from deeprxn.data_pipeline.data_pipeline import DataPipelineComponent
+from deeprxn.dataset.graph_dataset import GraphDataset
 
 
 class DatasetDegreeStatistics(DataPipelineComponent):
@@ -14,14 +15,23 @@ class DatasetDegreeStatistics(DataPipelineComponent):
     def __init__(self):
         self.max_degree = -1
 
-    def forward(self, dataset) -> None:
+    def forward(self, dataset: GraphDataset) -> None:
         """
         Compute degree statistics for the entire dataset and saves them as a `dict` 
         under the :args:`dataset.degree_statistics` property.
 
         Args:
-            dataset: The dataset to process.
+            dataset (GraphDataset): The dataset for which to compute degree statistics.
+
+        Raises:
+            TypeError: If the dataset is not an instance of GraphDataset.
+            ValueError: If the dataset is not precomputed.
         """
+        if not isinstance(dataset, GraphDataset):
+            raise TypeError("Dataset must be an instance of GraphDataset.")
+        if not dataset.precompute_all:
+            raise ValueError("Dataset must be precomputed to compute degree statistics.")
+
         degree_histogram = None
 
         for data in dataset:

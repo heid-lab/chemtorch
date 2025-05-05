@@ -10,14 +10,14 @@ class DataSplit(NamedTuple):
     """
     A named tuple to hold the data splits for training, validation, and testing.
     """
-    train: pd.DataFrame
-    val: pd.DataFrame
-    test: pd.DataFrame
+    train: Any
+    val: Any
+    test: Any
 
 
 # Actually, this class is not needed except for documentation purposes, 
-# since it could simply use nn.Modules for everything.
-class DataPipelineComponent(torch.nn.Module):
+# since all components could simply subclass nn.Modules.
+class DataPipelineComponent(ABC):
     """
     An abstract base class for data pipeline components and pipelines.
 
@@ -29,6 +29,7 @@ class DataPipelineComponent(torch.nn.Module):
     Methods:
         forward: Executes the functionality of the component or pipeline.
     """
+
     @abstractmethod
     def forward(self, *args: Any, **kwargs: Any) -> Any:
         """
@@ -79,7 +80,7 @@ class DataPipeline(DataPipelineComponent):
         return data
 
 
-class SourcePipeline(DataPipelineComponent):
+class DataSourcePipeline(DataPipelineComponent):
     def __init__(self, components: List[DataPipelineComponent]):
         """
         A specialized pipeline to load the raw data source, process it, and split it into partitions.

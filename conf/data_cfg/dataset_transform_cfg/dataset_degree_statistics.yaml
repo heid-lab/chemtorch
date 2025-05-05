@@ -1,0 +1,2 @@
+dataset_degree_statistics:
+  _target_: deeprxn.transform.dataset_degree_statistics.DatasetDegreeStatistics

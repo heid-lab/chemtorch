@@ -1,5 +1,10 @@
 _target_: deeprxn.representation.cgr.CGR
-in_channel_multiplier: 2
 _recursive_: False
-pre_transform_cfg: null
+_partial_: True
+
+defaults:
+  - featurizer_cfg: standard
+
+in_channel_multiplier: 2
 concat_transform_features: False
+pre_transform_cfg: null     # TODO: Remove this?

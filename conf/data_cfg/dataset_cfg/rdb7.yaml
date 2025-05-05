@@ -6,6 +6,7 @@ defaults:
   # Data pipeline components in chronological order
   - source_pipeline_cfg/data_reader_cfg: single_csv_reader
   - source_pipeline_cfg/data_splitter_cfg: ratio_splitter
+  - source_pipeline_cfg/column_mapper_cfg: column_filter_rename
   - _self_
 
 # === DATA PIPELINE COMPONENTS ========================
@@ -16,11 +17,13 @@ data_file: "rdb7_full.csv"
 train_ratio: 0.9
 val_ratio: 0.05
 test_ratio: 0.05
-
-# === DATASET =========================================
+# For column_filter_rename
 column_mapping:
   smiles: "smiles"
   label: "dE0"
+
+# === DATASET =========================================
+# TODO: Move sample_transform_cfg and dataset_transform_cfg here
 # Additional dataset arguements (see GraphDataset for details)
 # preprocess_all: true
 # cache_graphs: true 

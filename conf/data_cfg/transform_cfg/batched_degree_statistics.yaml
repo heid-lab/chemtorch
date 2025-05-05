@@ -1,3 +1,0 @@
-batched_degree_statistics:
-  _target_: deeprxn.transform.batched_degree_statistics.BatchedDegreeStatistics
-  type: dataset

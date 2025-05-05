@@ -20,12 +20,8 @@ class LineDMG(ReactionGraph):
         self,
         smiles: str,
         label: float,
-        atom_featurizer: callable,
-        bond_featurizer: callable,
-        qm_featurizer= None,   
-        single_featurizer= None,
-        concat_origin_feature: bool = False,
-        in_channel_multiplier: int = 1,
+        featurizer_cfg: DictConfig,      # TODO: Remove dependency on hydra
+        in_channel_multiplier: int = 1,  # TODO: Remove this (only there for hydra interpolation)
         pre_transform_cfg: Optional[Dict[str, DictConfig]] = None,
         use_directed: bool = True,
         feature_aggregation: Optional[str] = None,
@@ -37,8 +33,8 @@ class LineDMG(ReactionGraph):
         super().__init__(
             smiles=smiles,
             label=label,
-            atom_featurizer=atom_featurizer,
-            bond_featurizer=bond_featurizer,
+            atom_featurizer=hydra.utils.instantiate(featurizer_cfg.atom_featurizer_cfg),
+            bond_featurizer=hydra.utils.instantiate(featurizer_cfg.bond_featurizer_cfg),
         )
         self.pre_transform_cfg = pre_transform_cfg
         self.use_directed = use_directed
