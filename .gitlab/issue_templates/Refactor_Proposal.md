@@ -1,4 +1,4 @@
-## 🔨 Refactor: <Short descriptive title>
+## 🔨 <Short descriptive title>
 
 ### Summary
 Briefly describe what code or component should be refactored and why.
