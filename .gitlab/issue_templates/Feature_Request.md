@@ -1,4 +1,4 @@
-## ✨ Feature: <Short descriptive title>
+## ✨ <Short descriptive title>
 
 ### Summary
 Briefly describe the proposed feature in 1–2 sentences.
