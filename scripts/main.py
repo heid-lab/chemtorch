@@ -7,8 +7,9 @@ import wandb
 from omegaconf import DictConfig, OmegaConf
 from torch_geometric.loader import DataLoader
 
-from deeprxn.data_pipeline.data_pipeline import DataPipeline, DataSourcePipeline, DataSplit
-from deeprxn.data_pipeline.representation_factory.graph_representaion_factory import GraphRepresentationFactory
+from deeprxn.data_pipeline.data_pipeline import DataPipeline, DataSplit
+from deeprxn.data_pipeline.data_source.data_source import DataSource
+from deeprxn.data_pipeline.representation_factory.graph_representation_factory import GraphRepresentationFactory
 from deeprxn.utils import load_model, set_seed
 
 OmegaConf.register_new_resolver("eval", eval)
@@ -30,20 +31,25 @@ def main(cfg: DictConfig):
 
     ##### SOURCE PIPELINE ########################################################
     # TODO: Instantiate source pipeline as a whole using hydra
-    source_pipeline = DataSourcePipeline([
-        hydra.utils.instantiate(component_cfg)
-        for component_cfg in cfg.data_cfg.dataset_cfg.source_pipeline_cfg.values()
-    ])
-    dataframes = source_pipeline.forward()  # data split of train, val, test dataframes
-    print(f"DEBUG: Source pipeline finished successfully")
+    data_source: DataSource = hydra.utils.instantiate(cfg.data_cfg.dataset_cfg.data_source_cfg)
+    preprocessing_cfg = getattr(cfg.data_cfg.dataset_cfg, "preprocessing_cfg", {})
+    preprocessing_pipeline = DataPipeline([
+        hydra.utils.instantiate(config)
+        for config in preprocessing_cfg.values()
+    ])   
+
+    data = data_source.load()
+    dataframes = preprocessing_pipeline.forward(data)       
+    print(f"DEBUG: Preprocessing pipeline finished successfully")
 
     ##### SAMPLE PROCESSING PIPELINE #############################################
     # TODO: Generalize pipeline to non-graph representations
     sample_transforms = []
     if cfg.data_cfg.get("sample_transform_cfg", None):
         sample_transforms = [
-            hydra.utils.instantiate(sample_transform_cfg)
-            for sample_transform_cfg in cfg.data_cfg.sample_transform_cfg
+            hydra.utils.instantiate(config)
+            for _, config in cfg.data_cfg.sample_transform_cfg.items()
+
         ]
 
     sample_processing_pipeline = DataPipeline([
@@ -59,8 +65,8 @@ def main(cfg: DictConfig):
     dataset_transforms = []
     if cfg.data_cfg.get("dataset_transform_cfg", None):
         dataset_transforms = [
-            hydra.utils.instantiate(dataset_transform)
-            for dataset_transform in cfg.data_cfg.dataset_transform_cfg
+            hydra.utils.instantiate(config)
+            for _, config in cfg.data_cfg.dataset_transform_cfg.items()
         ]
 
     dataset_processing_pipeline = DataPipeline(dataset_transforms)

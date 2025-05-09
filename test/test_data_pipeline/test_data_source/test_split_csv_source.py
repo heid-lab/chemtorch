@@ -1,12 +1,12 @@
 import pandas as pd
 import pytest
 from deeprxn.data_pipeline.data_pipeline import DataSplit
-from deeprxn.data_pipeline.data_reader.split_csv_reader import SplitCSVReader
+from deeprxn.data_pipeline.data_source.split_csv_source import SplitCSVSource
 
 
 @pytest.fixture
 def split_csv_folder(tmp_path):
-    """Fixture to create a temporary folder with train/val/test CSV files for testing SplitCSVReader."""
+    """Fixture to create a temporary folder with train/val/test CSV files for testing SplitCSVSource."""
     folder_path = tmp_path / "data"
     folder_path.mkdir()
     for split in ["train", "val", "test"]:
@@ -15,10 +15,10 @@ def split_csv_folder(tmp_path):
     return str(folder_path)
 
 
-def test_split_csv_reader(split_csv_folder):
-    """Test instantiation and forward pass of SplitCSVReader."""
-    reader = SplitCSVReader(data_folder=split_csv_folder)
-    data_split = reader.forward()
+def test_split_csv_source(split_csv_folder):
+    """Test instantiation and forward pass of SplitCSVSource."""
+    reader = SplitCSVSource(data_folder=split_csv_folder)
+    data_split = reader.load()
     assert isinstance(data_split, DataSplit)
     assert isinstance(data_split.train, pd.DataFrame)
     assert isinstance(data_split.val, pd.DataFrame)
@@ -28,25 +28,25 @@ def test_split_csv_reader(split_csv_folder):
     assert not data_split.test.empty
 
 
-def test_split_csv_reader_missing_files(tmp_path):
-    """Test SplitCSVReader with missing CSV files."""
+def test_split_csv_source_missing_files(tmp_path):
+    """Test SplitCSVSource with missing CSV files."""
     data_folder = tmp_path / "data"
     data_folder.mkdir()
     # Create only one file instead of all three
     (data_folder / "train.csv").write_text("col1,col2\n1,2\n3,4\n")
 
-    reader = SplitCSVReader(data_folder=str(data_folder))
+    reader = SplitCSVSource(data_folder=str(data_folder))
     with pytest.raises(FileNotFoundError, match="Missing files"):
-        reader.forward()
+        reader.load()
 
 
-def test_split_csv_reader_empty_files(tmp_path):
-    """Test SplitCSVReader with empty CSV files."""
+def test_split_csv_source_empty_files(tmp_path):
+    """Test SplitCSVSource with empty CSV files."""
     data_folder = tmp_path / "data"
     data_folder.mkdir()
     for split in ["train", "val", "test"]:
         (data_folder / f"{split}.csv").write_text("")  # Create empty files
 
-    reader = SplitCSVReader(data_folder=str(data_folder))
+    reader = SplitCSVSource(data_folder=str(data_folder))
     with pytest.raises(pd.errors.EmptyDataError, match="No columns to parse from file"):
-        reader.forward()
+        reader.load()

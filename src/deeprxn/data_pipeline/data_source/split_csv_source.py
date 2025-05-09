@@ -1,11 +1,11 @@
 import os
 import pandas as pd
 from typing_extensions import override
-from deeprxn.data_pipeline.data_reader.data_reader import DataReader
+from deeprxn.data_pipeline.data_source.data_source import DataSource
 from deeprxn.data_pipeline.data_pipeline import DataSplit
 
 
-class SplitCSVReader(DataReader):
+class SplitCSVSource(DataSource):
     def __init__(
             self,
             data_folder: str,
@@ -13,9 +13,10 @@ class SplitCSVReader(DataReader):
         self.data_folder = data_folder
 
     @override
-    def forward(self) -> DataSplit:
+    def load(self) -> DataSplit:
         """
-        Read data from a CSV file.
+        Load data from multiple CSV files in a specified folder.
+        The files should be named 'train.csv', 'val.csv', and 'test.csv'.
         """
         files = {
             name: os.path.join(self.data_folder, f"{name}.csv")

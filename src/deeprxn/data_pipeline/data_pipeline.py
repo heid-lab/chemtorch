@@ -3,8 +3,6 @@ import pandas as pd
 from abc import ABC, abstractmethod
 from typing import Any, List, NamedTuple
 
-import torch
-
 
 class DataSplit(NamedTuple):
     """
@@ -78,46 +76,3 @@ class DataPipeline(DataPipelineComponent):
         for component in self.components:
             data = component.forward(data)
         return data
-
-
-class DataSourcePipeline(DataPipelineComponent):
-    def __init__(self, components: List[DataPipelineComponent]):
-        """
-        A specialized pipeline to load the raw data source, process it, and split it into partitions.
-
-        Args:
-            components (List[DataPipelineComponent]): A list of data pipeline components.
-            The first component must load the data from the source. The remaining
-            components can perform preprocessing, transformations, or splitting.
-
-        Raises:
-            ValueError: If no components are provided.
-        """
-        if not components:
-            raise ValueError("SourceProcessingPipeline requires at least one component.")
-
-        self.data_source = components[0]
-        if len(components) > 1:
-            self.pipeline = DataPipeline(components[1:])
-
-    def forward(self) -> DataSplit:
-        """
-        Executes the source processing pipeline.
-
-        Returns:
-            DataSplit: A named tuple containing the train, val, and test dataframes.
-
-        Raises:
-            TypeError: If the final output is not a DataSplit object.
-        """
-        data = self.data_source.forward()
-        if hasattr(self, 'pipeline'):
-            data = self.pipeline.forward(data)
-
-        if not isinstance(data, DataSplit):
-            raise TypeError("Final output must be a DataSplit object")
-
-        return data
-
-
-

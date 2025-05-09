@@ -4,13 +4,13 @@ _partial_: true
 # === DATA PIPELINE ===================================
 defaults:
   # Data pipeline components in chronological order
-  - source_pipeline_cfg/data_reader_cfg: single_csv_reader
-  - source_pipeline_cfg/data_splitter_cfg: ratio_splitter
-  - source_pipeline_cfg/column_mapper_cfg: column_filter_rename
+  - data_source_cfg: single_csv_source
+  - preprocessing_cfg/data_splitter_cfg: ratio_splitter
+  - preprocessing_cfg/column_mapper_cfg: column_filter_rename
   - _self_
 
 # === DATA PIPELINE COMPONENTS ========================
-# For single_csv_reader
+# For single_csv_source
 data_folder: "deeprxn_datasets/data/rdb7/barriers"
 data_file: "rdb7_full.csv"
 # For ratio_splitter
