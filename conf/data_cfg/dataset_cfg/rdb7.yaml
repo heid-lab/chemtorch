@@ -23,7 +23,6 @@ column_mapping:
   label: "dE0"
 
 # === DATASET =========================================
-# TODO: Move sample_transform_cfg and dataset_transform_cfg here
 # Additional dataset arguements (see GraphDataset for details)
 # preprocess_all: true
 # cache_graphs: true 

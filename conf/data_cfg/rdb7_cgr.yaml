@@ -4,7 +4,6 @@ _recursive_: False
 defaults:
   - dataset_cfg: rdb7
   - representation_cfg: cgr
-  # TODO: Move sample_transform_cfg and dataset_transform_cfg to dataset_cfg
   - sample_transform_cfg: null      # Specify list of sample_transforms
   - dataset_transform_cfg: null     # Specify list of dataset_transforms
   - _self_
