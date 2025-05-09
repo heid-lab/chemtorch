@@ -164,12 +164,11 @@ def main(cfg: DictConfig):
     else:
         # TODO: DON'T HARD CODE THIS
         #### for models needing precomputed statistics on the dataset, e.g. PNA
-        transform_cfg = getattr(cfg.data_cfg, "transform_cfg", None)
-        if transform_cfg and hasattr(
-            transform_cfg, "batched_degree_statistics"
+        if dataset_transform_cfg and hasattr(
+            dataset_transform_cfg, "dataset_degree_statistics"
         ):
             model = hydra.utils.instantiate(
-                cfg.model_cfg, dataset_precomputed=train_loader.dataset.statistics
+                cfg.model_cfg, dataset_degree_statistics=train_loader.dataset.degree_statistics
             )
         else:
             model = hydra.utils.instantiate(cfg.model_cfg)

@@ -23,12 +23,12 @@ class PNA(Model):
         layer_cfg: DictConfig,
         pool_cfg: DictConfig,
         head_cfg: DictConfig,
-        dataset_precomputed=None,
+        dataset_degree_statistics=None,
     ):
         """Initialize Custom model."""
         super().__init__()
-        self.depth = depth
 
+        self.depth = depth
         self.encoders = nn.ModuleList()
         for _, config in encoder_cfg.items():
             self.encoders.append(hydra.utils.instantiate(config))
@@ -36,7 +36,7 @@ class PNA(Model):
         self.layers = nn.ModuleList()
         if shared_weights:
             layer = hydra.utils.instantiate(
-                layer_cfg, dataset_precomputed=dataset_precomputed
+                layer_cfg, dataset_degree_statistics=dataset_degree_statistics
             )
             for _ in range(self.depth):
                 self.layers.append(layer)
@@ -44,7 +44,7 @@ class PNA(Model):
             for _ in range(self.depth):
                 self.layers.append(
                     hydra.utils.instantiate(
-                        layer_cfg, dataset_precomputed=dataset_precomputed
+                        layer_cfg, dataset_degree_statistics=dataset_degree_statistics
                     )
                 )
 

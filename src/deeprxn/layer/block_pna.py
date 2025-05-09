@@ -22,7 +22,7 @@ class BlockPNALayer(MPNNLayerBase):
         activation: str,
         ffn: bool,
         mpnn_cfg: DictConfig,
-        dataset_precomputed=None,
+        dataset_degree_statistics=None,
     ):
         MPNNLayerBase.__init__(self, in_channels, out_channels)
 
@@ -33,7 +33,7 @@ class BlockPNALayer(MPNNLayerBase):
         self.ffn = ffn
 
         self.mpnn = hydra.utils.instantiate(
-            mpnn_cfg, dataset_precomputed=dataset_precomputed
+            mpnn_cfg, dataset_degree_statistics=dataset_degree_statistics
         )
 
         if layer_norm and batch_norm:
