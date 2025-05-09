@@ -3,7 +3,7 @@ from typing_extensions import override
 
 import pandas as pd
 from deeprxn.data_pipeline.data_splitter.data_splitter import DataSplitter
-from deeprxn.data_pipeline.data_pipeline import DataSplit
+from deeprxn.data_pipeline.data_split import DataSplit
 
 
 class IndexSplitter(DataSplitter):
@@ -14,6 +14,7 @@ class IndexSplitter(DataSplitter):
         Args:
             index_path (str): The path to the pickle file containg the index.
         """
+        super(IndexSplitter, self).__init__()
         with open(index_path, "rb") as f:
             split_indices = pickle.load(f)
         
@@ -30,22 +31,22 @@ class IndexSplitter(DataSplitter):
 
 
     @override
-    def forward(self, raw: pd.DataFrame) -> DataSplit:
+    def forward(self, df: pd.DataFrame) -> DataSplit:
         """
         Splits the raw data into training, validation, and test partitions based on the specified indices.
 
         Args:
-            raw: The raw data to be split.
+            df (pd.DataFrame): The input DataFrame to be split.
 
         Returns:
             DataSplit: A named tuple containing the train, val, and test dataframes.
         """
-        if raw.empty:
+        if df.empty:
             raise ValueError("Input DataFrame is empty")
 
         return DataSplit(
-            train=raw.iloc[self.split_map["train"]],
-            val=raw.iloc[self.split_map["val"]],
-            test=raw.iloc[self.split_map["test"]],
+            train=df.iloc[self.split_map["train"]],
+            val=df.iloc[self.split_map["val"]],
+            test=df.iloc[self.split_map["test"]],
         )
 

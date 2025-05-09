@@ -2,7 +2,7 @@ import os
 import pandas as pd
 from typing_extensions import override
 from deeprxn.data_pipeline.data_source.data_source import DataSource
-from deeprxn.data_pipeline.data_pipeline import DataSplit
+from deeprxn.data_pipeline.data_split import DataSplit
 
 
 class SplitCSVSource(DataSource):

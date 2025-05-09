@@ -1,9 +1,10 @@
 from typing import Callable, Any, Dict
+
+from torch import nn
 from torch_geometric.data import Data
-from deeprxn.data_pipeline.data_pipeline import DataPipelineComponent
 
 
-class GraphRepresentationFactory(DataPipelineComponent):
+class GraphRepresentationFactory(nn.Module):
     """
     A factory class for creating graph representations.
 
@@ -19,6 +20,7 @@ class GraphRepresentationFactory(DataPipelineComponent):
             preconf_repr (Callable[..., Any]): A callable that takes keyword arguments
                 and returns an instance of the representation.
         """
+        super(GraphRepresentationFactory, self).__init__()
         self.preconf_repr = preconf_repr
 
     def forward(self, sample: Dict[str, Any]) -> Data:

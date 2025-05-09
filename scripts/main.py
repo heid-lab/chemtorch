@@ -5,9 +5,11 @@ import hydra
 import torch
 import wandb
 from omegaconf import DictConfig, OmegaConf
+from torch import nn
 from torch_geometric.loader import DataLoader
 
-from deeprxn.data_pipeline.data_pipeline import DataPipeline, DataSplit
+from deeprxn import dataset
+from deeprxn.data_pipeline.data_split import DataSplit
 from deeprxn.data_pipeline.data_source.data_source import DataSource
 from deeprxn.data_pipeline.representation_factory.graph_representation_factory import GraphRepresentationFactory
 from deeprxn.utils import load_model, set_seed
@@ -33,7 +35,7 @@ def main(cfg: DictConfig):
     # TODO: Instantiate source pipeline as a whole using hydra
     data_source: DataSource = hydra.utils.instantiate(cfg.data_cfg.dataset_cfg.data_source_cfg)
     preprocessing_cfg = getattr(cfg.data_cfg.dataset_cfg, "preprocessing_cfg", {})
-    preprocessing_pipeline = DataPipeline([
+    preprocessing_pipeline = nn.Sequential(*[
         hydra.utils.instantiate(config)
         for config in preprocessing_cfg.values()
     ])   
@@ -44,32 +46,26 @@ def main(cfg: DictConfig):
 
     ##### SAMPLE PROCESSING PIPELINE #############################################
     # TODO: Generalize pipeline to non-graph representations
-    sample_transforms = []
-    if cfg.data_cfg.get("sample_transform_cfg", None):
-        sample_transforms = [
-            hydra.utils.instantiate(config)
-            for _, config in cfg.data_cfg.sample_transform_cfg.items()
-
-        ]
-
-    sample_processing_pipeline = DataPipeline([
+    sample_transform_cfg = getattr(cfg.data_cfg, "sample_transform_cfg", {})
+    sample_processing_pipeline = nn.Sequential(*[
         GraphRepresentationFactory(
             preconf_repr=hydra.utils.instantiate(
                 cfg.data_cfg.representation_cfg
             )),
-        *sample_transforms  # Add sample transforms if they exist
+        *[
+            hydra.utils.instantiate(config)
+            for _, config in sample_transform_cfg.items()
+        ]
     ])
     print(f"DEBUG: Sample processing pipeline instantiated successfully")
 
     ##### DATASET PROCESSING PIPELINE ############################################
-    dataset_transforms = []
-    if cfg.data_cfg.get("dataset_transform_cfg", None):
-        dataset_transforms = [
+    dataset_transform_cfg = getattr(cfg.data_cfg, "dataset_transform_cfg", {})
+    dataset_processing_pipeline = nn.Sequential(*[
             hydra.utils.instantiate(config)
-            for _, config in cfg.data_cfg.dataset_transform_cfg.items()
+            for _, config in dataset_transform_cfg.items()
         ]
-
-    dataset_processing_pipeline = DataPipeline(dataset_transforms)
+)
     print(f"DEBUG: Dataset processing pipeline instantiated successfully")
 
     ##### DATASETS ###############################################################

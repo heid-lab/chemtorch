@@ -1,6 +1,7 @@
 import torch
 import torch_geometric
-from torch import Tensor
+
+from torch import nn
 from torch_geometric.data import Data
 from torch_geometric.utils import (
     get_self_loop_attr,
@@ -11,9 +12,8 @@ from torch_geometric.utils import (
     to_torch_csr_tensor,
 )
 
-from deeprxn.data_pipeline.data_pipeline import DataPipelineComponent
 
-class RandomWalkPETransform(DataPipelineComponent):
+class RandomWalkPETransform(nn.Module):
     """
     This code includes implementations adapted from PyTorch Geometric
     (https://github.com/pyg-team/pytorch_geometric)
@@ -26,6 +26,7 @@ class RandomWalkPETransform(DataPipelineComponent):
         attr_name=None,
         type: str = "graph",
     ) -> None:
+        super(RandomWalkPETransform, self).__init__()
         self.walk_length = walk_length
         self.attr_name = attr_name
 
@@ -51,7 +52,7 @@ class RandomWalkPETransform(DataPipelineComponent):
         else:
             adj = to_torch_csr_tensor(data.edge_index, value, size=data.size())
 
-        def get_pe(out: Tensor) -> Tensor:
+        def get_pe(out: torch.Tensor) -> torch.Tensor:
             if is_torch_sparse_tensor(out):
                 return get_self_loop_attr(*to_edge_index(out), num_nodes=N)
             return out[loop_index, loop_index]

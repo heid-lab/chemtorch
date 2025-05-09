@@ -1,16 +1,16 @@
+import torch
+
+from torch import nn
+from torch_geometric.data import Data
 from typing import Dict, Optional
 
-import torch
-from torch_geometric.data import Data
-
-from deeprxn.data_pipeline.data_pipeline import DataPipelineComponent
 from deeprxn.representation.reaction_graph import (
     AtomOriginType,
     EdgeOriginType,
 )
 
 
-class DummyNodeTransform(DataPipelineComponent):
+class DummyNodeTransform(nn.Module):
     def __init__(
         self,
         mode: str,
@@ -19,41 +19,42 @@ class DummyNodeTransform(DataPipelineComponent):
         feature_init: str = "zeros",
         type: str = "graph",
     ):
+        super(DummyNodeTransform, self).__init__()
         self.mode = mode
         self.connection_type = connection_type
         self.dummy_dummy_connection = dummy_dummy_connection
         self.feature_init = feature_init
         self.dummy_origin_type = 2
 
-    def forward(self, data: Data) -> Data:
+    def forward(self, x: Data) -> Data:
         if (
-            AtomOriginType.REACTANT_PRODUCT.value in data.atom_origin_type
+            AtomOriginType.REACTANT_PRODUCT.value in x.atom_origin_type
             and self.mode == "reactant_product"
         ):
             raise ValueError("CGR not supported with reactant/product dummies")
 
-        node_feat_dim = data.x.size(1)
+        node_feat_dim = x.x.size(1)
         feature_init_fn = (
             torch.zeros if self.feature_init == "zeros" else torch.ones
         )
 
         # Create dummy features matching existing dimensions
-        dummy_feature = feature_init_fn(1, node_feat_dim, device=data.x.device)
+        dummy_feature = feature_init_fn(1, node_feat_dim, device=x.x.device)
         dummy_bond = None
 
-        if hasattr(data, "edge_attr"):
-            bond_feat_dim = data.edge_attr.size(1)
+        if hasattr(x, "edge_attr"):
+            bond_feat_dim = x.edge_attr.size(1)
             dummy_bond = feature_init_fn(
-                1, bond_feat_dim, device=data.edge_attr.device
+                1, bond_feat_dim, device=x.edge_attr.device
             )
 
         if self.mode == "global":
-            self._add_global_dummy(data, dummy_feature, dummy_bond)
+            self._add_global_dummy(x, dummy_feature, dummy_bond)
         elif self.mode == "reactant_product":
-            self._add_reactant_product_dummies(data, dummy_feature, dummy_bond)
+            self._add_reactant_product_dummies(x, dummy_feature, dummy_bond)
         else:
             raise ValueError(f"Invalid dummy mode: {self.mode}")
-        return data
+        return x
 
     def _get_pretransform_attributes(
         self, data: Data

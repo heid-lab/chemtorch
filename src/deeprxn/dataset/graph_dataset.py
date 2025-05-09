@@ -1,9 +1,9 @@
+import pandas as pd
+
+from torch import nn
 from functools import lru_cache
 from typing import Optional
 from torch_geometric.data import Data, Dataset
-import pandas as pd
-
-from deeprxn.data_pipeline.data_pipeline import DataPipeline
 
 
 # TODO: Generalize the dataset class to non-graph datasets?
@@ -18,7 +18,7 @@ class GraphDataset(Dataset):
     def __init__(
         self,
         data: pd.DataFrame,
-        sample_processing_pipeline: DataPipeline,
+        sample_processing_pipeline: nn.Sequential,
         precompute_all: bool = True,
         cache_graphs: bool = True,
         max_cache_size: Optional[int] = None,
@@ -31,7 +31,7 @@ class GraphDataset(Dataset):
 
         Args:
             data (pd.DataFrame): The input data containing molecular graphs.
-            sample_processing_pipeline (DataPipeline): A pipeline for processing 
+            sample_processing_pipeline (nn.Sequential): A pipeline for processing 
             individual samples to the final representations on which the model 
             will be trained on.
             precompute_all (bool): Whether to precompute all graphs upfront.

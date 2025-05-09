@@ -1,8 +1,10 @@
 import pytest
 import pandas as pd
+from torch import nn
+
 from deeprxn.data_pipeline.data_source.data_source import DataSource
 from deeprxn.data_pipeline.data_splitter.data_splitter import DataSplitter
-from deeprxn.data_pipeline.data_pipeline import DataPipeline, DataSplit
+from deeprxn.data_pipeline.data_split import DataSplit
 from deeprxn.data_pipeline.data_source.single_csv_source import SingleCSVSource
 from deeprxn.data_pipeline.data_source.split_csv_source import SplitCSVSource
 from deeprxn.data_pipeline.data_splitter.ratio_splitter import RatioSplitter
@@ -41,7 +43,7 @@ def test_preprocessing_with_single_csv_source(single_csv_file):
     source = SingleCSVSource(data_path=single_csv_file)
     splitter = RatioSplitter(train_ratio=0.8, val_ratio=0.1, test_ratio=0.1)
     data = source.load()
-    pipeline = DataPipeline(components=[splitter])
+    pipeline = nn.Sequential(splitter)
     data_split = pipeline.forward(data)
     assert isinstance(data_split, DataSplit)
     assert isinstance(data_split.train, pd.DataFrame)
@@ -54,7 +56,7 @@ def test_preprocessing_with_single_csv_source(single_csv_file):
 def test_preprocessing_with_split_csv_source(split_csv_folder):
     """Test the data pipeline with SplitCSVSource."""
     source = SplitCSVSource(data_folder=split_csv_folder)
-    pipeline = DataPipeline([])
+    pipeline = nn.Sequential()
     data = source.load()
     data_split = pipeline.forward(data)
     assert isinstance(data_split, DataSplit)

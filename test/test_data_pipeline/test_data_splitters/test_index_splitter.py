@@ -1,7 +1,7 @@
 import pickle
 import pandas as pd
 import pytest
-from deeprxn.data_pipeline.data_pipeline import DataSplit
+from deeprxn.data_pipeline.data_split import DataSplit
 from deeprxn.data_pipeline.data_splitter.index_splitter import IndexSplitter
 
 

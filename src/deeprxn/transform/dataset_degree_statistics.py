@@ -1,11 +1,11 @@
-from typing import Any, Dict
 import torch
+
+from torch import nn
 from torch_geometric.utils import degree
-from deeprxn.data_pipeline.data_pipeline import DataPipelineComponent
 from deeprxn.dataset.graph_dataset import GraphDataset
 
 
-class DatasetDegreeStatistics(DataPipelineComponent):
+class DatasetDegreeStatistics(nn.Module):
     """
     A dataset-wide transform to compute degree statistics for PNA.
 
@@ -13,6 +13,7 @@ class DatasetDegreeStatistics(DataPipelineComponent):
     """
 
     def __init__(self):
+        super(DatasetDegreeStatistics, self).__init__()
         self.max_degree = -1
 
     def forward(self, dataset: GraphDataset) -> None:

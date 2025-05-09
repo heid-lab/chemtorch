@@ -1,7 +1,7 @@
 from typing_extensions import override
 import pandas as pd
 from deeprxn.data_pipeline.data_splitter.data_splitter import DataSplitter
-from deeprxn.data_pipeline.data_pipeline import DataSplit
+from deeprxn.data_pipeline.data_split import DataSplit
 
 
 class RatioSplitter(DataSplitter):
@@ -20,6 +20,7 @@ class RatioSplitter(DataSplitter):
             val_ratio (float): The ratio of data to be used for validation.
             test_ratio (float): The ratio of data to be used for testing.
         """
+        super(RatioSplitter, self).__init__()
         self.train_ratio = train_ratio
         self.val_ratio = val_ratio
         self.test_ratio = test_ratio
@@ -32,20 +33,20 @@ class RatioSplitter(DataSplitter):
 
 
     @override
-    def forward(self, raw: pd.DataFrame) -> DataSplit:
+    def forward(self, df: pd.DataFrame) -> DataSplit:
         """
         Splits the raw data into training, validation, and test partitions based on the specified ratios.
 
         Args:
-            raw: The raw data to be split.
+            df (pd.DataFrame): The input DataFrame to be split.
 
         Returns:
             DataSplit: A named tuple containing the train, val, and test dataframes.
         """
-        if raw.empty:
+        if df.empty:
             raise ValueError("Input DataFrame is empty")
 
-        random_df = raw.sample(frac=1).reset_index(drop=True)
+        random_df = df.sample(frac=1).reset_index(drop=True)
 
         train_size = int(len(random_df) * self.train_ratio)
         val_size = int(len(random_df) * self.val_ratio)

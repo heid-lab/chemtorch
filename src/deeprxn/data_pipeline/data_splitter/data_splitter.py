@@ -1,21 +1,26 @@
-from deeprxn.data_pipeline.data_pipeline import DataPipelineComponent, DataSplit
+import pandas as pd
+from torch import nn
+
+from deeprxn.data_pipeline.data_split import DataSplit
 
 
-from abc import abstractmethod
-
-
-class DataSplitter(DataPipelineComponent):
+class DataSplitter(nn.Module):
     """
-    Abstract base class for data splitting strategies.
+    Base class for data splitting strategies.
     """
+    def __init__(self):
+        """
+        Initializes the DataSplitter.
+        """
+        super(DataSplitter, self).__init__()
 
-    @abstractmethod
-    def forward(self, raw) -> DataSplit:
+
+    def forward(self, df: pd.DataFrame) -> DataSplit:
         """
         Splits the raw data into training, validation, and test partitions.
 
         Args:
-            raw: The raw data to be split.
+            df (pd.DataFrame): The raw data to be split.
 
         Returns:
             DataSplit: A named tuple containing the train, val, and test dataframes.
