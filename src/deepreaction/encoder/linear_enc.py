@@ -1,10 +1,8 @@
 from torch import nn
 from torch_geometric.data import Batch
 
-from deepreaction.encoder.encoder_base import Encoder
 
-
-class LinearEncoder(Encoder):
+class LinearEncoder(nn.Module):
 
     def __init__(
         self,
@@ -13,7 +11,7 @@ class LinearEncoder(Encoder):
         edge_in_channels: int,
         edge_out_channels: int,
     ):
-        super().__init__()
+        super(LinearEncoder, self).__init__()
 
         self.node_encoder = nn.Linear(node_in_channels, node_out_channels)
         self.edge_encoder = nn.Linear(edge_in_channels, edge_out_channels)

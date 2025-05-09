@@ -1,11 +1,9 @@
-import torch
+from torch import nn
 from torch_geometric.data import Batch
 from torch_geometric.nn import GATv2Conv
 
-from deepreaction.layer.mpnn_layer.mpnn_layer_base import MPNNLayerBase
 
-
-class GATv2Layer(MPNNLayerBase):
+class GATv2Layer(nn.Module):
     """Graph Attention Network Layer wrapper."""
 
     def __init__(
@@ -26,7 +24,7 @@ class GATv2Layer(MPNNLayerBase):
             dropout: Dropout probability
             concat: Whether to concatenate or average multi-head attention outputs
         """
-        super().__init__(in_channels, out_channels)
+        super(GATv2Layer, self).__init__()
 
         self.use_edge_attr = use_edge_attr
 

@@ -2,10 +2,8 @@ import torch
 from torch import nn
 from torch_geometric.data import Batch
 
-from deepreaction.encoder.encoder_base import Encoder
 
-
-class NodeOriginsEncoder(Encoder):
+class NodeOriginsEncoder(nn.Module):
 
     def __init__(
         self,
@@ -13,7 +11,7 @@ class NodeOriginsEncoder(Encoder):
         out_channels: int,
         as_variable: bool = False,
     ):
-        super().__init__()
+        super(NodeOriginsEncoder, self).__init__()
         self.as_variable = as_variable
         self.raw_norm = nn.BatchNorm1d(in_channels)
         self.linear = nn.Linear(in_channels, out_channels)

@@ -2,11 +2,10 @@ import torch
 import torch.nn as nn
 from torch_geometric.data import Batch
 
-from deepreaction.act.act import Activation, ActivationType
-from deepreaction.head.head import Head
+from deepreaction.act.act import Activation
 
 
-class FFNEnthalpyHead(Head):
+class FFNEnthalpyHead(nn.Module):
     """Feed forward network head with configurable layers."""
 
     def __init__(
@@ -16,9 +15,9 @@ class FFNEnthalpyHead(Head):
         hidden_channels: int,
         num_layers: int = 2,
         dropout: float = 0.02,
-        activation: ActivationType = "relu",
+        activation: str="relu",
     ):
-        super().__init__(in_channels, out_channels)
+        super(FFNEnthalpyHead, self).__init__()
 
         # Use our Activation class
         self.activation = Activation(activation_type=activation)

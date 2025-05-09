@@ -3,10 +3,8 @@ import torch.nn as nn
 import torch_geometric.nn as pyg_nn
 from torch_geometric.nn import Linear as Linear_pyg
 
-from deepreaction.layer.mpnn_layer.mpnn_layer_base import MPNNLayerBase
 
-
-class GINEConvESLapPE(MPNNLayerBase):
+class GINEConvESLapPE(MessagePassing):
     """GINEConv Layer with EquivStableLapPE implementation.
 
     Modified torch_geometric.nn.conv.GINEConv layer to perform message scaling
@@ -24,7 +22,7 @@ class GINEConvESLapPE(MPNNLayerBase):
         **kwargs,
     ):
         kwargs.setdefault("aggr", "add")
-        super().__init__(in_channels, out_channels)
+        super(GINEConvESLapPE, self).__init__(**kwargs)
         self.nn = nn.Sequential(
             Linear_pyg(in_channels, out_channels),
             nn.ReLU(),

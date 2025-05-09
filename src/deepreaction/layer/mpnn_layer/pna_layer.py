@@ -2,10 +2,8 @@ import torch.nn as nn
 import torch_geometric.nn as pyg_nn
 from torch_geometric.nn import Linear as Linear_pyg
 
-from deepreaction.layer.mpnn_layer.mpnn_layer_base import MPNNLayerBase
 
-
-class PNALayer(MPNNLayerBase):
+class PNALayer(nn.Module):
     def __init__(
         self,
         in_channels: int,
@@ -15,7 +13,7 @@ class PNALayer(MPNNLayerBase):
         scalers=["identity", "amplification", "attenuation"],
         use_edge_attr: bool = True,
     ):
-        super().__init__(in_channels, out_channels)
+        super(PNALayer, self).__init__()
 
         if dataset_degree_statistics is None:
             raise ValueError("Dataset degree statistics not found precomputed.")

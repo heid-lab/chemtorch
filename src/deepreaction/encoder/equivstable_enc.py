@@ -1,10 +1,8 @@
 import torch
 import torch.nn as nn
 
-from deepreaction.encoder.encoder_base import Encoder
 
-
-class EquivStableEncoder(Encoder):
+class EquivStableEncoder(nn.Module):
     """Equivariant and Stable Laplace Positional Embedding node encoder.
 
     This encoder simply transforms the k-dim node LapPE to d-dim to be
@@ -13,7 +11,7 @@ class EquivStableEncoder(Encoder):
     """
 
     def __init__(self, in_channels, out_channels, raw_norm_type=None):
-        super().__init__()
+        super(EquivStableEncoder, self).__init__()
 
         max_freqs = in_channels  # Num. eigenvectors (frequencies)
 

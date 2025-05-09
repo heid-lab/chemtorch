@@ -1,19 +1,18 @@
+from re import M
 import torch
 import torch.nn.functional as F
 from torch import nn
 from torch_geometric.data import Batch
 
-from deepreaction.encoder.encoder_base import Encoder
 
-
-class NodeToEdgeEncoder(Encoder):
+class NodeToEdgeEncoder(nn.Module):
 
     def __init__(
         self,
         in_channels: int,
         out_channels: int,
     ):
-        super().__init__()
+        super(NodeToEdgeEncoder, self).__init__()
 
         self.edge_init = nn.Linear(in_channels, out_channels)
 

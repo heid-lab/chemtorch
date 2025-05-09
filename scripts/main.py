@@ -8,7 +8,6 @@ from omegaconf import DictConfig, OmegaConf
 from torch import nn
 from torch_geometric.loader import DataLoader
 
-from deepreaction import dataset
 from deepreaction.data_pipeline.data_split import DataSplit
 from deepreaction.data_pipeline.data_source.data_source import DataSource
 from deepreaction.data_pipeline.representation_factory.graph_representation_factory import GraphRepresentationFactory
@@ -42,7 +41,7 @@ def main(cfg: DictConfig):
 
     data = data_source.load()
     dataframes = preprocessing_pipeline.forward(data)       
-    print(f"DEBUG: Preprocessing pipeline finished successfully")
+    print(f"INFO: Preprocessing pipeline finished successfully")
 
     ##### SAMPLE PROCESSING PIPELINE #############################################
     # TODO: Generalize pipeline to non-graph representations
@@ -57,7 +56,7 @@ def main(cfg: DictConfig):
             for _, config in sample_transform_cfg.items()
         ]
     ])
-    print(f"DEBUG: Sample processing pipeline instantiated successfully")
+    print(f"INFO: Sample processing pipeline instantiated successfully")
 
     ##### DATASET PROCESSING PIPELINE ############################################
     dataset_transform_cfg = getattr(cfg.data_cfg, "dataset_transform_cfg", {})
@@ -66,7 +65,7 @@ def main(cfg: DictConfig):
             for _, config in dataset_transform_cfg.items()
         ]
 )
-    print(f"DEBUG: Dataset processing pipeline instantiated successfully")
+    print(f"INFO: Dataset processing pipeline instantiated successfully")
 
     ##### DATASETS ###############################################################
     dataset_partial = hydra.utils.instantiate(
@@ -79,7 +78,7 @@ def main(cfg: DictConfig):
             dataframes
         )
     )
-    print(f"DEBUG: Datasets instantiated successfully")
+    print(f"INFO: Datasets instantiated successfully")
 
     ##### DATALOADERS ###########################################################
     # TODO: Preconfigure dataloader via hydra and instantiate using factory
@@ -104,7 +103,7 @@ def main(cfg: DictConfig):
         dataset=datasets.test,
         shuffle=False,
     )    
-    print(f"DEBUG: Dataloaders instantiated successfully")
+    print(f"INFO: Dataloaders instantiated successfully")
 
     ##### INITIALIZE W&B ##########################################################
     # TODO: Move this to graph dataset, or even better, to hydra

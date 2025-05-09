@@ -5,11 +5,10 @@ import torch_geometric.nn as pyg_nn
 from omegaconf import DictConfig
 from torch_geometric.data import Batch
 
-from deepreaction.act.act import Activation, ActivationType
-from deepreaction.layer.mpnn_layer.mpnn_layer_base import MPNNLayerBase
+from deepreaction.act.act import Activation
 
 
-class BlockGCNLayer(MPNNLayerBase):
+class BlockGCNLayer(nn.Module):
     def __init__(
         self,
         hidden_channels: int,
@@ -23,7 +22,7 @@ class BlockGCNLayer(MPNNLayerBase):
         ffn: bool,
         mpnn_cfg: DictConfig,
     ):
-        MPNNLayerBase.__init__(self, in_channels, out_channels)
+        super(BlockGCNLayer, self).__init__()
 
         self.layer_norm = layer_norm
         self.batch_norm = batch_norm

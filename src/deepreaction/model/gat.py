@@ -3,10 +3,8 @@ import torch.nn as nn
 from omegaconf import DictConfig
 from torch_geometric.data import Batch
 
-from deepreaction.model.model_base import Model
 
-
-class GAT(Model):
+class GAT(nn.Module):
     def __init__(
         self,
         num_node_features: int,

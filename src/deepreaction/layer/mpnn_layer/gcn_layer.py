@@ -6,8 +6,6 @@ from torch_geometric.nn import MessagePassing
 from torch_geometric.nn.conv.gcn_conv import gcn_norm
 from torch_geometric.typing import Adj, OptTensor, SparseTensor
 
-from deepreaction.layer.mpnn_layer.mpnn_layer_base import MPNNLayerBase
-
 
 class GCNConvWithEdges(MessagePassing):
     """GCN convolution with edge features.

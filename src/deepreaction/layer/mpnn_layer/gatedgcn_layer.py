@@ -2,13 +2,13 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch_geometric.nn as pyg_nn
+from torch_geometric.nn import MessagePassing
 from torch_scatter import scatter
 
-from deepreaction.act.act import Activation, ActivationType
-from deepreaction.layer.mpnn_layer.mpnn_layer_base import MPNNLayerBase
+from deepreaction.act.act import Activation
 
 
-class GatedGCNLayer(MPNNLayerBase):
+class GatedGCNLayer(MessagePassing):
     """
     GatedGCN layer
     Residual Gated Graph ConvNets
@@ -25,7 +25,7 @@ class GatedGCNLayer(MPNNLayerBase):
         equivstable_pe=False,
         # **kwargs,
     ):
-        super().__init__(in_channels, out_channels)
+        super(GatedGCNLayer, self).__init__()
         self.activation = Activation(activation_type=act)
         self.A = pyg_nn.Linear(in_channels, out_channels, bias=True)
         self.B = pyg_nn.Linear(in_channels, out_channels, bias=True)

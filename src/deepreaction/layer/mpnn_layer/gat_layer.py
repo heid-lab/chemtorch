@@ -1,11 +1,9 @@
-import torch
+from torch import nn
 from torch_geometric.data import Batch
 from torch_geometric.nn import GATConv
 
-from deepreaction.layer.mpnn_layer.mpnn_layer_base import MPNNLayerBase
 
-
-class GATLayer(MPNNLayerBase):
+class GATLayer(nn.Module):
     def __init__(
         self,
         in_channels: int,
@@ -15,7 +13,7 @@ class GATLayer(MPNNLayerBase):
         concat: bool = True,
         use_edge_attr: bool = True,
     ):
-        super().__init__(in_channels, out_channels)
+        self.super(GATLayer, self).__init__()
         self.use_edge_attr = use_edge_attr
 
         self.gat = GATConv(

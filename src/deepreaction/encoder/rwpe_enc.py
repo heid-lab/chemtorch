@@ -4,10 +4,8 @@ import torch_geometric as pyg
 from torch import nn
 from torch_geometric.data import Batch
 
-from deepreaction.encoder.encoder_base import Encoder
 
-
-class RWEncoder(Encoder):
+class RWEncoder(nn.Module):
 
     def __init__(
         self,
@@ -16,7 +14,7 @@ class RWEncoder(Encoder):
         transform_type: str = "normal",
         as_variable: bool = False,
     ):
-        super().__init__()
+        super(RWEncoder, self).__init__()
         self.as_variable = as_variable
 
         in_channels = (

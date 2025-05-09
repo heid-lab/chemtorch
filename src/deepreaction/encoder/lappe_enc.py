@@ -2,10 +2,8 @@ import torch
 from torch import nn
 from torch_geometric.data import Batch
 
-from deepreaction.encoder.encoder_base import Encoder
 
-
-class LapPE(Encoder):
+class LapPE(nn.Module):
 
     def __init__(
         self,
@@ -16,7 +14,7 @@ class LapPE(Encoder):
         as_variable: bool = False,
         raw_norm_type=None,
     ):
-        super().__init__()
+        super(LapPE, self).__init__()
 
         self.model_type = model_type
         self.as_variable = as_variable

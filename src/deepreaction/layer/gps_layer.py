@@ -3,10 +3,8 @@ import torch.nn as nn
 import torch_geometric.nn as pyg_nn
 from torch_geometric.utils import to_dense_batch
 
-from deepreaction.layer.mpnn_layer.mpnn_layer_base import MPNNLayerBase
 
-
-class GPSLayer(MPNNLayerBase):
+class GPSLayer(nn.Module):
     def __init__(
         self,
         in_channels,
@@ -19,7 +17,7 @@ class GPSLayer(MPNNLayerBase):
         log_attn_weights=False,
         dataset_precomputed=None,
     ):
-        super().__init__(in_channels, out_channels)
+        super(GPSLayer, self).__init__()
 
         if dataset_precomputed:
             self.local_gnn = hydra.utils.instantiate(

@@ -6,10 +6,8 @@ from omegaconf import DictConfig
 from torch_geometric.data import Batch
 from torch_geometric.nn.aggr import SumAggregation
 
-from deepreaction.model.model_base import Model
 
-
-class GCN(Model):
+class GCN(nn.Module):
     """Custom model using configurable components."""
 
     def __init__(
