@@ -2,6 +2,7 @@ import pytest
 import pandas as pd
 from torch import nn
 
+from deeprxn.data_pipeline.column_mapper.column_filter_rename import ColumnFilterAndRename
 from deeprxn.data_pipeline.data_source.data_source import DataSource
 from deeprxn.data_pipeline.data_splitter.data_splitter import DataSplitter
 from deeprxn.data_pipeline.data_split import DataSplit
@@ -66,3 +67,39 @@ def test_preprocessing_with_split_csv_source(split_csv_folder):
     assert not data_split.train.empty
     assert not data_split.val.empty
     assert not data_split.test.empty
+
+
+def test_preprocessing_with_single_csv_source_and_column_mapper(single_csv_file):
+    """Test the data pipeline with SingleCSVSource, RatioSplitter, and ColumnFilterAndRename."""
+    source = SingleCSVSource(data_path=single_csv_file)
+    splitter = RatioSplitter(train_ratio=0.8, val_ratio=0.1, test_ratio=0.1)
+    column_mapper = ColumnFilterAndRename(column_mapping={"new_col1": "col1", "new_col2": "col2"})
+
+    # Load data and process through the pipeline
+    data = source.load()
+    pipeline = nn.Sequential(splitter, column_mapper)
+    data_split = pipeline.forward(data)
+
+    # Assertions
+    assert isinstance(data_split, DataSplit)
+    for df in [data_split.train, data_split.val, data_split.test]:
+        assert isinstance(df, pd.DataFrame)
+        assert not df.empty
+        assert list(df.columns) == ["new_col1", "new_col2"]
+
+def test_preprocessing_with_split_csv_source_and_column_mapper(split_csv_folder):
+    """Test the data pipeline with SplitCSVSource and ColumnFilterAndRename."""
+    source = SplitCSVSource(data_folder=split_csv_folder)
+    column_mapper = ColumnFilterAndRename(column_mapping={"new_col1": "col1", "new_col2": "col2"})
+
+    # Load data and process through the pipeline
+    data = source.load()
+    pipeline = nn.Sequential(column_mapper)
+    data_split = pipeline.forward(data)
+
+    # Assertions
+    assert isinstance(data_split, DataSplit)
+    for df in [data_split.train, data_split.val, data_split.test]:
+        assert isinstance(df, pd.DataFrame)
+        assert not df.empty
+        assert list(df.columns) == ["new_col1", "new_col2"]
