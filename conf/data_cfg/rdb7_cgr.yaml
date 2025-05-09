@@ -5,13 +5,9 @@ defaults:
   - dataset_cfg: rdb7
   - representation_cfg: cgr
   # TODO: Move sample_transform_cfg and dataset_transform_cfg to dataset_cfg
-  - sample_transforms_cfg: null     # Specify list of sample_transforms
+  - sample_transform_cfg: null      # Specify list of sample_transforms
   - dataset_transform_cfg: null     # Specify list of dataset_transforms
   - _self_
 
 batch_size: 50
 num_workers: 0
-# TODO: Remove this?
-#pin_memory: true
-# no_reverse_edge: true  # Moved from root
-# use_self_loop: "only"  # Moved from root

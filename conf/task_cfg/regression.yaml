@@ -7,7 +7,6 @@ defaults:
   - scheduler_cfg: cosine_with_warmup
   - _self_
 
-# WHAT IS THIS DOING HERE?
 epochs: 30
 
 # OPTIMIZER STABILITY
