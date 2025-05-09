@@ -1,4 +1,4 @@
-_target_: deeprxn.layer.mpnn_layer.mpnn_layer.MPNNLayer
+_target_: deepreaction.layer.mpnn_layer.mpnn_layer.MPNNLayer
 in_channels: ${model_cfg.hidden_channels}
 out_channels: ${model_cfg.hidden_channels}
 dropout: 0.02

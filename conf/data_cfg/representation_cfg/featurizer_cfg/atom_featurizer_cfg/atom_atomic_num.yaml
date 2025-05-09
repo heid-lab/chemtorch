@@ -1,1 +1,1 @@
-_target_: deeprxn.featurizer.atom_featurizer.atom_atomic_num.AtomicNumberFeaturizer
+_target_: deepreaction.featurizer.atom_featurizer.atom_atomic_num.AtomicNumberFeaturizer

@@ -10,7 +10,7 @@ defaults:
 
 # WANDB
 wandb: false
-project_name: deeprxn
+project_name: deepreaction
 group_name: null
 run_name: null
 

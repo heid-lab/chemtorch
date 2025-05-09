@@ -1,4 +1,4 @@
-_target_: deeprxn.dataset.graph_dataset.GraphDataset
+_target_: deepreaction.dataset.graph_dataset.GraphDataset
 _partial_: true
 
 # === DATA PIPELINE ===================================
@@ -11,7 +11,7 @@ defaults:
 
 # === DATA PIPELINE COMPONENTS ========================
 # For single_csv_source
-data_folder: "deeprxn_datasets/data/rdb7/barriers"
+data_folder: "deepreaction_datasets/data/rdb7/barriers"
 data_file: "rdb7_full.csv"
 # For ratio_splitter
 train_ratio: 0.9

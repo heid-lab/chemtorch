@@ -1,2 +1,2 @@
-_target_: deeprxn.data_pipeline.data_source.split_csv_source.SplitCSVSource
+_target_: deepreaction.data_pipeline.data_source.split_csv_source.SplitCSVSource
 data_folder: ${data_cfg.dataset_cfg.data_folder}

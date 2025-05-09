@@ -1,7 +1,7 @@
 import pytest
 import pandas as pd
-from deeprxn.data_pipeline.data_splitter.ratio_splitter import RatioSplitter
-from deeprxn.data_pipeline.data_split import DataSplit
+from deepreaction.data_pipeline.data_splitter.ratio_splitter import RatioSplitter
+from deepreaction.data_pipeline.data_split import DataSplit
 
 def test_ratio_splitter(sample_dataframe):
     """Test the RatioSplitter functionality."""

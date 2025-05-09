@@ -1,5 +1,5 @@
 rwpe_enc: 
-  _target_: deeprxn.encoder.rwpe_enc.RWEncoder
+  _target_: deepreaction.encoder.rwpe_enc.RWEncoder
   in_channels: ${eval:'${data.representation_cfg.pre_transform_cfg.randomwalk.walk_length} * ${data.representation_cfg.in_channel_multiplier}'}
   out_channels: ${model_cfg.layer_cfg.mpnn_cfg.in_channels}
   transform_type: normal

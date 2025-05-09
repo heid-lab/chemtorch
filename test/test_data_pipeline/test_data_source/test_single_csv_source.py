@@ -1,6 +1,6 @@
 import pytest
 import pandas as pd
-from deeprxn.data_pipeline.data_source.single_csv_source import SingleCSVSource
+from deepreaction.data_pipeline.data_source.single_csv_source import SingleCSVSource
 
 @pytest.fixture
 def single_csv_file(tmp_path):

@@ -1,5 +1,5 @@
 linear_enc:
-  _target_: deeprxn.encoder.linear_enc.LinearEncoder
+  _target_: deepreaction.encoder.linear_enc.LinearEncoder
   node_in_channels: ${num_node_features}
   node_out_channels: ${model_cfg.layer_cfg.mpnn_cfg.in_channels}
   edge_in_channels: ${num_edge_features}

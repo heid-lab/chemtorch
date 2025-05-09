@@ -1,5 +1,5 @@
 lapPE:
-  _target_: deeprxn.transform.lapPE.LapPE
+  _target_: deepreaction.transform.lapPE.LapPE
   eigvec_norm: L2
   max_freqs: 1
   attr_name: [EigVals, EigVecs]

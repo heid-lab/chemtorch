@@ -1,7 +1,7 @@
 import pandas as pd
 import pytest
-from deeprxn.data_pipeline.data_split import DataSplit
-from deeprxn.data_pipeline.data_source.split_csv_source import SplitCSVSource
+from deepreaction.data_pipeline.data_split import DataSplit
+from deepreaction.data_pipeline.data_source.split_csv_source import SplitCSVSource
 
 
 @pytest.fixture

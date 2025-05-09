@@ -2,13 +2,13 @@ import pytest
 import pandas as pd
 from torch import nn
 
-from deeprxn.data_pipeline.column_mapper.column_filter_rename import ColumnFilterAndRename
-from deeprxn.data_pipeline.data_source.data_source import DataSource
-from deeprxn.data_pipeline.data_splitter.data_splitter import DataSplitter
-from deeprxn.data_pipeline.data_split import DataSplit
-from deeprxn.data_pipeline.data_source.single_csv_source import SingleCSVSource
-from deeprxn.data_pipeline.data_source.split_csv_source import SplitCSVSource
-from deeprxn.data_pipeline.data_splitter.ratio_splitter import RatioSplitter
+from deepreaction.data_pipeline.column_mapper.column_filter_rename import ColumnFilterAndRename
+from deepreaction.data_pipeline.data_source.data_source import DataSource
+from deepreaction.data_pipeline.data_splitter.data_splitter import DataSplitter
+from deepreaction.data_pipeline.data_split import DataSplit
+from deepreaction.data_pipeline.data_source.single_csv_source import SingleCSVSource
+from deepreaction.data_pipeline.data_source.split_csv_source import SplitCSVSource
+from deepreaction.data_pipeline.data_splitter.ratio_splitter import RatioSplitter
 
 class NoOpMockSource(DataSource):
     def load(self):

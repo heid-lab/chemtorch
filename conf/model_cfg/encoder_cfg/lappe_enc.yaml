@@ -1,5 +1,5 @@
 lappe_enc: 
-  _target_: deeprxn.encoder.lappe_enc.LapPE
+  _target_: deepreaction.encoder.lappe_enc.LapPE
   in_channels: ${eval:'${data.representation_cfg.pre_transform_cfg.lapPE.max_freqs} * ${data.representation_cfg.in_channel_multiplier}'}
   out_channels: ${model_cfg.layer_cfg.mpnn_cfg.in_channels}
   model_type: deepset # transformer

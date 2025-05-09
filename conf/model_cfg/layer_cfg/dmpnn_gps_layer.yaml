@@ -1,4 +1,4 @@
-_target_: deeprxn.layer.dmpnn_gps_layer.DMPNNGPSLayer
+_target_: deepreaction.layer.dmpnn_gps_layer.DMPNNGPSLayer
 _recursive_: False
 
 defaults:

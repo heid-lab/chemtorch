@@ -1,7 +1,7 @@
 
 program: scripts/main.py  # Executing the main.py script
 
-project: deeprxn
+project: deepreaction
 
 method: bayes   # also possible: grid
 metric:

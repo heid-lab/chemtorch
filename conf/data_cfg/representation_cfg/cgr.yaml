@@ -1,4 +1,4 @@
-_target_: deeprxn.representation.cgr.CGR
+_target_: deepreaction.representation.cgr.CGR
 _recursive_: False
 _partial_: True
 

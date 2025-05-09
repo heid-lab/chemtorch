@@ -1,4 +1,4 @@
-_target_: deeprxn.layer.att_layer.relation.Relation
+_target_: deepreaction.layer.att_layer.relation.Relation
 embed_dim: ${model_cfg.hidden_channels}
 num_heads: 4
 dropout: 0.05

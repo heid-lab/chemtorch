@@ -1,4 +1,4 @@
-_target_: deeprxn.layer.block_pna.BlockPNALayer
+_target_: deepreaction.layer.block_pna.BlockPNALayer
 _recursive_: False
 
 defaults:
