@@ -1,4 +1,4 @@
-from deeprxn.data_pipeline.data_pipeline import DataPipelineComponent, Any
+from deeprxn.data_pipeline.data_pipeline import DataPipelineComponent, DataSplit
 
 
 from abc import abstractmethod
@@ -10,7 +10,7 @@ class DataSplitter(DataPipelineComponent):
     """
 
     @abstractmethod
-    def forward(self, raw) -> Any:
+    def forward(self, raw) -> DataSplit:
         """
         Splits the raw data into training, validation, and test partitions.
 
