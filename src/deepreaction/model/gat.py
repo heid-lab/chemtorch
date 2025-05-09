@@ -1,74 +1,51 @@
 import hydra
 import torch.nn as nn
 from omegaconf import DictConfig
+from torch_geometric.data import Batch
+
+from deepreaction.model.model_base import Model
 
 
-class GAT(nn.Module):
-   """Graph Attention Network."""
+class GAT(Model):
+    def __init__(
+        self,
+        num_node_features: int,
+        num_edge_features: int,
+        hidden_channels: int,
+        depth: int,
+        shared_weights: bool,
+        encoder_cfg: DictConfig,
+        layer_cfg: DictConfig,
+        pool_cfg: DictConfig,
+        head_cfg: DictConfig,
+    ):
+        super().__init__()
+        self.depth = depth
 
-   def __init__(
-       self,
-       num_node_features,
-       num_edge_features,
-       hidden_channels,
-       depth,
-       shared_weights,
-       encoder_cfg,
-       layer_cfg,
-       pool_cfg,
-       head_cfg,
-   ):
-       """Initialize the GAT model.
+        self.encoders = nn.ModuleList()
+        for _, config in encoder_cfg.items():
+            self.encoders.append(hydra.utils.instantiate(config))
 
-       Parameters
-       ----------
-       num_node_features : int
-           The input node feature dimension.
-       num_edge_features : int
-           The input edge feature dimension.
-       hidden_channels : int
-           The hidden layer dimension.
-       depth : int
-           The number of message passing layers.
-       shared_weights : bool
-           Whether to use shared weights across layers.
-       encoder_cfg : DictConfig
-           Configuration for node/edge encoders.
-       layer_cfg : DictConfig
-           Configuration for message passing layers.
-       pool_cfg : DictConfig
-           Configuration for graph pooling.
-       head_cfg : DictConfig
-           Configuration for output head.
+        self.layers = nn.ModuleList()
+        if shared_weights:
+            layer = hydra.utils.instantiate(layer_cfg)
+            for _ in range(self.depth):
+                self.layers.append(layer)
+        else:
+            for _ in range(self.depth):
+                self.layers.append(hydra.utils.instantiate(layer_cfg))
 
-       """
-       super().__init__()
-       self.depth = depth
+        self.pool = hydra.utils.instantiate(pool_cfg)
+        self.head = hydra.utils.instantiate(head_cfg)
 
-       self.encoders = nn.ModuleList()
-       for _, config in encoder_cfg.items():
-           self.encoders.append(hydra.utils.instantiate(config))
+    def forward(self, batch: Batch) -> Batch:
+        for encoder in self.encoders:
+            batch = encoder(batch)
 
-       self.layers = nn.ModuleList()
-       if shared_weights:
-           layer = hydra.utils.instantiate(layer_cfg)
-           for _ in range(self.depth):
-               self.layers.append(layer)
-       else:
-           for _ in range(self.depth):
-               self.layers.append(hydra.utils.instantiate(layer_cfg))
+        for layer in self.layers:
+            batch = layer(batch)
 
-       self.pool = hydra.utils.instantiate(pool_cfg)
-       self.head = hydra.utils.instantiate(head_cfg)
+        batch.x = self.pool(batch)
+        preds = self.head(batch)
 
-   def forward(self, batch):
-       for encoder in self.encoders:
-           batch = encoder(batch)
-
-       for layer in self.layers:
-           batch = layer(batch)
-
-       batch.x = self.pool(batch)
-       preds = self.head(batch)
-
-       return preds
+        return preds

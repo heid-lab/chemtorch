@@ -1,12 +1,12 @@
 import torch
+from torch import nn
+from torch import nn
 from torch_geometric.data import Data
 from torch_geometric.utils import scatter, to_dense_adj
 from torch_geometric.utils.num_nodes import maybe_num_nodes
 
-from deepreaction.transform.transform_base import TransformBase
 
-
-class RWSE(TransformBase):
+class RWSE(nn.Module):
     """
     # TODO: check out how to cite code
     """
@@ -16,19 +16,19 @@ class RWSE(TransformBase):
         times: int = 20,
         type: str = "graph",
     ) -> None:
+        super(RWSE, self).__init__()
         self.times = times
 
-    def forward(self, data: Data) -> Data:
-
-        N = data.x.shape[0]  # Number of nodes, including disconnected nodes.
+    def forward(self, x: Data) -> Data:
+        N = x.x.shape[0]  # Number of nodes, including disconnected nodes.
 
         times = list(range(1, self.times + 1))
         rw_landing = self.get_rw_landing_probs(
-            ksteps=times, edge_index=data.edge_index, num_nodes=N
+            ksteps=times, edge_index=x.edge_index, num_nodes=N
         )
-        data.wandomwalkpe = rw_landing
+        x.wandomwalkpe = rw_landing
 
-        return data
+        return x
 
     def get_rw_landing_probs(
         self, ksteps, edge_index, edge_weight=None, num_nodes=None, space_dim=0

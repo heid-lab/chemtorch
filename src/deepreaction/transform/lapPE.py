@@ -1,13 +1,17 @@
+from re import L
 import numpy as np
 import torch
+from torch import nn
 import torch.nn.functional as F
 from torch_geometric.data import Data
-from torch_geometric.utils import get_laplacian, to_scipy_sparse_matrix, to_undirected
+from torch_geometric.utils import (
+    get_laplacian,
+    to_scipy_sparse_matrix,
+    to_undirected,
+)
 
-from deepreaction.transform.transform_base import TransformBase
 
-
-class LapPE(TransformBase):
+class LapPE(nn.Module):
     """
     # TODO: check out how to cite code
     """
@@ -21,16 +25,17 @@ class LapPE(TransformBase):
         laplacian_norm_type=None,
         type: str = "graph",
     ) -> None:
+        super(LapPE, self).__init__()
         self.eigvec_norm = eigvec_norm
         self.max_freqs = max_freqs
         self.laplacian_norm_type = laplacian_norm_type
         self.attr_name = attr_name
 
-    def forward(self, data: Data) -> Data:
+    def forward(self, x: Data) -> Data:
 
-        N = data.x.shape[0]
+        N = x.x.shape[0]
 
-        undir_edge_index = to_undirected(data.edge_index)
+        undir_edge_index = to_undirected(x.edge_index)
 
         # Eigen values and vectors.
         evals, evects = None, None
@@ -45,14 +50,14 @@ class LapPE(TransformBase):
         )
         evals, evects = np.linalg.eigh(L.toarray())
 
-        data.EigVals, data.EigVecs = self.get_lap_decomp_stats(
+        x.EigVals, x.EigVecs = self.get_lap_decomp_stats(
             evals=evals,
             evects=evects,
             max_freqs=self.max_freqs,
             eigvec_norm=self.eigvec_norm,
         )
 
-        return data
+        return x
 
     def get_lap_decomp_stats(self, evals, evects, max_freqs, eigvec_norm="L2"):
         """Compute Laplacian eigen-decomposition-based PE stats of the given graph.

@@ -10,7 +10,8 @@ from sklearn.metrics import mean_absolute_error, root_mean_squared_error
 from torch import nn
 
 import wandb
-from deepreaction.data import Standardizer
+from deepreaction.standardizer import Standardizer
+
 from deepreaction.utils import (
     check_early_stopping,
     load_model,
@@ -82,8 +83,9 @@ def train(train_loader,
           scheduler_cfg, 
           use_wandb=False):
 
-    mean = np.mean(train_loader.dataset.labels)
-    std = np.std(train_loader.dataset.labels)
+    train_labels = train_loader.dataset.get_labels()
+    mean = np.mean(train_labels)
+    std = np.std(train_labels)
     stdzer = Standardizer(mean, std)
 
     if use_wandb:
@@ -119,7 +121,7 @@ def train(train_loader,
         )
         val_preds = predict(model, val_loader, stdzer, device)
         val_loss = root_mean_squared_error(
-            val_preds, val_loader.dataset.labels
+            val_preds, val_loader.dataset.get_labels()
         )
 
         try:
@@ -174,8 +176,9 @@ def train(train_loader,
     if save_model_parameters:
         model, _, _, _ = load_model(model, optimizer, model_path)
     test_preds = predict(model, test_loader, stdzer, device)
-    test_rmse = root_mean_squared_error(test_preds, test_loader.dataset.labels)
-    test_mae = mean_absolute_error(test_preds, test_loader.dataset.labels)
+    test_labels = test_loader.dataset.get_labels()
+    test_rmse = root_mean_squared_error(test_preds, test_labels)
+    test_mae = mean_absolute_error(test_preds, test_labels)
     print(f"Test RMSE: {test_rmse}")
     print(f"Test MAE: {test_mae}")
 

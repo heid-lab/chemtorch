@@ -5,29 +5,25 @@ import torch
 import torch_geometric as tg
 from omegaconf import DictConfig
 
-from deepreaction.representation.rxn_graph_base import (
+from deepreaction.representation.reaction_graph import (
     AtomOriginType,
     EdgeOriginType,
-    RxnGraphBase,
+    ReactionGraph
 )
 
 
-class DMG(RxnGraphBase):
+class DMG(ReactionGraph):
     """Dual Molecular Graph (DMG) representation."""
 
     def __init__(
         self,
         smiles: str,
         label: float,
-        atom_featurizer: callable,
-        bond_featurizer: callable,
-        qm_featurizer: callable,
-        single_featurizer: callable,
+        featurizer_cfg: DictConfig,      # TODO: Remove dependency on hydra
+        in_channel_multiplier: int = 1,  # TODO: Remove this (only there for hydra interpolation)
         connection_direction: str = "bidirectional",
         concat_origin_feature: bool = False,
-        in_channel_multiplier: int = 1,
         pre_transform_cfg: Optional[Dict[str, DictConfig]] = None,
-        enthalpy=None,
         extra_zero_fvec: bool = False,
     ):
         """Initialize graph.
@@ -37,9 +33,8 @@ class DMG(RxnGraphBase):
         super().__init__(
             smiles=smiles,
             label=label,
-            atom_featurizer=atom_featurizer,
-            bond_featurizer=bond_featurizer,
-            enthalpy=enthalpy,
+            atom_featurizer=hydra.utils.instantiate(featurizer_cfg.atom_featurizer_cfg),
+            bond_featurizer=hydra.utils.instantiate(featurizer_cfg.bond_featurizer_cfg),
         )
         self.connection_direction = connection_direction
         self.concat_origin_feature = concat_origin_feature
@@ -47,9 +42,9 @@ class DMG(RxnGraphBase):
         self.component_features = {}
         self.extra_zero_fvec = extra_zero_fvec
 
-        self.qm_featurizer = qm_featurizer
+        self.qm_featurizer = hydra.utils.instantiate(featurizer_cfg.external_atom_featurizer_cfg)
         self.qm_f = []
-        self.single_featurizer = single_featurizer
+        self.single_featurizer = hydra.utils.instantiate(featurizer_cfg.single_featurizer_cfg)
         self.single_f = []
 
         self.n_atoms_reac = self.mol_reac.GetNumAtoms()
@@ -355,9 +350,6 @@ class DMG(RxnGraphBase):
             [self._get_edge_type_encoding(t) for t in self.edge_origin_type],
             dtype=torch.float,
         )
-
-        if self.enthalpy is not None:
-            data.enthalpy = torch.tensor([self.enthalpy], dtype=torch.float)
 
         if self.concat_origin_feature == True:
             # Concatenate with existing features

@@ -1,32 +1,21 @@
 import torch
+import torch.nn.functional as F
+import torch_geometric as pyg
 from torch import nn
+from torch_geometric.data import Batch
+
+from deepreaction.encoder.encoder_base import Encoder
 
 
-class RWEncoder(nn.Module):
-    """Random walk positional encoder for graph neural networks."""
+class RWEncoder(Encoder):
 
     def __init__(
         self,
-        in_channels,
-        out_channels,
-        transform_type="normal",
-        as_variable=False,
+        in_channels: int,
+        out_channels: int,
+        transform_type: str = "normal",
+        as_variable: bool = False,
     ):
-        """Initialize the random walk positional encoder.
-
-        Parameters
-        ----------
-        in_channels : int
-            The input dimension of random walk features.
-        out_channels : int
-            The output dimension of encoded positional features.
-        transform_type : str, optional
-            The transformation type for positional encodings, by default "normal".
-            Options: "normal", "difference", or "reactant_difference".
-        as_variable : bool, optional
-            Whether to store as a separate variable or concatenate to node features, by default False.
-
-        """
         super().__init__()
         self.as_variable = as_variable
 
@@ -39,7 +28,8 @@ class RWEncoder(nn.Module):
 
         self.pe_encoder = nn.Linear(in_channels, out_channels)
 
-    def forward(self, batch):
+    def forward(self, batch: Batch) -> Batch:
+
         if not hasattr(batch, "randomwalkpe"):
             raise ValueError(
                 "Batch object does not have randomwalkpe attribute"

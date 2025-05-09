@@ -1,17 +1,17 @@
 <div align="center">
 
-# DeepRxn
+# deepreaction
 
 <a href="https://pytorch.org/"><img alt="PyTorch" src="https://img.shields.io/badge/PyTorch-black?logo=PyTorch"></a>
 <a href="https://hydra.cc/docs/intro/"><img alt="Config: Hydra" src="https://img.shields.io/badge/Config-Hydra-89b8cd"></a>
 
 
-![DeepRxn_logo.png](./images/DeepRxn_logo.png)
+![deepreaction_logo.png](./images/deepreaction_logo.png)
 
 </div>
 
 ## Description
-DeepRxn package
+deepreaction package
 
 
 ## Contents
@@ -24,8 +24,8 @@ DeepRxn package
 
 Clone this repository and change directory:
 ```
-git clone ssh://git@gitlab.tuwien.ac.at:822/e165-03-1_theoretische_materialchemie/deeprxn.git
-cd deeprxn
+git clone ssh://git@gitlab.tuwien.ac.at:822/e165-03-1_theoretische_materialchemie/deepreaction.git
+cd deepreaction
 ```
 We recommend to install the package inside a Conda environment (or any other virtual environment of your choice).
 
@@ -38,8 +38,8 @@ where `${TORCH}` should be replaced by your PyTorch version (e.g., 2.6.0), and `
 Here we is an example installation of PyTorch 2.5.1 for CPU. To install for GPUs, follow the PyTorch and `torch_geometric` installation instructions.
 
 ```
-conda create -n deeprxn python=3.10 && \
-conda activate deeprxn && \
+conda create -n deepreaction python=3.10 && \
+conda activate deepreaction && \
 pip install rdkit numpy scikit-learn pandas && \
 pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu && \
 pip install --upgrade hydra-core && \
@@ -70,7 +70,7 @@ A model follows the following design:
 - `act`: activation functions to be used
 
 ```
-deeprxn/
+deepreaction/
 ├── act/                    (activation functions, config in conf/model/)
 ├── att_layer/              (attention layers, config in conf/model/)
 ├── encoder/                (encoders, config in conf/model/)

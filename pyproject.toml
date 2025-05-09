@@ -3,7 +3,7 @@ requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "DeepRxn"
+name = "deepreaction"
 authors = [
     { name = "Esther Heid", email = "esther.heid@tuwien.ac.at" },
 ]
@@ -27,4 +27,4 @@ dynamic = ["version"]
 where = ["src"]
 
 [tool.setuptools.dynamic]
-version = { attr = "deeprxn.__version__" }
+version = { attr = "deepreaction.__version__" }

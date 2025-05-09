@@ -2,17 +2,11 @@ _target_: deepreaction.data.construct_loader
 _recursive_: False
 
 defaults:
-  - dataset_cfg: rdb7new
-  - featurizer_cfg: standard
+  - dataset_cfg: rdb7
   - representation_cfg: cgr
-  - transform_cfg: null
+  - sample_transform_cfg: null      # Specify list of sample_transforms
+  - dataset_transform_cfg: null     # Specify list of dataset_transforms
   - _self_
 
 batch_size: 50
 num_workers: 0
-#pin_memory: true
-cache_graphs: true
-max_cache_size: null
-preprocess_all: true
-# no_reverse_edge: true  # Moved from root
-# use_self_loop: "only"  # Moved from root

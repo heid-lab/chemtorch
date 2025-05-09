@@ -1,5 +1,0 @@
-_target_: deepreaction.data.load_csv_dataset
-input_column: "smiles"
-target_column: "dE0"
-data_folder: "barriers_rdb7new_3"
-reduced_dataset: 1

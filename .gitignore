@@ -9,18 +9,11 @@ __pycache__/
 # bash files
 *.sh
 
+# Data folder
 data/*
-conf/*.yaml
-conf/model/*.yaml
-!conf/model/gat.yaml
-!conf/model/gatv2.yaml
-!conf/model/pna.yaml
 
-conf/data/*.yaml
-!conf/data/rdb7_cgr.yaml
-!conf/data/rdb7_dmg.yaml
-!conf/data/rdb7_line_cgr.yaml
-!conf/data/rdb7_line_dmg.yaml
+# Results
+results
 
 # Saved models
 saved_models/
@@ -36,6 +29,12 @@ data.tar.gz
 
 # Weight & Bias
 wandb/
+
+# VS Code
+.vscode
+
+# Tools
+tools
 
 # Distribution / packaging
 .Python

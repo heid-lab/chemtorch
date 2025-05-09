@@ -1,31 +1,21 @@
 from torch import nn
+from torch_geometric.data import Batch
+
+from deepreaction.encoder.encoder_base import Encoder
 
 
-class LinearNodeEncoder(nn.Module):
-    """Linear node feature encoder for graph neural networks."""
+class LinearNodeEncoder(Encoder):
 
     def __init__(
         self,
-        in_channels,
-        out_channels,
-        bias=True,
+        in_channels: int,
+        out_channels: int,
+        bias: bool = True,
     ):
-        """Initialize the linear node encoder.
-
-        Parameters
-        ----------
-        in_channels : int
-            The dimension of input node features.
-        out_channels : int
-            The dimension of output node features.
-        bias : bool, optional
-            Whether to include a bias term, by default True.
-
-        """
         super().__init__()
 
         self.encoder = nn.Linear(in_channels, out_channels, bias=bias)
 
-    def forward(self, batch):
+    def forward(self, batch: Batch) -> Batch:
         batch.x = self.encoder(batch.x)
         return batch

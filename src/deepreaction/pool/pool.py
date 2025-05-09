@@ -4,9 +4,13 @@ from typing import Callable, Dict, Literal
 import torch
 import torch.nn as nn
 from torch_geometric.data import Batch
-from torch_geometric.nn import global_add_pool, global_max_pool, global_mean_pool
+from torch_geometric.nn import (
+    global_add_pool,
+    global_max_pool,
+    global_mean_pool,
+)
 
-from deepreaction.representation.rxn_graph_base import AtomOriginType
+from deepreaction.representation.reaction_graph import AtomOriginType
 
 
 class Pool(nn.Module):

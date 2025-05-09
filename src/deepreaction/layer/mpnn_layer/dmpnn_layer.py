@@ -1,9 +1,14 @@
+from typing import Optional
+
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 from torch_geometric.data import Batch
 
+from deepreaction.layer.mpnn_layer.mpnn_layer_base import MPNNLayerBase
 
-class DMPNNLayer(nn.Module):
+
+class DMPNNLayer(MPNNLayerBase):
     """Directed Message Passing Neural Network Layer."""
 
     def __init__(
@@ -19,7 +24,7 @@ class DMPNNLayer(nn.Module):
             out_channels: Number of output features
             separate_nn: Whether to use separate neural networks for real and artificial bonds
         """
-        super().__init__()
+        MPNNLayerBase.__init__(self, in_channels, out_channels)
 
         self.separate_nn = separate_nn
         self.lin_real = nn.Linear(in_channels, out_channels)

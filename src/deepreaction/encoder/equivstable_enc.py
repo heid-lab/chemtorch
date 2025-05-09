@@ -1,9 +1,10 @@
-# started from code from https://github.com/rampasek/GraphGPS/tree/main, MIT License, Copyright (c) 2022 Ladislav Rampášek, Michael Galkin, Vijay Prakash Dwivedi, Dominique Beaini
 import torch
 import torch.nn as nn
 
+from deepreaction.encoder.encoder_base import Encoder
 
-class EquivStableEncoder(nn.Module):
+
+class EquivStableEncoder(Encoder):
     """Equivariant and Stable Laplace Positional Embedding node encoder.
 
     This encoder simply transforms the k-dim node LapPE to d-dim to be
@@ -11,24 +12,7 @@ class EquivStableEncoder(nn.Module):
     Based on the approach proposed in paper https://openreview.net/pdf?id=e95i1IHcWj
     """
 
-    def __init__(self, 
-                 in_channels, 
-                 out_channels, 
-                 raw_norm_type=None
-    ):
-        """Initialize the equivariant and stable Laplace encoder.
-
-        Parameters
-        ----------
-        in_channels : int
-            The number of input channels, representing maximum frequency eigenvectors.
-        out_channels : int
-            The dimension of the output embedding.
-        raw_norm_type : str, optional
-            The type of normalization to apply to raw eigenvectors, by default None.
-            Options: "batchnorm" or None.
-
-        """
+    def __init__(self, in_channels, out_channels, raw_norm_type=None):
         super().__init__()
 
         max_freqs = in_channels  # Num. eigenvectors (frequencies)

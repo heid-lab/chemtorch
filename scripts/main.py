@@ -1,10 +1,17 @@
+from functools import partial
 import os
 
 import hydra
 import torch
-from omegaconf import DictConfig, OmegaConf
-
 import wandb
+from omegaconf import DictConfig, OmegaConf
+from torch import nn
+from torch_geometric.loader import DataLoader
+
+from deepreaction import dataset
+from deepreaction.data_pipeline.data_split import DataSplit
+from deepreaction.data_pipeline.data_source.data_source import DataSource
+from deepreaction.data_pipeline.representation_factory.graph_representation_factory import GraphRepresentationFactory
 from deepreaction.utils import load_model, set_seed
 
 OmegaConf.register_new_resolver("eval", eval)
@@ -24,11 +31,83 @@ def main(cfg: DictConfig):
         device = torch.device("cpu")
     print(f"Using device: {device}")
 
-    ############################# data instantiation #############################
-    train_loader = hydra.utils.instantiate(cfg.data_cfg, shuffle=True, split="train")
-    val_loader = hydra.utils.instantiate(cfg.data_cfg, shuffle=False, split="val")
-    test_loader = hydra.utils.instantiate(cfg.data_cfg, shuffle=False, split="test")
+    ##### SOURCE PIPELINE ########################################################
+    # TODO: Instantiate source pipeline as a whole using hydra
+    data_source: DataSource = hydra.utils.instantiate(cfg.data_cfg.dataset_cfg.data_source_cfg)
+    preprocessing_cfg = getattr(cfg.data_cfg.dataset_cfg, "preprocessing_cfg", {})
+    preprocessing_pipeline = nn.Sequential(*[
+        hydra.utils.instantiate(config)
+        for config in preprocessing_cfg.values()
+    ])   
 
+    data = data_source.load()
+    dataframes = preprocessing_pipeline.forward(data)       
+    print(f"DEBUG: Preprocessing pipeline finished successfully")
+
+    ##### SAMPLE PROCESSING PIPELINE #############################################
+    # TODO: Generalize pipeline to non-graph representations
+    sample_transform_cfg = getattr(cfg.data_cfg, "sample_transform_cfg", {})
+    sample_processing_pipeline = nn.Sequential(*[
+        GraphRepresentationFactory(
+            preconf_repr=hydra.utils.instantiate(
+                cfg.data_cfg.representation_cfg
+            )),
+        *[
+            hydra.utils.instantiate(config)
+            for _, config in sample_transform_cfg.items()
+        ]
+    ])
+    print(f"DEBUG: Sample processing pipeline instantiated successfully")
+
+    ##### DATASET PROCESSING PIPELINE ############################################
+    dataset_transform_cfg = getattr(cfg.data_cfg, "dataset_transform_cfg", {})
+    dataset_processing_pipeline = nn.Sequential(*[
+            hydra.utils.instantiate(config)
+            for _, config in dataset_transform_cfg.items()
+        ]
+)
+    print(f"DEBUG: Dataset processing pipeline instantiated successfully")
+
+    ##### DATASETS ###############################################################
+    dataset_partial = hydra.utils.instantiate(
+        cfg.data_cfg.dataset_cfg,
+        sample_processing_pipeline=sample_processing_pipeline,
+    )
+    datasets = DataSplit(
+        *map(
+            lambda df: dataset_processing_pipeline.forward(dataset_partial(data=df)),
+            dataframes
+        )
+    )
+    print(f"DEBUG: Datasets instantiated successfully")
+
+    ##### DATALOADERS ###########################################################
+    # TODO: Preconfigure dataloader via hydra and instantiate using factory
+    dataloader_partial = partial(
+        DataLoader,
+        batch_size=cfg.data_cfg.batch_size,
+        num_workers=cfg.data_cfg.num_workers,
+        pin_memory=True,
+        sampler=None,
+        generator=torch.Generator().manual_seed(0), # TODO: Do not hardcode seed!
+    )
+
+    train_loader = dataloader_partial(
+        dataset=datasets.train,
+        shuffle=True,
+    )
+    val_loader = dataloader_partial(
+        dataset=datasets.val,
+        shuffle=False,
+    )
+    test_loader = dataloader_partial(
+        dataset=datasets.test,
+        shuffle=False,
+    )    
+    print(f"DEBUG: Dataloaders instantiated successfully")
+
+    ##### INITIALIZE W&B ##########################################################
+    # TODO: Move this to graph dataset, or even better, to hydra
     OmegaConf.update(
         cfg,
         "num_node_features",
@@ -83,13 +162,13 @@ def main(cfg: DictConfig):
                 f"Pretrained model incompatible with dataset: {str(e)}"
             )
     else:
+        # TODO: DON'T HARD CODE THIS
         #### for models needing precomputed statistics on the dataset, e.g. PNA
-        transform_cfg = getattr(cfg.data_cfg, "transform_cfg", None)
-        if transform_cfg and hasattr(
-            transform_cfg, "batched_degree_statistics"
-        ):  # TODO: generalize
+        if dataset_transform_cfg and hasattr(
+            dataset_transform_cfg, "dataset_degree_statistics"
+        ):
             model = hydra.utils.instantiate(
-                cfg.model_cfg, dataset_precomputed=train_loader.dataset.statistics
+                cfg.model_cfg, dataset_degree_statistics=train_loader.dataset.degree_statistics
             )
         else:
             model = hydra.utils.instantiate(cfg.model_cfg)
@@ -100,10 +179,10 @@ def main(cfg: DictConfig):
     )
     print(f"Total parameters: {total_params:,}")
 
-    under_parameters = getattr(cfg, "under_parameters", None)
-    if under_parameters is not None and total_params > under_parameters:
+    parameter_limit = getattr(cfg, "parameter_limit", None)
+    if parameter_limit is not None and total_params > parameter_limit:
         print(
-            f"Model has {total_params:,} parameters, which exceeds the threshold of {under_parameters:,}. Skipping this run."
+            f"Model has {total_params:,} parameters, which exceeds the parameter limit of {parameter_limit:,}. Skipping this run."
         )
         if cfg.wandb:
             wandb.log(

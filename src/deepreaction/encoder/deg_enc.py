@@ -1,31 +1,24 @@
 import torch
 import torch_geometric as pyg
 from torch import nn
+from torch_geometric.data import Batch
+
+from deepreaction.encoder.encoder_base import Encoder
 
 
-class DegreeEncoder(nn.Module):
-    """Node degree encoder for graph neural networks."""
+class DegreeEncoder(Encoder):
 
     def __init__(
         self,
-        in_channels,
-        out_channels,
+        in_channels: int,
+        out_channels: int,
     ):
-        """Initialize the degree encoder.
-
-        Parameters
-        ----------
-        in_channels : int
-            The maximum degree to encode (embedding table size).
-        out_channels : int
-            The dimension of the degree embedding.
-
-        """
         super().__init__()
 
         self.encoder = nn.Embedding(in_channels, out_channels)
 
-    def forward(self, batch):
+    def forward(self, batch: Batch) -> Batch:
+
         degree = pyg.utils.degree(
             batch.edge_index[1], num_nodes=batch.num_nodes, dtype=torch.float
         )

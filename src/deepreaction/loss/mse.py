@@ -1,21 +1,11 @@
-import torch.nn as nn
+import torch
 
 
-class MSELoss(nn.Module):
-   """Mean squared error loss wrapper."""
+class MSELoss(torch.nn.Module):
+    def __init__(self, reduction="sum"):
+        super(MSELoss, self).__init__()
+        self.mse = torch.nn.MSELoss(reduction=reduction)
 
-   def __init__(self, reduction="sum"):
-       """Initialize the MSE loss.
+    def forward(self, preds, y):
+        return self.mse(preds, y)
 
-       Parameters
-       ----------
-       reduction : str, optional
-           Specifies the reduction to apply to the output, by default "sum".
-           Options: 'none' | 'mean' | 'sum'.
-
-       """
-       super(MSELoss, self).__init__()
-       self.mse = nn.MSELoss(reduction=reduction)
-
-   def forward(self, preds, y):
-       return self.mse(preds, y)

@@ -1,14 +1,14 @@
-# started from code from https://github.com/rampasek/GraphGPS/tree/main, MIT License, Copyright (c) 2022 Ladislav Rampášek, Michael Galkin, Vijay Prakash Dwivedi, Dominique Beaini
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch_geometric.nn as pyg_nn
 from torch_scatter import scatter
 
-from deepreaction.act.act import Activation
+from deepreaction.act.act import Activation, ActivationType
+from deepreaction.layer.mpnn_layer.mpnn_layer_base import MPNNLayerBase
 
 
-class GatedGCNLayer(nn.Module):
+class GatedGCNLayer(MPNNLayerBase):
     """
     GatedGCN layer
     Residual Gated Graph ConvNets
@@ -25,25 +25,7 @@ class GatedGCNLayer(nn.Module):
         equivstable_pe=False,
         # **kwargs,
     ):
-        """Initialize the GatedGCN layer.
-
-        Parameters
-        ----------
-        in_channels : int
-            The input feature dimension.
-        out_channels : int
-            The output feature dimension.
-        dropout : float
-            Dropout probability.
-        residual : bool
-            Whether to use residual connections.
-        act : str, optional
-            Activation function type, by default "relu".
-        equivstable_pe : bool, optional
-            Whether to use equivariant and stable positional encoding, by default False.
-
-        """
-        super().__init__()
+        super().__init__(in_channels, out_channels)
         self.activation = Activation(activation_type=act)
         self.A = pyg_nn.Linear(in_channels, out_channels, bias=True)
         self.B = pyg_nn.Linear(in_channels, out_channels, bias=True)

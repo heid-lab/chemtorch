@@ -2,56 +2,29 @@ import hydra
 import torch.nn as nn
 import torch.nn.functional as F
 import torch_geometric.nn as pyg_nn
+from omegaconf import DictConfig
+from torch_geometric.data import Batch
 
-from deepreaction.act.act import Activation
+from deepreaction.act.act import Activation, ActivationType
+from deepreaction.layer.mpnn_layer.mpnn_layer_base import MPNNLayerBase
 
 
-class BlockPNALayer(nn.Module):
-    """Block PNA layer."""
-
+class BlockPNALayer(MPNNLayerBase):
     def __init__(
         self,
-        hidden_channels,
-        in_channels,
-        out_channels,
-        layer_norm,
-        batch_norm,
-        residual,
-        dropout,
-        activation,
-        ffn,
-        mpnn_cfg,
-        dataset_precomputed=None,
+        hidden_channels: int,
+        in_channels: int,
+        out_channels: int,
+        layer_norm: bool,
+        batch_norm: bool,
+        residual: bool,
+        dropout: float,
+        activation: str,
+        ffn: bool,
+        mpnn_cfg: DictConfig,
+        dataset_degree_statistics=None,
     ):
-        """Initialize the Block PNA layer.
-
-        Parameters
-        ----------
-        hidden_channels : int
-            The hidden feature dimension.
-        in_channels : int
-            The input feature dimension.
-        out_channels : int
-            The output feature dimension.
-        layer_norm : bool
-            Whether to use layer normalization.
-        batch_norm : bool
-            Whether to use batch normalization.
-        residual : bool
-            Whether to use residual connections.
-        dropout : float
-            Dropout probability.
-        activation : str
-            Activation function type.
-        ffn : bool
-            Whether to use a feed-forward network.
-        mpnn_cfg : DictConfig
-            Configuration for the message passing neural network.
-        dataset_precomputed : object, optional
-            Precomputed dataset statistics, by default None.
-
-        """
-        super().__init__()
+        MPNNLayerBase.__init__(self, in_channels, out_channels)
 
         self.layer_norm = layer_norm
         self.batch_norm = batch_norm
@@ -60,7 +33,7 @@ class BlockPNALayer(nn.Module):
         self.ffn = ffn
 
         self.mpnn = hydra.utils.instantiate(
-            mpnn_cfg, dataset_precomputed=dataset_precomputed
+            mpnn_cfg, dataset_degree_statistics=dataset_degree_statistics
         )
 
         if layer_norm and batch_norm:
@@ -76,6 +49,7 @@ class BlockPNALayer(nn.Module):
 
         self.activation = Activation(activation_type=activation)
 
+        # TODO: make component
         if self.ffn:
             if self.batch_norm:
                 self.norm1_ffn = pyg_nn.norm.BatchNorm(hidden_channels)
@@ -91,7 +65,7 @@ class BlockPNALayer(nn.Module):
             self.ff_dropout1 = nn.Dropout(dropout)
             self.ff_dropout2 = nn.Dropout(dropout)
 
-    def forward(self, batch):
+    def forward(self, batch: Batch) -> Batch:
         if self.residual:
             pre_layer = batch.x
 
