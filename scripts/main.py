@@ -79,9 +79,7 @@ def main(cfg: DictConfig):
     )
     datasets = DataSplit(
         *map(
-            lambda df: dataset_processing_pipeline.forward(
-                dataset_partial(data=df)
-            ),
+            lambda df: dataset_processing_pipeline.forward(dataset_partial(data=df)),
             dataframes
         )
     )
