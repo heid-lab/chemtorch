@@ -1,10 +1,10 @@
-import torch
-
-from torch import nn
-from torch_geometric.data import Data
 from typing import Dict, Optional
 
-from deepreaction.representation.reaction_graph import (
+import torch
+from torch import nn
+from torch_geometric.data import Data
+
+from deepreaction.representation.graph_representations.graph_reprs_utils import (
     AtomOriginType,
     EdgeOriginType,
 )

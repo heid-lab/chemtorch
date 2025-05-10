@@ -10,7 +10,9 @@ from torch_geometric.nn import (
     global_mean_pool,
 )
 
-from deepreaction.representation.reaction_graph import AtomOriginType
+from deepreaction.representation.graph_representations.graph_reprs_utils import (
+    AtomOriginType,
+)
 
 
 class Pool(nn.Module):

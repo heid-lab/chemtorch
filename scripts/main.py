@@ -1,16 +1,15 @@
-from functools import partial
 import os
+from functools import partial
 
 import hydra
 import torch
-import wandb
 from omegaconf import DictConfig, OmegaConf
 from torch import nn
 from torch_geometric.loader import DataLoader
 
-from deepreaction.data_pipeline.data_split import DataSplit
+import wandb
 from deepreaction.data_pipeline.data_source.data_source import DataSource
-from deepreaction.data_pipeline.representation_factory.graph_representation_factory import GraphRepresentationFactory
+from deepreaction.data_pipeline.data_split import DataSplit
 from deepreaction.utils import load_model, set_seed
 
 OmegaConf.register_new_resolver("eval", eval)
@@ -32,47 +31,63 @@ def main(cfg: DictConfig):
 
     ##### SOURCE PIPELINE ########################################################
     # TODO: Instantiate source pipeline as a whole using hydra
-    data_source: DataSource = hydra.utils.instantiate(cfg.data_cfg.dataset_cfg.data_source_cfg)
-    preprocessing_cfg = getattr(cfg.data_cfg.dataset_cfg, "preprocessing_cfg", {})
-    preprocessing_pipeline = nn.Sequential(*[
-        hydra.utils.instantiate(config)
-        for config in preprocessing_cfg.values()
-    ])   
-
-    data = data_source.load()
-    dataframes = preprocessing_pipeline.forward(data)       
-    print(f"INFO: Preprocessing pipeline finished successfully")
-
-    ##### SAMPLE PROCESSING PIPELINE #############################################
-    # TODO: Generalize pipeline to non-graph representations
-    sample_transform_cfg = getattr(cfg.data_cfg, "sample_transform_cfg", {})
-    sample_processing_pipeline = nn.Sequential(*[
-        GraphRepresentationFactory(preconf_repr=hydra.utils.instantiate(cfg.data_cfg.representation_cfg)),
+    data_source: DataSource = hydra.utils.instantiate(
+        cfg.data_cfg.dataset_cfg.data_source_cfg
+    )
+    preprocessing_cfg = getattr(
+        cfg.data_cfg.dataset_cfg, "preprocessing_cfg", {}
+    )
+    preprocessing_pipeline = nn.Sequential(
         *[
             hydra.utils.instantiate(config)
-            for _, config in sample_transform_cfg.items()
+            for config in preprocessing_cfg.values()
         ]
-    ])
+    )
+
+    data = data_source.load()
+    dataframes = preprocessing_pipeline.forward(data)
+    print(f"INFO: Preprocessing pipeline finished successfully")
+
+    ##### REPRESENTATION #######################################################
+    representation_partial = hydra.utils.instantiate(
+        cfg.data_cfg.representation_cfg
+    )
+    print(f"INFO: Partial representation instantiated successfully")
+
+    #### SAMPLE PROCESSING PIPELINE ############################################
+    sample_transform_cfg = getattr(cfg.data_cfg, "sample_transform_cfg", {})
+    sample_processing_pipeline = nn.Sequential(
+        *[
+            *[
+                hydra.utils.instantiate(config)
+                for _, config in sample_transform_cfg.items()
+            ],
+        ]
+    )
     print(f"INFO: Sample processing pipeline instantiated successfully")
 
     ##### DATASET PROCESSING PIPELINE ############################################
     dataset_transform_cfg = getattr(cfg.data_cfg, "dataset_transform_cfg", {})
-    dataset_processing_pipeline = nn.Sequential(*[
+    dataset_processing_pipeline = nn.Sequential(
+        *[
             hydra.utils.instantiate(config)
             for _, config in dataset_transform_cfg.items()
         ]
-)
+    )
     print(f"INFO: Dataset processing pipeline instantiated successfully")
 
     ##### DATASETS ###############################################################
     dataset_partial = hydra.utils.instantiate(
         cfg.data_cfg.dataset_cfg,
+        representation_partial=representation_partial,
         sample_processing_pipeline=sample_processing_pipeline,
     )
     datasets = DataSplit(
         *map(
-            lambda df: dataset_processing_pipeline.forward(dataset_partial(data=df)),
-            dataframes
+            lambda df: dataset_processing_pipeline.forward(
+                dataset_partial(data=df)
+            ),
+            dataframes,
         )
     )
     print(f"INFO: Datasets instantiated successfully")
@@ -85,7 +100,9 @@ def main(cfg: DictConfig):
         num_workers=cfg.data_cfg.num_workers,
         pin_memory=True,
         sampler=None,
-        generator=torch.Generator().manual_seed(0), # TODO: Do not hardcode seed!
+        generator=torch.Generator().manual_seed(
+            0
+        ),  # TODO: Do not hardcode seed!
     )
 
     train_loader = dataloader_partial(
@@ -99,7 +116,7 @@ def main(cfg: DictConfig):
     test_loader = dataloader_partial(
         dataset=datasets.test,
         shuffle=False,
-    )    
+    )
     print(f"INFO: Dataloaders instantiated successfully")
 
     ##### INITIALIZE W&B ##########################################################
@@ -130,7 +147,11 @@ def main(cfg: DictConfig):
             name=run_name,
             config=resolved_cfg,
         )
-        precompute_time = train_loader.dataset.precompute_time + val_loader.dataset.precompute_time + test_loader.dataset.precompute_time
+        precompute_time = (
+            train_loader.dataset.precompute_time
+            + val_loader.dataset.precompute_time
+            + test_loader.dataset.precompute_time
+        )
         wandb.log(
             {"Precompute_time": precompute_time},
             commit=False,
@@ -164,7 +185,8 @@ def main(cfg: DictConfig):
             dataset_transform_cfg, "dataset_degree_statistics"
         ):
             model = hydra.utils.instantiate(
-                cfg.model_cfg, dataset_degree_statistics=train_loader.dataset.degree_statistics
+                cfg.model_cfg,
+                dataset_degree_statistics=train_loader.dataset.degree_statistics,
             )
         else:
             model = hydra.utils.instantiate(cfg.model_cfg)
@@ -194,14 +216,15 @@ def main(cfg: DictConfig):
         wandb.log({"total_parameters": total_params}, commit=False)
 
     ############################# task instantiation #############################
-    hydra.utils.instantiate(cfg.task_cfg, 
-                            train_loader=train_loader, 
-                            val_loader=val_loader, 
-                            test_loader=test_loader, 
-                            model=model,
-                            device=device,
-                            )
-    #train()
+    hydra.utils.instantiate(
+        cfg.task_cfg,
+        train_loader=train_loader,
+        val_loader=val_loader,
+        test_loader=test_loader,
+        model=model,
+        device=device,
+    )
+    # train()
 
     if cfg.wandb:
         wandb.finish()

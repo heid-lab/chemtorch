@@ -5,10 +5,10 @@ import torch
 import torch_geometric as tg
 from omegaconf import DictConfig
 
-from deepreaction.representation.reaction_graph import (
+from deepreaction.representation.graph_representations.graph_reprs_utils import (
     AtomOriginType,
     EdgeOriginType,
-    ReactionGraph
+    ReactionGraph,
 )
 
 
@@ -19,7 +19,7 @@ class DMG(ReactionGraph):
         self,
         smiles: str,
         label: float,
-        featurizer_cfg: DictConfig,      # TODO: Remove dependency on hydra
+        featurizer_cfg: DictConfig,  # TODO: Remove dependency on hydra
         in_channel_multiplier: int = 1,  # TODO: Remove this (only there for hydra interpolation)
         connection_direction: str = "bidirectional",
         concat_origin_feature: bool = False,
@@ -33,8 +33,12 @@ class DMG(ReactionGraph):
         super().__init__(
             smiles=smiles,
             label=label,
-            atom_featurizer=hydra.utils.instantiate(featurizer_cfg.atom_featurizer_cfg),
-            bond_featurizer=hydra.utils.instantiate(featurizer_cfg.bond_featurizer_cfg),
+            atom_featurizer=hydra.utils.instantiate(
+                featurizer_cfg.atom_featurizer_cfg
+            ),
+            bond_featurizer=hydra.utils.instantiate(
+                featurizer_cfg.bond_featurizer_cfg
+            ),
         )
         self.connection_direction = connection_direction
         self.concat_origin_feature = concat_origin_feature
@@ -42,9 +46,13 @@ class DMG(ReactionGraph):
         self.component_features = {}
         self.extra_zero_fvec = extra_zero_fvec
 
-        self.qm_featurizer = hydra.utils.instantiate(featurizer_cfg.external_atom_featurizer_cfg)
+        self.qm_featurizer = hydra.utils.instantiate(
+            featurizer_cfg.external_atom_featurizer_cfg
+        )
         self.qm_f = []
-        self.single_featurizer = hydra.utils.instantiate(featurizer_cfg.single_featurizer_cfg)
+        self.single_featurizer = hydra.utils.instantiate(
+            featurizer_cfg.single_featurizer_cfg
+        )
         self.single_f = []
 
         self.n_atoms_reac = self.mol_reac.GetNumAtoms()
@@ -201,7 +209,9 @@ class DMG(ReactionGraph):
                 self.atom_featurizer(self.mol_reac.GetAtomWithIdx(i))
             )
             if self.qm_featurizer is not None:
-                self.qm_f.append(self.qm_featurizer(self.mol_reac.GetAtomWithIdx(i)))
+                self.qm_f.append(
+                    self.qm_featurizer(self.mol_reac.GetAtomWithIdx(i))
+                )
             if self.single_featurizer is not None:
                 self.single_f.append(
                     self.single_featurizer(self.mol_reac.GetAtomWithIdx(i))
@@ -241,7 +251,9 @@ class DMG(ReactionGraph):
                 )
             if self.single_featurizer is not None:
                 self.single_f.append(
-                    self.single_featurizer(self.mol_prod.GetAtomWithIdx(prod_idx))
+                    self.single_featurizer(
+                        self.mol_prod.GetAtomWithIdx(prod_idx)
+                    )
                 )
             self.atom_origin_type.append(AtomOriginType.PRODUCT)
             compound_idx = (
@@ -328,8 +340,12 @@ class DMG(ReactionGraph):
         if self.extra_zero_fvec:
             n, d = data.x.shape
             new_x = torch.zeros(n, 2 * d)
-            reactant_mask = data.atom_origin_type == AtomOriginType.REACTANT.value
-            product_mask = data.atom_origin_type == AtomOriginType.PRODUCT.value
+            reactant_mask = (
+                data.atom_origin_type == AtomOriginType.REACTANT.value
+            )
+            product_mask = (
+                data.atom_origin_type == AtomOriginType.PRODUCT.value
+            )
             new_x[reactant_mask, d:] = data.x[reactant_mask]
             new_x[product_mask, :d] = data.x[product_mask]
             data.x = new_x
