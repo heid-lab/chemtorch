@@ -28,8 +28,12 @@ class CGR(tg.data.Data):
         label: float,
         featurizer_cfg: DictConfig,
         in_channel_multiplier: int = 2,
+        **kwargs,
     ):
-        super(CGR, self).__init__()
+        super(CGR, self).__init__(**kwargs)
+
+        if smiles is None or label is None or featurizer_cfg is None:
+            return
 
         self._atom_featurizer = hydra.utils.instantiate(
             featurizer_cfg.atom_featurizer_cfg
