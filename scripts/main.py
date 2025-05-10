@@ -47,10 +47,7 @@ def main(cfg: DictConfig):
     # TODO: Generalize pipeline to non-graph representations
     sample_transform_cfg = getattr(cfg.data_cfg, "sample_transform_cfg", {})
     sample_processing_pipeline = nn.Sequential(*[
-        GraphRepresentationFactory(
-            preconf_repr=hydra.utils.instantiate(
-                cfg.data_cfg.representation_cfg
-            )),
+        GraphRepresentationFactory(preconf_repr=hydra.utils.instantiate(cfg.data_cfg.representation_cfg)),
         *[
             hydra.utils.instantiate(config)
             for _, config in sample_transform_cfg.items()
