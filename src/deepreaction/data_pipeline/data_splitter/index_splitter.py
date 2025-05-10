@@ -1,23 +1,24 @@
 import pickle
-from typing_extensions import override
 
 import pandas as pd
-from deepreaction.data_pipeline.data_splitter.data_splitter import DataSplitter
+from typing_extensions import override
+
 from deepreaction.data_pipeline.data_split import DataSplit
+from deepreaction.data_pipeline.data_splitter.data_splitter import DataSplitter
 
 
 class IndexSplitter(DataSplitter):
-    def __init__(self, index_path: str):
+    def __init__(self, split_index_path: str):
         """
         Initializes the IndexSplitter with the specified index path.
 
         Args:
-            index_path (str): The path to the pickle file containg the index.
+            split_index_path (str): The path to the pickle file containg the index.
         """
         super(IndexSplitter, self).__init__()
-        with open(index_path, "rb") as f:
-            split_indices = pickle.load(f)
-        
+        with open(split_index_path, "rb") as f:
+            split_indices = pickle.load(f)[0]
+
         if len(split_indices) != 3:
             raise ValueError(
                 "Pickle file must contain exactly 3 arrays for train/val/test splits"
@@ -28,7 +29,6 @@ class IndexSplitter(DataSplitter):
             "val": split_indices[1],
             "test": split_indices[2],
         }
-
 
     @override
     def forward(self, df: pd.DataFrame) -> DataSplit:
@@ -49,4 +49,3 @@ class IndexSplitter(DataSplitter):
             val=df.iloc[self.split_map["val"]],
             test=df.iloc[self.split_map["test"]],
         )
-
