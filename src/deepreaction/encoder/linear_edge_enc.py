@@ -10,7 +10,7 @@ class LinearEdgeEncoder(nn.Module):
         out_channels: int,
         bias: bool = True,
     ):
-        super(LinearEdgeEncoder).__init__()
+        super(LinearEdgeEncoder, self).__init__()
 
         self.encoder = nn.Linear(in_channels, out_channels, bias=bias)
 

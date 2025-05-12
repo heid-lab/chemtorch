@@ -5,7 +5,7 @@ import torch_geometric.nn as pyg_nn
 from omegaconf import DictConfig
 from torch_geometric.data import Batch
 
-from deepreaction.act.act import Activation, ActivationType
+from deepreaction.act.act import Activation
 
 
 class BlockPNALayer(nn.Module):
