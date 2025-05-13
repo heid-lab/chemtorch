@@ -10,7 +10,7 @@ from torch_geometric.nn import (
     global_mean_pool,
 )
 
-from deepreaction.representation.graph_representations.graph_reprs_utils import (
+from deepreaction.representation.graph.graph_reprs_utils import (
     AtomOriginType,
 )
 

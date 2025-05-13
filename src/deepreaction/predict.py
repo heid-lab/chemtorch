@@ -5,7 +5,7 @@ from sklearn.metrics import mean_absolute_error, root_mean_squared_error
 
 import wandb
 from deepreaction.standardizer import Standardizer
-from deepreaction.utils import load_model, load_standardizer
+from deepreaction.misc import load_model, load_standardizer
 
 
 @torch.no_grad()

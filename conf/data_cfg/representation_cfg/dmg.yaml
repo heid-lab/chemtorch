@@ -1,4 +1,4 @@
-_target_: deepreaction.representation.dmg.DMG
+_target_: deepreaction.representation.graph.dmg.DMG
 _recursive_: False
 in_channel_multiplier: 1
 connection_direction: null

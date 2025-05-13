@@ -1,7 +1,6 @@
 import torch
 import torch_geometric
 
-from torch import nn
 from torch_geometric.data import Data
 from torch_geometric.utils import (
     get_self_loop_attr,
@@ -11,9 +10,10 @@ from torch_geometric.utils import (
     to_torch_coo_tensor,
     to_torch_csr_tensor,
 )
+from deepreaction.transform.transform_base import TransformBase
 
 
-class RandomWalkPETransform(nn.Module):
+class RandomWalkPETransform(TransformBase[Data]):
     """
     This code includes implementations adapted from PyTorch Geometric
     (https://github.com/pyg-team/pytorch_geometric)
@@ -26,10 +26,12 @@ class RandomWalkPETransform(nn.Module):
         attr_name=None,
         type: str = "graph",
     ) -> None:
-        super(RandomWalkPETransform, self).__init__()
+        super().__init__()
         self.walk_length = walk_length
         self.attr_name = attr_name
 
+
+    # override
     def forward(self, data: Data) -> Data:
         assert data.edge_index is not None
         row, col = data.edge_index

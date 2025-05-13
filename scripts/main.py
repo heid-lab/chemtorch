@@ -10,7 +10,7 @@ from torch_geometric.loader import DataLoader
 import wandb
 from deepreaction.data_pipeline.data_source.data_source import DataSource
 from deepreaction.data_pipeline.data_split import DataSplit
-from deepreaction.utils import load_model, set_seed
+from deepreaction.misc import load_model, set_seed
 
 OmegaConf.register_new_resolver("eval", eval)
 
@@ -49,51 +49,58 @@ def main(cfg: DictConfig):
     print(f"INFO: Preprocessing pipeline finished successfully")
 
     ##### REPRESENTATION #######################################################
-    representation_partial = hydra.utils.instantiate(
-        cfg.data_cfg.representation_cfg
-    )
-    print(f"INFO: Partial representation instantiated successfully")
+    representation_cfg = getattr(cfg.data_cfg, "representation_cfg", {})
+    representation = hydra.utils.instantiate(representation_cfg)
+    print(f"INFO: Representation instantiated successfully")
+    print(f"INFO: Representation type: {type(representation)}")
 
-    #### SAMPLE PROCESSING PIPELINE ############################################
-    sample_transform_cfg = getattr(cfg.data_cfg, "sample_transform_cfg", {})
-    sample_processing_pipeline = nn.Sequential(
+    #### TRANSFORM #############################################################
+    transform_cfg = getattr(cfg.data_cfg, "transform_cfg", {})
+    transform = nn.Sequential(
         *[
-            *[
-                hydra.utils.instantiate(config)
-                for _, config in sample_transform_cfg.items()
-            ],
-        ]
+            hydra.utils.instantiate(config)
+            for _, config in transform_cfg.items()
+        ],
     )
-    print(f"INFO: Sample processing pipeline instantiated successfully")
+    print(f"INFO: Transform instantiated successfully")
 
-    ##### DATASET PROCESSING PIPELINE ############################################
+    ##### DATASET ###############################################################
+    dataset_partial = hydra.utils.instantiate(
+        cfg.data_cfg.dataset_cfg,
+        representation=representation,
+        transform=transform,
+    )
+    
+    datasets = DataSplit(
+        *map(
+            lambda df: dataset_partial(df),
+            dataframes
+        )
+    )
+    print(f"INFO: Datasets instantiated successfully")
+
+    ##### DATASET TRANSFORM ####################################################
     dataset_transform_cfg = getattr(cfg.data_cfg, "dataset_transform_cfg", {})
-    dataset_processing_pipeline = nn.Sequential(
+    dataset_transform = nn.Sequential(
         *[
             hydra.utils.instantiate(config)
             for _, config in dataset_transform_cfg.items()
         ]
     )
-    print(f"INFO: Dataset processing pipeline instantiated successfully")
+    print(f"INFO: Dataset transform instantiated successfully")
 
-    ##### DATASETS ###############################################################
-    dataset_partial = hydra.utils.instantiate(
-        cfg.data_cfg.dataset_cfg,
-        representation_partial=representation_partial,
-        sample_processing_pipeline=sample_processing_pipeline,
-    )
     datasets = DataSplit(
         *map(
-            lambda df: dataset_processing_pipeline.forward(
-                dataset_partial(data=df)
-            ),
-            dataframes,
+            lambda ds: dataset_transform.forward(ds),
+            datasets,
         )
     )
-    print(f"INFO: Datasets instantiated successfully")
+    print(f"INFO: Dataset transform applied successfully")
 
     ##### DATALOADERS ###########################################################
-    # TODO: Preconfigure dataloader via hydra and instantiate using factory
+    # TODO: DO NOT HARD CODE PyG DataLoader
+    # Instead, preconfigure and instantiate dataloader compatible with dataset 
+    # class via hydra
     dataloader_partial = partial(
         DataLoader,
         batch_size=cfg.data_cfg.batch_size,
