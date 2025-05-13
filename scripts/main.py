@@ -11,6 +11,7 @@ import wandb
 from deepreaction.data_pipeline.data_source.data_source import DataSource
 from deepreaction.data_pipeline.data_split import DataSplit
 from deepreaction.misc import load_model, set_seed
+from deepreaction.transform.compose import Compose
 
 OmegaConf.register_new_resolver("eval", eval)
 
@@ -56,12 +57,11 @@ def main(cfg: DictConfig):
 
     #### TRANSFORM #############################################################
     transform_cfg = getattr(cfg.data_cfg, "transform_cfg", {})
-    transform = nn.Sequential(
-        *[
+    transforms = [
             hydra.utils.instantiate(config)
             for _, config in transform_cfg.items()
-        ],
-    )
+        ]
+    transform = Compose(transforms)
     print(f"INFO: Transform instantiated successfully")
 
     ##### DATASET ###############################################################
@@ -126,8 +126,8 @@ def main(cfg: DictConfig):
     )
     print(f"INFO: Dataloaders instantiated successfully")
 
-    ##### INITIALIZE W&B ##########################################################
-    # TODO: Move this to graph dataset, or even better, to hydra
+    ##### UPDATE CONFIG ##########################################################
+    # TODO: REMOVE THIS
     OmegaConf.update(
         cfg,
         "num_node_features",
@@ -147,6 +147,7 @@ def main(cfg: DictConfig):
     # check out
     resolved_cfg = OmegaConf.to_container(cfg, resolve=True)
 
+    ##### INITIALIZE W&B ##########################################################
     if cfg.wandb:
         wandb.init(
             project=cfg.project_name,

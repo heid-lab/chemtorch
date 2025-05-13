@@ -8,7 +8,8 @@ class Compose(TransformBase[T]):
     def __init__(self, transforms: Sequence[TransformBase[T]]):
         self.transforms = transforms
 
-    def __call__(self, data: T) -> T:
+
+    def forward(self, data: T) -> T:
         for t in self.transforms:
             data = t(data)
         return data
