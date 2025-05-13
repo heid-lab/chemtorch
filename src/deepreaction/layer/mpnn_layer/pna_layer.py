@@ -8,19 +8,21 @@ class PNALayer(nn.Module):
         self,
         in_channels: int,
         out_channels: int,
-        dataset_degree_statistics: dict,
+        degree_statistics: dict,
         aggregators=["mean", "min", "max", "std"],
         scalers=["identity", "amplification", "attenuation"],
         use_edge_attr: bool = True,
     ):
         super(PNALayer, self).__init__()
 
-        if dataset_degree_statistics is None:
-            raise ValueError("Dataset degree statistics not found precomputed.")
-        if "degree_histogram" not in dataset_degree_statistics:
+        if degree_statistics is None:
+            raise ValueError(
+                "Dataset degree statistics not found precomputed."
+            )
+        if "degree_histogram" not in degree_statistics:
             raise ValueError("Degree histogram not found precomputed.")
 
-        self.deg = dataset_degree_statistics["degree_histogram"]
+        self.deg = degree_statistics["degree_histogram"]
         self.in_channels = in_channels
         self.out_channels = out_channels
         self.aggregators = list(aggregators)

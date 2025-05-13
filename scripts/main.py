@@ -58,9 +58,8 @@ def main(cfg: DictConfig):
     #### TRANSFORM #############################################################
     transform_cfg = getattr(cfg.data_cfg, "transform_cfg", {})
     transforms = [
-            hydra.utils.instantiate(config)
-            for _, config in transform_cfg.items()
-        ]
+        hydra.utils.instantiate(config) for _, config in transform_cfg.items()
+    ]
     transform = Compose(transforms)
     print(f"INFO: Transform instantiated successfully")
 
@@ -70,13 +69,8 @@ def main(cfg: DictConfig):
         representation=representation,
         transform=transform,
     )
-    
-    datasets = DataSplit(
-        *map(
-            lambda df: dataset_partial(df),
-            dataframes
-        )
-    )
+
+    datasets = DataSplit(*map(lambda df: dataset_partial(df), dataframes))
     print(f"INFO: Datasets instantiated successfully")
 
     ##### DATASET TRANSFORM ####################################################
@@ -99,7 +93,7 @@ def main(cfg: DictConfig):
 
     ##### DATALOADERS ###########################################################
     # TODO: DO NOT HARD CODE PyG DataLoader
-    # Instead, preconfigure and instantiate dataloader compatible with dataset 
+    # Instead, preconfigure and instantiate dataloader compatible with dataset
     # class via hydra
     dataloader_partial = partial(
         DataLoader,
@@ -126,25 +120,25 @@ def main(cfg: DictConfig):
     )
     print(f"INFO: Dataloaders instantiated successfully")
 
-    ##### UPDATE CONFIG ##########################################################
-    # TODO: REMOVE THIS
-    OmegaConf.update(
-        cfg,
-        "num_node_features",
-        train_loader.dataset.num_node_features,
-        merge=True,
-    )
-    OmegaConf.update(
-        cfg,
-        "num_edge_features",
-        train_loader.dataset.num_edge_features,
-        merge=True,
-    )
+    ##### UPDATE GLOBAL CONFIG FROM DATASET ATTRIBUTES ##############################
+    cfg_updates_spec = cfg.get("update_cfg_from_dataset", {})
+    if cfg_updates_spec:
+        print(
+            "INFO: Updating global config from train_loader.dataset attributes:"
+        )
+        for cfg_path, dataset_attr_name in cfg_updates_spec.items():
+            if hasattr(train_loader.dataset, dataset_attr_name):
+                value = getattr(train_loader.dataset, dataset_attr_name)
+                OmegaConf.update(cfg, cfg_path, value, merge=True)
+                print(
+                    f"  - Updated cfg.{cfg_path} with dataset.{dataset_attr_name} (value: {value})"
+                )
+            else:
+                raise ValueError(
+                    f"Attribute '{dataset_attr_name}' (for cfg path '{cfg_path}') not found on train_loader.dataset."
+                )
 
     run_name = getattr(cfg, "run_name", None)
-
-    # https://omegaconf.readthedocs.io/en/2.3_branch/usage.html#utility-functions
-    # check out
     resolved_cfg = OmegaConf.to_container(cfg, resolve=True)
 
     ##### INITIALIZE W&B ##########################################################
@@ -167,17 +161,40 @@ def main(cfg: DictConfig):
 
     print(OmegaConf.to_yaml(resolved_cfg))
 
-    ############################# model instantiation #############################
-    if cfg.use_loaded_model:
-        model = hydra.utils.instantiate(cfg.model_cfg)
+    ##### RUNTIME MODEL CONSTRUCTOR ARGUMENT COLLECTION ###########################
+    runtime_init_args = {}
+    attrs_to_collect_for_init = cfg.get(
+        "runtime_model_init_args_from_dataset", []
+    )
 
+    if attrs_to_collect_for_init:
+        print(
+            f"INFO: Checking train dataset for runtime model __init__ attributes: {attrs_to_collect_for_init}"
+        )
+        for attr_name in attrs_to_collect_for_init:
+            if hasattr(train_loader.dataset, attr_name):
+                runtime_init_args[attr_name] = getattr(
+                    train_loader.dataset, attr_name
+                )
+                print(
+                    f"  - Found and added '{attr_name}' to runtime __init__ args."
+                )
+            else:
+                raise ValueError(
+                    f"Required dataset attribute '{attr_name}' for model __init__ not found."
+                )
+
+    ##### MODEL ##################################################################
+    model = hydra.utils.instantiate(cfg.model_cfg, **runtime_init_args)
+    model = model.to(device)
+
+    if cfg.use_loaded_model:
         if not os.path.exists(cfg.pretrained_path):
             raise ValueError(
                 f"Pretrained model not found at {cfg.pretrained_path}"
             )
 
         model, _, _, _ = load_model(model, None, cfg.pretrained_path)
-        model = model.to(device)
 
         try:
             sample_batch = next(iter(train_loader))
@@ -186,19 +203,6 @@ def main(cfg: DictConfig):
             raise ValueError(
                 f"Pretrained model incompatible with dataset: {str(e)}"
             )
-    else:
-        # TODO: DON'T HARD CODE THIS
-        #### for models needing precomputed statistics on the dataset, e.g. PNA
-        if dataset_transform_cfg and hasattr(
-            dataset_transform_cfg, "dataset_degree_statistics"
-        ):
-            model = hydra.utils.instantiate(
-                cfg.model_cfg,
-                dataset_degree_statistics=train_loader.dataset.degree_statistics,
-            )
-        else:
-            model = hydra.utils.instantiate(cfg.model_cfg)
-        model = model.to(device)
 
     total_params = sum(
         p.numel() for p in model.parameters() if p.requires_grad

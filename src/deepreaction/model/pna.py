@@ -21,7 +21,7 @@ class PNA(nn.Module):
         layer_cfg: DictConfig,
         pool_cfg: DictConfig,
         head_cfg: DictConfig,
-        dataset_degree_statistics=None,
+        **kwargs,
     ):
         """Initialize Custom model."""
         super().__init__()
@@ -33,17 +33,13 @@ class PNA(nn.Module):
 
         self.layers = nn.ModuleList()
         if shared_weights:
-            layer = hydra.utils.instantiate(
-                layer_cfg, dataset_degree_statistics=dataset_degree_statistics
-            )
+            layer = hydra.utils.instantiate(layer_cfg, **kwargs)
             for _ in range(self.depth):
                 self.layers.append(layer)
         else:
             for _ in range(self.depth):
                 self.layers.append(
-                    hydra.utils.instantiate(
-                        layer_cfg, dataset_degree_statistics=dataset_degree_statistics
-                    )
+                    hydra.utils.instantiate(layer_cfg, **kwargs)
                 )
 
         self.pool = hydra.utils.instantiate(pool_cfg)
