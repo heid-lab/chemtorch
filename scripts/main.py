@@ -53,7 +53,6 @@ def main(cfg: DictConfig):
     representation_cfg = getattr(cfg.data_cfg, "representation_cfg", {})
     representation = hydra.utils.instantiate(representation_cfg)
     print(f"INFO: Representation instantiated successfully")
-    print(f"INFO: Representation type: {type(representation)}")
 
     #### TRANSFORM #############################################################
     transform_cfg = getattr(cfg.data_cfg, "transform_cfg", {})
@@ -101,16 +100,18 @@ def main(cfg: DictConfig):
     # TODO: DO NOT HARD CODE PyG DataLoader
     # Instead, preconfigure and instantiate dataloader compatible with dataset 
     # class via hydra
-    dataloader_partial = partial(
-        DataLoader,
-        batch_size=cfg.data_cfg.batch_size,
-        num_workers=cfg.data_cfg.num_workers,
-        pin_memory=True,
-        sampler=None,
-        generator=torch.Generator().manual_seed(
-            0
-        ),  # TODO: Do not hardcode seed!
-    )
+    # dataloader_partial = partial(
+    #     DataLoader,
+    #     batch_size=cfg.data_cfg.batch_size,
+    #     num_workers=cfg.data_cfg.num_workers,
+    #     pin_memory=True,
+    #     sampler=None,
+    #     generator=torch.Generator().manual_seed(
+    #         0
+    #     ),  # TODO: Do not hardcode seed!
+    # )
+    # torch.Generator()
+    dataloader_partial = hydra.utils.instantiate(cfg.data_cfg.dataloader_cfg)
 
     train_loader = dataloader_partial(
         dataset=datasets.train,

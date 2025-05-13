@@ -83,3 +83,12 @@ def load_standardizer(model_dir):
         params = torch.load(standardizer_path)
         return params["mean"], params["std"]
     return None, None
+
+
+def get_generator(seed: int) -> torch.Generator:
+    """
+    Get a random generator with a specific seed.
+    """
+    generator = torch.Generator()
+    generator.manual_seed(seed)
+    return generator

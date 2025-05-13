@@ -3,7 +3,5 @@ defaults:
   - representation_cfg: cgr
   - transform_cfg: null             # Specify list of transforms
   - dataset_transform_cfg: null     # Specify list of dataset_transforms
+  - dataloader_cfg: torch_geometric_dataloader
   - _self_
-
-batch_size: 50
-num_workers: 0
