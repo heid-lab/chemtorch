@@ -1,7 +1,0 @@
-_target_: deepreaction.representation.line_dmg.LineDMG
-_recursive_: False
-in_channel_multiplier: 1
-concat_origin_feature: false
-pre_transform_cfg: null
-use_directed: true
-feature_aggregation: null

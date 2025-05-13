@@ -1,24 +1,31 @@
+import time
 import pandas as pd
 
-from torch import nn
 from functools import lru_cache
-from typing import Optional
+from typing import Callable, List, Optional
 from torch_geometric.data import Data, Dataset
 
+from deepreaction.dataset.dataset_base import DatasetBase
+from deepreaction.representation.representation_base import RepresentationBase
+from deepreaction.transform.transform_base import TransformBase
 
-# TODO: Generalize the dataset class to non-graph datasets?
-class GraphDataset(Dataset):
+
+class GraphDataset(DatasetBase[Data], Dataset):
     """
     A flexible dataset class for molecular graphs.
+    It allows for subsampling the data, caching processed graphs, and precomputing all graphs.
 
-    This class supports both precomputing all graphs upfront and processing
-    samples on demand with optional caching.
+    Note:
+        This class is designed to work with PyTorch Geometric's Data class and Dataloader.
+        It requires a dataframe with a 'label' column and a representation creator that can
+        convert the dataframe rows into PyTorch Geometric Data objects.
     """
 
     def __init__(
         self,
-        data: pd.DataFrame,
-        sample_processing_pipeline: nn.Sequential,
+        dataframe: pd.DataFrame,
+        representation: RepresentationBase[Data] | Callable[..., Data],
+        transform: TransformBase[Data] | Callable[[Data], Data] = None,
         precompute_all: bool = True,
         cache_graphs: bool = True,
         max_cache_size: Optional[int] = None,
@@ -27,13 +34,12 @@ class GraphDataset(Dataset):
         **kwargs,   # ignore any additional keyword arguments
     ):
         """
-        Initialize the GraphDataset with the provided data and processing pipeline.
+        Initialize the GraphDataset.
 
         Args:
-            data (pd.DataFrame): The input data containing molecular graphs.
-            sample_processing_pipeline (nn.Sequential): A pipeline for processing 
-            individual samples to the final representations on which the model 
-            will be trained on.
+            dataframe (pd.DataFrame): The dataframe containing the input data.
+            representation (RepresentationBase[Data] | Callable[..., Data]): The representation creator.
+            transform (TransformBase[Data] | Callable[[Data], Data]): The transform to apply to the data.
             precompute_all (bool): Whether to precompute all graphs upfront.
             cache_graphs (bool): Whether to cache processed graphs (if not precomputing).
             max_cache_size (Optional[int]): Maximum size of the cache (if caching is enabled).
@@ -46,35 +52,55 @@ class GraphDataset(Dataset):
             ValueError: If the subsample is not an int or a float.
             ValueError: If the dataset is not precomputed and caching is not enabled.
         """
-        if "label" not in data.columns:
-            raise ValueError(f"Dataframe must contain a 'label' column, received columns: {data.columns}")
+        DatasetBase.__init__(self, dataframe, representation, transform)
+        Dataset.__init__(self)
+        if "label" not in dataframe.columns:
+            raise ValueError(
+                f"Dataframe must contain a 'label' column, received columns: {dataframe.columns}"
+            )
 
-        self.data = self._subsample_data(data, subsample)
-        self.sample_processing_pipeline = sample_processing_pipeline
+        self.dataframe = self._subsample_data(dataframe, subsample)
+        self.representation = representation
+        self.transforms = transform
+
         self.precompute_all = precompute_all
+        self.precomputed_graphs: Optional[List[Data]] = None
+        self.precompute_time: float = 0.0
 
-        if precompute_all:
+        if self.precompute_all:
+            print(f"INFO: Precomputing {len(self.dataframe)} graphs...")
+            start_time = time.time()
+            # Consider using joblib for parallel precomputation if _process_sample_by_idx is slow
+            # from joblib import Parallel, delayed
+            # self.precomputed_graphs = Parallel(n_jobs=-1)(delayed(self._process_sample_by_idx)(idx) for idx in range(len(self.data_df)))
             self.precomputed_graphs = [
-                self._process_sample(idx) for idx in range(len(self.data))
+                self._process_sample_by_idx(idx)
+                for idx in range(len(self.dataframe))
             ]
+            self.precompute_time = time.time() - start_time
+            print(
+                f"INFO: Precomputation finished in {self.precompute_time:.2f}s."
+            )
         else:
             if cache_graphs:
-                self.process_sample = lru_cache(max_cache_size)(self._process_sample)
+                self._get_processed_sample = lru_cache(
+                    max_size=max_cache_size
+                )(self._process_sample_by_idx)
             else:
-                self.process_sample = self._process_sample
+                self._get_processed_sample = self._process_sample_by_idx
 
-    
-    def __len__(self):
+
+    def __len__(self) -> int:
         """
         Return the number of samples in the dataset.
 
         Returns:
             int: Number of samples.
         """
-        return len(self.data)
+        return len(self.dataframe)
 
 
-    def __getitem__(self, idx):
+    def __getitem__(self, idx) -> Data:
         """
         Retrieve a processed graph by its index.
 
@@ -85,11 +111,16 @@ class GraphDataset(Dataset):
             Data: A PyTorch Geometric `Data` object representing the molecular graph.
         """
         if self.precompute_all:
+            if self.precomputed_graphs is None:
+                raise RuntimeError(
+                    f"Graphs were set to be precomputed but are not available."
+                )
             return self.precomputed_graphs[idx]
         else:
-            return self.process_sample(idx)
+            return self._get_processed_sample(idx)
 
 
+    # TODO: Remove this method
     def get_labels(self):
         """
         Retrieve the labels for the dataset.
@@ -97,32 +128,12 @@ class GraphDataset(Dataset):
         Returns:
             pd.Series: The labels for the dataset.
         """
-        return self.data["label"].values
+        return self.dataframe["label"].values
 
 
-    def _process_sample(self, idx) -> Data:
-        """
-        Process a single sample using this dataset's :attr:`sample_processing_pipeline`.
-
-        Args:
-            idx (int): Index of the sample to process.
-
-        Returns:
-            Data: A PyTorch Geometric `Data` object representing the molecular graph.
-
-        Raises:
-            ValueError: If there is an error during graph creation.
-        """
-        sample = self.data.iloc[idx]
-        try:
-            return self.sample_processing_pipeline.forward(sample)
-        except Exception as e:
-            raise ValueError(
-                f"Error processing sample {idx}, Error: {str(e)}"
-            )
-
-
-    def _subsample_data(self, data: pd.DataFrame, subsample: Optional[int | float]) -> pd.DataFrame:
+    def _subsample_data(
+        self, data: pd.DataFrame, subsample: Optional[int | float]
+    ) -> pd.DataFrame:
         """
         Subsample the data.
 

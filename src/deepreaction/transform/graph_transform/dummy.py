@@ -1,16 +1,16 @@
-import torch
-
-from torch import nn
-from torch_geometric.data import Data
 from typing import Dict, Optional
 
-from deepreaction.representation.reaction_graph import (
+import torch
+from torch_geometric.data import Data
+
+from deepreaction.representation.graph.graph_reprs_utils import (
     AtomOriginType,
     EdgeOriginType,
 )
+from deepreaction.transform.transform_base import TransformBase
 
 
-class DummyNodeTransform(nn.Module):
+class DummyNodeTransform(TransformBase[Data]):
     def __init__(
         self,
         mode: str,
@@ -19,13 +19,15 @@ class DummyNodeTransform(nn.Module):
         feature_init: str = "zeros",
         type: str = "graph",
     ):
-        super(DummyNodeTransform, self).__init__()
+        super().__init__()
         self.mode = mode
         self.connection_type = connection_type
         self.dummy_dummy_connection = dummy_dummy_connection
         self.feature_init = feature_init
         self.dummy_origin_type = 2
 
+    
+    # override
     def forward(self, x: Data) -> Data:
         if (
             AtomOriginType.REACTANT_PRODUCT.value in x.atom_origin_type

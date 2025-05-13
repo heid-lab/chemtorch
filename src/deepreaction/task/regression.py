@@ -12,7 +12,7 @@ from torch import nn
 import wandb
 from deepreaction.standardizer import Standardizer
 
-from deepreaction.utils import (
+from deepreaction.misc import (
     check_early_stopping,
     load_model,
     load_standardizer,

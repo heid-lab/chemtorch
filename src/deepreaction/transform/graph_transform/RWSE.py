@@ -1,12 +1,13 @@
 import torch
-from torch import nn
-from torch import nn
+
 from torch_geometric.data import Data
 from torch_geometric.utils import scatter, to_dense_adj
 from torch_geometric.utils.num_nodes import maybe_num_nodes
 
+from deepreaction.transform.transform_base import TransformBase
 
-class RWSE(nn.Module):
+
+class RWSE(TransformBase[Data]):
     """
     # TODO: check out how to cite code
     """
@@ -16,9 +17,11 @@ class RWSE(nn.Module):
         times: int = 20,
         type: str = "graph",
     ) -> None:
-        super(RWSE, self).__init__()
+        super().__init__()
         self.times = times
+    
 
+    # override
     def forward(self, x: Data) -> Data:
         N = x.x.shape[0]  # Number of nodes, including disconnected nodes.
 

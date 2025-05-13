@@ -1,10 +1,7 @@
-_target_: deepreaction.data.construct_loader
-_recursive_: False
-
 defaults:
   - dataset_cfg: rdb7
   - representation_cfg: cgr
-  - sample_transform_cfg: null      # Specify list of sample_transforms
+  - transform_cfg: null             # Specify list of transforms
   - dataset_transform_cfg: null     # Specify list of dataset_transforms
   - _self_
 
