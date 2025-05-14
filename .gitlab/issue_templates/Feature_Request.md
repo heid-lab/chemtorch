@@ -1,5 +1,3 @@
-## ✨ <Short descriptive title>
-
 ### Summary
 Briefly describe the proposed feature in 1–2 sentences.
 ### Motivation
@@ -24,7 +22,3 @@ List concrete benefits or use cases enabled by this feature.
 
 ### Additional Notes
 (Optional) Naming suggestions, open questions, design constraints, links to relevant issues/MRs.
-
----
-
-/label ~"feature"

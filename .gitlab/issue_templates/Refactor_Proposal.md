@@ -1,5 +1,3 @@
-## 🔨 <Short descriptive title>
-
 ### Summary
 Briefly describe what code or component should be refactored and why.
 
@@ -22,5 +20,3 @@ Outline the refactor steps or general idea:
 
 ### Additional Notes
 (Optional) Suggestions, related issues, or open questions.
-
-/label ~"refactor"

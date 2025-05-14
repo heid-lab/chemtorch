@@ -1,5 +1,3 @@
-## 🐛 <Short descriptive title>
-
 ### Summary
 Briefly describe the bug in 1–2 sentences.
 
@@ -24,5 +22,3 @@ What *actually* happens?
 
 ### Additional Notes
 (Optional) Anything else relevant to this bug, such as temporary workarounds or suspected root causes.
-
-/label ~"bug"
