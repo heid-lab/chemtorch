@@ -1,11 +1,8 @@
-# main config 
-
+# @package _global_
 defaults:
-  - data_cfg: rdb7_cgr
-  - model_cfg: dmpnn
-  - task_cfg: regression
-  - override hydra/job_logging: disabled
-  - override hydra/hydra_logging: disabled
+  - override /data_cfg: rdb7_drfp
+  - override /model_cfg: mlp_regressor
+  - override /task_cfg: regression_fp
   - _self_ # placement of this matters
 
 # WANDB
@@ -21,8 +18,9 @@ seed: 0 # use 0
 runtime_model_init_args_from_dataset: null
   # - degree_statistics
 update_cfg_from_dataset:
-  num_node_features: num_node_features
-  num_edge_features: num_edge_features
+  fp_length: fp_length
+#   num_node_features: num_node_features
+#   num_edge_features: num_edge_features
 
 # DEVICE (redunadant)
 use_cuda: true
@@ -43,3 +41,4 @@ hydra:
   output_subdir: null
   run:
     dir: .
+
