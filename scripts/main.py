@@ -1,11 +1,9 @@
 import os
-from functools import partial
 
 import hydra
 import torch
 from omegaconf import DictConfig, OmegaConf
 from torch import nn
-from torch_geometric.loader import DataLoader
 
 import wandb
 from deepreaction.data_pipeline.data_source.data_source import DataSource
@@ -91,20 +89,6 @@ def main(cfg: DictConfig):
     print(f"INFO: Dataset transform applied successfully")
 
     ##### DATALOADERS ###########################################################
-    # TODO: DO NOT HARD CODE PyG DataLoader
-    # Instead, preconfigure and instantiate dataloader compatible with dataset
-    # class via hydra
-    # dataloader_partial = partial(
-    #     DataLoader,
-    #     batch_size=cfg.data_cfg.batch_size,
-    #     num_workers=cfg.data_cfg.num_workers,
-    #     pin_memory=True,
-    #     sampler=None,
-    #     generator=torch.Generator().manual_seed(
-    #         0
-    #     ),  # TODO: Do not hardcode seed!
-    # )
-    # torch.Generator()
     dataloader_partial = hydra.utils.instantiate(cfg.data_cfg.dataloader_cfg)
 
     train_loader = dataloader_partial(
@@ -125,7 +109,7 @@ def main(cfg: DictConfig):
     cfg_updates_spec = cfg.get("update_cfg_from_dataset", {})
     if cfg_updates_spec:
         print(
-            "INFO: Updating global config from train_loader.dataset attributes:"
+            "INFO: Updating global config from train dataset attributes:"
         )
         for cfg_path, dataset_attr_name in cfg_updates_spec.items():
             if hasattr(train_loader.dataset, dataset_attr_name):
@@ -150,10 +134,11 @@ def main(cfg: DictConfig):
             name=run_name,
             config=resolved_cfg,
         )
+        # TODO: Generalize for datasets w/o support for precomputation
         precompute_time = (
-            train_loader.dataset.precompute_time
-            + val_loader.dataset.precompute_time
-            + test_loader.dataset.precompute_time
+            datasets.train.precompute_time
+            + datasets.val.precompute_time
+            + datasets.test.precompute_time
         )
         wandb.log(
             {"Precompute_time": precompute_time},
@@ -173,7 +158,7 @@ def main(cfg: DictConfig):
             f"INFO: Checking train dataset for runtime model __init__ attributes: {attrs_to_collect_for_init}"
         )
         for attr_name in attrs_to_collect_for_init:
-            if hasattr(train_loader.dataset, attr_name):
+            if hasattr(datasets.train, attr_name):
                 runtime_init_args[attr_name] = getattr(
                     train_loader.dataset, attr_name
                 )
