@@ -43,10 +43,10 @@ class DRFPRepresentation(RepresentationBase[torch.Tensor]):
             radius: The maximum radius for atom environments.
             rings: Whether to include ring systems as features.
             root_central_atom: Whether to root fragment SMILES at the central atom.
-                               This affects the generated fragment SMILES strings (shingles)
-                               before hashing and diffing.
+                This affects the generated fragment SMILES strings (shingles)
+                before hashing and diffing.
             include_hydrogens: Whether to include explicit hydrogens in fragments
-                               before generating shingles.
+                before generating shingles.
         """
         self.n_folded_length = n_folded_length
         self.min_radius = min_radius
