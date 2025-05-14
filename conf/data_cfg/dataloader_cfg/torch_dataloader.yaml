@@ -1,0 +1,11 @@
+_target_: torch.utils.data.DataLoader
+_partial_: true
+
+batch_size: 50
+num_workers: 0
+pin_memory: true
+
+generator:
+  _target_: deepreaction.misc.get_generator
+  # TODO: DO NOT HARD CODE THE SEED!!!
+  seed: 0

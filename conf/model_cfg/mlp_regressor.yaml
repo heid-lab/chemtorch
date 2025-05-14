@@ -1,0 +1,4 @@
+_target_: deepreaction.model.mlp_regressor.MLPRegressor
+_recursive_: False
+
+input_dim: ${fp_length}
