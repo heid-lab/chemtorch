@@ -16,7 +16,7 @@ from deepreaction.representation.representation_base import RepresentationBase
 RDLogger.DisableLog("rdApp.*")
 
 
-class DRFPRepresentation(RepresentationBase[torch.Tensor]):
+class DRFP(RepresentationBase[torch.Tensor]):
     """
     Stateless class for constructing DRFP (Differential Reaction Fingerprints).
 
@@ -77,29 +77,22 @@ class DRFPRepresentation(RepresentationBase[torch.Tensor]):
             RuntimeError: For other errors encountered during fingerprint generation,
                           wrapping the original exception.
         """
-        try:
-            hashed_diff_np, _shingles_diff_bytes = DrfpEncoder.internal_encode(
-                smiles,
-                radius=self.radius,
-                min_radius=self.min_radius,
-                rings=self.rings,
-                get_atom_indices=False,  # not needed for the fingerprint itself
-                root_central_atom=self.root_central_atom,
-                include_hydrogens=self.include_hydrogens,
-            )
+        hashed_diff_np, _shingles_diff_bytes = DRFPUtil.internal_encode(
+            smiles,
+            radius=self.radius,
+            min_radius=self.min_radius,
+            rings=self.rings,
+            get_atom_indices=False,  # not needed for the fingerprint itself
+            root_central_atom=self.root_central_atom,
+            include_hydrogens=self.include_hydrogens,
+        )
 
-            fingerprint_np, _on_bits = DrfpEncoder.fold(
-                hashed_diff_np,
-                length=self.n_folded_length,
-            )
-            # Convert the NumPy array to a PyTorch Tensor
-            return torch.from_numpy(fingerprint_np).to(torch.float32)
-        except NoReactionError as e:
-            raise e
-        except Exception as e:
-            raise RuntimeError(
-                f"Failed to generate DRFP for SMILES '{smiles}': {e}"
-            ) from e
+        fingerprint_np, _on_bits = DRFPUtil.fold(
+            hashed_diff_np,
+            length=self.n_folded_length,
+        )
+        # Convert the NumPy array to a PyTorch Tensor
+        return torch.from_numpy(fingerprint_np).to(torch.float32)
 
 
 class NoReactionError(Exception):
@@ -114,8 +107,10 @@ class NoReactionError(Exception):
         super().__init__(self.message)
 
 
-class DrfpEncoder:
-    """A class for encoding SMILES as drfp fingerprints."""
+class DRFPUtil:
+    """
+    A utility class for encoding SMILES as drfp fingerprints.
+    """
 
     @staticmethod
     def shingling_from_mol(
@@ -279,7 +274,7 @@ class DrfpEncoder:
                 continue
 
             if get_atom_indices:
-                sh, ai = DrfpEncoder.shingling_from_mol(
+                sh, ai = DRFPUtil.shingling_from_mol(
                     mol,
                     radius=radius,
                     rings=rings,
@@ -290,7 +285,7 @@ class DrfpEncoder:
                 )
                 atom_indices["reactants"].append(ai)
             else:
-                sh = DrfpEncoder.shingling_from_mol(
+                sh = DRFPUtil.shingling_from_mol(
                     mol,
                     radius=radius,
                     rings=rings,
@@ -310,7 +305,7 @@ class DrfpEncoder:
                 continue
 
             if get_atom_indices:
-                sh, ai = DrfpEncoder.shingling_from_mol(
+                sh, ai = DRFPUtil.shingling_from_mol(
                     mol,
                     radius=radius,
                     rings=rings,
@@ -321,7 +316,7 @@ class DrfpEncoder:
                 )
                 atom_indices["products"].append(ai)
             else:
-                sh = DrfpEncoder.shingling_from_mol(
+                sh = DRFPUtil.shingling_from_mol(
                     mol,
                     radius=radius,
                     rings=rings,
@@ -336,9 +331,9 @@ class DrfpEncoder:
         s = right_shingles.symmetric_difference(left_shingles)
 
         if get_atom_indices:
-            return DrfpEncoder.hash(list(s)), list(s), atom_indices
+            return DRFPUtil.hash(list(s)), list(s), atom_indices
         else:
-            return DrfpEncoder.hash(list(s)), list(s)
+            return DRFPUtil.hash(list(s)), list(s)
 
     @staticmethod
     def hash(shingling: List[str]) -> np.ndarray:
@@ -434,7 +429,7 @@ class DrfpEncoder:
         ):
             if atom_index_mapping:
                 hashed_diff, smiles_diff, atom_index_map = (
-                    DrfpEncoder.internal_encode(
+                    DRFPUtil.internal_encode(
                         x,
                         min_radius=min_radius,
                         radius=radius,
@@ -445,7 +440,7 @@ class DrfpEncoder:
                     )
                 )
             else:
-                hashed_diff, smiles_diff = DrfpEncoder.internal_encode(
+                hashed_diff, smiles_diff = DRFPUtil.internal_encode(
                     x,
                     min_radius=min_radius,
                     radius=radius,
@@ -454,7 +449,7 @@ class DrfpEncoder:
                     include_hydrogens=include_hydrogens,
                 )
 
-            difference_folded, on_bits = DrfpEncoder.fold(
+            difference_folded, on_bits = DRFPUtil.fold(
                 hashed_diff,
                 length=n_folded_length,
             )

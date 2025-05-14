@@ -1,4 +1,4 @@
-_target_: deepreaction.representation.fingerprint.drfp.DRFPRepresentation
+_target_: deepreaction.representation.fingerprint.drfp.DRFP
 _recursive_: False
 
 n_folded_length: 2048
