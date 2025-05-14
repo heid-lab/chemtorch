@@ -10,20 +10,19 @@ defaults:
   - _self_
 
 # === DATA PIPELINE COMPONENTS ========================
-# For single_csv_source
+# single_csv_source
 data_folder: "deepreaction_datasets/data/rdb7/barriers"
 data_file: "rdb7_full.csv"
-# For ratio_splitter
+# ratio_splitter
 train_ratio: 0.9
 val_ratio: 0.05
 test_ratio: 0.05
-# For column_filter_rename
+# column_filter_rename
 column_mapping:
   smiles: "smiles"
   label: "dE0"
 
 # === DATASET =========================================
-# Additional dataset arguements (see GraphDataset for details)
 # preprocess_all: true
 # cache_graphs: true 
 # max_cache_size: null

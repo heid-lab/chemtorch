@@ -10,20 +10,19 @@ defaults:
   - _self_
 
 # === DATA PIPELINE COMPONENTS ========================
-# For single_csv_source
+# single_csv_source
 data_folder: "data/barriers_rdb7new"
 data_file: "data.csv"
-# For index_splitter
+# index_splitter
 split_index_path: "data/barriers_rdb7new/seed${data_cfg.dataset_cfg.seed}.pkl"
 seed: 0
-# For column_filter_rename
+# column_filter_rename
 column_mapping:
   smiles: "rxn_smiles"
   label: "ea"
 
 # === DATASET =========================================
-# Additional dataset arguements (see GraphDataset for details)
+subsample: 0.01         
 # preprocess_all: true
 # cache_graphs: true 
 # max_cache_size: null
-subsample: 0.01         
