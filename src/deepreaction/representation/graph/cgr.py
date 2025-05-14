@@ -45,16 +45,10 @@ class CGR(RepresentationBase[Data]):
         self.bond_featurizer = hydra.utils.instantiate(featurizer_cfg.bond_featurizer_cfg)
 
 
-    def forward(self, smiles: str, label: Optional[float] = None) -> Data:
+    # override
+    def construct(self, smiles: str, label: Optional[float] = None) -> Data:
         """
         Construct a CGR graph from the sample.
-        """
-        return self._construct_cgr_graph(smiles, label)
-
-
-    def _construct_cgr_graph(self, smiles: str, label: Optional[float] = None) -> Data:
-        """
-        Helper method to construct a CGR graph from SMILES and label.
         """
         smiles_reac, _, smiles_prod = smiles.split(">")
 

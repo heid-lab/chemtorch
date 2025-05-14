@@ -65,16 +65,8 @@ class DMG(RepresentationBase[Data]):
         self.extra_zero_fvec = extra_zero_fvec
 
 
-    def forward(self, sample: Any) -> Data:
-        """
-        Construct a DMG graph from the sample.
-        """
-        smiles = sample["smiles"]
-        label = sample.get("label", None)
-        return self._construct_dmg_graph(smiles, label)
-
-
-    def _construct_dmg_graph(self, smiles: str, label: Optional[float] = None) -> Data:
+    # override
+    def construct(self, smiles: str, label: Optional[float] = None) -> Data:
         # Parse reactant and product SMILES
         smiles_reac, _, smiles_prod = smiles.split(">")
 

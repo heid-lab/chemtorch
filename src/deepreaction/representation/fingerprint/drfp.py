@@ -55,7 +55,8 @@ class DRFPRepresentation(RepresentationBase[torch.Tensor]):
         self.root_central_atom = root_central_atom
         self.include_hydrogens = include_hydrogens
 
-    def forward(self, smiles: str) -> torch.Tensor:
+    # override
+    def construct(self, smiles: str) -> torch.Tensor:
         """
         Generates a DRFP fingerprint for a single reaction SMILES string.
 
