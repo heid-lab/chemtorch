@@ -21,7 +21,7 @@ class BlockPNALayer(nn.Module):
         activation: str,
         ffn: bool,
         mpnn_cfg: DictConfig,
-        dataset_degree_statistics=None,
+        **kwargs,
     ):
         super(BlockPNALayer, self).__init__()
 
@@ -31,9 +31,7 @@ class BlockPNALayer(nn.Module):
         self.dropout = dropout
         self.ffn = ffn
 
-        self.mpnn = hydra.utils.instantiate(
-            mpnn_cfg, dataset_degree_statistics=dataset_degree_statistics
-        )
+        self.mpnn = hydra.utils.instantiate(mpnn_cfg, **kwargs)
 
         if layer_norm and batch_norm:
             raise ValueError(
