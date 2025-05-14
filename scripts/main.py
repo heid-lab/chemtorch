@@ -72,39 +72,7 @@ def main(cfg: DictConfig):
     datasets = DataSplit(*map(lambda df: dataset_partial(df), dataframes))
     print(f"INFO: Datasets instantiated successfully")
 
-    ##### DATASET TRANSFORM ####################################################
-    dataset_transform_cfg = getattr(cfg.data_cfg, "dataset_transform_cfg", {})
-    dataset_transform = nn.Sequential(
-        *[
-            hydra.utils.instantiate(config)
-            for _, config in dataset_transform_cfg.items()
-        ]
-    )
-    print(f"INFO: Dataset transform instantiated successfully")
-
-    datasets = DataSplit(
-        *map(
-            lambda ds: dataset_transform.forward(ds),
-            datasets,
-        )
-    )
-    print(f"INFO: Dataset transform applied successfully")
-
     ##### DATALOADERS ###########################################################
-    # TODO: DO NOT HARD CODE PyG DataLoader
-    # Instead, preconfigure and instantiate dataloader compatible with dataset
-    # class via hydra
-    # dataloader_partial = partial(
-    #     DataLoader,
-    #     batch_size=cfg.data_cfg.batch_size,
-    #     num_workers=cfg.data_cfg.num_workers,
-    #     pin_memory=True,
-    #     sampler=None,
-    #     generator=torch.Generator().manual_seed(
-    #         0
-    #     ),  # TODO: Do not hardcode seed!
-    # )
-    # torch.Generator()
     dataloader_partial = hydra.utils.instantiate(cfg.data_cfg.dataloader_cfg)
 
     train_loader = dataloader_partial(

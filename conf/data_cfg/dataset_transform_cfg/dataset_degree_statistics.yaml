@@ -1,2 +1,0 @@
-dataset_degree_statistics:
-  _target_: deepreaction.dataset_transform.dataset_degree_statistics.DatasetDegreeStatistics

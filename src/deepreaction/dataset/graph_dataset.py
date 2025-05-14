@@ -1,9 +1,11 @@
 import time
-import pandas as pd
-
 from functools import lru_cache
-from typing import Callable, List, Optional
+from typing import Callable, Dict, List, Optional, Union
+
+import pandas as pd
+import torch
 from torch_geometric.data import Data, Dataset
+from torch_geometric.utils import degree
 
 from deepreaction.dataset.dataset_base import DatasetBase
 from deepreaction.representation.representation_base import RepresentationBase
@@ -30,8 +32,8 @@ class GraphDataset(DatasetBase[Data], Dataset):
         cache_graphs: bool = True,
         max_cache_size: Optional[int] = None,
         subsample: Optional[int | float] = None,
-        *args,      # ingore any additional positional arguments
-        **kwargs,   # ignore any additional keyword arguments
+        *args,  # ingore any additional positional arguments
+        **kwargs,  # ignore any additional keyword arguments
     ):
         """
         Initialize the GraphDataset.
@@ -70,9 +72,6 @@ class GraphDataset(DatasetBase[Data], Dataset):
         if self.precompute_all:
             print(f"INFO: Precomputing {len(self.dataframe)} graphs...")
             start_time = time.time()
-            # Consider using joblib for parallel precomputation if _process_sample_by_idx is slow
-            # from joblib import Parallel, delayed
-            # self.precomputed_graphs = Parallel(n_jobs=-1)(delayed(self._process_sample_by_idx)(idx) for idx in range(len(self.data_df)))
             self.precomputed_graphs = [
                 self._process_sample_by_idx(idx)
                 for idx in range(len(self.dataframe))
@@ -89,7 +88,6 @@ class GraphDataset(DatasetBase[Data], Dataset):
             else:
                 self._get_processed_sample = self._process_sample_by_idx
 
-
     def __len__(self) -> int:
         """
         Return the number of samples in the dataset.
@@ -98,7 +96,6 @@ class GraphDataset(DatasetBase[Data], Dataset):
             int: Number of samples.
         """
         return len(self.dataframe)
-
 
     def __getitem__(self, idx) -> Data:
         """
@@ -118,11 +115,10 @@ class GraphDataset(DatasetBase[Data], Dataset):
             return self.precomputed_graphs[idx]
         else:
             return self._get_processed_sample(idx)
-    
+
     def _process_sample_by_idx(self, idx: int) -> Data:
         sample = self.dataframe.iloc[idx]
         return self._process_sample(sample)
-
 
     # TODO: Remove this method
     def get_labels(self):
@@ -133,7 +129,6 @@ class GraphDataset(DatasetBase[Data], Dataset):
             pd.Series: The labels for the dataset.
         """
         return self.dataframe["label"].values
-
 
     def _subsample_data(
         self, data: pd.DataFrame, subsample: Optional[int | float]
@@ -155,3 +150,65 @@ class GraphDataset(DatasetBase[Data], Dataset):
             return data.sample(frac=subsample)
         else:
             raise ValueError("Subsample must be an int or a float.")
+
+    @property
+    def degree_statistics(self) -> Dict[str, Union[int, torch.Tensor]]:
+        """
+        Computes degree statistics for the dataset, specifically the overall maximum
+        degree and a histogram of node degrees.
+
+        This property requires `precompute_all` to be True during dataset initialization,
+        as it iterates over all precomputed graphs.
+
+        Returns:
+            Dict[str, Union[int, torch.Tensor]]: A dictionary containing:
+                - "max_degree" (int): The maximum degree found across all nodes in all graphs.
+                - "degree_histogram" (torch.Tensor): A 1D tensor where the i-th element
+                  is the total count of nodes with degree `i` across all graphs.
+        Raises:
+            ValueError: If `precompute_all` was False during dataset initialization.
+            AttributeError: If the first graph object in the dataset is not a PyTorch Geometric
+                            `Data` object or does not possess `edge_index` and `num_nodes` attributes,
+                            assuming the dataset is not empty.
+        """
+        if not self.precompute_all:
+            raise ValueError(
+                "Dataset must be precomputed to compute degree statistics."
+            )
+
+        max_degree = -1
+        degree_histogram = None
+
+        if not isinstance(self[0], Data):
+            raise AttributeError(
+                f"'{self[0].__class__.__name__}' object cannot be used "
+                f"to determine degree_statistics"
+            )
+
+        for data in self:
+            d = degree(
+                data.edge_index[1], num_nodes=data.num_nodes, dtype=torch.long
+            )
+            max_degree = max(max_degree, int(d.max()))
+
+            if degree_histogram is None:
+                degree_histogram = torch.zeros(
+                    max_degree + 1, dtype=torch.long
+                )
+            elif max_degree >= degree_histogram.numel():
+                # Resize the degree_histogram tensor to accommodate the new max_degree
+                new_size = max_degree + 1
+                resized_histogram = torch.zeros(new_size, dtype=torch.long)
+                resized_histogram[: degree_histogram.numel()] = (
+                    degree_histogram
+                )
+                degree_histogram = resized_histogram
+
+            degree_histogram += torch.bincount(
+                d, minlength=degree_histogram.numel()
+            )
+
+        return {
+            "max_degree": max_degree,
+            "degree_histogram": degree_histogram,
+        }
