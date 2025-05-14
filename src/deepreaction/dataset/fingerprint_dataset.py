@@ -129,15 +129,16 @@ class FingerprintDataset(DatasetBase[torch.Tensor], Dataset):
     def fp_length(self) -> int:
         """Returns the length of fingerprints in the dataset."""
         data = self[0]
-        fingerprint = data[0] if isinstance(data, tuple) else data
+        fingerprint = data[0]   # data is a tuple (fingerprint, label)
 
-        if isinstance(fingerprint, torch.Tensor):
-            return fingerprint.shape[0]
+        if not isinstance(fingerprint, torch.Tensor):
+            raise AttributeError(
+                f"'{fingerprint.__class__.__name__}' object cannot be used "
+                f"to determine fingerprint length"
+            )
+        
+        return fingerprint.shape[0]
 
-        raise AttributeError(
-            f"'{fingerprint.__class__.__name__}' object cannot be used "
-            f"to determine fingerprint length"
-        )
 
     # TODO: Remove this method
     def get_labels(self):
