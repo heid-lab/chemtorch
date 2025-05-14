@@ -122,8 +122,8 @@ class FingerprintDataset(DatasetBase[torch.Tensor], Dataset):
 
     def _process_sample_by_idx(self, idx: int) -> torch.Tensor:
         sample = self.dataframe.iloc[idx]
-        X = self.representation(sample["smiles"])
-        return X, torch.tensor(sample["label"], dtype=torch.float32)
+        fingerprint = self._process_sample(sample[["smiles"]])
+        return fingerprint, torch.tensor(sample["label"], dtype=torch.float32)
 
     @property
     def fp_length(self) -> int:
