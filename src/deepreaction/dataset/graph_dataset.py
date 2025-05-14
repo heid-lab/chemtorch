@@ -118,6 +118,10 @@ class GraphDataset(DatasetBase[Data], Dataset):
             return self.precomputed_graphs[idx]
         else:
             return self._get_processed_sample(idx)
+    
+    def _process_sample_by_idx(self, idx: int) -> Data:
+        sample = self.dataframe.iloc[idx]
+        return self._process_sample(sample)
 
 
     # TODO: Remove this method

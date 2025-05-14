@@ -79,7 +79,7 @@ class DatasetBase(Generic[T]):
         return super().__init_subclass__()
 
 
-    def _process_sample_by_idx(self, idx: int) -> T:
+    def _process_sample(self, sample: pd.Series | dict) -> T:
         """
         Process a sample by its index.
 
@@ -88,15 +88,23 @@ class DatasetBase(Generic[T]):
         to the representation object.
 
         Args:
-            idx (int): Index of the sample to process.
+            sample (pd.Series | dict): The sample data to process. It can be a pandas Series or a dictionary.
         
         Returns:
             T: The processed representation object.
+
+        Raises:
+            ValueError: If the sample is not a pandas Series or a dictionary.
         """
-        sample = self.dataframe.iloc[idx]
-        data_obj = self.representation(**sample.to_dict())
+        if isinstance(sample, pd.Series):
+            sample = sample.to_dict()
+        elif not isinstance(sample, dict):
+            raise ValueError(f"Sample must be a pandas Series or a dictionary. Received: {type(sample)}")
+        data_obj = self.representation(**sample)
         if self.transform:
             data_obj = self.transform(data_obj)
         return data_obj
+    
+    # TODO: Add abstract method _get_sample_by_idx to guide implementation?
 
 
