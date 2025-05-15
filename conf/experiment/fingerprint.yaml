@@ -1,0 +1,44 @@
+# @package _global_
+defaults:
+  - override /data_cfg: rdb7_drfp
+  - override /model_cfg: mlp_regressor
+  - override /task_cfg: regression_fp
+  - _self_ # placement of this matters
+
+# WANDB
+wandb: false
+project_name: deepreaction
+group_name: null
+run_name: null
+
+# INITIALIZATION
+seed: 0 # use 0
+
+# RUNTIME ARGS
+runtime_model_init_args_from_dataset: null
+  # - degree_statistics
+update_cfg_from_dataset:
+  fp_length: fp_length
+#   num_node_features: num_node_features
+#   num_edge_features: num_edge_features
+
+# DEVICE (redunadant)
+use_cuda: true
+device: gpu
+
+# FOR SWEEPING
+parameter_limit: null
+
+# lambda_param: 0.1
+# extra_loss: null
+# margin: 1
+
+# MODEL LOADING
+use_loaded_model: false
+pretrained_path: null
+
+hydra:
+  output_subdir: null
+  run:
+    dir: .
+

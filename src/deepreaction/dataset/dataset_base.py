@@ -14,23 +14,10 @@ class DatasetBase(Generic[T]):
     Base class for DeepReaction datasets.
 
     This class defines the standard interface for datasets in the DeepReaction framework.
-    All datasets should subclass :class:`DatasetBase[T]` and use the provided
-    :meth:`_process_sample_by_idx` method to process samples.
+    All datasets should subclass :class:`DatasetBase[T]` and implement the `_get_sample_by_idx` method.    
 
-    Args:
-        dataframe (pd.DataFrame): The input data as a pandas DataFrame. Each row represents a single sample.
-        representation (RepresentationBase[T] | Callable[..., T]): A stateless class or callable that 
-            constructs the data object consumed by the model. Must take in the fields of a single sample 
-            from the :attr:`dataframe` (row) as keyword arguments and return an object of type T.
-        transform (Optional[TransformBase[T] | Callable[[T], T]]): An optional transformation function or a composition thereof 
-            (:class:`Compose`) that takes in an object of type T and returns a (possibly modified) object of 
-            the same type.
-    
     Raises:
         RuntimeError: If the subclass does not call `super().__init__()` in its `__init__()` method.
-        ValueError: If the `dataframe` is not a pandas DataFrame.
-        ValueError: If the `representation` is not a RepresentationBase or a callable.
-        ValueError: If the `transform` is not a TransformBase, a callable, or None.
 
     Example:
         >>> import pandas as pd
@@ -56,6 +43,23 @@ class DatasetBase(Generic[T]):
         representation: RepresentationBase[T] | Callable[..., T],
         transform: Optional[TransformBase[T] | Callable[[T], T]] = None
     ):
+        """
+        Initialize the DatasetBase.
+
+        Args:
+            dataframe (pd.DataFrame): The input data as a pandas DataFrame. Each row represents a single sample.
+            representation (RepresentationBase[T] | Callable[..., T]): A stateless class or callable that 
+                constructs the data object consumed by the model. Must take in the fields of a single sample 
+                from the :attr:`dataframe` (row) as keyword arguments and return an object of type T.
+            transform (Optional[TransformBase[T] | Callable[[T], T]]): An optional transformation function or a composition thereof 
+                (:class:`Compose`) that takes in an object of type T and returns a (possibly modified) object of 
+                the same type.
+
+        Raises:
+            ValueError: If the `dataframe` is not a pandas DataFrame.
+            ValueError: If the `representation` is not a RepresentationBase or a callable.
+            ValueError: If the `transform` is not a TransformBase, a callable, or None.
+        """
         if not isinstance(dataframe, pd.DataFrame):
             raise ValueError("dataframe must be a pandas DataFrame.")
         if not isinstance(representation, (RepresentationBase, Callable)):
@@ -77,7 +81,7 @@ class DatasetBase(Generic[T]):
     def __init_subclass__(cls):
         enforce_base_init(DatasetBase)(cls)
         return super().__init_subclass__()
-
+    
 
     def _process_sample(self, sample: pd.Series | dict) -> T:
         """

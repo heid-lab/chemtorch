@@ -9,11 +9,14 @@ defaults:
   - _self_ 
 
 # === DATA PIPELINE COMPONENTS ========================
+# split_csv_source
 data_folder: "deepreaction_datasets/data/rgd1/barriers"
+# column_filter_rename
+column_mapping:
+  smiles: "smiles"
+  label: "ea"
 
 # === DATASET =========================================
-input_column: "smiles"
-target_column: "ea"
 # Additional dataset arguements (see MolGraphDataset for details)
 # subsample: null         
 # cache_graphs: true 

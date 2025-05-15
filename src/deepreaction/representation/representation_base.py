@@ -31,13 +31,23 @@ class RepresentationBase(ABC, Generic[T]):
             ...
         TypeError: Can't instantiate abstract class BadRepresentation with abstract method forward
     """
-    @abstractmethod
-    def forward(self, *args, **kwargs) -> T:
-        """
-        Create a representation object from input arguments.
-        The return type T must match what the dataset and transforms expect.
-        """
-        pass
+    
 
     def __call__(self, *args, **kwargs) -> T:
-        return self.forward(*args, **kwargs)
+        return self.construct(*args, **kwargs)
+
+
+    @abstractmethod
+    def construct(self, *args, **kwargs) -> T:
+        """
+        Construct the representation object from input arguments.
+        This method should be implemented by subclasses.
+
+        Args:
+            *args: Positional arguments for constructing the representation.
+            **kwargs: Keyword arguments for constructing the representation.
+
+        Returns:
+            T: The constructed representation object.
+        """
+        pass

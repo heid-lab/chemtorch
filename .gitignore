@@ -19,7 +19,7 @@ results
 saved_models/
 
 # yaml files in experiment
-conf/experiment/*.yaml
+conf/experiment/old/*.yaml
 
 # data.tar.gz
 data.tar.gz
