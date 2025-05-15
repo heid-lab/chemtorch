@@ -1,0 +1,12 @@
+_target_: deepreaction.head.graph_prediction_head.GraphPredictionHead
+batch_to_tensor: 
+  _target_: deepreaction.head.graph_prediction_head.BatchToX
+predictor:
+  _target_: deepreaction.model.mlp.MLP
+  in_channels: ${model_cfg.hidden_channels}
+  out_channels: 1
+  hidden_size: ${model_cfg.hidden_channels}
+  num_layers: 2
+  dropout: 0.02
+  activation: 
+    _target_: torch.nn.ReLU

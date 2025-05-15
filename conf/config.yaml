@@ -18,9 +18,11 @@ run_name: null
 seed: 0 # use 0
 
 # RUNTIME ARGS
-runtime_model_init_args_from_dataset: null
-  # - degree_statistics
+runtime_model_init_args_from_dataset:
+  # degree_statistics: degree_statistics
+  # in_channels: fp_length
 update_cfg_from_dataset:
+  # fp_length: fp_length
   num_node_features: num_node_features
   num_edge_features: num_edge_features
 

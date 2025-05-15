@@ -8,7 +8,7 @@ defaults:
   - layer_cfg: block_gatedgcn
   - /model/layer_cfg/att_layer_cfg/react_prod_att_layer@att_layer_cfg
   - pool_cfg: global_pool
-  - head_cfg: ffn_head
+  - head_cfg: graph_prediction_head
   - _self_
 
 separate: false

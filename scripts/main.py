@@ -150,24 +150,21 @@ def main(cfg: DictConfig):
     ##### RUNTIME MODEL CONSTRUCTOR ARGUMENT COLLECTION ###########################
     runtime_init_args = {}
     attrs_to_collect_for_init = cfg.get(
-        "runtime_model_init_args_from_dataset", []
+        "runtime_model_init_args_from_dataset", {}
     )
 
     if attrs_to_collect_for_init:
         print(
             f"INFO: Checking train dataset for runtime model __init__ attributes: {attrs_to_collect_for_init}"
         )
-        for attr_name in attrs_to_collect_for_init:
-            if hasattr(datasets.train, attr_name):
-                runtime_init_args[attr_name] = getattr(
-                    train_loader.dataset, attr_name
-                )
-                print(
-                    f"  - Found and added '{attr_name}' to runtime __init__ args."
+        for model_arg, dataset_prop in attrs_to_collect_for_init.items():
+            if hasattr(datasets.train, dataset_prop):
+                runtime_init_args[model_arg] = getattr(
+                    datasets.train, dataset_prop
                 )
             else:
                 raise ValueError(
-                    f"Required dataset attribute '{attr_name}' for model __init__ not found."
+                    f"Required dataset property '{dataset_prop}' for model argument '{model_arg}' not found on training dataset."
                 )
 
     ##### MODEL ##################################################################

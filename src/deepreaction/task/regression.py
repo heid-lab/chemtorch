@@ -28,7 +28,8 @@ def predict(model, loader, stdzer, device):
     with torch.no_grad():
         for data in loader:
             data = data.to(device)
-            out = model(data)
+            out = model(data)           # shape: (batch_size, 1)
+            out = out.squeeze(-1)       # shape: (batch_size)
             pred = stdzer(out, rev=True)
             preds.extend(pred.cpu().detach().tolist())
     return preds
@@ -52,6 +53,7 @@ def train_epoch(
         optimizer.zero_grad()
 
         out = model(data)
+        out = out.squeeze(-1)
         result = loss_fn(out, stdzer(data.y))
         result.backward()
 

@@ -23,7 +23,7 @@ column_mapping:
   label: "dE0"
 
 # === DATASET =========================================
+subsample: 0.1         
 # preprocess_all: true
 # cache_graphs: true 
 # max_cache_size: null
-# subsample: null         
