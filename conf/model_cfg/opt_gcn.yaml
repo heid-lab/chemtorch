@@ -26,7 +26,6 @@ layer_cfg:
   batch_norm: false
   residual: true
   dropout: 0.05
-  activation: relu
   ffn: true
 
 encoder_cfg:
@@ -41,4 +40,3 @@ pool_cfg:
 head_cfg:
   num_layers: 2
   dropout: 0.02
-  activation: relu

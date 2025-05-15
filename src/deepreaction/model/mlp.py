@@ -2,7 +2,6 @@ from typing import List, Optional, Callable, Union
 from torch import nn
 import torch
 
-from deepreaction.act.act import Activation
 
 class MLP(nn.Module):
     """
@@ -16,7 +15,7 @@ class MLP(nn.Module):
         hidden_size: Optional[int] = None,
         num_layers: Optional[int] = None,
         dropout: float = 0.,
-        activation: Union[nn.Module, Callable, str] = nn.ReLU,
+        activation: nn.Module = nn.ReLU,
     ):
         """
         Initialize the MLP.
@@ -27,15 +26,14 @@ class MLP(nn.Module):
             hidden_size (int, optional): Hidden layer size (used if hidden_dims is not provided).
             num_layers (int, optional): Number of hidden layers (used if hidden_dims is not provided).
             dropout (float, optional): Dropout rate. Defaults to 0.
-            activation (nn.Module or Callable or str, optional): Activation function. Defaults to nn.ReLU.
+            activation (nn.Module, optional): Activation function. Defaults to nn.ReLU.
         """
         super().__init__()
 
         # Validate and resolve hidden_dims
         hidden_dims = self._resolve_hidden_dims(hidden_dims, hidden_size, num_layers)
 
-        # Handle activation
-        self.activation = self._resolve_activation(activation)
+        self.activation = activation
         self.dropout = dropout
 
         # Build layers
@@ -57,21 +55,6 @@ class MLP(nn.Module):
             return [hidden_size] * num_layers
         else:
             raise ValueError("You must specify either hidden_dims OR both hidden_size and num_layers.")
-
-    @staticmethod
-    def _resolve_activation(activation):
-        if isinstance(activation, nn.Module):
-            return activation
-        elif callable(activation):
-            # Wrap callable in a nn.Module
-            class LambdaActivation(nn.Module):
-                def forward(self, x):
-                    return activation(x)
-            return LambdaActivation()
-        elif isinstance(activation, str):
-            return Activation(activation)
-        else:
-            raise ValueError("activation must be an nn.Module, a callable, or a string.")
 
     def _construct_linear(self, input_dim: int, output_dim: int) -> nn.Module:
         layers = []

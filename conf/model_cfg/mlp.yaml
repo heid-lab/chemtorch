@@ -1,10 +1,10 @@
 _target_: deepreaction.model.mlp.MLP
-# _recursive_: False
 
 # TODO: Pass in code!
 # in_channels: ${fp_length}
 out_channels: 1
 hidden_dims: [256, 64]
 dropout: 0
-activation: 
+activation:
   _target_: torch.nn.ReLU
+  inplace: true

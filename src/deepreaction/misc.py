@@ -2,7 +2,8 @@ import os
 import pickle
 import random
 from pathlib import Path
-from typing import Literal, Optional, Tuple, Union
+from typing import Callable, Literal, Optional, Tuple, Union
+from torch import nn
 
 import numpy as np
 import pandas as pd

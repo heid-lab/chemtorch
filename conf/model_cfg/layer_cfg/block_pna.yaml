@@ -12,7 +12,9 @@ layer_norm: false
 batch_norm: false
 residual: true
 dropout: 0.0
-activation: relu
+activation:
+  _target_: torch.nn.ReLU
+  inplace: true
 ffn: false
 
 mpnn_cfg:

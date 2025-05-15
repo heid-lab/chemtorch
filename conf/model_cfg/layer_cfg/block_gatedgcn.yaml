@@ -10,7 +10,9 @@ out_channels: ${model_cfg.hidden_channels}
 
 residual: true
 dropout: 0.0
-activation: relu
+activation:
+  _target_: torch.nn.ReLU
+  inplace: true
 ffn: false
 
 mpnn_cfg:

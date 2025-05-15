@@ -91,7 +91,9 @@ model_cfg:
     hidden_channels: ${model_cfg.hidden_channels}
     num_layers: 2
     dropout: 0.02
-    activation: relu
+    activation:
+      _target_: torch.nn.ReLU
+      inplace: true
 
 task_cfg:
   _target_: deepreaction.task.regression.train
