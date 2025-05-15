@@ -95,18 +95,6 @@ class DRFP(RepresentationBase[torch.Tensor]):
         return torch.from_numpy(fingerprint_np).to(torch.float32)
 
 
-class NoReactionError(Exception):
-    """Raised when the encoder attempts to encode a non-reaction SMILES.
-
-    Attributes:
-        message: a message containing the non-reaction SMILES
-    """
-
-    def __init__(self, message: str):
-        self.message = message
-        super().__init__(self.message)
-
-
 class DRFPUtil:
     """
     A utility class for encoding SMILES as drfp fingerprints.
@@ -253,7 +241,7 @@ class DRFPUtil:
 
         sides = in_smiles.split(">")
         if len(sides) < 3:
-            raise NoReactionError(
+            raise ValueError(
                 f"The following is not a valid reaction SMILES: '{in_smiles}'"
             )
 
