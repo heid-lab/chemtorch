@@ -70,24 +70,6 @@ def main(cfg: DictConfig):
     datasets = DataSplit(*map(lambda df: dataset_partial(df), dataframes))
     print(f"INFO: Datasets instantiated successfully")
 
-    ##### DATASET TRANSFORM ####################################################
-    dataset_transform_cfg = getattr(cfg.data_cfg, "dataset_transform_cfg", {})
-    dataset_transform = nn.Sequential(
-        *[
-            hydra.utils.instantiate(config)
-            for _, config in dataset_transform_cfg.items()
-        ]
-    )
-    print(f"INFO: Dataset transform instantiated successfully")
-
-    datasets = DataSplit(
-        *map(
-            lambda ds: dataset_transform.forward(ds),
-            datasets,
-        )
-    )
-    print(f"INFO: Dataset transform applied successfully")
-
     ##### DATALOADERS ###########################################################
     dataloader_partial = hydra.utils.instantiate(cfg.data_cfg.dataloader_cfg)
 

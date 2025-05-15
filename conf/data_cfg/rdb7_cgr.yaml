@@ -1,7 +1,6 @@
 defaults:
-  - dataset_cfg: rdb7
+  - dataset_cfg: rdb7_with_splits
   - representation_cfg: cgr
   - transform_cfg: null             # Specify list of transforms
-  - dataset_transform_cfg: null     # Specify list of dataset_transforms
   - dataloader_cfg: torch_geometric_dataloader
   - _self_
