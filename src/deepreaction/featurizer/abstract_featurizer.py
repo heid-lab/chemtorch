@@ -5,7 +5,8 @@ from typing import List
 
 class AbstractFeaturizer:
     """
-    Abstract class for featurizers.
+    Abstract class that defines the interface for featurizers insides the 
+    DeepReaction framework.
 
     This class defines the interface for featurizers that convert input data into a list of numeric features.
     It is designed to be subclassed by specific featurizer implementations.
