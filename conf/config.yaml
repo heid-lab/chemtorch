@@ -1,7 +1,7 @@
 # main config 
 
 defaults:
-  - data_cfg: rdb7_cgr
+  - data_cfg: rdb7_dmg
   - model_cfg: dmpnn
   - task_cfg: regression
   - override hydra/job_logging: disabled

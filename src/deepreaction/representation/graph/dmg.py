@@ -29,36 +29,23 @@ class DMG(RepresentationBase[Data]):
 
     def __init__(
         self,
-        # TODO: Get rid of hydra dep and pass instantiated featurizer explicitely
-        featurizer_cfg: DictConfig,
-        # atom_featurizer,
-        # bond_featurizer,
-        # qm_featurizer=None,
-        # single_featurizer=None,
+        atom_featurizer,
+        bond_featurizer,
+        qm_featurizer=None,
+        single_featurizer=None,
         connection_direction: str = "bidirectional",
         concat_origin_feature: bool = False,
         pre_transform_list: Optional[List] = None,
         extra_zero_fvec: bool = False,
+        *args,
+        **kwargs,
     ):
-        # self.atom_featurizer = atom_featurizer
-        # self.bond_featurizer = bond_featurizer
-        # self.qm_featurizer = qm_featurizer
-        # self.single_featurizer = single_featurizer
+        self.atom_featurizer = atom_featurizer
+        self.bond_featurizer = bond_featurizer
+        self.qm_featurizer = qm_featurizer
+        self.single_featurizer = single_featurizer
 
-        self.atom_featurizer = hydra.utils.instantiate(
-            featurizer_cfg.atom_featurizer_cfg
-        )
-        self.bond_featurizer = hydra.utils.instantiate(
-            featurizer_cfg.bond_featurizer_cfg
-        )
-        self.qm_featurizer = hydra.utils.instantiate(
-            featurizer_cfg.external_atom_featurizer_cfg
-        )
         self.qm_f = []
-        self.single_featurizer = hydra.utils.instantiate(
-            featurizer_cfg.single_featurizer_cfg
-        )
-
         self.connection_direction = connection_direction
         self.concat_origin_feature = concat_origin_feature
         self.pre_transform_list = pre_transform_list or []
