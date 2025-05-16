@@ -5,8 +5,6 @@ import torch_geometric.nn as pyg_nn
 from omegaconf import DictConfig
 from torch_geometric.data import Batch
 
-from deepreaction.act.act import Activation
-
 
 class BlockGCNLayer(nn.Module):
     def __init__(
@@ -18,7 +16,7 @@ class BlockGCNLayer(nn.Module):
         batch_norm: bool,
         residual: bool,
         dropout: float,
-        activation: str,
+        activation: DictConfig,
         ffn: bool,
         mpnn_cfg: DictConfig,
     ):
@@ -43,7 +41,7 @@ class BlockGCNLayer(nn.Module):
         if self.batch_norm:
             self.norm = pyg_nn.norm.BatchNorm(hidden_channels)
 
-        self.activation = Activation(activation_type=activation)
+        self.activation = hydra.utils.instantiate(activation)
 
         # TODO: make component
         if self.ffn:
@@ -53,7 +51,7 @@ class BlockGCNLayer(nn.Module):
                 self.norm1_local = pyg_nn.norm.LayerNorm(hidden_channels)
             self.ff_linear1 = nn.Linear(hidden_channels, hidden_channels * 2)
             self.ff_linear2 = nn.Linear(hidden_channels * 2, hidden_channels)
-            self.act_fn_ff = Activation(activation_type=activation)
+            self.act_fn_ff = hydra.utils.instantiate(activation)
             if self.batch_norm:
                 self.norm2_ffn = pyg_nn.norm.BatchNorm(hidden_channels)
             if self.layer_norm:

@@ -5,9 +5,6 @@ import torch_geometric.nn as pyg_nn
 from torch_geometric.nn import MessagePassing
 from torch_scatter import scatter
 
-from deepreaction.act.act import Activation
-
-
 class GatedGCNLayer(MessagePassing):
     """
     GatedGCN layer
@@ -21,12 +18,12 @@ class GatedGCNLayer(MessagePassing):
         out_channels,
         dropout,
         residual,
-        act="relu",
+        act: nn.Module,
         equivstable_pe=False,
         # **kwargs,
     ):
         super(GatedGCNLayer, self).__init__()
-        self.activation = Activation(activation_type=act)
+        self.activation = hydra.utils.instantiate(act)
         self.A = pyg_nn.Linear(in_channels, out_channels, bias=True)
         self.B = pyg_nn.Linear(in_channels, out_channels, bias=True)
         self.C = pyg_nn.Linear(in_channels, out_channels, bias=True)

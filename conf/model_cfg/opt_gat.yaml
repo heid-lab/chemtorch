@@ -12,7 +12,7 @@ defaults:
     - linear_edge_enc
   - layer_cfg: block_gat
   - pool_cfg: global_pool
-  - head_cfg: ffn_head
+  - head_cfg: graph_prediction_head
   - _self_
 
 num_node_features: ${num_node_features}
@@ -32,7 +32,6 @@ layer_cfg:
   batch_norm: false
   residual: true
   dropout: 0.05
-  activation: relu
   ffn: true
   mpnn_cfg:
     dropout: ${model.layer_cfg.dropout}
@@ -45,4 +44,3 @@ pool_cfg:
 head_cfg:
   num_layers: 2
   dropout: 0.02
-  activation: relu

@@ -29,7 +29,8 @@ def predict(model, loader, stdzer, device):
         for data_x, data_y in loader:
             data_x = data_x.to(device)
             data_y = data_y.to(device)
-            out = model(data_x)
+            out = model(data_x)         # shape: (batch_size, 1)
+            out = out.squeeze(-1)       # shape: (batch_size)
             pred = stdzer(out, rev=True)
             preds.extend(pred.cpu().detach().tolist())
     return preds
@@ -55,6 +56,7 @@ def train_epoch(
         optimizer.zero_grad()
 
         out = model(data_x)
+        out = out.squeeze(-1)
         result = loss_fn(out, stdzer(data_y))
         result.backward()
 

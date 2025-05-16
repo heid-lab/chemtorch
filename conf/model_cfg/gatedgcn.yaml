@@ -7,7 +7,7 @@ defaults:
     - linear_edge_enc
   - layer_cfg: block_gatedgcn
   - pool_cfg: global_pool
-  - head_cfg: ffn_head
+  - head_cfg: graph_prediction_head
   - _self_
 
 num_node_features: ${num_node_features}
@@ -25,7 +25,3 @@ encoder_cfg:
 pool_cfg:
   aggr: add
 
-head_cfg:
-  num_layers: 2
-  dropout: 0.02
-  activation: relu
