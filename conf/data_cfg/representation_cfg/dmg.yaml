@@ -3,7 +3,7 @@ _target_: deepreaction.representation.graph.dmg.DMG
 defaults:
   - featurizer_cfg/atom_featurizer_cfg/atom_rdkit_organic@atom_featurizer
   - featurizer_cfg/bond_featurizer_cfg/bond_rdkit_organic@bond_featurizer
-  # - featurizer_cfg/atom_featurizer_cfg/qm_atom@qm_featurizer
+  - featurizer_cfg/atom_featurizer_cfg/qm_atom@qm_featurizer
   - _self_
 in_channel_multiplier: 1
 connection_direction: null
