@@ -8,10 +8,10 @@ from torch.utils.data import Dataset
 
 from deepreaction.dataset.dataset_base import DatasetBase
 from deepreaction.representation.representation_base import RepresentationBase
-from deepreaction.transform.transform_base import TransformBase
+from deepreaction.transform.abstract_transform import AbstractTransform
 
 
-class FingerprintDataset(DatasetBase[torch.Tensor], Dataset):
+class FingerprintDataset(Dataset, DatasetBase[torch.Tensor]):
     """
     A flexible dataset class for molecular fingerprints.
     It allows for subsampling the data, caching processed fingerprints, and precomputing all fingerprints.
@@ -29,7 +29,7 @@ class FingerprintDataset(DatasetBase[torch.Tensor], Dataset):
             RepresentationBase[torch.Tensor] | Callable[..., torch.Tensor]
         ),
         transform: (
-            TransformBase[torch.Tensor]
+            AbstractTransform[torch.Tensor]
             | Callable[[torch.Tensor], torch.Tensor]
         ) = None,
         precompute_all: bool = True,

@@ -1,11 +1,11 @@
 from typing import Generic, TypeVar, Sequence, Callable
 
-from deepreaction.transform.transform_base import TransformBase
+from deepreaction.transform.abstract_transform import AbstractTransform
 
 T = TypeVar("T")
 
-class Compose(TransformBase[T]):
-    def __init__(self, transforms: Sequence[TransformBase[T]]):
+class Compose(AbstractTransform[T]):
+    def __init__(self, transforms: Sequence[AbstractTransform[T]]):
         self.transforms = transforms
 
 

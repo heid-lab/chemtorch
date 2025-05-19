@@ -10,10 +10,10 @@ from torch_geometric.utils import (
     to_torch_coo_tensor,
     to_torch_csr_tensor,
 )
-from deepreaction.transform.transform_base import TransformBase
+from deepreaction.transform.abstract_transform import AbstractTransform
 
 
-class RandomWalkPETransform(TransformBase[Data]):
+class RandomWalkPETransform(AbstractTransform[Data]):
     """
     This code includes implementations adapted from PyTorch Geometric
     (https://github.com/pyg-team/pytorch_geometric)
@@ -32,7 +32,7 @@ class RandomWalkPETransform(TransformBase[Data]):
 
 
     # override
-    def forward(self, data: Data) -> Data:
+    def __call__(self, data: Data) -> Data:
         assert data.edge_index is not None
         row, col = data.edge_index
         N = data.num_nodes

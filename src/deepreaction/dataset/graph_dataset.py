@@ -9,10 +9,10 @@ from torch_geometric.utils import degree
 
 from deepreaction.dataset.dataset_base import DatasetBase
 from deepreaction.representation.representation_base import RepresentationBase
-from deepreaction.transform.transform_base import TransformBase
+from deepreaction.transform.abstract_transform import AbstractTransform
 
 
-class GraphDataset(DatasetBase[Data], Dataset):
+class GraphDataset(Dataset, DatasetBase[Data]):
     """
     A flexible dataset class for molecular graphs.
     It allows for subsampling the data, caching processed graphs, and precomputing all graphs.
@@ -27,7 +27,7 @@ class GraphDataset(DatasetBase[Data], Dataset):
         self,
         dataframe: pd.DataFrame,
         representation: RepresentationBase[Data] | Callable[..., Data],
-        transform: TransformBase[Data] | Callable[[Data], Data] = None,
+        transform: AbstractTransform[Data] | Callable[[Data], Data] = None,
         precompute_all: bool = True,
         cache_graphs: bool = True,
         max_cache_size: Optional[int] = None,
