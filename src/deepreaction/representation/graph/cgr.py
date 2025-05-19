@@ -32,17 +32,13 @@ class CGR(RepresentationBase[Data]):
 
     def __init__(
         self,
-        # TODO: Get rid of hydra dep and pass instantiated featurizer explicitely
-        featurizer_cfg: DictConfig,
-        # atom_featurizer,
-        # bond_featurizer,
+        atom_featurizer,
+        bond_featurizer,
         *args,
         **kwargs,
     ):
-        # self.atom_featurizer = atom_featurizer
-        # self.bond_featurizer = bond_featurizer
-        self.atom_featurizer = hydra.utils.instantiate(featurizer_cfg.atom_featurizer_cfg)
-        self.bond_featurizer = hydra.utils.instantiate(featurizer_cfg.bond_featurizer_cfg)
+        self.atom_featurizer = atom_featurizer
+        self.bond_featurizer = bond_featurizer
 
 
     # override
