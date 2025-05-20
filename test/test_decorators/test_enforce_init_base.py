@@ -65,3 +65,23 @@ def test_grandchild_must_call_super_init():
 
     # Should not raise
     GoodGrandchild()
+
+def test_subclass_computes_arg_for_super_init():
+    class Base:
+        def __init__(self, value):
+            self.value = value
+
+        def __init_subclass__(cls):
+            enforce_base_init(Base)(cls)
+            return super().__init_subclass__()
+
+    class SubWithComputedArg(Base):
+        def __init__(self, x):
+            computed_value = x * 2
+            super().__init__(computed_value)
+            self.x = x
+
+    # Should not raise
+    obj = SubWithComputedArg(10)
+    assert obj.value == 20
+    assert obj.x == 10
