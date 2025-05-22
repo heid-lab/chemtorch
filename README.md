@@ -93,7 +93,7 @@ In the `conf` folder:
 - `data/`: Data configs
     - `dataset_cfg/`: Dataset configs
     - `featurizer_cfg/`: Featurizer configs
-    - `representation_cfg/`: Representation configs
+    - `representation/`: Representation configs
     - `transform_cfg/`: Transformation configs
     - `*.yaml`: Possible data configs to be passed in the main config
         - E.g., `e2_feat1_cgr_dummy.yaml` could specifiy which dataset, features, representation, and transformation to use.

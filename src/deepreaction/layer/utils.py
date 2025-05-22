@@ -366,7 +366,7 @@ class Stack(nn.Module, Generic[T]):
     """
     def __init__(
             self, 
-            layer_cfg: DictConfig, 
+            layer_cfg: DictConfig,  # TODO: Avoid passing config (pass an instance instead)
             depth: int,
             share_weights: bool = False
         ):
@@ -381,12 +381,13 @@ class Stack(nn.Module, Generic[T]):
         super(Stack, self).__init__()
         self.layers = nn.ModuleList()
         if share_weights:
-            layer = hydra.utils.instantiate(layer_cfg)
+            single_layer = hydra.utils.instantiate(layer_cfg)
             for _ in range(depth):
-                self.layers.append(layer)
+                self.layers.append(single_layer)
         else:
             for _ in range(depth):
-                self.layers.append(hydra.utils.instantiate(layer_cfg))
+                new_layer = hydra.utils.instantiate(layer_cfg)
+                self.layers.append(new_layer)
 
     def forward(self, x: T) -> T:
         for layer in self.layers:
