@@ -2,7 +2,7 @@
 
 defaults:
   - data: rdb7_cgr
-  - model: pna
+  - model: gcn
   - task: regression
   - override hydra/job_logging: disabled
   - override hydra/hydra_logging: disabled
@@ -19,7 +19,7 @@ seed: 0 # use 0
 
 update_cfg_from_dataset:
   # fp_length: fp_length
-  degree_statistics: degree_statistics
+  # degree_statistics: degree_statistics
   num_node_features: num_node_features
   num_edge_features: num_edge_features
 
