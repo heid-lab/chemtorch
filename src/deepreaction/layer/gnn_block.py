@@ -78,8 +78,9 @@ class GNNBlockLayer(nn.Module):
         # Opt-ins
         self.mpnn_norm = init_norm(norm, hidden_channels, norm_kwargs)
         self.mpnn_residual = ResidualConnection(use_mpnn_residual)
-        if use_ffn:
-            self.use_ffn = True
+
+        self.use_ffn = use_ffn
+        if self.use_ffn:
             self.ffn = init_2_layer_ffn(hidden_channels, dropout, self.activation)
             self.ffn_norm_in = init_norm(norm, hidden_channels, norm_kwargs)
             self.ffn_norm_out = init_norm(norm, hidden_channels, norm_kwargs)
