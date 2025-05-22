@@ -12,7 +12,13 @@ from deepreaction.representation.representation_base import RepresentationBase
 from deepreaction.transform.abstract_transform import AbstractTransform
 
 
-class GraphDataset(Dataset, DatasetBase[Data]):
+# TODO: Get rid of multiple inheritance because it is buggy:
+# Switching the order of inheritance breaks initialization because
+# torch_geometric's Dataset class `super().__init__()` which resolves 
+# to the next class in the MRO (DatasetBase), not and the the parent
+# class of Dataset as intended, causing an error because DatasetBase
+# does not receive its expected arguments.
+class GraphDataset(DatasetBase[Data], Dataset):
     """
     A flexible dataset class for molecular graphs.
     It allows for subsampling the data, caching processed graphs, and precomputing all graphs.
@@ -50,11 +56,16 @@ class GraphDataset(Dataset, DatasetBase[Data]):
             **kwargs: Additional keyword arguments, ignored.
 
         Raises:
-            ValueError: If the data does not contain a 'label' column.
+            # ValueError: If the data does not contain a 'label' column.
             ValueError: If the subsample is not an int or a float.
             ValueError: If the dataset is not precomputed and caching is not enabled.
         """
-        DatasetBase.__init__(self, dataframe, representation, transform)
+        DatasetBase.__init__(
+            self,
+            dataframe=dataframe, 
+            representation=representation, 
+            transform=transform
+        )
         Dataset.__init__(self)
         if "label" not in dataframe.columns:
             raise ValueError(

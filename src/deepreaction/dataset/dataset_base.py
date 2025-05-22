@@ -16,6 +16,9 @@ class DatasetBase(Generic[T]):
     This class defines the standard interface for datasets in the DeepReaction framework.
     All datasets should subclass :class:`DatasetBase[T]` and implement the `_get_sample_by_idx` method.    
 
+    Warning: If the subclass inherits from multiple classes, ensure that :class:`DatasetBase` is the first 
+    class in the inheritance list, otherwise the arguemnts of the `__init__` method may not be passed correctly.
+
     Raises:
         RuntimeError: If the subclass does not call `super().__init__()` in its `__init__()` method.
 
