@@ -1,8 +1,10 @@
+from typing import Any, Callable, Dict, Optional, Union
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch_geometric.nn as pyg_nn
 from torch_geometric.nn import MessagePassing
+from torch_geometric.nn.resolver import activation_resolver
 from torch_scatter import scatter
 
 class GatedGCNLayer(MessagePassing):
@@ -18,12 +20,13 @@ class GatedGCNLayer(MessagePassing):
         out_channels,
         dropout,
         residual,
-        act: nn.Module,
         equivstable_pe=False,
+        act: Union[str, Callable, None] = "relu",
+        act_kwargs: Optional[Dict[str, Any]] = None,
         # **kwargs,
     ):
         super(GatedGCNLayer, self).__init__()
-        self.activation = hydra.utils.instantiate(act)
+        self.activation = activation_resolver(act, **(act_kwargs or {}))
         self.A = pyg_nn.Linear(in_channels, out_channels, bias=True)
         self.B = pyg_nn.Linear(in_channels, out_channels, bias=True)
         self.C = pyg_nn.Linear(in_channels, out_channels, bias=True)
