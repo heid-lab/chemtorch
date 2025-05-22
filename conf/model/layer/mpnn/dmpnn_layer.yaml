@@ -1,0 +1,4 @@
+_target_: deepreaction.layer.mpnn_layer.dmpnn_layer.DMPNNLayer
+in_channels: ${model.gnn.layer.hidden_channels}
+out_channels: ${model.gnn.layer.hidden_channels}
+separate_nn: false
