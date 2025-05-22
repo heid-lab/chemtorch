@@ -1,0 +1,2 @@
+_target_: deepreaction.loss.mse.MSELoss
+reduction: sum
