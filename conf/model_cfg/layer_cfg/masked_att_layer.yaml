@@ -1,9 +1,0 @@
-_target_: deepreaction.layer.att_layer.masked_att_layer.MaskedAttLayer
-_partial_: true
-embed_dim: ${model_cfg.hidden_channels}
-num_heads: 4
-dropout: 0.05
-batch_first: true
-mode: local # none, local, intra, inter
-layer_norm: false
-batch_norm: true

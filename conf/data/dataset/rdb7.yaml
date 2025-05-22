@@ -1,0 +1,28 @@
+_target_: deepreaction.dataset.graph_dataset.GraphDataset
+_partial_: true
+
+# === DATA PIPELINE ===================================
+defaults:
+  # Data pipeline components in chronological order
+  - data_source: single_csv_source
+  - preprocessing/data_splitter: ratio_splitter
+  - preprocessing/column_mapper: column_filter_rename
+
+# === DATA PIPELINE COMPONENTS ========================
+# single_csv_source
+data_folder: "deepreaction_datasets/data/rdb7/barriers"
+data_file: "rdb7_full.csv"
+# ratio_splitter
+train_ratio: 0.9
+val_ratio: 0.05
+test_ratio: 0.05
+# column_filter_rename
+column_mapping:
+  smiles: "smiles"
+  label: "dE0"
+
+# === DATASET =========================================
+subsample: 0.1         
+# preprocess_all: true
+# cache_graphs: true 
+# max_cache_size: null

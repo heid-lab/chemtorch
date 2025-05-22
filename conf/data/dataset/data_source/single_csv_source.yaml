@@ -1,0 +1,2 @@
+_target_: deepreaction.data_pipeline.data_source.single_csv_source.SingleCSVSource
+data_path: ${data.dataset.data_folder}/${data.dataset.data_file}

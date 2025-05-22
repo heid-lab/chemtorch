@@ -1,6 +1,0 @@
-defaults:
-  - dataset_cfg: rdb7
-  - representation_cfg: dmg
-  - transform_cfg: null             # Specify list of transforms
-  - dataloader_cfg: torch_geometric_dataloader
-  - _self_

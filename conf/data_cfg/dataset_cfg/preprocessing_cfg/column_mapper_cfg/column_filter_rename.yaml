@@ -1,2 +1,0 @@
-_target_: deepreaction.data_pipeline.column_mapper.column_filter_rename.ColumnFilterAndRename
-column_mapping: ${data_cfg.dataset_cfg.column_mapping}

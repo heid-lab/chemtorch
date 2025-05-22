@@ -1,7 +1,0 @@
-_target_: deepreaction.layer.mpnn_layer.gat_layer.GATLayer
-in_channels: ${model_cfg.hidden_channels}
-out_channels: ${eval:'${model_cfg.hidden_channels} // ${.heads}'}
-heads: 1
-dropout: 0.0
-concat: true
-use_edge_attr: true

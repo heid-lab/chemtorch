@@ -1,0 +1,28 @@
+_target_: deepreaction.dataset.fingerprint_dataset.FingerprintDataset
+_partial_: true
+
+# === DATA PIPELINE ===================================
+defaults:
+  # Data pipeline components in chronological order
+  - data_source: single_csv_source
+  - preprocessing/data_splitter: index_splitter
+  - preprocessing/column_mapper: column_filter_rename
+  - _self_
+
+# === DATA PIPELINE COMPONENTS ========================
+# single_csv_source
+data_folder: "data/barriers_rdb7new"
+data_file: "data.csv"
+# index_splitter
+split_index_path: "data/barriers_rdb7new/seed${data.dataset.seed}.pkl"
+seed: 0
+# column_filter_rename
+column_mapping:
+  smiles: "rxn_smiles"
+  label: "ea"
+
+# === DATASET =========================================
+subsample: 0.01         
+# preprocess_all: true
+# cache_graphs: true 
+# max_cache_size: null

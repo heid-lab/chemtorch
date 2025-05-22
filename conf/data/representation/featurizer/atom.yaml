@@ -1,0 +1,6 @@
+defaults:
+  - atom_featurizer: atom_rdkit_organic
+  - bond_featurizer: bond_rdkit_organic
+  - external_atom_featurizer: null
+  - single_featurizer: atom_num
+  - _self_

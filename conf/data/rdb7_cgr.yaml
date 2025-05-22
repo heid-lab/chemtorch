@@ -1,0 +1,5 @@
+defaults:
+  - dataset: rdb7
+  - representation: cgr
+  - transform: null             # Specify list of transforms
+  - dataloader: torch_geometric_dataloader

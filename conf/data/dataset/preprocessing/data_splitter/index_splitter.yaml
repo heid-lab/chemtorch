@@ -1,0 +1,2 @@
+_target_: deepreaction.data_pipeline.data_splitter.index_splitter.IndexSplitter
+split_index_path: ${data.dataset.split_index_path}

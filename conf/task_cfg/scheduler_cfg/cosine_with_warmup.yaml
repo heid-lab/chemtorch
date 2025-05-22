@@ -1,8 +1,0 @@
-scheduler:
-  _target_: torch.optim.lr_scheduler.LambdaLR
-  _partial_: true
-  lr_lambda:
-    _target_: deepreaction.scheduler.scheduler.get_cosine_scheduler_with_warmup
-    num_warmup_steps: 50
-    num_training_steps: ${task_cfg.epochs}
-    num_cycles: 0.5
