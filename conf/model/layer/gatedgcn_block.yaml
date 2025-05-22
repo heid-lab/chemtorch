@@ -1,4 +1,4 @@
-_target_: deepreaction.layer.GNNBlockLayer
+_target_: deepreaction.layer.gnn_block.GNNBlockLayer
 
 defaults:
   - mpnn: gatedgcn_layer
