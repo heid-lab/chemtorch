@@ -164,7 +164,7 @@ class Stack(nn.Module, Generic[T]):
     """
     def __init__(
             self, 
-            layer_cfg: DictConfig, 
+            layer: DictConfig, 
             depth: int,
             share_weights: bool = False
         ):
@@ -172,221 +172,19 @@ class Stack(nn.Module, Generic[T]):
         Initialize the Stack using Hydra for instantiation.
 
         Args:
-            layer_cfg (DictConfig): The configuration for the layer to be stacked.
+            layer (DictConfig): The configuration for the layer to be stacked.
             depth (int): The number of times to repeat the layer.
             share_weights (bool): If True, share weights between the stacked layers.
         """
         super(Stack, self).__init__()
         self.layers = nn.ModuleList()
         if share_weights:
-            layer = hydra.utils.instantiate(layer_cfg)
-            for _ in range(depth):
-                self.layers.append(layer)
-        else:
-            for _ in range(self.depth):
-                self.layers.append(hydra.utils.instantiate(layer_cfg))
-
-    def forward(self, x: T) -> T:
-        for module in self.layers:
-            x = module(x)
-        return x
-
-
-
-T = TypeVar("T")
-class Stack(nn.Module, Generic[T]):
-    """
-    A utility class for stacking a layer multiple times.
-
-    This class is useful for creating deep neural networks by stacking
-    the same layer multiple times.
-
-    Note, that the input and output types of the layer must be the same.
-    """
-    def __init__(
-            self, 
-            layer_cfg: DictConfig, 
-            depth: int,
-            share_weights: bool = False
-        ):
-        """
-        Initialize the Stack using Hydra for instantiation.
-
-        Args:
-            layer_cfg (DictConfig): The configuration for the layer to be stacked.
-            depth (int): The number of times to repeat the layer.
-            share_weights (bool): If True, share weights between the stacked layers.
-        """
-        super(Stack, self).__init__()
-        self.layers = nn.ModuleList()
-        if share_weights:
-            layer = hydra.utils.instantiate(layer_cfg)
-            for _ in range(depth):
-                self.layers.append(layer)
-        else:
-            for _ in range(self.depth):
-                self.layers.append(hydra.utils.instantiate(layer_cfg))
-
-    def forward(self, x: T) -> T:
-        for module in self.layers:
-            x = module(x)
-        return x
-
-
-    
-T = TypeVar("T")
-class Stack(nn.Module, Generic[T]):
-    """
-    A utility class for stacking a layer multiple times.
-
-    This class is useful for creating deep neural networks by stacking
-    the same layer multiple times.
-
-    Note, that the input and output types of the layer must be the same.
-    """
-    def __init__(
-            self, 
-            layer_cfg: DictConfig, 
-            depth: int,
-            share_weights: bool = False
-        ):
-        """
-        Initialize the Stack using Hydra for instantiation.
-
-        Args:
-            layer_cfg (DictConfig): The configuration for the layer to be stacked.
-            depth (int): The number of times to repeat the layer.
-            share_weights (bool): If True, share weights between the stacked layers.
-        """
-        super(Stack, self).__init__()
-        self.layers = nn.ModuleList()
-        if share_weights:
-            layer = hydra.utils.instantiate(layer_cfg)
-            for _ in range(depth):
-                self.layers.append(layer)
-        else:
-            for _ in range(self.depth):
-                self.layers.append(hydra.utils.instantiate(layer_cfg))
-
-    def forward(self, x: T) -> T:
-        for module in self.layers:
-            x = module(x)
-        return x
-
-
-
-T = TypeVar("T")
-class Stack(nn.Module, Generic[T]):
-    """
-    A utility class for stacking a layer multiple times.
-
-    This class is useful for creating deep neural networks by stacking
-    the same layer multiple times.
-
-    Note, that the input and output types of the layer must be the same.
-    """
-    def __init__(
-            self, 
-            layer_cfg: DictConfig, 
-            depth: int,
-            share_weights: bool = False
-        ):
-        """
-        Initialize the Stack using Hydra for instantiation.
-
-        Args:
-            layer_cfg (DictConfig): The configuration for the layer to be stacked.
-            depth (int): The number of times to repeat the layer.
-            share_weights (bool): If True, share weights between the stacked layers.
-        """
-        super(Stack, self).__init__()
-        self.layers = nn.ModuleList()
-        if share_weights:
-            layer = hydra.utils.instantiate(layer_cfg)
-            for _ in range(depth):
-                self.layers.append(layer)
-        else:
-            for _ in range(self.depth):
-                self.layers.append(hydra.utils.instantiate(layer_cfg))
-
-    def forward(self, x: T) -> T:
-        for module in self.layers:
-            x = module(x)
-        return x
-
-
-T = TypeVar("T")
-class Stack(nn.Module, Generic[T]):
-    """
-    A utility class for stacking a layer multiple times.
-
-    This class is useful for creating deep neural networks by stacking
-    the same layer multiple times.
-
-    Note, that the input and output types of the layer must be the same.
-    """
-    def __init__(
-            self, 
-            layer_cfg: DictConfig, 
-            depth: int,
-            share_weights: bool = False
-        ):
-        """
-        Initialize the Stack using Hydra for instantiation.
-
-        Args:
-            layer_cfg (DictConfig): The configuration for the layer to be stacked.
-            depth (int): The number of times to repeat the layer.
-            share_weights (bool): If True, share weights between the stacked layers.
-        """
-        super(Stack, self).__init__()
-        self.layers = nn.ModuleList()
-        if share_weights:
-            layer = hydra.utils.instantiate(layer_cfg)
-            for _ in range(depth):
-                self.layers.append(layer)
-        else:
-            for _ in range(self.depth):
-                self.layers.append(hydra.utils.instantiate(layer_cfg))
-
-    def forward(self, x: T) -> T:
-        for module in self.layers:
-            x = module(x)
-        return x
-
-T = TypeVar("T")
-class Stack(nn.Module, Generic[T]):
-    """
-    A utility class for stacking a layer multiple times.
-
-    This class is useful for creating deep neural networks by stacking
-    the same layer multiple times.
-
-    Note, that the input and output types of the layer must be the same.
-    """
-    def __init__(
-            self, 
-            layer_cfg: DictConfig,  # TODO: Avoid passing config (pass an instance instead)
-            depth: int,
-            share_weights: bool = False
-        ):
-        """
-        Initialize the Stack using Hydra for instantiation.
-
-        Args:
-            layer_cfg (DictConfig): The configuration for the layer to be stacked.
-            depth (int): The number of times to repeat the layer.
-            share_weights (bool): If True, share weights between the stacked layers.
-        """
-        super(Stack, self).__init__()
-        self.layers = nn.ModuleList()
-        if share_weights:
-            single_layer = hydra.utils.instantiate(layer_cfg)
+            single_layer = hydra.utils.instantiate(layer)
             for _ in range(depth):
                 self.layers.append(single_layer)
         else:
             for _ in range(depth):
-                new_layer = hydra.utils.instantiate(layer_cfg)
+                new_layer = hydra.utils.instantiate(layer)
                 self.layers.append(new_layer)
 
     def forward(self, x: T) -> T:

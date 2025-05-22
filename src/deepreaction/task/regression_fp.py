@@ -5,7 +5,7 @@ import time
 import hydra
 import numpy as np
 import torch
-from omegaconf import OmegaConf
+from omegaconf import DictConfig, OmegaConf
 from sklearn.metrics import mean_absolute_error, root_mean_squared_error
 from torch import nn
 
@@ -84,9 +84,9 @@ def train(
     min_delta,
     save_model_parameters,
     model_path,
-    loss_cfg,
-    optimizer_cfg,
-    scheduler_cfg,
+    loss: DictConfig,
+    optimizer: DictConfig,
+    scheduler: DictConfig,
     use_wandb=False,
 ):
 
@@ -98,14 +98,14 @@ def train(
     if use_wandb:
         wandb.run.summary["status"] = "training"
 
-    requires_metric = getattr(scheduler_cfg, "requires_metric", False)
+    requires_metric = getattr(scheduler, "requires_metric", False)
 
-    optimizer_partial = hydra.utils.instantiate(optimizer_cfg)
+    optimizer_partial = hydra.utils.instantiate(optimizer)
     optimizer = optimizer_partial(params=model.parameters())
-    scheduler_partial = hydra.utils.instantiate(scheduler_cfg.scheduler)
+    scheduler_partial = hydra.utils.instantiate(scheduler.scheduler)
     scheduler = scheduler_partial(optimizer)
 
-    loss_fn = hydra.utils.instantiate(loss_cfg)
+    loss_fn = hydra.utils.instantiate(loss)
     print(model)
 
     if use_wandb:
