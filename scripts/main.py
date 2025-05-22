@@ -108,6 +108,7 @@ def main(cfg: DictConfig):
     run_name = getattr(cfg, "run_name", None)
     resolved_cfg = OmegaConf.to_container(cfg, resolve=True)
 
+    print(f"INFO: Final config:\n{OmegaConf.to_yaml(resolved_cfg)}")
     ##### INITIALIZE W&B ##########################################################
     if cfg.wandb:
         wandb.init(
@@ -127,7 +128,6 @@ def main(cfg: DictConfig):
             commit=False,
         )
 
-    print(OmegaConf.to_yaml(resolved_cfg))
 
     ##### RUNTIME MODEL CONSTRUCTOR ARGUMENT COLLECTION ###########################
     runtime_init_args = {}
