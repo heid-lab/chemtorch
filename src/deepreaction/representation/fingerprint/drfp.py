@@ -38,15 +38,18 @@ class DRFP(RepresentationBase[torch.Tensor]):
         Initializes the DRFP representation creator.
 
         Args:
-            n_folded_length: The length of the folded fingerprint.
-            min_radius: The minimum radius for atom environments (0 includes single atoms).
-            radius: The maximum radius for atom environments.
-            rings: Whether to include ring systems as features.
-            root_central_atom: Whether to root fragment SMILES at the central atom.
-                This affects the generated fragment SMILES strings (shingles)
-                before hashing and diffing.
-            include_hydrogens: Whether to include explicit hydrogens in fragments
-                before generating shingles.
+            n_folded_length (int, optional): The length of the folded fingerprint.
+                Default is 2048.
+            min_radius (int, optional): The minimum radius for substructure extraction.
+                Default is 0 (includes single atoms).
+            radius (int, optional): The maximum radius for substructure extraction.
+                Default is 3 (corresponds to DRFP6).
+            rings (bool, optional): Whether to include full rings as substructures.
+                Default is True.
+            root_central_atom (bool, optional): Whether to root the central atom
+                of substructures when generating SMILES. Default is True.
+            include_hydrogens (bool, optional): Whether to include hydrogens in the
+                molecular representation. Default is False.
         """
         self.n_folded_length = n_folded_length
         self.min_radius = min_radius

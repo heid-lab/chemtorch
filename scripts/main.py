@@ -9,7 +9,7 @@ import wandb
 from deepreaction.data_pipeline.data_source.data_source import DataSource
 from deepreaction.data_pipeline.data_split import DataSplit
 from deepreaction.misc import load_model, set_seed
-from deepreaction.transform.compose import Compose
+from deepreaction.transform.transform_compose import TransformCompose
 
 OmegaConf.register_new_resolver("eval", eval)
 
@@ -57,7 +57,7 @@ def main(cfg: DictConfig):
     transforms = [
         hydra.utils.instantiate(config) for _, config in transform.items()
     ]
-    transform = Compose(transforms)
+    transform = TransformCompose(transforms)
     print(f"INFO: Transform instantiated successfully")
 
     ##### DATASET ###############################################################
