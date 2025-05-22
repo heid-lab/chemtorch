@@ -2,7 +2,7 @@
 
 defaults:
   - data: rdb7_cgr
-  - model: gine
+  - model: gatedgcn
   - task: regression
   - override hydra/job_logging: disabled
   - override hydra/hydra_logging: disabled
