@@ -1,0 +1,4 @@
+_target_: torch.nn.Sequential
+_args_:
+  - ${model.encoder.linear_node_enc}
+  - ${model.encoder.linear_edge_enc}

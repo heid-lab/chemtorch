@@ -1,0 +1,38 @@
+_target_: deepreaction.model.gnn.GNN
+
+defaults:
+  - pool: global_pool
+  - head: mlp
+
+encoder:
+  _target_: torch.nn.Sequential
+  _args_:
+    - _target_: deepreaction.encoder.linear_node_enc.LinearNodeEncoder
+      in_channels: ${num_node_features}
+      out_channels: ${model.gnn.layer.hidden_channels}
+      bias: true
+    - _target_: deepreaction.encoder.linear_edge_enc.LinearEdgeEncoder
+      in_channels: ${num_edge_features}
+      out_channels: ${model.gnn.layer.hidden_channels}
+      bias: true
+
+gnn:
+  _target_: deepreaction.layer.utils.Stack
+  _recursive_: false
+  depth: 12
+  layer:
+    _target_: deepreaction.layer.gnn_block.GNNBlockLayer
+    use_residual: true
+    use_ffn: true
+    dropout: 0.05
+    act: relu
+    norm: null
+    hidden_channels: 64
+    mpnn:
+      _target_: deepreaction.layer.mpnn_layer.gatv2_layer.GATv2Layer
+      in_channels: ${model.gnn.layer.hidden_channels}
+      out_channels: ${eval:'${model.gnn.layer.hidden_channels} // ${.heads}'}
+      heads: 4
+      dropout: 0.05
+      concat: true
+      use_edge_attr: true
