@@ -102,13 +102,14 @@ def main(cfg: DictConfig):
                 )
             else:
                 raise ValueError(
-                    f"Attribute '{dataset_attr_name}' (for cfg path '{cfg_path}') not found on train_loader.dataset."
+                    f"Attribute '{dataset_attr_name}' (for cfg path '{cfg_path}') not found on datasets.train."
                 )
 
     run_name = getattr(cfg, "run_name", None)
     resolved_cfg = OmegaConf.to_container(cfg, resolve=True)
 
     print(f"INFO: Final config:\n{OmegaConf.to_yaml(resolved_cfg)}")
+
     ##### INITIALIZE W&B ##########################################################
     if cfg.wandb:
         wandb.init(
@@ -129,28 +130,8 @@ def main(cfg: DictConfig):
         )
 
 
-    ##### RUNTIME MODEL CONSTRUCTOR ARGUMENT COLLECTION ###########################
-    runtime_init_args = {}
-    attrs_to_collect_for_init = cfg.get(
-        "runtime_model_init_args_from_dataset", {}
-    )
-
-    if attrs_to_collect_for_init:
-        print(
-            f"INFO: Checking train dataset for runtime model __init__ attributes: {attrs_to_collect_for_init}"
-        )
-        for model_arg, dataset_prop in attrs_to_collect_for_init.items():
-            if hasattr(datasets.train, dataset_prop):
-                runtime_init_args[model_arg] = getattr(
-                    datasets.train, dataset_prop
-                )
-            else:
-                raise ValueError(
-                    f"Required dataset property '{dataset_prop}' for model argument '{model_arg}' not found on training dataset."
-                )
-
     ##### MODEL ##################################################################
-    model = hydra.utils.instantiate(cfg.model, **runtime_init_args)
+    model = hydra.utils.instantiate(cfg.model)
     model = model.to(device)
 
     if cfg.use_loaded_model:

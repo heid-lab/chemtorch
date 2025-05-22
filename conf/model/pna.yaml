@@ -1,0 +1,27 @@
+_target_: deepreaction.model.gnn.GNN
+
+defaults:
+  - encoder: linear_enc
+  - pool: global_pool
+  - head: mlp
+
+gnn:
+  _target_: deepreaction.layer.utils.Stack
+  _recursive_: false
+  depth: 9
+  layer:
+    _target_: deepreaction.layer.gnn_block.GNNBlockLayer
+    use_residual: true
+    use_ffn: true
+    dropout: 0.05
+    act: relu
+    norm: batch_norm
+    hidden_channels: 64
+    mpnn:
+      _target_: deepreaction.layer.mpnn_layer.pna_layer.PNALayer
+      in_channels: ${model.gnn.layer.hidden_channels}
+      out_channels: ${model.gnn.layer.hidden_channels}
+      degree_statistics: ${degree_statistics}
+      aggregators: ['mean', 'max', 'sum'] 
+      scalers: ['identity']
+      use_edge_attr: true

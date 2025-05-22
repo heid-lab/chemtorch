@@ -1,0 +1,11 @@
+_target_: deepreaction.layer.gnn_block.GNNBlockLayer
+
+defaults:
+  - mpnn: pna_layer
+
+use_residual: true
+use_ffn: false
+dropout: 0.0
+act: relu
+norm: batch_norm
+hidden_channels: ${model.gnn.layer.hidden_channels}

@@ -163,7 +163,7 @@ class GraphDataset(DatasetBase[Data], Dataset):
             raise ValueError("Subsample must be an int or a float.")
 
     @property
-    def degree_statistics(self) -> Dict[str, Union[int, torch.Tensor]]:
+    def degree_statistics(self) -> Dict[str, Union[int, List]]:
         """
         Computes degree statistics for the dataset, specifically the overall maximum
         degree and a histogram of node degrees.
@@ -172,10 +172,11 @@ class GraphDataset(DatasetBase[Data], Dataset):
         as it iterates over all precomputed graphs.
 
         Returns:
-            Dict[str, Union[int, torch.Tensor]]: A dictionary containing:
+            Dict[str, Union[int, List]]: A dictionary containing:
                 - "max_degree" (int): The maximum degree found across all nodes in all graphs.
-                - "degree_histogram" (torch.Tensor): A 1D tensor where the i-th element
-                  is the total count of nodes with degree `i` across all graphs.
+                - "degree_histogram" (List[int]) A list where the i-th element
+                    is the total count of nodes with degree `i` across all graphs.
+
         Raises:
             ValueError: If `precompute_all` was False during dataset initialization.
             AttributeError: If the first graph object in the dataset is not a PyTorch Geometric
@@ -218,8 +219,8 @@ class GraphDataset(DatasetBase[Data], Dataset):
             degree_histogram += torch.bincount(
                 d, minlength=degree_histogram.numel()
             )
-
+        
         return {
             "max_degree": max_degree,
-            "degree_histogram": degree_histogram,
+            "degree_histogram": degree_histogram.tolist(),
         }
