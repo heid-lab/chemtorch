@@ -1,4 +1,4 @@
 _target_: deepreaction.encoder.linear_edge_enc.LinearEdgeEncoder
 in_channels: ${num_edge_features}
-out_channels: ${model.hidden_channels}
+out_channels: ${model.gnn.layer.hidden_channels}
 bias: true

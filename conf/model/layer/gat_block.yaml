@@ -1,0 +1,16 @@
+_target_: deepreaction.layer.GNNBlockLayer
+
+defaults:
+  - mpnn: gat_layer
+
+use_residual: true
+use_ffn: true
+dropout: 0.05
+act: relu
+norm: null
+hidden_channels: ${model.hidden_channels}
+
+# override
+mpnn:
+  dropout: ${model.layer.dropout}
+  heads: 4

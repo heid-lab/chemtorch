@@ -1,9 +1,9 @@
 # main config 
 
 defaults:
-  - data_cfg: rdb7_dmg
-  - model_cfg: dmpnn
-  - task_cfg: regression
+  - data: rdb7_cgr
+  - model: gat
+  - task: regression
   - override hydra/job_logging: disabled
   - override hydra/hydra_logging: disabled
   - _self_ # placement of this matters
