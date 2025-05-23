@@ -9,10 +9,10 @@ from torch_geometric.utils import (
     to_undirected,
 )
 
-from deepreaction.transform.transform_base import TransformBase
+from deepreaction.transform.abstract_transform import AbstractTransform
 
 
-class LapPE(TransformBase[Data]):
+class LapPE(AbstractTransform[Data]):
     """
     # TODO: check out how to cite code
     """
@@ -34,7 +34,7 @@ class LapPE(TransformBase[Data]):
 
 
     # override
-    def forward(self, data: Data) -> Data:
+    def __call__(self, data: Data) -> Data:
 
         N = data.x.shape[0]
 

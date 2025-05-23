@@ -4,10 +4,10 @@ from torch_geometric.data import Data
 from torch_geometric.utils import scatter, to_dense_adj
 from torch_geometric.utils.num_nodes import maybe_num_nodes
 
-from deepreaction.transform.transform_base import TransformBase
+from deepreaction.transform.abstract_transform import AbstractTransform
 
 
-class RWSE(TransformBase[Data]):
+class RWSE(AbstractTransform[Data]):
     """
     # TODO: check out how to cite code
     """
@@ -22,7 +22,7 @@ class RWSE(TransformBase[Data]):
     
 
     # override
-    def forward(self, x: Data) -> Data:
+    def __call__(self, x: Data) -> Data:
         N = x.x.shape[0]  # Number of nodes, including disconnected nodes.
 
         times = list(range(1, self.times + 1))

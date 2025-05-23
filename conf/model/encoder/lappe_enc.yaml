@@ -1,0 +1,6 @@
+_target_: deepreaction.encoder.lappe_enc.LapPE
+in_channels: ${eval:'${data.transform.lapPE.max_freqs} * ${data.representation.in_channel_multiplier}'}
+out_channels: ${model.gnn.layer.hidden_channels}
+model_type: deepset # transformer
+n_layers: 2
+raw_norm_type: null

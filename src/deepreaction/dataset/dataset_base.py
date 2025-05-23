@@ -2,7 +2,7 @@ from typing import Callable, Optional, TypeVar, Generic
 import pandas as pd
 
 from deepreaction.representation.representation_base import RepresentationBase
-from deepreaction.transform.transform_base import TransformBase
+from deepreaction.transform.abstract_transform import AbstractTransform
 from deepreaction.utils.decorators.enforce_base_init import enforce_base_init
 
 
@@ -15,6 +15,9 @@ class DatasetBase(Generic[T]):
 
     This class defines the standard interface for datasets in the DeepReaction framework.
     All datasets should subclass :class:`DatasetBase[T]` and implement the `_get_sample_by_idx` method.    
+
+    Warning: If the subclass inherits from multiple classes, ensure that :class:`DatasetBase` is the first 
+    class in the inheritance list, otherwise the arguemnts of the `__init__` method may not be passed correctly.
 
     Raises:
         RuntimeError: If the subclass does not call `super().__init__()` in its `__init__()` method.
@@ -41,7 +44,7 @@ class DatasetBase(Generic[T]):
         self,
         dataframe: pd.DataFrame,
         representation: RepresentationBase[T] | Callable[..., T],
-        transform: Optional[TransformBase[T] | Callable[[T], T]] = None
+        transform: Optional[AbstractTransform[T] | Callable[[T], T]] = None
     ):
         """
         Initialize the DatasetBase.
@@ -66,7 +69,7 @@ class DatasetBase(Generic[T]):
             raise ValueError(
                 "representation must be a RepresentationBase or a callable."
             )
-        if not isinstance(transform, (TransformBase, Callable, type(None))):
+        if not isinstance(transform, (AbstractTransform, Callable, type(None))):
             raise ValueError(
                 "transform must be a TransformBase, a callable, or None."
             )

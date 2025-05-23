@@ -31,15 +31,15 @@ def main(cfg: DictConfig):
     ##### SOURCE PIPELINE ########################################################
     # TODO: Instantiate source pipeline as a whole using hydra
     data_source: DataSource = hydra.utils.instantiate(
-        cfg.data_cfg.dataset_cfg.data_source_cfg
+        cfg.data.dataset.data_source
     )
-    preprocessing_cfg = getattr(
-        cfg.data_cfg.dataset_cfg, "preprocessing_cfg", {}
+    preprocessing = getattr(
+        cfg.data.dataset, "preprocessing", {}
     )
     preprocessing_pipeline = nn.Sequential(
         *[
             hydra.utils.instantiate(config)
-            for config in preprocessing_cfg.values()
+            for config in preprocessing.values()
         ]
     )
 
@@ -48,40 +48,40 @@ def main(cfg: DictConfig):
     print(f"INFO: Preprocessing pipeline finished successfully")
 
     ##### REPRESENTATION #######################################################
-    representation_cfg = getattr(cfg.data_cfg, "representation_cfg", {})
-    representation = hydra.utils.instantiate(representation_cfg)
+    representation = getattr(cfg.data, "representation", {})
+    representation = hydra.utils.instantiate(representation)
     print(f"INFO: Representation instantiated successfully")
 
     #### TRANSFORM #############################################################
-    transform_cfg = getattr(cfg.data_cfg, "transform_cfg", {})
+    transform = getattr(cfg.data, "transform", {})
     transforms = [
-        hydra.utils.instantiate(config) for _, config in transform_cfg.items()
+        hydra.utils.instantiate(config) for _, config in transform.items()
     ]
     transform = TransformCompose(transforms)
     print(f"INFO: Transform instantiated successfully")
 
     ##### DATASET ###############################################################
-    dataset_partial = hydra.utils.instantiate(
-        cfg.data_cfg.dataset_cfg,
+    dataset_factory = hydra.utils.instantiate(
+        cfg.data.dataset,
         representation=representation,
         transform=transform,
     )
 
-    datasets = DataSplit(*map(lambda df: dataset_partial(df), dataframes))
+    datasets = DataSplit(*map(lambda df: dataset_factory(df), dataframes))
     print(f"INFO: Datasets instantiated successfully")
 
     ##### DATALOADERS ###########################################################
-    dataloader_partial = hydra.utils.instantiate(cfg.data_cfg.dataloader_cfg)
+    dataloader_factory = hydra.utils.instantiate(cfg.data.dataloader)
 
-    train_loader = dataloader_partial(
+    train_loader = dataloader_factory(
         dataset=datasets.train,
         shuffle=True,
     )
-    val_loader = dataloader_partial(
+    val_loader = dataloader_factory(
         dataset=datasets.val,
         shuffle=False,
     )
-    test_loader = dataloader_partial(
+    test_loader = dataloader_factory(
         dataset=datasets.test,
         shuffle=False,
     )
@@ -102,11 +102,13 @@ def main(cfg: DictConfig):
                 )
             else:
                 raise ValueError(
-                    f"Attribute '{dataset_attr_name}' (for cfg path '{cfg_path}') not found on train_loader.dataset."
+                    f"Attribute '{dataset_attr_name}' (for cfg path '{cfg_path}') not found on datasets.train."
                 )
 
     run_name = getattr(cfg, "run_name", None)
     resolved_cfg = OmegaConf.to_container(cfg, resolve=True)
+
+    print(f"INFO: Final config:\n{OmegaConf.to_yaml(resolved_cfg)}")
 
     ##### INITIALIZE W&B ##########################################################
     if cfg.wandb:
@@ -127,30 +129,9 @@ def main(cfg: DictConfig):
             commit=False,
         )
 
-    print(OmegaConf.to_yaml(resolved_cfg))
-
-    ##### RUNTIME MODEL CONSTRUCTOR ARGUMENT COLLECTION ###########################
-    runtime_init_args = {}
-    attrs_to_collect_for_init = cfg.get(
-        "runtime_model_init_args_from_dataset", {}
-    )
-
-    if attrs_to_collect_for_init:
-        print(
-            f"INFO: Checking train dataset for runtime model __init__ attributes: {attrs_to_collect_for_init}"
-        )
-        for model_arg, dataset_prop in attrs_to_collect_for_init.items():
-            if hasattr(datasets.train, dataset_prop):
-                runtime_init_args[model_arg] = getattr(
-                    datasets.train, dataset_prop
-                )
-            else:
-                raise ValueError(
-                    f"Required dataset property '{dataset_prop}' for model argument '{model_arg}' not found on training dataset."
-                )
 
     ##### MODEL ##################################################################
-    model = hydra.utils.instantiate(cfg.model_cfg, **runtime_init_args)
+    model = hydra.utils.instantiate(cfg.model)
     model = model.to(device)
 
     if cfg.use_loaded_model:
@@ -194,7 +175,7 @@ def main(cfg: DictConfig):
 
     ############################# task instantiation #############################
     hydra.utils.instantiate(
-        cfg.task_cfg,
+        cfg.task,
         train_loader=train_loader,
         val_loader=val_loader,
         test_loader=test_loader,

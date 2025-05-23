@@ -1,0 +1,24 @@
+_target_: deepreaction.data.dataset.mol_graph_dataset.MolGraphDataset
+_partial_: true
+
+# === DATA PIPELINE ===================================
+defaults:
+  # Data pipeline components in chronological order
+  - data_source: split_csv_source
+  - preprocessing/column_mapper: column_filter_rename
+  - _self_ 
+
+# === DATA PIPELINE COMPONENTS ========================
+# split_csv_source
+data_folder: "deepreaction_datasets/data/e2sn2/Sn2/barriers"
+# column_filter_rename
+column_mapping:
+  smiles: "AAM"
+  label: "ea"
+
+# === DATASET =========================================
+# Additional dataset arguements (see MolGraphDataset for details)
+# subsample: null         
+# cache_graphs: true 
+# max_cache_size: null
+# preprocess_all: true

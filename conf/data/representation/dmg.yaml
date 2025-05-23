@@ -1,0 +1,12 @@
+_target_: deepreaction.representation.graph.dmg.DMG
+
+defaults:
+  - featurizer/atom_featurizer/atom_rdkit_organic@atom_featurizer
+  - featurizer/bond_featurizer/bond_rdkit_organic@bond_featurizer
+  - featurizer/atom_featurizer/qm_atom@qm_featurizer
+
+in_channel_multiplier: 1
+connection_direction: null
+concat_origin_feature: false
+pre_transform_cfg: null
+extra_zero_fvec: false

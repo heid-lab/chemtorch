@@ -2,8 +2,6 @@ import torch.nn as nn
 import torch_geometric.nn as pyg_nn
 from torch_geometric.nn import Linear as Linear_pyg
 
-from deepreaction.model.gine import GINE
-
 
 class GINELayer(nn.Module):
     """Graph Isomorphism Network with Edge features (GINE) layer."""

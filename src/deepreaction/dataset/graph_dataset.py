@@ -9,9 +9,15 @@ from torch_geometric.utils import degree
 
 from deepreaction.dataset.dataset_base import DatasetBase
 from deepreaction.representation.representation_base import RepresentationBase
-from deepreaction.transform.transform_base import TransformBase
+from deepreaction.transform.abstract_transform import AbstractTransform
 
 
+# TODO: Get rid of multiple inheritance because it is buggy:
+# Switching the order of inheritance breaks initialization because
+# torch_geometric's Dataset class `super().__init__()` which resolves 
+# to the next class in the MRO (DatasetBase), not and the the parent
+# class of Dataset as intended, causing an error because DatasetBase
+# does not receive its expected arguments.
 class GraphDataset(DatasetBase[Data], Dataset):
     """
     A flexible dataset class for molecular graphs.
@@ -27,7 +33,7 @@ class GraphDataset(DatasetBase[Data], Dataset):
         self,
         dataframe: pd.DataFrame,
         representation: RepresentationBase[Data] | Callable[..., Data],
-        transform: TransformBase[Data] | Callable[[Data], Data] = None,
+        transform: AbstractTransform[Data] | Callable[[Data], Data] = None,
         precompute_all: bool = True,
         cache_graphs: bool = True,
         max_cache_size: Optional[int] = None,
@@ -50,11 +56,16 @@ class GraphDataset(DatasetBase[Data], Dataset):
             **kwargs: Additional keyword arguments, ignored.
 
         Raises:
-            ValueError: If the data does not contain a 'label' column.
+            # ValueError: If the data does not contain a 'label' column.
             ValueError: If the subsample is not an int or a float.
             ValueError: If the dataset is not precomputed and caching is not enabled.
         """
-        DatasetBase.__init__(self, dataframe, representation, transform)
+        DatasetBase.__init__(
+            self,
+            dataframe=dataframe, 
+            representation=representation, 
+            transform=transform
+        )
         Dataset.__init__(self)
         if "label" not in dataframe.columns:
             raise ValueError(
@@ -152,7 +163,7 @@ class GraphDataset(DatasetBase[Data], Dataset):
             raise ValueError("Subsample must be an int or a float.")
 
     @property
-    def degree_statistics(self) -> Dict[str, Union[int, torch.Tensor]]:
+    def degree_statistics(self) -> Dict[str, Union[int, List]]:
         """
         Computes degree statistics for the dataset, specifically the overall maximum
         degree and a histogram of node degrees.
@@ -161,10 +172,11 @@ class GraphDataset(DatasetBase[Data], Dataset):
         as it iterates over all precomputed graphs.
 
         Returns:
-            Dict[str, Union[int, torch.Tensor]]: A dictionary containing:
+            Dict[str, Union[int, List]]: A dictionary containing:
                 - "max_degree" (int): The maximum degree found across all nodes in all graphs.
-                - "degree_histogram" (torch.Tensor): A 1D tensor where the i-th element
-                  is the total count of nodes with degree `i` across all graphs.
+                - "degree_histogram" (List[int]) A list where the i-th element
+                    is the total count of nodes with degree `i` across all graphs.
+
         Raises:
             ValueError: If `precompute_all` was False during dataset initialization.
             AttributeError: If the first graph object in the dataset is not a PyTorch Geometric
@@ -207,8 +219,8 @@ class GraphDataset(DatasetBase[Data], Dataset):
             degree_histogram += torch.bincount(
                 d, minlength=degree_histogram.numel()
             )
-
+        
         return {
             "max_degree": max_degree,
-            "degree_histogram": degree_histogram,
+            "degree_histogram": degree_histogram.tolist(),
         }

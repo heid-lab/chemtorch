@@ -1,12 +1,12 @@
 # main config 
 
 defaults:
-  - data_cfg: rdb7_dmg
-  - model_cfg: dmpnn
-  - task_cfg: regression
+  - data: rdb7_cgr
+  - model: gcn
+  - task: regression
   - override hydra/job_logging: disabled
   - override hydra/hydra_logging: disabled
-  - _self_ # placement of this matters
+  - _self_
 
 # WANDB
 wandb: false
@@ -17,12 +17,9 @@ run_name: null
 # INITIALIZATION
 seed: 0 # use 0
 
-# RUNTIME ARGS
-runtime_model_init_args_from_dataset:
-  # degree_statistics: degree_statistics
-  # in_channels: fp_length
 update_cfg_from_dataset:
   # fp_length: fp_length
+  # degree_statistics: degree_statistics
   num_node_features: num_node_features
   num_edge_features: num_edge_features
 

@@ -1,6 +1,0 @@
-_target_: deepreaction.layer.att_layer.gps_double_att.GPSDoubleAttLayer
-in_channels: ${model_cfg.hidden_channels}
-out_channels: ${model_cfg.hidden_channels}
-num_heads: 4
-dropout: 0.02
-batch_first: true

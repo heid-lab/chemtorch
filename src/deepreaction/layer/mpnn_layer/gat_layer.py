@@ -13,7 +13,7 @@ class GATLayer(nn.Module):
         concat: bool = True,
         use_edge_attr: bool = True,
     ):
-        self.super(GATLayer, self).__init__()
+        super(GATLayer, self).__init__()
         self.use_edge_attr = use_edge_attr
 
         self.gat = GATConv(

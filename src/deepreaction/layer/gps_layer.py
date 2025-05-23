@@ -1,142 +1,111 @@
-import hydra
+from typing import Any, Callable, Dict, Optional, Union
 import torch.nn as nn
-import torch_geometric.nn as pyg_nn
+from torch_geometric.data import Batch
 from torch_geometric.utils import to_dense_batch
+from torch_geometric.nn.resolver import activation_resolver
+
+from deepreaction.layer.gnn_block import GNNBlockLayer
+from deepreaction.layer.utils import ResidualConnection, init_2_layer_ffn, init_dropout, init_norm, normalize
 
 
 class GPSLayer(nn.Module):
+    """
+    Graph Propagation and Self-Attention Layer (GPSLayer) for Graph Neural Networks.
+    This layer combines message passing neural networks (MPNN) with self-attention
+    mechanisms to capture both local and global information in graph-structured data.
+
+    Citation:
+    Rampášek, L., Galkin, M., Dwivedi, V. P., Luu, A. T., Wolf, G., & 
+    Beaini, D. (2022). Recipe for a general, powerful, scalable graph 
+    transformer. Advances in Neural Information Processing Systems, 35, 
+    14501-14515. https://arxiv.org/abs/2205.12454
+    """
     def __init__(
         self,
-        in_channels,
-        out_channels,
-        mpnn_cfg,
-        att_layer_cfg,
-        layer_norm,
-        batch_norm,
-        dropout,
-        log_attn_weights=False,
-        dataset_precomputed=None,
+        mpnn: nn.Module,
+        attention: nn.MultiheadAttention,
+        hidden_channels: int,
+        dropout = 0.0,
+        use_mpnn_residual: bool = False,
+        act: Union[str, Callable, None] = "relu",
+        act_kwargs: Optional[Dict[str, Any]] = None,
+        norm: Union[str, Callable, None] = None,
+        norm_kwargs: Optional[Dict[str, Any]] = None,
+        **kwargs: Any,  # TODO: Add suppoert for PNA 'degree_statistics'
     ):
-        super(GPSLayer, self).__init__()
+        """
+        Initializes the GPSLayer.
+        
+        Args:
+            mpnn (nn.Module): The message passing neural network (MPNN) layer.
+            attention (nn.MultiheadAttention): The attention layer.
+            hidden_channels (int): Number of hidden channels.
+            use_mpnn_residual (bool): Whether to use a residual connection for the MPNN (default: `False`).
+            dropout (float): Dropout rate (default: `0.0`).
+            act (str or Callable, optional): The non-linear activation function to
+                use. (default: :obj:`"relu"`)
+            act_kwargs (Dict[str, Any], optional): Arguments passed to the
+                respective activation function defined by :obj:`act`.
+                (default: :obj:`None`)
+            norm (str or Callable, optional): The normalization function to
+                use, as implemted in PyTorch Geometric (default: `None`)
+            norm_kwargs (Dict[str, Any], optional): Arguments passed to the
+                respective normalization function defined by :obj:`norm`.
+                (default: :obj:`None`)
 
-        if dataset_precomputed:
-            self.local_gnn = hydra.utils.instantiate(
-                mpnn_cfg,
-                dataset_precomputed=dataset_precomputed,
-                _convert_="partial",
-            )
-        else:
-            self.local_gnn = hydra.utils.instantiate(mpnn_cfg)
-        self.self_attn = hydra.utils.instantiate(att_layer_cfg)
-        self.layer_norm = layer_norm
-        self.batch_norm = batch_norm
-        self.log_attn_weights = log_attn_weights
+        Raises:
+            ValueError: If `dropout` is less than `0`.
+        """
+        self.activation = activation_resolver(act, **(act_kwargs or {}))
+        self.dropout = init_dropout(dropout)
 
-        if self.layer_norm and self.batch_norm:
-            raise ValueError(
-                "Cannot apply two types of normalization together"
-            )
+        self.mpnn = mpnn
+        self.mpnn_norm = init_norm(norm, hidden_channels, norm_kwargs)
+        self.mpnn_residual = ResidualConnection(use_mpnn_residual)
 
-        if self.layer_norm:
-            self.norm1_local = pyg_nn.norm.LayerNorm(out_channels)
-            self.norm1_attn = pyg_nn.norm.LayerNorm(out_channels)
+        self.attn = attention
+        self.attn_residual = ResidualConnection(use_residual=True)
+        self.attn_norm = init_norm(norm, hidden_channels, norm_kwargs)
 
-        if self.batch_norm:
-            self.norm1_local = nn.BatchNorm1d(out_channels)
-            self.norm1_attn = nn.BatchNorm1d(out_channels)
+        self.ffn = init_2_layer_ffn(hidden_channels, dropout, self.activation)
+        self.ffn_norm = init_norm(norm, hidden_channels, norm_kwargs)
+        self.ffn_residual = ResidualConnection(use_residual=True)
 
-        self.dropout_local = nn.Dropout(dropout)
-        self.dropout_attn = nn.Dropout(dropout)
 
-        # Feed Forward block.
-        self.ff_linear1 = nn.Linear(out_channels, out_channels * 2)
-        self.ff_linear2 = nn.Linear(out_channels * 2, out_channels)
-        self.act_fn_ff = nn.ReLU()
+    def forward(self, batch: Batch):
+        # Register original input features for residual connection
+        self.mpnn_residual.register(batch.x)
+        self.ffn_residual.register(batch.x)
+        self.attn_residual.register(batch.x)
 
-        if self.layer_norm:
-            self.norm2 = pyg_nn.norm.LayerNorm(out_channels)
+        x_dense, mask = to_dense_batch(batch.x, batch.batch)
 
-        if self.batch_norm:
-            self.norm2 = nn.BatchNorm1d(out_channels)
-        self.ff_dropout1 = nn.Dropout(dropout)
-        self.ff_dropout2 = nn.Dropout(dropout)
+        # MPNN
+        batch = self.mpnn(batch)
+        h_mpnn = batch.x
+        h_mpnn = self.mpnn_residual.apply(h_mpnn)
+        h_mpnn = normalize(h_mpnn, batch, self.mpnn_norm)
 
-    def forward(self, batch):
-        h = batch.x
-        h_in1 = h
+        # Self-attention
+        h_attn = self.attn(
+            x_dense,
+            x_dense,
+            x_dense,
+            attn_mask=None,
+            key_padding_mask=~mask,
+            need_weights=False,
+        )[0][mask]
+        h_attn = self.dropout(h_attn)
+        h_attn = self.attn_residual.apply(h_attn)
+        h_attn = normalize(h_attn, batch, self.attn_norm)
 
-        h_out_list = []
-        local_out = self.local_gnn(batch)
-        # GatedGCN does residual connection and dropout internally.
-        h_local = local_out.x
-        batch.edge_attr = local_out.edge_attr
-
-        if self.layer_norm:
-            h_local = self.norm1_local(h_local, batch.batch)
-        if self.batch_norm:
-            h_local = self.norm1_local(h_local)
-        h_out_list.append(h_local)
-
-        h_dense, mask = to_dense_batch(h, batch.batch)
-        h_attn = self._sa_block(h_dense, None, ~mask)[mask]
-        h_attn = self.dropout_attn(h_attn)
-        h_attn = h_in1 + h_attn  # Residual connection.
-        if self.layer_norm:
-            h_attn = self.norm1_attn(h_attn, batch.batch)
-        if self.batch_norm:
-            h_attn = self.norm1_attn(h_attn)
-        h_out_list.append(h_attn)
-
-        # Combine local and global outputs.
-        # h = torch.cat(h_out_list, dim=-1)
-        h = sum(h_out_list)
+        # Combine local MPNN and global self-attention features
+        h = h_mpnn + h_attn
 
         # Feed Forward block.
-        h = h + self._ff_block(h)
-        if self.layer_norm:
-            h = self.norm2(h, batch.batch)
-        if self.batch_norm:
-            h = self.norm2(h)
-
+        h = self.ffn(h)
+        h = self.dropout(h)
+        h = self.ffn_residual.apply(h)
+        h = normalize(h, batch, self.ffn_norm)
         batch.x = h
         return batch
-
-    def _sa_block(self, x, attn_mask, key_padding_mask):
-        """Self-attention block."""
-        if not self.log_attn_weights:
-            x = self.self_attn(
-                x,
-                x,
-                x,
-                attn_mask=attn_mask,
-                key_padding_mask=key_padding_mask,
-                need_weights=False,
-            )[0]
-        else:
-            # Requires PyTorch v1.11+ to support `average_attn_weights=False`
-            # option to return attention weights of individual heads.
-            x, A = self.self_attn(
-                x,
-                x,
-                x,
-                attn_mask=attn_mask,
-                key_padding_mask=key_padding_mask,
-                need_weights=True,
-                average_attn_weights=False,
-            )
-            self.attn_weights = A.detach().cpu()
-        return x
-
-    def _ff_block(self, x):
-        """Feed Forward block."""
-        x = self.ff_dropout1(self.act_fn_ff(self.ff_linear1(x)))
-        return self.ff_dropout2(self.ff_linear2(x))
-
-    def extra_repr(self):
-        s = (
-            f"summary: dim_h={self.dim_h}, "
-            f"local_gnn_type={self.local_gnn_type}, "
-            f"global_model_type={self.global_model_type}, "
-            f"heads={self.num_heads}"
-        )
-        return s

@@ -1,3 +1,6 @@
+from typing import Dict
+from git import List, Union
+import torch
 import torch.nn as nn
 import torch_geometric.nn as pyg_nn
 from torch_geometric.nn import Linear as Linear_pyg
@@ -8,7 +11,7 @@ class PNALayer(nn.Module):
         self,
         in_channels: int,
         out_channels: int,
-        degree_statistics: dict,
+        degree_statistics: Dict[str, Union[int, List[int]]],
         aggregators=["mean", "min", "max", "std"],
         scalers=["identity", "amplification", "attenuation"],
         use_edge_attr: bool = True,
@@ -22,7 +25,11 @@ class PNALayer(nn.Module):
         if "degree_histogram" not in degree_statistics:
             raise ValueError("Degree histogram not found precomputed.")
 
-        self.deg = degree_statistics["degree_histogram"]
+        deg_hist = degree_statistics["degree_histogram"]
+        if not isinstance(deg_hist, torch.Tensor):
+            deg_hist = torch.tensor(deg_hist, dtype=torch.long)
+        self.degree_histogram = deg_hist
+
         self.in_channels = in_channels
         self.out_channels = out_channels
         self.aggregators = list(aggregators)
@@ -33,7 +40,7 @@ class PNALayer(nn.Module):
             self.out_channels,
             aggregators=self.aggregators,
             scalers=self.scalers,
-            deg=self.deg,
+            deg=self.degree_histogram,
             edge_dim=self.in_channels if use_edge_attr else None,
             towers=1,
             pre_layers=1,

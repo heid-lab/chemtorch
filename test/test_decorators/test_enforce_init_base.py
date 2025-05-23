@@ -85,3 +85,36 @@ def test_subclass_computes_arg_for_super_init():
     obj = SubWithComputedArg(10)
     assert obj.value == 20
     assert obj.x == 10
+
+def test_multiple_inheritance_with_enforce_base_init():
+    class BaseA:
+        def __init__(self, a):
+            self.a = a
+
+        def __init_subclass__(cls):
+            enforce_base_init(BaseA)(cls)
+            return super().__init_subclass__()
+
+    class BaseB:
+        def __init__(self, b):
+            self.b = b
+
+    class Child(BaseB, BaseA):
+        def __init__(self, a, b):
+            BaseA.__init__(self, a)  # Explicitly call BaseA's __init__
+            BaseB.__init__(self, b)  # Explicitly call BaseB's __init__
+
+    # Should not raise
+    obj = Child(1, 2)
+    assert obj.a == 1
+    assert obj.b == 2
+
+    # If we skip BaseA's __init__, should raise
+    class BadChild(BaseA, BaseB):
+        def __init__(self, a, b):
+            # Missing super().__init__(a)
+            BaseB.__init__(self, b)
+
+    import pytest
+    with pytest.raises(RuntimeError):
+        BadChild(1, 2)

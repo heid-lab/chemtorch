@@ -1,0 +1,5 @@
+node_origins_qm_enc: 
+  _target_: deepreaction.encoder.node_origins_qm_enc.NodeOriginsEncoder
+  in_channels: 2
+  out_channels: ${model.gnn.layer.hidden_channels}
+

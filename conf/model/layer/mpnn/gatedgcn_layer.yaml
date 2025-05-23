@@ -1,0 +1,7 @@
+_target_: deepreaction.layer.mpnn_layer.gatedgcn_layer.GatedGCNLayer
+in_channels: ${model.gnn.layer.hidden_channels}
+out_channels: ${model.gnn.layer.hidden_channels}
+dropout: 0
+use_residual: true
+equivstable_pe: false
+act: relu

@@ -1,0 +1,7 @@
+_target_: deepreaction.representation.graph.cgr.CGR
+
+defaults:
+  - featurizer/atom_featurizer/atom_rdkit_organic@atom_featurizer
+  - featurizer/bond_featurizer/bond_rdkit_organic@bond_featurizer
+
+in_channel_multiplier: 2

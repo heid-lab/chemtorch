@@ -2,6 +2,7 @@ import torch
 import torch.nn.functional as F
 import torch_geometric.nn as pyg_nn
 from torch import Tensor
+from torch import nn
 from torch_geometric.nn import MessagePassing
 from torch_geometric.nn.conv.gcn_conv import gcn_norm
 from torch_geometric.typing import Adj, OptTensor, SparseTensor
@@ -108,7 +109,7 @@ class GCNConvWithEdges(MessagePassing):
         return f"{self.__class__.__name__}({self.in_channels}, {self.out_channels})"
 
 
-class GCNLayer(MPNNLayerBase):
+class GCNLayer(nn.Module):
     """GCN layer that can optionally use edge attributes."""
 
     def __init__(

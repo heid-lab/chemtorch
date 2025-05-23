@@ -7,10 +7,10 @@ from deepreaction.representation.graph.graph_reprs_utils import (
     AtomOriginType,
     EdgeOriginType,
 )
-from deepreaction.transform.transform_base import TransformBase
+from deepreaction.transform.abstract_transform import AbstractTransform
 
 
-class DummyNodeTransform(TransformBase[Data]):
+class DummyNodeTransform(AbstractTransform[Data]):
     def __init__(
         self,
         mode: str,
@@ -28,7 +28,7 @@ class DummyNodeTransform(TransformBase[Data]):
 
     
     # override
-    def forward(self, x: Data) -> Data:
+    def __call__(self, x: Data) -> Data:
         if (
             AtomOriginType.REACTANT_PRODUCT.value in x.atom_origin_type
             and self.mode == "reactant_product"

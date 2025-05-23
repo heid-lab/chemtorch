@@ -1,4 +1,0 @@
-_target_: deepreaction.data_pipeline.data_splitter.ratio_splitter.RatioSplitter
-train_ratio: ${data_cfg.dataset_cfg.train_ratio}
-val_ratio: ${data_cfg.dataset_cfg.val_ratio}
-test_ratio: ${data_cfg.dataset_cfg.test_ratio}
