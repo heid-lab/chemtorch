@@ -5,33 +5,36 @@ import time
 import hydra
 import numpy as np
 import torch
-from omegaconf import DictConfig
+from omegaconf import DictConfig, OmegaConf
 from sklearn.metrics import mean_absolute_error, root_mean_squared_error
 from torch import nn
 
 import wandb
-from deepreaction.utils.standardizer import Standardizer
-
 from deepreaction.utils.misc import (
     check_early_stopping,
     load_model,
+    load_standardizer,
     save_model,
     save_standardizer,
 )
+from deepreaction.utils.standardizer import Standardizer
 
 # torch.autograd.set_detect_anomaly(True)
+
 
 def predict(model, loader, stdzer, device):
     model.eval()
     preds = []
     with torch.no_grad():
-        for data in loader:
-            data = data.to(device)
-            out = model(data)           # shape: (batch_size, 1)
+        for X, y in loader:
+            X = X.to(device)
+            y = y.to(device)
+            out = model(X)         # shape: (batch_size, 1)
             out = out.squeeze(-1)       # shape: (batch_size)
             pred = stdzer(out, rev=True)
             preds.extend(pred.cpu().detach().tolist())
     return preds
+
 
 def train_epoch(
     model,
@@ -47,13 +50,14 @@ def train_epoch(
     model.train()
     loss_all = 0
 
-    for data in train_loader:
-        data = data.to(device)
+    for X, y in train_loader:
+        X = X.to(device)
+        y = y.to(device)
         optimizer.zero_grad()
 
-        out = model(data)
+        out = model(X)
         out = out.squeeze(-1)
-        result = loss_fn(out, stdzer(data.y))
+        result = loss_fn(out, stdzer(y))
         result.backward()
 
         if clip_grad_norm:
@@ -61,28 +65,30 @@ def train_epoch(
                 model.parameters(), clip_grad_norm_value
             )
         optimizer.step()
-        loss_all += loss_fn(stdzer(out, rev=True), data.y)
+        loss_all += loss_fn(stdzer(out, rev=True), y)
 
     epoch_time = time.time() - start_time
     return math.sqrt(loss_all / len(train_loader.dataset)), epoch_time
 
 
-def train(train_loader, 
-          val_loader, 
-          test_loader, 
-          model,
-          device, 
-          epochs, 
-          clip_grad_norm,
-          clip_grad_norm_value,
-          patience,
-          min_delta,
-          save_model_parameters,
-          model_path,
-          loss: DictConfig, 
-          optimizer: DictConfig, 
-          scheduler: DictConfig, 
-          use_wandb=False):
+def train(
+    train_loader,
+    val_loader,
+    test_loader,
+    model,
+    device,
+    epochs,
+    clip_grad_norm,
+    clip_grad_norm_value,
+    patience,
+    min_delta,
+    save_model_parameters,
+    model_path,
+    loss: DictConfig,
+    optimizer: DictConfig,
+    scheduler: DictConfig,
+    use_wandb=False,
+):
 
     train_labels = train_loader.dataset.get_labels()
     mean = np.mean(train_labels)
@@ -146,9 +152,7 @@ def train(train_loader,
         if val_loss < best_val_loss:
             best_val_loss = val_loss
             if save_model_parameters:
-                save_model(
-                    model, optimizer, epoch, best_val_loss, model_path
-                )
+                save_model(model, optimizer, epoch, best_val_loss, model_path)
                 save_standardizer(mean, std, model_path)
 
         print(

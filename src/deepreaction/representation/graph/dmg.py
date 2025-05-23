@@ -53,7 +53,7 @@ class DMG(AbstractRepresentation[Data]):
 
 
     # override
-    def construct(self, smiles: str, label: Optional[float] = None) -> Data:
+    def construct(self, smiles: str) -> Data:
         # Parse reactant and product SMILES
         smiles_reac, _, smiles_prod = smiles.split(">")
 
@@ -161,8 +161,6 @@ class DMG(AbstractRepresentation[Data]):
             torch.tensor(f_bonds, dtype=torch.float)
             if f_bonds else torch.zeros((0, len(self.bond_featurizer(None))), dtype=torch.float)
         )
-        if label is not None:
-            data.y = torch.tensor([label], dtype=torch.float)
         data.smiles = smiles
         data.atom_origin_type = torch.tensor(atom_origin_type, dtype=torch.long)
         data.atom_compound_idx = torch.tensor(atom_compound_idx, dtype=torch.long)

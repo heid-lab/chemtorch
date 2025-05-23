@@ -1,5 +1,3 @@
-import time
-from functools import lru_cache
 from typing import Callable, Dict, List, Optional, Union
 
 import pandas as pd
@@ -35,7 +33,7 @@ class GraphDataset(DatasetBase[Data], Dataset):
         representation: AbstractRepresentation[Data] | Callable[..., Data],
         transform: AbstractTransform[Data] | Callable[[Data], Data] = None,
         precompute_all: bool = True,
-        cache_graphs: bool = True,
+        cache: bool = True,
         max_cache_size: Optional[int] = None,
         subsample: Optional[int | float] = None,
     ):
@@ -52,7 +50,7 @@ class GraphDataset(DatasetBase[Data], Dataset):
             subsample (Optional[int | float]): The subsample size or fraction.
 
         Raises:
-            # ValueError: If the data does not contain a 'label' column.
+            ValueError: If the data does not contain a 'label' column.
             ValueError: If the subsample is not an int or a float.
             ValueError: If the dataset is not precomputed and caching is not enabled.
         """
@@ -60,103 +58,13 @@ class GraphDataset(DatasetBase[Data], Dataset):
             self,
             dataframe=dataframe, 
             representation=representation, 
-            transform=transform
+            transform=transform,
+            precompute_all=precompute_all,
+            cache=cache,
+            max_cache_size=max_cache_size,
+            subsample=subsample
         )
-        # Dataset.__init__(self)
-        if "label" not in dataframe.columns:
-            raise ValueError(
-                f"Dataframe must contain a 'label' column, received columns: {dataframe.columns}"
-            )
-
-        self.dataframe = self._subsample_data(dataframe, subsample)
-        self.representation = representation
-        self.transform = transform
-
-        self.precompute_all = precompute_all
-        self.precomputed_graphs: Optional[List[Data]] = None
-        self.precompute_time: float = 0.0
-
-        if self.precompute_all:
-            print(f"INFO: Precomputing {len(self.dataframe)} graphs...")
-            start_time = time.time()
-            self.precomputed_graphs = [
-                self._process_sample_by_idx(idx)
-                for idx in range(len(self.dataframe))
-            ]
-            self.precompute_time = time.time() - start_time
-            print(
-                f"INFO: Precomputation finished in {self.precompute_time:.2f}s."
-            )
-        else:
-            if cache_graphs:
-                self._get_processed_sample = lru_cache(
-                    max_size=max_cache_size
-                )(self._process_sample_by_idx)
-            else:
-                self._get_processed_sample = self._process_sample_by_idx
-
-    def __len__(self) -> int:
-        """
-        Return the number of samples in the dataset.
-
-        Returns:
-            int: Number of samples.
-        """
-        return len(self.dataframe)
-
-    def __getitem__(self, idx) -> Data:
-        """
-        Retrieve a processed graph by its index.
-
-        Args:
-            idx (int): Index of the sample to retrieve.
-
-        Returns:
-            Data: A PyTorch Geometric `Data` object representing the molecular graph.
-        """
-        if self.precompute_all:
-            if self.precomputed_graphs is None:
-                raise RuntimeError(
-                    f"Graphs were set to be precomputed but are not available."
-                )
-            return self.precomputed_graphs[idx]
-        else:
-            return self._get_processed_sample(idx)
-
-    def _process_sample_by_idx(self, idx: int) -> Data:
-        sample = self.dataframe.iloc[idx]
-        return self._process_sample(sample)
-
-    # TODO: Remove this method
-    def get_labels(self):
-        """
-        Retrieve the labels for the dataset.
-
-        Returns:
-            pd.Series: The labels for the dataset.
-        """
-        return self.dataframe["label"].values
-
-    def _subsample_data(
-        self, data: pd.DataFrame, subsample: Optional[int | float]
-    ) -> pd.DataFrame:
-        """
-        Subsample the data.
-
-        Args:
-            data (pd.DataFrame): The original data.
-            subsample (Optional[int | float]): The subsample size or fraction.
-        Returns:
-            pd.DataFrame: The subsampled data.
-        """
-        if subsample is None or subsample == 1.0:
-            return data
-        elif isinstance(subsample, int):
-            return data.sample(n=subsample)
-        elif isinstance(subsample, float):
-            return data.sample(frac=subsample)
-        else:
-            raise ValueError("Subsample must be an int or a float.")
+        Dataset.__init__(self)
 
     @property
     def degree_statistics(self) -> Dict[str, Union[int, List]]:

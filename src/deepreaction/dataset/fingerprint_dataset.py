@@ -1,3 +1,4 @@
+from re import sub
 import time
 from functools import lru_cache
 from typing import Callable, List, Optional
@@ -33,93 +34,22 @@ class FingerprintDataset(DatasetBase[torch.Tensor], Dataset):
             | Callable[[torch.Tensor], torch.Tensor]
         ) = None,
         precompute_all: bool = True,
-        cache_fingerprints: bool = True,
+        cache: bool = True,
         max_cache_size: Optional[int] = None,
         subsample: Optional[int | float] = None,
     ):
-        """
-        Initialize the FingerprintDataset.
-
-        Args:
-            dataframe (pd.DataFrame): The dataframe containing the input data.
-            representation (RepresentationBase[torch.Tensor] | Callable[..., torch.Tensor]): The representation creator.
-            transform (TransformBase[torch.Tensor] | Callable[[torch.Tensor], torch.Tensor]): The transform to apply to the data.
-            precompute_all (bool): Whether to precompute all fingerprints upfront.
-            cache_fingerprints (bool): Whether to cache processed fingerprints (if not precomputing).
-            max_cache_size (Optional[int]): Maximum size of the cache (if caching is enabled).
-            subsample (Optional[int | float]): The subsample size or fraction.
-
-        Raises:
-            ValueError: If the data does not contain a 'label' column.
-            ValueError: If the subsample is not an int or a float.
-            ValueError: If the dataset is not precomputed and caching is not enabled.
-        """
-        DatasetBase.__init__(self, dataframe, representation, transform)
+        DatasetBase.__init__(
+            self, 
+            dataframe=dataframe, 
+            representation=representation, 
+            transform=transform,
+            precompute_all=precompute_all,
+            cache=cache,
+            max_cache_size=max_cache_size,
+            subsample=subsample
+        )
         Dataset.__init__(self)
-        if "label" not in dataframe.columns:
-            raise ValueError(
-                f"Dataframe must contain a 'label' column, received columns: {dataframe.columns}"
-            )
 
-        self.dataframe = self._subsample_data(dataframe, subsample)
-        self.representation = representation
-        self.transforms = transform
-
-        self.precompute_all = precompute_all
-        self.precomputed_fingerprints: Optional[List[torch.Tensor]] = None
-        self.precompute_time: float = 0.0
-
-        if self.precompute_all:
-            print(f"INFO: Precomputing {len(self.dataframe)} fingerprints...")
-            start_time = time.time()
-            self.precomputed_fingerprints = [
-                self._process_sample_by_idx(idx)
-                for idx in range(len(self.dataframe))
-            ]
-            self.precompute_time = time.time() - start_time
-            print(
-                f"INFO: Precomputation finished in {self.precompute_time:.2f}s."
-            )
-        else:
-            if cache_fingerprints:
-                self._get_processed_sample = lru_cache(
-                    max_size=max_cache_size
-                )(self._process_sample_by_idx)
-            else:
-                self._get_processed_sample = self._process_sample_by_idx
-
-    def __len__(self) -> int:
-        """
-        Return the number of samples in the dataset.
-
-        Returns:
-            int: Number of samples.
-        """
-        return len(self.dataframe)
-
-    def __getitem__(self, idx) -> torch.Tensor:
-        """
-        Retrieve a processed fingerprint by its index.
-
-        Args:
-            idx (int): Index of the sample to retrieve.
-
-        Returns:
-            Data: A PyTorch `Tensor` object representing the molecular fingerprint.
-        """
-        if self.precompute_all:
-            if self.precomputed_fingerprints is None:
-                raise RuntimeError(
-                    f"Fingerprints were set to be precomputed but are not available."
-                )
-            return self.precomputed_fingerprints[idx]
-        else:
-            return self._get_processed_sample(idx)
-
-    def _process_sample_by_idx(self, idx: int) -> torch.Tensor:
-        sample = self.dataframe.iloc[idx]
-        fingerprint = self._process_sample(sample[["smiles"]])
-        return fingerprint, torch.tensor(sample["label"], dtype=torch.float32)
 
     @property
     def fp_length(self) -> int:
@@ -134,35 +64,3 @@ class FingerprintDataset(DatasetBase[torch.Tensor], Dataset):
             )
         
         return fingerprint.shape[0]
-
-
-    # TODO: Remove this method
-    def get_labels(self):
-        """
-        Retrieve the labels for the dataset.
-
-        Returns:
-            pd.Series: The labels for the dataset.
-        """
-        return self.dataframe["label"].values
-
-    def _subsample_data(
-        self, data: pd.DataFrame, subsample: Optional[int | float]
-    ) -> pd.DataFrame:
-        """
-        Subsample the data.
-
-        Args:
-            data (pd.DataFrame): The original data.
-            subsample (Optional[int | float]): The subsample size or fraction.
-        Returns:
-            pd.DataFrame: The subsampled data.
-        """
-        if subsample is None or subsample == 1.0:
-            return data
-        elif isinstance(subsample, int):
-            return data.sample(n=subsample)
-        elif isinstance(subsample, float):
-            return data.sample(frac=subsample)
-        else:
-            raise ValueError("Subsample must be an int or a float.")

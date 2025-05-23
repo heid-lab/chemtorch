@@ -40,7 +40,7 @@ class CGR(AbstractRepresentation[Data]):
 
 
     # override
-    def construct(self, smiles: str, label: Optional[float] = None) -> Data:
+    def construct(self, smiles: str) -> Data:
         """
         Construct a CGR graph from the sample.
         """
@@ -113,8 +113,6 @@ class CGR(AbstractRepresentation[Data]):
             )
             data.edge_origin_type = torch.empty((0), dtype=torch.long)
 
-        if label is not None:
-            data.y = torch.tensor([label], dtype=torch.float)
         data.smiles = smiles  # Store original reaction SMILES
         data.atom_origin_type = torch.tensor(
             atom_origin_type_list, dtype=torch.long
