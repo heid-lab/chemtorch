@@ -6,7 +6,7 @@ from torch_geometric.data import Batch
 from torch_geometric.nn.resolver import activation_resolver
 
 from deepreaction.layer.utils import ResidualConnection, init_2_layer_ffn, init_dropout, init_norm, normalize
-from deepreaction.utils.decorators.enforce_base_init import enforce_base_init
+from deepreaction.utils import enforce_base_init
 
 class GNNBlockLayer(nn.Module):
     """

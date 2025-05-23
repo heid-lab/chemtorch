@@ -8,16 +8,15 @@ T = TypeVar("T")
 class AbstractTransform(ABC, Generic[T]):
     """
     Abstract base class for transforms in the DeepReaction framework.
-    This class serves as a base for creating transforms that operate on single data 
-    points.
+    This class serves as a base for creating transforms that operate single objects.
 
     Raises:
         TypeError: If the subclass does not implement the :attr:`__call__` method.
 
     Example (correct usage):
         >>> class MyTransform(TransformBase[int]):
-        ...     def __call__(self, data: int) -> int:
-        ...         return data * 2
+        ...     def __call__(self, obj: int) -> int:
+        ...         return obj * 2
         >>> t = MyTransform()
         >>> t(3)
         6
@@ -32,5 +31,15 @@ class AbstractTransform(ABC, Generic[T]):
     """
 
     @abstractmethod
-    def __call__(self, data: T) -> T:
+    def __call__(self, obj: T) -> T:
+        """
+        Abstract method to be implemented by subclasses.
+        This method should define the transformation logic.
+
+        Args:
+            obj (T): The object to be transformed.
+            
+        Returns:
+            T: The transformed object.
+        """
         pass

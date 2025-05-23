@@ -1,10 +1,8 @@
 from typing import List, Optional, Tuple
 
-import hydra
 import torch
 
 from torch_geometric.data import Data
-from omegaconf import DictConfig
 from rdkit import Chem
 
 from deepreaction.representation.graph.graph_reprs_utils import (
@@ -13,10 +11,10 @@ from deepreaction.representation.graph.graph_reprs_utils import (
     make_mol,
     map_reac_to_prod,
 )
-from deepreaction.representation.representation_base import RepresentationBase
+from deepreaction.representation import AbstractRepresentation
 
 
-class CGR(RepresentationBase[Data]):
+class CGR(AbstractRepresentation[Data]):
     """
     Stateless class for constructing Condensed Graph of Reaction (CGR) representations.
 

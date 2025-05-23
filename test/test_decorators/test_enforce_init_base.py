@@ -1,5 +1,5 @@
 import pytest
-from deepreaction.utils.decorators.enforce_base_init import enforce_base_init
+from deepreaction.utils import enforce_base_init
 
 def test_subclass_calls_super_init():
     class Base:

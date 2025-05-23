@@ -1,7 +1,7 @@
 import pandas as pd
 import pytest
-from deepreaction.data_pipeline.data_split import DataSplit
-from deepreaction.data_pipeline.column_mapper.column_filter_rename import ColumnFilterAndRename
+from deepreaction.utils import DataSplit
+from deepreaction.data_pipeline.column_mapper import ColumnFilterAndRename
 
 def test_column_filter_and_rename_success():
     # Mock input DataFrames

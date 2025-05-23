@@ -8,19 +8,19 @@ from torch_geometric.data import Data, Dataset
 from torch_geometric.utils import degree
 
 from deepreaction.dataset.dataset_base import DatasetBase
-from deepreaction.representation.representation_base import RepresentationBase
-from deepreaction.transform.abstract_transform import AbstractTransform
+from deepreaction.representation import AbstractRepresentation
+from deepreaction.transform import AbstractTransform
 
 
 # TODO: Get rid of multiple inheritance because it is buggy:
 # Switching the order of inheritance breaks initialization because
 # torch_geometric's Dataset class `super().__init__()` which resolves 
-# to the next class in the MRO (DatasetBase), not and the the parent
-# class of Dataset as intended, causing an error because DatasetBase
+# to the next class in the MRO (DataModuleBase), not and the the parent
+# class of Dataset as intended, causing an error because DataModuleBase
 # does not receive its expected arguments.
 class GraphDataset(DatasetBase[Data], Dataset):
     """
-    A flexible dataset class for molecular graphs.
+    Data module for molecular graphs.
     It allows for subsampling the data, caching processed graphs, and precomputing all graphs.
 
     Note:
@@ -32,14 +32,12 @@ class GraphDataset(DatasetBase[Data], Dataset):
     def __init__(
         self,
         dataframe: pd.DataFrame,
-        representation: RepresentationBase[Data] | Callable[..., Data],
+        representation: AbstractRepresentation[Data] | Callable[..., Data],
         transform: AbstractTransform[Data] | Callable[[Data], Data] = None,
         precompute_all: bool = True,
         cache_graphs: bool = True,
         max_cache_size: Optional[int] = None,
         subsample: Optional[int | float] = None,
-        *args,  # ingore any additional positional arguments
-        **kwargs,  # ignore any additional keyword arguments
     ):
         """
         Initialize the GraphDataset.
@@ -52,8 +50,6 @@ class GraphDataset(DatasetBase[Data], Dataset):
             cache_graphs (bool): Whether to cache processed graphs (if not precomputing).
             max_cache_size (Optional[int]): Maximum size of the cache (if caching is enabled).
             subsample (Optional[int | float]): The subsample size or fraction.
-            *args: Additional positional arguments, ignored.
-            **kwargs: Additional keyword arguments, ignored.
 
         Raises:
             # ValueError: If the data does not contain a 'label' column.
@@ -66,7 +62,7 @@ class GraphDataset(DatasetBase[Data], Dataset):
             representation=representation, 
             transform=transform
         )
-        Dataset.__init__(self)
+        # Dataset.__init__(self)
         if "label" not in dataframe.columns:
             raise ValueError(
                 f"Dataframe must contain a 'label' column, received columns: {dataframe.columns}"
@@ -74,7 +70,7 @@ class GraphDataset(DatasetBase[Data], Dataset):
 
         self.dataframe = self._subsample_data(dataframe, subsample)
         self.representation = representation
-        self.transforms = transform
+        self.transform = transform
 
         self.precompute_all = precompute_all
         self.precomputed_graphs: Optional[List[Data]] = None

@@ -6,14 +6,14 @@ import pandas as pd
 import torch
 from torch.utils.data import Dataset
 
-from deepreaction.dataset.dataset_base import DatasetBase
-from deepreaction.representation.representation_base import RepresentationBase
-from deepreaction.transform.abstract_transform import AbstractTransform
+from deepreaction.dataset import DatasetBase
+from deepreaction.representation import AbstractRepresentation
+from deepreaction.transform import AbstractTransform
 
 
 class FingerprintDataset(DatasetBase[torch.Tensor], Dataset):
     """
-    A flexible dataset class for molecular fingerprints.
+    Data module for molecular fingerprints.
     It allows for subsampling the data, caching processed fingerprints, and precomputing all fingerprints.
 
     Note:
@@ -26,7 +26,7 @@ class FingerprintDataset(DatasetBase[torch.Tensor], Dataset):
         self,
         dataframe: pd.DataFrame,
         representation: (
-            RepresentationBase[torch.Tensor] | Callable[..., torch.Tensor]
+            AbstractRepresentation[torch.Tensor] | Callable[..., torch.Tensor]
         ),
         transform: (
             AbstractTransform[torch.Tensor]
@@ -36,8 +36,6 @@ class FingerprintDataset(DatasetBase[torch.Tensor], Dataset):
         cache_fingerprints: bool = True,
         max_cache_size: Optional[int] = None,
         subsample: Optional[int | float] = None,
-        *args,  # ingore any additional positional arguments
-        **kwargs,  # ignore any additional keyword arguments
     ):
         """
         Initialize the FingerprintDataset.
@@ -50,8 +48,6 @@ class FingerprintDataset(DatasetBase[torch.Tensor], Dataset):
             cache_fingerprints (bool): Whether to cache processed fingerprints (if not precomputing).
             max_cache_size (Optional[int]): Maximum size of the cache (if caching is enabled).
             subsample (Optional[int | float]): The subsample size or fraction.
-            *args: Additional positional arguments, ignored.
-            **kwargs: Additional keyword arguments, ignored.
 
         Raises:
             ValueError: If the data does not contain a 'label' column.

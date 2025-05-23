@@ -12,9 +12,9 @@ from deepreaction.representation.graph.graph_reprs_utils import (
     make_mol,
     map_reac_to_prod,
 )
-from deepreaction.representation.representation_base import RepresentationBase
+from deepreaction.representation import AbstractRepresentation
 
-class DMG(RepresentationBase[Data]):
+class DMG(AbstractRepresentation[Data]):
     """
     Stateless class for constructing Dual Molecular Graph (DMG) representations.
 

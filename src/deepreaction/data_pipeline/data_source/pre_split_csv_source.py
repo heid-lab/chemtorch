@@ -1,11 +1,11 @@
 import os
 import pandas as pd
 from typing_extensions import override
-from deepreaction.data_pipeline.data_source.data_source import DataSource
-from deepreaction.data_pipeline.data_split import DataSplit
+from deepreaction.data_pipeline.data_source import DataSource
+from deepreaction.utils import DataSplit
 
 
-class SplitCSVSource(DataSource):
+class PreSplitCSVSource(DataSource):
     def __init__(
             self,
             data_folder: str,
@@ -15,7 +15,7 @@ class SplitCSVSource(DataSource):
     @override
     def load(self) -> DataSplit:
         """
-        Load data from multiple CSV files in a specified folder.
+        Load presplit data from CSV files in a specified folder.
         The files should be named 'train.csv', 'val.csv', and 'test.csv'.
         """
         files = {

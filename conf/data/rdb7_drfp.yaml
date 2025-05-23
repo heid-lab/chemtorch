@@ -1,6 +1,0 @@
-defaults:
-  - dataset: rdb7_with_splits_fp
-  - representation: drfp
-  - transform: null             # Specify list of transforms
-  - dataset_transform: null     # Specify list of dataset_transforms
-  - dataloader: torch_dataloader

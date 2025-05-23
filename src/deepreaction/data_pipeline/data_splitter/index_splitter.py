@@ -3,8 +3,8 @@ import pickle
 import pandas as pd
 from typing_extensions import override
 
-from deepreaction.data_pipeline.data_split import DataSplit
-from deepreaction.data_pipeline.data_splitter.data_splitter import DataSplitter
+from deepreaction.utils import DataSplit
+from deepreaction.data_pipeline.data_splitter import DataSplitter
 
 
 class IndexSplitter(DataSplitter):
@@ -31,7 +31,7 @@ class IndexSplitter(DataSplitter):
         }
 
     @override
-    def forward(self, df: pd.DataFrame) -> DataSplit:
+    def __call__(self, df: pd.DataFrame) -> DataSplit:
         """
         Splits the raw data into training, validation, and test partitions based on the specified indices.
 

@@ -1,0 +1,11 @@
+_target_: deepreaction.dataset.GraphDataset
+_partial_: true
+
+defaults:
+  - representation: cgr
+
+transform: null
+subsample: 0.1         
+# preprocess_all: true
+# cache_graphs: true 
+# max_cache_size: null

@@ -5,7 +5,7 @@ from typing import TypeVar, Generic
 T = TypeVar("T")
 
 
-class RepresentationBase(ABC, Generic[T]):
+class AbstractRepresentation(ABC, Generic[T]):
     """
     Abstract base class for all stateless representation creators.
 

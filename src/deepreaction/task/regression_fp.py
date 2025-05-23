@@ -10,14 +10,14 @@ from sklearn.metrics import mean_absolute_error, root_mean_squared_error
 from torch import nn
 
 import wandb
-from deepreaction.misc import (
+from deepreaction.utils.misc import (
     check_early_stopping,
     load_model,
     load_standardizer,
     save_model,
     save_standardizer,
 )
-from deepreaction.standardizer import Standardizer
+from deepreaction.utils.standardizer import Standardizer
 
 # torch.autograd.set_detect_anomaly(True)
 
@@ -50,14 +50,14 @@ def train_epoch(
     model.train()
     loss_all = 0
 
-    for data_x, data_y in train_loader:
-        data_x = data_x.to(device)
-        data_y = data_y.to(device)
+    for X, y in train_loader:
+        X = X.to(device)
+        y = y.to(device)
         optimizer.zero_grad()
 
-        out = model(data_x)
+        out = model(X)
         out = out.squeeze(-1)
-        result = loss_fn(out, stdzer(data_y))
+        result = loss_fn(out, stdzer(y))
         result.backward()
 
         if clip_grad_norm:
@@ -65,7 +65,7 @@ def train_epoch(
                 model.parameters(), clip_grad_norm_value
             )
         optimizer.step()
-        loss_all += loss_fn(stdzer(out, rev=True), data_y)
+        loss_all += loss_fn(stdzer(out, rev=True), y)
 
     epoch_time = time.time() - start_time
     return math.sqrt(loss_all / len(train_loader.dataset)), epoch_time

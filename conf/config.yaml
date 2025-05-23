@@ -1,7 +1,9 @@
 # main config 
 
 defaults:
-  - data: rdb7_cgr
+  - data_pipeline: rdb7
+  - dataset: graph
+  - dataloader: pyg_dataloader
   - model: gcn
   - task: regression
   - override hydra/job_logging: disabled

@@ -1,7 +1,7 @@
 from typing_extensions import override
 import pandas as pd
-from deepreaction.data_pipeline.data_splitter.data_splitter import DataSplitter
-from deepreaction.data_pipeline.data_split import DataSplit
+from deepreaction.data_pipeline.data_splitter import DataSplitter
+from deepreaction.utils import DataSplit
 
 
 class RatioSplitter(DataSplitter):
@@ -33,7 +33,7 @@ class RatioSplitter(DataSplitter):
 
 
     @override
-    def forward(self, df: pd.DataFrame) -> DataSplit:
+    def __call__(self, df: pd.DataFrame) -> DataSplit:
         """
         Splits the raw data into training, validation, and test partitions based on the specified ratios.
 

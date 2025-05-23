@@ -1,0 +1,9 @@
+_target_: deepreaction.utils.CallableCompose
+
+callables:
+  - _target_: deepreaction.data_pipeline.data_source.PreSplitCSVSource
+    data_folder: "deepreaction_datasets/data/cycloaddition/barriers"
+  - _target_: deepreaction.data_pipeline.column_mapper.ColumnFilterAndRename
+    column_mapping:
+      smiles: "rxn_smiles"
+      label: "G_act"

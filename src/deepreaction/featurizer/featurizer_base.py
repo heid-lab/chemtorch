@@ -2,7 +2,7 @@ from typing import Any, Callable, Generic, List, Optional, Tuple, TypeVar
 
 from deepreaction.featurizer.abstract_featurizer import AbstractFeaturizer
 from deepreaction.featurizer.utils import featurize
-from deepreaction.utils.decorators.enforce_base_init import enforce_base_init
+from deepreaction.utils import enforce_base_init
 
 T = TypeVar("T")
 

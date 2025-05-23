@@ -1,14 +1,12 @@
 from typing import Callable, Optional, TypeVar, Generic
 import pandas as pd
 
-from deepreaction.representation.representation_base import RepresentationBase
-from deepreaction.transform.abstract_transform import AbstractTransform
-from deepreaction.utils.decorators.enforce_base_init import enforce_base_init
+from deepreaction.representation import AbstractRepresentation
+from deepreaction.transform import AbstractTransform
+from deepreaction.utils import enforce_base_init
 
 
 T = TypeVar("T")
-
-
 class DatasetBase(Generic[T]):
     """
     Base class for DeepReaction datasets.
@@ -43,7 +41,7 @@ class DatasetBase(Generic[T]):
     def __init__(
         self,
         dataframe: pd.DataFrame,
-        representation: RepresentationBase[T] | Callable[..., T],
+        representation: AbstractRepresentation[T] | Callable[..., T],
         transform: Optional[AbstractTransform[T] | Callable[[T], T]] = None
     ):
         """
@@ -65,7 +63,7 @@ class DatasetBase(Generic[T]):
         """
         if not isinstance(dataframe, pd.DataFrame):
             raise ValueError("dataframe must be a pandas DataFrame.")
-        if not isinstance(representation, (RepresentationBase, Callable)):
+        if not isinstance(representation, (AbstractRepresentation, Callable)):
             raise ValueError(
                 "representation must be a RepresentationBase or a callable."
             )
