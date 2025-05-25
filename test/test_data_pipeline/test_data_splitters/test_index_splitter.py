@@ -1,8 +1,8 @@
 import pickle
 import pandas as pd
 import pytest
-from deepreaction.data_pipeline.data_split import DataSplit
-from deepreaction.data_pipeline.data_splitter.index_splitter import IndexSplitter
+from deepreaction.utils import DataSplit
+from deepreaction.data_pipeline.data_splitter import IndexSplitter
 
 
 @pytest.fixture
@@ -38,7 +38,7 @@ def malformed_pickle_file(tmp_path):
 def test_index_splitter(sample_dataframe, index_pickle_file):
     """Test the IndexSplitter functionality."""
     splitter = IndexSplitter(split_index_path=index_pickle_file)
-    data_split = splitter.forward(sample_dataframe)
+    data_split = splitter.__call__(sample_dataframe)
 
     # Check that the output is a DataSplit object
     assert isinstance(data_split, DataSplit)
@@ -74,7 +74,7 @@ def test_index_splitter_empty_dataframe(index_pickle_file):
     splitter = IndexSplitter(split_index_path=index_pickle_file)
     empty_df = pd.DataFrame()
     with pytest.raises(ValueError, match="Input DataFrame is empty"):
-        splitter.forward(empty_df)
+        splitter.__call__(empty_df)
 
 
 def test_index_splitter_malformed_pickle(malformed_pickle_file):
@@ -90,7 +90,7 @@ def test_index_splitter_out_of_bounds_indices(index_pickle_file, sample_datafram
         pickle.dump([[[0, 1, 2, 100], [5, 6], [7, 8, 9]]], f)
     splitter = IndexSplitter(split_index_path=index_pickle_file)
     with pytest.raises(IndexError):
-        splitter.forward(sample_dataframe)
+        splitter.__call__(sample_dataframe)
 
 
 def test_index_splitter_duplicate_indices(tmp_path, sample_dataframe):
@@ -100,7 +100,7 @@ def test_index_splitter_duplicate_indices(tmp_path, sample_dataframe):
     with open(split_index_path, "wb") as f:
         pickle.dump([indices], f)
     splitter = IndexSplitter(split_index_path=str(split_index_path))
-    data_split = splitter.forward(sample_dataframe)
+    data_split = splitter.__call__(sample_dataframe)
     # Check that index 2 appears in both train and val splits
     assert 2 in data_split.train.index.values
     assert 2 in data_split.val.index.values
@@ -132,4 +132,4 @@ def test_index_splitter_empty_dataframe(index_pickle_file):
     splitter = IndexSplitter(split_index_path=index_pickle_file)
     empty_df = pd.DataFrame()
     with pytest.raises(ValueError, match="Input DataFrame is empty"):
-        splitter.forward(empty_df)
+        splitter.__call__(empty_df)

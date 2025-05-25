@@ -3,13 +3,11 @@ import os
 import hydra
 import torch
 from omegaconf import DictConfig, OmegaConf
-from torch import nn
 
 import wandb
-from deepreaction.data_pipeline.data_source.data_source import DataSource
-from deepreaction.data_pipeline.data_split import DataSplit
-from deepreaction.misc import load_model, set_seed
-from deepreaction.transform.transform_compose import TransformCompose
+from deepreaction.utils import DataSplit
+from deepreaction.utils import load_model, set_seed
+from deepreaction.utils import CallableCompose
 
 OmegaConf.register_new_resolver("eval", eval)
 
@@ -28,50 +26,20 @@ def main(cfg: DictConfig):
         device = torch.device("cpu")
     print(f"Using device: {device}")
 
-    ##### SOURCE PIPELINE ########################################################
-    # TODO: Instantiate source pipeline as a whole using hydra
-    data_source: DataSource = hydra.utils.instantiate(
-        cfg.data.dataset.data_source
-    )
-    preprocessing = getattr(
-        cfg.data.dataset, "preprocessing", {}
-    )
-    preprocessing_pipeline = nn.Sequential(
-        *[
-            hydra.utils.instantiate(config)
-            for config in preprocessing.values()
-        ]
-    )
+    ##### DATA PIPELINE #########################################################
+    data_pipeline = hydra.utils.instantiate(cfg.data_pipeline)
+    print(f"INFO: Datapipeline instantiated successfully")
+    dataframes = data_pipeline()
+    print(f"INFO: Datapipeline finished successfully")
 
-    data = data_source.load()
-    dataframes = preprocessing_pipeline.forward(data)
-    print(f"INFO: Preprocessing pipeline finished successfully")
-
-    ##### REPRESENTATION #######################################################
-    representation = getattr(cfg.data, "representation", {})
-    representation = hydra.utils.instantiate(representation)
-    print(f"INFO: Representation instantiated successfully")
-
-    #### TRANSFORM #############################################################
-    transform = getattr(cfg.data, "transform", {})
-    transforms = [
-        hydra.utils.instantiate(config) for _, config in transform.items()
-    ]
-    transform = TransformCompose(transforms)
-    print(f"INFO: Transform instantiated successfully")
-
-    ##### DATASET ###############################################################
-    dataset_factory = hydra.utils.instantiate(
-        cfg.data.dataset,
-        representation=representation,
-        transform=transform,
-    )
-
+    ##### DATA MODULE ###########################################################
+    dataset_factory = hydra.utils.instantiate(cfg.dataset)
+    print(f"INFO: Data module factory instantiated successfully")
     datasets = DataSplit(*map(lambda df: dataset_factory(df), dataframes))
-    print(f"INFO: Datasets instantiated successfully")
+    print(f"INFO: Data modules instantiated successfully")
 
     ##### DATALOADERS ###########################################################
-    dataloader_factory = hydra.utils.instantiate(cfg.data.dataloader)
+    dataloader_factory = hydra.utils.instantiate(cfg.dataloader)
 
     train_loader = dataloader_factory(
         dataset=datasets.train,

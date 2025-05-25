@@ -1,7 +1,7 @@
 import pandas as pd
 import pytest
-from deepreaction.data_pipeline.data_split import DataSplit
-from deepreaction.data_pipeline.data_source.split_csv_source import SplitCSVSource
+from deepreaction.utils import DataSplit
+from deepreaction.data_pipeline.data_source import PreSplitCSVSource
 
 
 @pytest.fixture
@@ -17,7 +17,7 @@ def split_csv_folder(tmp_path):
 
 def test_split_csv_source(split_csv_folder):
     """Test instantiation and forward pass of SplitCSVSource."""
-    reader = SplitCSVSource(data_folder=split_csv_folder)
+    reader = PreSplitCSVSource(data_folder=split_csv_folder)
     data_split = reader.load()
     assert isinstance(data_split, DataSplit)
     assert isinstance(data_split.train, pd.DataFrame)
@@ -35,7 +35,7 @@ def test_split_csv_source_missing_files(tmp_path):
     # Create only one file instead of all three
     (data_folder / "train.csv").write_text("col1,col2\n1,2\n3,4\n")
 
-    reader = SplitCSVSource(data_folder=str(data_folder))
+    reader = PreSplitCSVSource(data_folder=str(data_folder))
     with pytest.raises(FileNotFoundError, match="Missing files"):
         reader.load()
 
@@ -47,6 +47,6 @@ def test_split_csv_source_empty_files(tmp_path):
     for split in ["train", "val", "test"]:
         (data_folder / f"{split}.csv").write_text("")  # Create empty files
 
-    reader = SplitCSVSource(data_folder=str(data_folder))
+    reader = PreSplitCSVSource(data_folder=str(data_folder))
     with pytest.raises(pd.errors.EmptyDataError, match="No columns to parse from file"):
         reader.load()

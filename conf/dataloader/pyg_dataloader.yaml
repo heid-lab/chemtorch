@@ -6,6 +6,6 @@ num_workers: 0
 pin_memory: true
 
 generator:
-  _target_: deepreaction.misc.get_generator
+  _target_: deepreaction.utils.get_generator
   # TODO: DO NOT HARD CODE THE SEED!!!
   seed: 0

@@ -2,13 +2,10 @@ import pytest
 import pandas as pd
 from torch import nn
 
-from deepreaction.data_pipeline.column_mapper.column_filter_rename import ColumnFilterAndRename
-from deepreaction.data_pipeline.data_source.data_source import DataSource
-from deepreaction.data_pipeline.data_splitter.data_splitter import DataSplitter
-from deepreaction.data_pipeline.data_split import DataSplit
-from deepreaction.data_pipeline.data_source.single_csv_source import SingleCSVSource
-from deepreaction.data_pipeline.data_source.split_csv_source import SplitCSVSource
-from deepreaction.data_pipeline.data_splitter.ratio_splitter import RatioSplitter
+from deepreaction.utils import DataSplit, CallableCompose
+from deepreaction.data_pipeline.column_mapper import ColumnFilterAndRename
+from deepreaction.data_pipeline.data_splitter import DataSplitter, RatioSplitter
+from deepreaction.data_pipeline.data_source import DataSource, SingleCSVSource, PreSplitCSVSource
 
 class NoOpMockSource(DataSource):
     def load(self):
@@ -44,8 +41,8 @@ def test_preprocessing_with_single_csv_source(single_csv_file):
     source = SingleCSVSource(data_path=single_csv_file)
     splitter = RatioSplitter(train_ratio=0.8, val_ratio=0.1, test_ratio=0.1)
     data = source.load()
-    pipeline = nn.Sequential(splitter)
-    data_split = pipeline.forward(data)
+    pipeline = CallableCompose([splitter])
+    data_split = pipeline(data)
     assert isinstance(data_split, DataSplit)
     assert isinstance(data_split.train, pd.DataFrame)
     assert isinstance(data_split.val, pd.DataFrame)
@@ -53,21 +50,6 @@ def test_preprocessing_with_single_csv_source(single_csv_file):
     assert not data_split.train.empty
     assert not data_split.val.empty
     assert not data_split.test.empty
-
-def test_preprocessing_with_split_csv_source(split_csv_folder):
-    """Test the data pipeline with SplitCSVSource."""
-    source = SplitCSVSource(data_folder=split_csv_folder)
-    pipeline = nn.Sequential()
-    data = source.load()
-    data_split = pipeline.forward(data)
-    assert isinstance(data_split, DataSplit)
-    assert isinstance(data_split.train, pd.DataFrame)
-    assert isinstance(data_split.val, pd.DataFrame)
-    assert isinstance(data_split.test, pd.DataFrame)
-    assert not data_split.train.empty
-    assert not data_split.val.empty
-    assert not data_split.test.empty
-
 
 def test_preprocessing_with_single_csv_source_and_column_mapper(single_csv_file):
     """Test the data pipeline with SingleCSVSource, RatioSplitter, and ColumnFilterAndRename."""
@@ -77,8 +59,8 @@ def test_preprocessing_with_single_csv_source_and_column_mapper(single_csv_file)
 
     # Load data and process through the pipeline
     data = source.load()
-    pipeline = nn.Sequential(splitter, column_mapper)
-    data_split = pipeline.forward(data)
+    pipeline = CallableCompose([splitter, column_mapper])
+    data_split = pipeline(data)
 
     # Assertions
     assert isinstance(data_split, DataSplit)
@@ -89,7 +71,7 @@ def test_preprocessing_with_single_csv_source_and_column_mapper(single_csv_file)
 
 def test_preprocessing_with_split_csv_source_and_column_mapper(split_csv_folder):
     """Test the data pipeline with SplitCSVSource and ColumnFilterAndRename."""
-    source = SplitCSVSource(data_folder=split_csv_folder)
+    source = PreSplitCSVSource(data_folder=split_csv_folder)
     column_mapper = ColumnFilterAndRename(column_mapping={"new_col1": "col1", "new_col2": "col2"})
 
     # Load data and process through the pipeline

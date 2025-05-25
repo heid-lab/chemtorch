@@ -1,12 +1,12 @@
 import pytest
 import pandas as pd
-from deepreaction.data_pipeline.data_splitter.ratio_splitter import RatioSplitter
-from deepreaction.data_pipeline.data_split import DataSplit
+from deepreaction.data_pipeline.data_splitter import RatioSplitter
+from deepreaction.utils import DataSplit
 
 def test_ratio_splitter(sample_dataframe):
     """Test the RatioSplitter functionality."""
     splitter = RatioSplitter(train_ratio=0.7, val_ratio=0.2, test_ratio=0.1)
-    data_split = splitter.forward(sample_dataframe)
+    data_split = splitter.__call__(sample_dataframe)
 
     # Check that the output is a DataSplit object
     assert isinstance(data_split, DataSplit)
@@ -46,4 +46,4 @@ def test_ratio_splitter_empty_dataframe():
     splitter = RatioSplitter(train_ratio=0.7, val_ratio=0.2, test_ratio=0.1)
     empty_df = pd.DataFrame()
     with pytest.raises(ValueError, match="Input DataFrame is empty"):
-        splitter.forward(empty_df)
+        splitter.__call__(empty_df)

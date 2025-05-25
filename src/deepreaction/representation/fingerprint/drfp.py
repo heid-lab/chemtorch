@@ -11,12 +11,12 @@ from rdkit.Chem import AllChem
 from rdkit.Chem.rdchem import Mol
 from tqdm import tqdm
 
-from deepreaction.representation.representation_base import RepresentationBase
+from deepreaction.representation import AbstractRepresentation
 
 RDLogger.DisableLog("rdApp.*")
 
 
-class DRFP(RepresentationBase[torch.Tensor]):
+class DRFP(AbstractRepresentation[torch.Tensor]):
     """
     Stateless class for constructing DRFP (Differential Reaction Fingerprints).
 

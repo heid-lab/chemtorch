@@ -12,9 +12,9 @@ from deepreaction.representation.graph.graph_reprs_utils import (
     make_mol,
     map_reac_to_prod,
 )
-from deepreaction.representation.representation_base import RepresentationBase
+from deepreaction.representation import AbstractRepresentation
 
-class DMG(RepresentationBase[Data]):
+class DMG(AbstractRepresentation[Data]):
     """
     Stateless class for constructing Dual Molecular Graph (DMG) representations.
 
@@ -53,7 +53,7 @@ class DMG(RepresentationBase[Data]):
 
 
     # override
-    def construct(self, smiles: str, label: Optional[float] = None) -> Data:
+    def construct(self, smiles: str) -> Data:
         # Parse reactant and product SMILES
         smiles_reac, _, smiles_prod = smiles.split(">")
 
@@ -161,8 +161,6 @@ class DMG(RepresentationBase[Data]):
             torch.tensor(f_bonds, dtype=torch.float)
             if f_bonds else torch.zeros((0, len(self.bond_featurizer(None))), dtype=torch.float)
         )
-        if label is not None:
-            data.y = torch.tensor([label], dtype=torch.float)
         data.smiles = smiles
         data.atom_origin_type = torch.tensor(atom_origin_type, dtype=torch.long)
         data.atom_compound_idx = torch.tensor(atom_compound_idx, dtype=torch.long)

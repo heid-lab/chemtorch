@@ -1,10 +1,8 @@
 from typing import List, Optional, Tuple
 
-import hydra
 import torch
 
 from torch_geometric.data import Data
-from omegaconf import DictConfig
 from rdkit import Chem
 
 from deepreaction.representation.graph.graph_reprs_utils import (
@@ -13,10 +11,10 @@ from deepreaction.representation.graph.graph_reprs_utils import (
     make_mol,
     map_reac_to_prod,
 )
-from deepreaction.representation.representation_base import RepresentationBase
+from deepreaction.representation import AbstractRepresentation
 
 
-class CGR(RepresentationBase[Data]):
+class CGR(AbstractRepresentation[Data]):
     """
     Stateless class for constructing Condensed Graph of Reaction (CGR) representations.
 
@@ -42,7 +40,7 @@ class CGR(RepresentationBase[Data]):
 
 
     # override
-    def construct(self, smiles: str, label: Optional[float] = None) -> Data:
+    def construct(self, smiles: str) -> Data:
         """
         Construct a CGR graph from the sample.
         """
@@ -115,8 +113,6 @@ class CGR(RepresentationBase[Data]):
             )
             data.edge_origin_type = torch.empty((0), dtype=torch.long)
 
-        if label is not None:
-            data.y = torch.tensor([label], dtype=torch.float)
         data.smiles = smiles  # Store original reaction SMILES
         data.atom_origin_type = torch.tensor(
             atom_origin_type_list, dtype=torch.long

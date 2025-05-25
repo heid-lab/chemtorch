@@ -1,7 +1,7 @@
 import pandas as pd
 from torch import nn
 
-from deepreaction.data_pipeline.data_split import DataSplit
+from deepreaction.utils import DataSplit
 
 
 class ColumnFilterAndRename(nn.Module):
