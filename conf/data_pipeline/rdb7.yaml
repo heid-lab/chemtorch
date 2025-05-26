@@ -3,11 +3,11 @@ _target_: deepreaction.utils.CallableCompose
 callables:
   - _target_: deepreaction.data_pipeline.data_source.SingleCSVSource
     data_path: "deepreaction_datasets/data/rdb7/barriers/rdb7_full.csv"
-  - _target_: deepreaction.data_pipeline.data_splitter.RatioSplitter 
-    train_ratio: 0.9
-    val_ratio: 0.05
-    test_ratio: 0.05
   - _target_: deepreaction.data_pipeline.column_mapper.ColumnFilterAndRename
     column_mapping:
       smiles: "smiles"
       label: "dE0"
+  - _target_: deepreaction.data_pipeline.data_splitter.RatioSplitter 
+    train_ratio: 0.9
+    val_ratio: 0.05
+    test_ratio: 0.05

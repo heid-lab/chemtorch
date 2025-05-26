@@ -1,3 +1,4 @@
+from typing import Union
 import pandas as pd
 from torch import nn
 
@@ -21,27 +22,33 @@ class ColumnFilterAndRename(nn.Module):
         super(ColumnFilterAndRename, self).__init__()
         self.column_mapping = column_mapping
 
-    def forward(self, dataframes: DataSplit) -> DataSplit:
+    def forward(self, data: Union[DataSplit, pd.DataFrame]) -> Union[DataSplit, pd.DataFrame]:
         """
-        Process the DataSplit object by filtering and renaming columns in each DataFrame.
+        Process the input data to filter and rename columns based on the column mapping.
 
         Args:
-            dataframes (DataSplit): A named tuple containing the train, val, and test DataFrames.
-            Each DataFrame will be processed to filter and rename columns based on the column mapping.
+            data (Union[DataSplit, pd.DataFrame]): The input data, which can be a DataSplit object
+                containing multiple DataFrames or a single pandas DataFrame.
 
         Returns:
-            DataSplit: A named tuple containing the processed train, val, and test DataFrames.
+            Union[DataSplit, pd.DataFrame]: The processed data with filtered and renamed columns.
+                If the input is a DataSplit, it returns a DataSplit with each DataFrame processed.
+                If the input is a pandas DataFrame, it returns a single processed DataFrame.
 
         Raises:
-            TypeError: If the input is not a DataSplit object or if any of the DataFrames are not pandas DataFrames.
+            TypeError: If the input is not a DataSplit object or a pandas DataFrame.
             KeyError: If any of the columns specified in the column mapping are not found in any of the DataFrame.
         """
-        if not isinstance(dataframes, DataSplit):
-            raise TypeError("Input must be a DataSplit object")
-
-        return DataSplit(
-            *map(self._parse_dataframe, dataframes)
-        )
+        if isinstance(data, pd.DataFrame):
+            return self._parse_dataframe(data)
+        elif isinstance(data, DataSplit):
+            return DataSplit(
+                *map(self._parse_dataframe, data)
+            )
+        else:
+            raise TypeError(
+                "Input must be a pandas DataFrame or a DataSplit object containing DataFrames"
+            )
 
 
     def _parse_dataframe(self, data: pd.DataFrame) -> pd.DataFrame:
@@ -53,6 +60,10 @@ class ColumnFilterAndRename(nn.Module):
 
         Returns:
             pd.DataFrame: The processed DataFrame with filtered and renamed columns.
+
+        Raises:
+            TypeError: If the input is not a pandas DataFrame.
+            KeyError: If any of the columns specified in the column mapping are not found in the DataFrame.
         """
         if not isinstance(data, pd.DataFrame):
             raise TypeError("Input must be a pandas DataFrame")
