@@ -19,11 +19,11 @@ run_name: null
 # INITIALIZATION
 seed: 0 # use 0
 
-update_cfg_from_dataset:
-  # fp_length: fp_length
-  # degree_statistics: degree_statistics
-  num_node_features: num_node_features
-  num_edge_features: num_edge_features
+runtime_config_parameters_from_dataset:
+  # - fp_length
+  # - degree_statistics
+  - num_node_features
+  - num_edge_features
 
 # DEVICE (redunadant)
 use_cuda: true

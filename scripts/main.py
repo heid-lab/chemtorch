@@ -7,7 +7,6 @@ from omegaconf import DictConfig, OmegaConf
 import wandb
 from deepreaction.utils import DataSplit
 from deepreaction.utils import load_model, set_seed
-from deepreaction.utils import CallableCompose
 
 OmegaConf.register_new_resolver("eval", eval)
 
@@ -56,21 +55,18 @@ def main(cfg: DictConfig):
     print(f"INFO: Dataloaders instantiated successfully")
 
     ##### UPDATE GLOBAL CONFIG FROM DATASET ATTRIBUTES ##############################
-    cfg_updates_spec = cfg.get("update_cfg_from_dataset", {})
-    if cfg_updates_spec:
+    dataset_properties = cfg.get("runtime_config_parameters_from_dataset", [])
+    if dataset_properties:
         print(
-            "INFO: Updating global config from train dataset attributes:"
+            "INFO: Updating global config with properties of train dataset:"
         )
-        for cfg_path, dataset_attr_name in cfg_updates_spec.items():
-            if hasattr(train_loader.dataset, dataset_attr_name):
-                value = getattr(train_loader.dataset, dataset_attr_name)
-                OmegaConf.update(cfg, cfg_path, value, merge=True)
-                print(
-                    f"  - Updated cfg.{cfg_path} with dataset.{dataset_attr_name} (value: {value})"
-                )
+        for dataset_property in dataset_properties:
+            if hasattr(datasets.train, dataset_property):
+                value = getattr(train_loader.dataset, dataset_property)
+                OmegaConf.update(cfg, dataset_property, value, merge=True)
             else:
-                raise ValueError(
-                    f"Attribute '{dataset_attr_name}' (for cfg path '{cfg_path}') not found on datasets.train."
+                raise AttributeError(
+                    f"Attribute '{dataset_property}' not found on datasets.train."
                 )
 
     run_name = getattr(cfg, "run_name", None)
