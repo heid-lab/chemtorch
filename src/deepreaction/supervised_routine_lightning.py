@@ -21,11 +21,13 @@ class SupervisedRoutine(L.LightningModule):
         self.optimizer = optimizer_factory
         self.lr_scheduler = lr_scheduler
         self.metrics = metrics if metrics is not None else {}
+        # TODO: Instantiate or pass standardizer
 
     def setup():
         """"""
 
     def forward(self, input: torch.Tensor) -> torch.Tensor:
+        # TODO: Use standardizer to normalize predictions if needed
         return self.model(input)
     
     def training_step(self, batch: Tuple[torch.Tensor, torch.Tensor]) -> torch.Tensor:

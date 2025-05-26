@@ -22,6 +22,7 @@ class DataModule(L.LightningDataModule):
         """
 
     def setup(self, stage: str = None):
+        # TODO: Load standardizer or compute mean and std from training data
         dp_out = self.data_pipeline()
         if isinstance(dp_out, DataSplit):
             dataframes = dp_out
