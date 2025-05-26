@@ -19,7 +19,7 @@ class DatasetBase(Generic[T]):
     All datasets should subclass :class:`DatasetBase[T]` and implement the `_get_sample_by_idx` method.    
 
     Warning: If the subclass inherits from multiple classes, ensure that :class:`DatasetBase` is the first 
-    class in the inheritance list, otherwise the arguemnts of the `__init__` method may not be passed correctly.
+    class in the inheritance list to ensure correct method resolution order (MRO).
 
     Raises:
         RuntimeError: If the subclass does not call `super().__init__()` in its `__init__()` method.
@@ -130,10 +130,10 @@ class DatasetBase(Generic[T]):
 
     def __getitem__(self, idx) -> torch.Tensor:
         """
-        Retrieve a processed fingerprint by its index.
+        Retrieve a processed item by its index.
 
         Args:
-            idx (int): Index of the sample to retrieve.
+            idx (int): Index of the item to retrieve.
 
         Returns:
             Data: A PyTorch `Tensor` object representing the molecular fingerprint.

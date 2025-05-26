@@ -10,12 +10,13 @@ from deepreaction.representation import AbstractRepresentation
 from deepreaction.transform import AbstractTransform
 
 
-# TODO: Get rid of multiple inheritance because it is buggy:
-# Switching the order of inheritance breaks initialization because
+# TODO: Switching the order of inheritance breaks initialization because
 # torch_geometric's Dataset class `super().__init__()` which resolves 
 # to the next class in the MRO (DataModuleBase), not and the the parent
 # class of Dataset as intended, causing an error because DataModuleBase
 # does not receive its expected arguments.
+# TODO: Consider using `torch_geometric.data.Dataset.download()` to save the precomputed
+# graphs to disk to save preprocessing time in the future.
 class GraphDataset(DatasetBase[Data], Dataset):
     """
     Data module for molecular graphs.
