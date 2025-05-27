@@ -27,11 +27,6 @@ def main(cfg: DictConfig):
     if getattr(cfg, "seed", None) is not None:
         set_seed(cfg.seed)
 
-    if cfg.use_cuda and torch.cuda.is_available():
-        device = torch.device("cuda")
-    else:
-        device = torch.device("cpu")
-
     ##### DATA MODULE #########################################################
     data_pipeline = hydra.utils.instantiate(cfg.data_pipeline)
     dataset_factory = hydra.utils.instantiate(cfg.dataset)
@@ -83,47 +78,35 @@ def main(cfg: DictConfig):
 
     ##### MODEL ##################################################################
     model = hydra.utils.instantiate(cfg.model)
-    model = model.to(device)
-
     # TODO: Use lightning for loading pretrained models and checkpoints
     if cfg.use_loaded_model:
         if not os.path.exists(cfg.pretrained_path):
             raise ValueError(
                 f"Pretrained model not found at {cfg.pretrained_path}"
             )
-
         model, _, _, _ = load_model(model, None, cfg.pretrained_path)
-
-        try:
-            sample_batch = next(iter(data_module.train_dataloader()))
-            model(sample_batch.to(device))
-        except Exception as e:
-            raise ValueError(
-                f"Pretrained model incompatible with dataset: {str(e)}"
-            )
 
     total_params = sum(
         p.numel() for p in model.parameters() if p.requires_grad
     )
     print(f"Total parameters: {total_params:,}")
+    if cfg.wandb:
+        wandb.log({"total_parameters": total_params}, commit=False)
 
     parameter_limit = getattr(cfg, "parameter_limit", None)
     if parameter_limit is not None and total_params > parameter_limit:
         print(
-            f"Model has {total_params:,} parameters, which exceeds the parameter limit of {parameter_limit:,}. Skipping this run."
+            f"Parameter limit of {parameter_limit:,} exceeded. Skipping this run."
         )
         if cfg.wandb:
             wandb.log(
                 {
-                    "total_parameters": total_params,
                     "parameter_threshold_exceeded": True,
                 }
             )
             wandb.run.summary["status"] = "parameter_threshold_exceeded"
         return False
 
-    if cfg.wandb:
-        wandb.log({"total_parameters": total_params}, commit=False)
 
     ###### TRAINER ##########################################################
     # TODO: Add callbacks (e.g., EarlyStopping, ModelCheckpoint)
@@ -148,7 +131,8 @@ def main(cfg: DictConfig):
         loss=hydra.utils.instantiate(cfg.task.loss),
         optimizer_factory=hydra.utils.instantiate(cfg.task.optimizer),
         lr_scheduler=hydra.utils.instantiate(cfg.task.scheduler),
-        # TODO: Use TorchMetrics and track inside routine
+        # TODO: Use TorchMetrics and update tracking in SupervisedRoutine
+        # TODO: Instantiate from cfg
         metrics={
             'rmse': root_mean_squared_error,
             'mae': mean_absolute_error
