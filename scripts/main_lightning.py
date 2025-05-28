@@ -8,10 +8,7 @@ from omegaconf import DictConfig, OmegaConf
 
 import wandb
 from deepreaction.data_module_lightning import DataModule
-from deepreaction.supervised_routine_lightning import SupervisedRoutine
-from deepreaction.utils import DataSplit
-from deepreaction.utils import load_model, set_seed
-from deepreaction.utils import CallableCompose
+from deepreaction.routine.supervised_learning_routine import SupervisedLearningRoutine
 
 OmegaConf.register_new_resolver("eval", eval)
 
@@ -23,9 +20,6 @@ def main(cfg: DictConfig):
 
     seed = getattr(cfg, "seed", 0)
     seed_everything(seed)
-
-    if getattr(cfg, "seed", None) is not None:
-        set_seed(cfg.seed)
 
     ##### DATA MODULE #########################################################
     data_pipeline = hydra.utils.instantiate(cfg.data_pipeline)
@@ -79,13 +73,6 @@ def main(cfg: DictConfig):
     ##### MODEL ##################################################################
     model = hydra.utils.instantiate(cfg.model)
     # TODO: Use lightning for loading pretrained models and checkpoints
-    if cfg.use_loaded_model:
-        if not os.path.exists(cfg.pretrained_path):
-            raise ValueError(
-                f"Pretrained model not found at {cfg.pretrained_path}"
-            )
-        model, _, _, _ = load_model(model, None, cfg.pretrained_path)
-
     total_params = sum(
         p.numel() for p in model.parameters() if p.requires_grad
     )
@@ -126,7 +113,7 @@ def main(cfg: DictConfig):
     print(f"Using device: {trainer.accelerator}")
     ############################# task instantiation #############################
     # TODO: Recursively instantiate routine with hydra
-    routine = SupervisedRoutine(
+    routine = SupervisedLearningRoutine(
         model=model,
         loss=hydra.utils.instantiate(cfg.task.loss),
         optimizer_factory=hydra.utils.instantiate(cfg.task.optimizer),
@@ -136,7 +123,9 @@ def main(cfg: DictConfig):
         metrics={
             'rmse': root_mean_squared_error,
             'mae': mean_absolute_error
-        }
+        },
+        pretrained_path=getattr(cfg, 'pretrained_path', None),
+        resume_training=getattr(cfg, 'resume_training', False),
     )
     trainer.fit(routine, datamodule=data_module)
     trainer.test(routine, datamodule=data_module)

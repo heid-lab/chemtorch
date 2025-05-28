@@ -1,16 +1,14 @@
+from abc import ABC, abstractmethod
 from ast import Tuple
 import os
-import re
-from typing import Callable, Iterator
+from typing import Any, Callable, Iterator
 import lightning as L
 from torch import nn, optim
 import torch
 
-from deepreaction.utils.standardizer import Standardizer
 
 
-# TODO: Move supervised training and evaluation into subclass and generalize the class
-class SupervisedRoutine(L.LightningModule):
+class RoutineBase(ABC, L.LightningModule):
     """"""
     def __init__(
             self, 
@@ -21,7 +19,6 @@ class SupervisedRoutine(L.LightningModule):
             metrics=None,
             pretrained_path: str = None,
             resume_training: bool = False,
-            standardizer_path=None
         ):
         super().__init__()
         self.model = model
@@ -31,28 +28,41 @@ class SupervisedRoutine(L.LightningModule):
         self.metrics = metrics if metrics is not None else {}
         self.pretrained_path = pretrained_path
         self.resume_training = resume_training
-        self.standardizer_path = standardizer_path
-        # TODO: Instantiate or pass standardizer
+
+    @abstractmethod
+    def step(self, batch: Any, stage: str, track_metrics: bool=False) -> torch.Tensor:
+        """
+        Perform a single step of training, validation, or testing.
+        Subclasses should implement this method to define the specific behavior
+        for each step in the routine.
+
+        Args:
+            batch (Any): The input batch of data.
+            stage (str): The stage of the routine ('train', 'val', 'test').
+            track_metrics (bool): Whether to track metrics for this step.
+
+        Returns:
+            torch.Tensor: The computed loss for the step.
+        """
+        pass
 
     def setup(self, stage=None):
-        """"""
+        # Default implementation, override in subclass if needed and call super().setup(stage)
         if self.pretrained_path:
             self._load_pretrained(self.pretrained_path, self.resume_training)
-        if self.standardizer_path:
-            self.standardizer = self._load_standardizer(self.standardizer_path)
 
-    def forward(self, input: torch.Tensor) -> torch.Tensor:
-        # TODO: Use standardizer to normalize predictions if needed
-        return self.model(input)
+    def forward(self, inputs: Any) -> Any:
+        # Default implementation, override in subclass if needed
+        return self.model(inputs)
     
     def training_step(self, batch: Tuple[torch.Tensor, torch.Tensor]) -> torch.Tensor:
-        return self._step(batch, stage="train", track_metrics=False)
+        return self.step(batch, stage="train", track_metrics=False)
 
     def validation_step(self, batch: Tuple[torch.Tensor, torch.Tensor]):
-        self._step(batch, stage="val", track_metrics=True)
+        self.step(batch, stage="val", track_metrics=True)
     
     def test_step(self, batch: Tuple[torch.Tensor, torch.Tensor]):
-        self._step(batch, stage="test", track_metrics=True)
+        self.step(batch, stage="test", track_metrics=True)
         
     def configure_optimizers(self):
         return {
@@ -96,26 +106,3 @@ class SupervisedRoutine(L.LightningModule):
         missing_keys = [key for key in keys if key not in checkpoint]
         if missing_keys:
             raise ValueError(f"Checkpoint is missing required keys: {missing_keys}")
-    
-    def _load_standardizer(self, path: str):
-        if not os.path.exists(path):
-            raise ValueError(f"Standardizer path does not exist: {path}")
-        params = torch.load(path)
-        standardizer = Standardizer(mean=params['mean'], std=params['std'])
-        self.log("standardizer_loaded", True, prog_bar=True)
-        return standardizer
-        
-
-    def _step(self, batch: Tuple[torch.Tensor, torch.Tensor], stage: str, track_metrics: bool=False) -> torch.Tensor:
-        input, target = batch
-        output = self(input)
-        loss = self.loss(output, target)
-        self.log(f"{stage}_loss", loss, on_step=False, on_epoch=True, prog_bar=True)
-
-        if track_metrics and self.metrics:
-            for name, metric in self.metrics.items():
-                value = metric(output, target)
-                self.log(f"{stage}_{name}", value, on_step=False, on_epoch=True, prog_bar=True)
-        return loss
-
-    
