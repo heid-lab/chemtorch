@@ -1,7 +1,6 @@
 from typing import Any, Callable
 import lightning as L
 import pandas as pd
-from zmq import has
 
 from deepreaction.utils.data_split import DataSplit
 
