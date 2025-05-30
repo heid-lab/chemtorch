@@ -1,7 +1,10 @@
 import os
 
 import hydra
+from hydra.utils import instantiate
 from lightning import Trainer, seed_everything
+from lightning.pytorch.callbacks import ModelCheckpoint
+from lightning.pytorch.loggers import WandbLogger
 from sklearn.metrics import mean_absolute_error, root_mean_squared_error
 import torch
 from omegaconf import DictConfig, OmegaConf
@@ -10,7 +13,7 @@ import wandb
 from deepreaction.data_module_lightning import DataModule
 from deepreaction.routine.supervised_learning_routine import SupervisedLearningRoutine
 
-OmegaConf.register_new_resolver("eval", eval)
+OmegaConf.register_new_resolver("eval", eval)   # TODO: What is this?
 
 
 @hydra.main(version_base=None, config_path="../conf", config_name="config")
@@ -21,10 +24,10 @@ def main(cfg: DictConfig):
     seed = getattr(cfg, "seed", 0)
     seed_everything(seed)
 
-    ##### DATA MODULE #########################################################
-    data_pipeline = hydra.utils.instantiate(cfg.data_pipeline)
-    dataset_factory = hydra.utils.instantiate(cfg.dataset)
-    dataloader_factory = hydra.utils.instantiate(cfg.dataloader)
+    ##### DATA MODULE ##############################################################
+    data_pipeline = instantiate(cfg.data_pipeline)
+    dataset_factory = instantiate(cfg.dataset)
+    dataloader_factory = instantiate(cfg.dataloader)
     data_module = DataModule(
         data_pipeline=data_pipeline,
         dataset_factory=dataset_factory,
@@ -58,20 +61,13 @@ def main(cfg: DictConfig):
             name=run_name,
             config=resolved_cfg,
         )
-        # TODO: Generalize for datasets w/o support for precomputation
-        precompute_time = (
-            data_module.get_dataset_property(stage='train', property='precompute_time')
-            + data_module.get_dataset_property(stage='val', property='precompute_time')
-            + data_module.get_dataset_property(stage='test', property='precompute_time')
-        )
-        wandb.log(
-            {"Precompute_time": precompute_time},
-            commit=False,
-        )
+        for stage in ['train', 'val', 'test']:
+            precompute_time = data_module.get_dataset_property(stage, 'precompute_time')
+            wandb.log({f"{stage}_precompute_time": precompute_time}, commit=False,)
 
 
     ##### MODEL ##################################################################
-    model = hydra.utils.instantiate(cfg.model)
+    model = instantiate(cfg.model)
     # TODO: Use lightning for loading pretrained models and checkpoints
     total_params = sum(
         p.numel() for p in model.parameters() if p.requires_grad
@@ -96,8 +92,6 @@ def main(cfg: DictConfig):
 
 
     ###### TRAINER ##########################################################
-    # TODO: Add callbacks (e.g., EarlyStopping, ModelCheckpoint)
-    # TODO: Add W&B logger
     # TODO: Add profiler
     # TODO: Consider fast_dev_run, overfit_batches, num_sanity_val_steps for testing and debugging
     # TODO: Consider benchmark mode for benchmarking
@@ -105,19 +99,15 @@ def main(cfg: DictConfig):
     # TODO: Consider `SlurmCluster` class for building slurm scripts
     # TODO: Consider `DistributedDataParallel` for distributed training NLP on large datasets
     # TODO: Consider HyperOptArgumentParser for hyperparameter optimization
-
-    accelerator = cfg.get("accelerator", 'auto')
-    trainer = Trainer(
-        accelerator=accelerator,
-    )
+    trainer = instantiate(cfg.trainer)
     print(f"Using device: {trainer.accelerator}")
     ############################# task instantiation #############################
     # TODO: Recursively instantiate routine with hydra
     routine = SupervisedLearningRoutine(
         model=model,
-        loss=hydra.utils.instantiate(cfg.task.loss),
-        optimizer_factory=hydra.utils.instantiate(cfg.task.optimizer),
-        lr_scheduler=hydra.utils.instantiate(cfg.task.scheduler),
+        loss=instantiate(cfg.task.loss),
+        optimizer_factory=instantiate(cfg.task.optimizer),
+        lr_scheduler=instantiate(cfg.task.scheduler),
         # TODO: Use TorchMetrics and update tracking in SupervisedRoutine
         # TODO: Instantiate from cfg
         metrics={
