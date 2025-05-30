@@ -9,14 +9,6 @@ from deepreaction.dataset.dataset_base import DatasetBase
 from deepreaction.representation import AbstractRepresentation
 from deepreaction.transform import AbstractTransform
 
-
-# TODO: Switching the order of inheritance breaks initialization because
-# torch_geometric's Dataset class `super().__init__()` which resolves 
-# to the next class in the MRO (DataModuleBase), not and the the parent
-# class of Dataset as intended, causing an error because DataModuleBase
-# does not receive its expected arguments.
-# TODO: Consider using `torch_geometric.data.Dataset.download()` to save the precomputed
-# graphs to disk to save preprocessing time in the future.
 class GraphDataset(DatasetBase[Data], Dataset):
     """
     Data module for molecular graphs.
@@ -27,45 +19,6 @@ class GraphDataset(DatasetBase[Data], Dataset):
         It requires a dataframe with a 'label' column and a representation creator that can
         convert the dataframe rows into PyTorch Geometric Data objects.
     """
-
-    def __init__(
-        self,
-        dataframe: pd.DataFrame,
-        representation: AbstractRepresentation[Data] | Callable[..., Data],
-        transform: AbstractTransform[Data] | Callable[[Data], Data] = None,
-        precompute_all: bool = True,
-        cache: bool = True,
-        max_cache_size: Optional[int] = None,
-        subsample: Optional[int | float] = None,
-    ):
-        """
-        Initialize the GraphDataset.
-
-        Args:
-            dataframe (pd.DataFrame): The dataframe containing the input data.
-            representation (RepresentationBase[Data] | Callable[..., Data]): The representation creator.
-            transform (TransformBase[Data] | Callable[[Data], Data]): The transform to apply to the data.
-            precompute_all (bool): Whether to precompute all graphs upfront.
-            cache_graphs (bool): Whether to cache processed graphs (if not precomputing).
-            max_cache_size (Optional[int]): Maximum size of the cache (if caching is enabled).
-            subsample (Optional[int | float]): The subsample size or fraction.
-
-        Raises:
-            ValueError: If the data does not contain a 'label' column.
-            ValueError: If the subsample is not an int or a float.
-            ValueError: If the dataset is not precomputed and caching is not enabled.
-        """
-        DatasetBase.__init__(
-            self,
-            dataframe=dataframe, 
-            representation=representation, 
-            transform=transform,
-            precompute_all=precompute_all,
-            cache=cache,
-            max_cache_size=max_cache_size,
-            subsample=subsample
-        )
-        Dataset.__init__(self)
 
     @property
     def degree_statistics(self) -> Dict[str, Union[int, List]]:

@@ -1,4 +1,5 @@
-from typing import Any, Callable
+import builtins
+from typing import Any, Callable, Literal
 import lightning as L
 import pandas as pd
 
@@ -61,9 +62,13 @@ class DataModule(L.LightningDataModule):
             shuffle=(stage == 'train'),
         )
 
-    def get_dataset_property(self, stage: str, property: str) -> Any:
+    def get_dataset_property(
+            self, 
+            stage: Literal['train', 'val', 'test', 'predict'],
+            property: str
+        ) -> Any:
         """
-        Retrieve a property from the dataset of a given stage.
+        Retrieve a property from the dataset of the specified stage.
 
         Args:
             stage (str): Of which dataset to get the property from:
@@ -74,10 +79,11 @@ class DataModule(L.LightningDataModule):
             Any: The value of the specified property from the train dataset.
 
         Raises:
-            AttributeError: If the property does not exist in the train dataset.
+            AttributeError: If the property does not exist in the train dataset or is not a @property.
         """
         dataset = self._get_dataset(stage)
-        if hasattr(dataset, property):
+        # Check if the attribute is a property of the dataset's class
+        if hasattr(type(dataset), property) and isinstance(getattr(type(dataset), builtins.property), property):
             return getattr(dataset, property)
         else:
-            raise AttributeError(f"Dataset does not have attribute '{property}'.")
+            raise AttributeError(f"Dataset does not have a property '{property}' (must be a @property).")

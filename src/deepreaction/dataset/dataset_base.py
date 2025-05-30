@@ -9,8 +9,9 @@ from deepreaction.transform import AbstractTransform
 from deepreaction.utils import enforce_base_init
 
 
+# TODO: Consider saving the precomputed data objects to disk to 
+# save preprocessing time for repeated runs with the same dataset.
 T = TypeVar("T")
-# TODO: Make label optional
 class DatasetBase(Generic[T]):
     """
     Base class for DeepReaction datasets.
@@ -96,7 +97,7 @@ class DatasetBase(Generic[T]):
 
         self.precompute_all = precompute_all
         self.precomputed_items = None
-        self.precompute_time = 0.0
+        self._precompute_time = 0.0
 
         if self.precompute_all:
             print(f"INFO: Precomputing {len(self.dataframe)} items...")
@@ -105,9 +106,9 @@ class DatasetBase(Generic[T]):
                 self._process_sample(idx)
                 for idx in range(len(self.dataframe))
             ]
-            self.precompute_time = time.time() - start_time
+            self._precompute_time = time.time() - start_time
             print(
-                f"INFO: Precomputation finished in {self.precompute_time:.2f}s."
+                f"INFO: Precomputation finished in {self._precompute_time:.2f}s."
             )
         else:
             if cache:
@@ -209,3 +210,16 @@ class DatasetBase(Generic[T]):
     def __init_subclass__(cls):
         enforce_base_init(DatasetBase)(cls)
         return super().__init_subclass__()
+
+    
+    @property
+    def precompute_time(self) -> float:
+        """
+        Get the time taken to precompute all samples.
+
+        Returns:
+            float: The time in seconds taken to precompute all samples.
+        """
+        if not self.precompute_all:
+            raise RuntimeError("Precomputation is not enabled for this dataset.")
+        return self._precompute_time
