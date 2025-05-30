@@ -4,7 +4,7 @@ defaults:
   - data_pipeline: rdb7
   - dataset: graph
   - dataloader: pyg_dataloader
-  - model: gcn
+  - model: dmpnn
   - task: regression
   - override hydra/job_logging: disabled
   - override hydra/hydra_logging: disabled

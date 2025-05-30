@@ -7,13 +7,13 @@ from omegaconf import DictConfig, OmegaConf
 import wandb
 from deepreaction.utils import DataSplit
 from deepreaction.utils import load_model, set_seed
-from deepreaction.utils import CallableCompose
+from deepreaction.utils import order_config_by_signature
 
 OmegaConf.register_new_resolver("eval", eval)
 
-
 @hydra.main(version_base=None, config_path="../conf", config_name="config")
 def main(cfg: DictConfig):
+    cfg = OmegaConf.create(order_config_by_signature(cfg))
     # config mutable
     OmegaConf.set_struct(cfg, False)
 
@@ -97,10 +97,10 @@ def main(cfg: DictConfig):
             commit=False,
         )
 
-
     ##### MODEL ##################################################################
     model = hydra.utils.instantiate(cfg.model)
     model = model.to(device)
+    torch.save(model.state_dict(), "debug/model_init_weights.pth")
 
     if cfg.use_loaded_model:
         if not os.path.exists(cfg.pretrained_path):
@@ -154,6 +154,7 @@ def main(cfg: DictConfig):
 
     if cfg.wandb:
         wandb.finish()
+
 
 
 if __name__ == "__main__":
