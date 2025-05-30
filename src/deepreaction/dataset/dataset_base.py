@@ -3,6 +3,7 @@ import time
 from typing import Callable, Optional, Tuple, TypeVar, Generic
 import pandas as pd
 import torch
+import wandb
 
 from deepreaction.representation import AbstractRepresentation
 from deepreaction.transform import AbstractTransform
@@ -11,6 +12,8 @@ from deepreaction.utils import enforce_base_init
 
 # TODO: Consider saving the precomputed data objects to disk to 
 # save preprocessing time for repeated runs with the same dataset.
+# Note: Update precompute_time property to return 0 or time taken
+# to load from disk.
 T = TypeVar("T")
 class DatasetBase(Generic[T]):
     """
