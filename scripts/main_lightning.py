@@ -106,7 +106,7 @@ def main(cfg: DictConfig):
     routine = SupervisedLearningRoutine(
         model=model,
         loss=instantiate(cfg.task.loss),
-        optimizer_factory=instantiate(cfg.task.optimizer),
+        optimizer=instantiate(cfg.task.optimizer),
         lr_scheduler=instantiate(cfg.task.scheduler),
         # TODO: Use TorchMetrics and update tracking in SupervisedRoutine
         # TODO: Instantiate from cfg
