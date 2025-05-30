@@ -1,0 +1,11 @@
+_target_: deepreaction.routine.supervised_learning_routine.SupervisedLearningRoutine
+
+defaults:
+  - loss: mse
+  - optimizer: adamw
+  - lr_scheduler: cosine_with_warmup
+
+# Optional parameters:
+# pretrained_path: null
+# resume_training: false
+# standardizer_path: null

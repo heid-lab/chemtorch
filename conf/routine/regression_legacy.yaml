@@ -1,4 +1,4 @@
-_target_: deepreaction.task.regression.train
+_target_: deepreaction.routine.regression_legacy.train
 _recursive_: False
 
 defaults:
