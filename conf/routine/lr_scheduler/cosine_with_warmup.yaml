@@ -1,7 +1,8 @@
-_target_: torch.optim.lr_scheduler.LambdaLR
-_partial_: true
-lr_lambda:
-  _target_: deepreaction.scheduler.scheduler.get_cosine_scheduler_with_warmup
-  num_warmup_steps: 50
-  num_training_steps: ${task.epochs}
-  num_cycles: 0.5
+_target_: deepreaction.scheduler.cosine_with_warmup_lr.CosineWithWarmupLR
+_partial_: true       # optimizer passed at runtime
+
+num_warmup_steps: 50          # Number of warmup steps (set as needed)
+num_training_steps: 1000000   # Large value to approximate "no upper bound"
+eta_min: 0.0 
+start_factor: 1e-6
+end_factor: 1.0

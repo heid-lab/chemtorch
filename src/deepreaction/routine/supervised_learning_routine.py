@@ -1,10 +1,14 @@
-from typing import Dict, Tuple
-from torchmetrics import Metric, MetricCollection
+from typing import Dict, Tuple, Callable, Iterator, Literal
+
 import os
-from typing import Callable, Iterator, Literal
-import lightning as L
-from torch import nn, optim
 import torch
+import lightning as L
+
+from torch import nn
+from torch.optim import Optimizer
+from torch.optim.lr_scheduler import LRScheduler
+from torchmetrics import Metric, MetricCollection
+
 
 from deepreaction.utils.standardizer import Standardizer
 
@@ -18,8 +22,8 @@ class SupervisedLearningRoutine(L.LightningModule):
             self, 
             model: nn.Module, 
             loss: Callable, 
-            optimizer: Callable[[Iterator[nn.Parameter]], optim.Optimizer],
-            lr_scheduler: optim.lr_scheduler.LRScheduler = None,
+            optimizer: Callable[[Iterator[nn.Parameter]], Optimizer],
+            lr_scheduler: Callable[[Optimizer], LRScheduler] = None,
             metrics: MetricCollection | Dict[str, MetricCollection] = None,
             standardizer_path: str = None,
             pretrained_path: str = None,
@@ -34,7 +38,8 @@ class SupervisedLearningRoutine(L.LightningModule):
             optimizer (Callable): A factory function that takes in the models parameters 
                 and returns an optimizer instance. For example, a partially instantiated 
                 PyTorch optimizer.
-            lr_scheduler (optim.lr_scheduler.LRScheduler, optional): Learning rate scheduler. Defaults to `None`.
+            lr_scheduler (Callable, optional): A factory function that takes in the optimizer
+                and returns a learning rate scheduler instance. Defaults to `None`, which means no scheduler is used.
             metrics (MetricCollection | Dict[str, MetricCollection], optional): A collection of metrics to be used for evaluation.
                 It can be a single MetricCollection or a dictionary of metric collections with keys 'train', 
                 'val', or 'test'. Defaults to `None`, which means no metrics are used.
@@ -50,8 +55,8 @@ class SupervisedLearningRoutine(L.LightningModule):
         super().__init__()
         self.model = model
         self.loss = loss
-        self.optimizer: optim.Optimizer = optimizer(params=self.model.parameters())
-        self.lr_scheduler = lr_scheduler
+        self.optimizer: Optimizer = optimizer(params=self.model.parameters())
+        self.lr_scheduler: LRScheduler = lr_scheduler(self.optimizer) if lr_scheduler else None
         self.metrics = self._init_metrics(metrics) if metrics else None
         self.standardizer_path = standardizer_path
         self.pretrained_path = pretrained_path
@@ -104,10 +109,15 @@ class SupervisedLearningRoutine(L.LightningModule):
 
         return loss
     def configure_optimizers(self):
-        return {
-            "optimizer": self.optimizer,
-            "lr_scheduler": self.lr_scheduler,
-        }
+        if self.lr_scheduler:
+            # Return both optimizer and scheduler
+            return {
+                "optimizer": self.optimizer,
+                "lr_scheduler": self.lr_scheduler,
+            }
+        else:
+            # Return only the optimizer
+            return self.optimizer
     
     def _init_metrics(self, metrics: MetricCollection | Dict[str, MetricCollection]) -> Dict[str, MetricCollection]:
         if isinstance(metrics, MetricCollection):
