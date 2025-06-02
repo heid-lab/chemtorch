@@ -57,7 +57,7 @@ class DataModule(L.LightningDataModule):
         """
         dataset = self._get_dataset(stage)
         # Check if the attribute is a property of the dataset's class
-        if hasattr(type(dataset), property) and isinstance(getattr(type(dataset), builtins.property), property):
+        if hasattr(type(dataset), property) and isinstance(getattr(type(dataset), property), builtins.property):
             return getattr(dataset, property)
         else:
             raise AttributeError(f"Dataset does not have a property '{property}' (must be a @property).")
