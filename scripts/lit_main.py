@@ -31,6 +31,8 @@ def main(cfg: DictConfig):
         dataset_factory=dataset_factory,
         dataloader_factory=dataloader_factory,
     )
+    data_module.prepare_data()
+    data_module.setup()
 
     ##### UPDATE GLOBAL CONFIG FROM DATASET ATTRIBUTES ##############################
     dataset_properties = cfg.get("runtime_config_parameters_from_dataset", [])
