@@ -96,7 +96,7 @@ model_cfg:
       inplace: true
 
 task_cfg:
-  _target_: deepreaction.task.regression.train
+  _target_: deepreaction.routine.regression_legacy.train
   _recursive_: False
   clip_grad_norm: true
   clip_grad_norm_value: 1
