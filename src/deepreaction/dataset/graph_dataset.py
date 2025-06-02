@@ -1,13 +1,10 @@
-from typing import Callable, Dict, List, Optional, Union
+from typing import Dict, List, Union
 
-import pandas as pd
 import torch
 from torch_geometric.data import Data, Dataset
 from torch_geometric.utils import degree
 
 from deepreaction.dataset.dataset_base import DatasetBase
-from deepreaction.representation import AbstractRepresentation
-from deepreaction.transform import AbstractTransform
 
 class GraphDataset(DatasetBase[Data], Dataset):
     """
@@ -82,3 +79,21 @@ class GraphDataset(DatasetBase[Data], Dataset):
             "max_degree": max_degree,
             "degree_histogram": degree_histogram.tolist(),
         }
+
+    @property
+    def num_node_features(self) -> int:
+        """
+        Returns the number of node features in the dataset. 
+        Please refer to the PyTorch Geometric documentation of `torch_geometric.data.Dataset.num_node_features`
+        for further details, if necessary.
+        """
+        return super().num_node_features
+
+    @property
+    def num_edge_features(self) -> int:
+        """
+        Returns the number of edge features in the dataset.
+        Please refer to the PyTorch Geometric documentation of `torch_geometric.data.Dataset.num_edge_features`
+        for further details, if necessary.
+        """
+        return super().num_edge_features
