@@ -35,7 +35,7 @@ def main(cfg: DictConfig):
     data_module.setup()
 
     ##### UPDATE GLOBAL CONFIG FROM DATASET ATTRIBUTES ##############################
-    dataset_properties = cfg.get("runtime_config_parameters_from_dataset", [])
+    dataset_properties = cfg.get("runtime_dataset_properties", [])
     if dataset_properties:
         print(
             "INFO: Updating global config with properties of training dataset"
