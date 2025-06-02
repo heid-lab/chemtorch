@@ -1,5 +1,5 @@
 _target_: deepreaction.routine.supervised_learning_routine.SupervisedLearningRoutine
-_partial_: true
+_partial_: true   # model passed at runtime
 
 defaults:
   - loss: mse

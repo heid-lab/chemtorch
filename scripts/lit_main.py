@@ -3,8 +3,6 @@ import os
 import hydra
 from hydra.utils import instantiate
 from lightning import seed_everything
-from lightning.pytorch.loggers import WandbLogger
-from sklearn.metrics import mean_absolute_error, root_mean_squared_error
 from omegaconf import DictConfig, OmegaConf
 
 import wandb
@@ -54,7 +52,7 @@ def main(cfg: DictConfig):
     # print(f"INFO: Final config:\n{OmegaConf.to_yaml(resolved_cfg)}")
 
     ##### INITIALIZE W&B ##########################################################
-    if cfg.wandb:
+    if cfg.log:
         wandb.init(
             project=cfg.project_name,
             group=cfg.group_name,
@@ -73,7 +71,7 @@ def main(cfg: DictConfig):
         p.numel() for p in model.parameters() if p.requires_grad
     )
     print(f"Total parameters: {total_params:,}")
-    if cfg.wandb:
+    if cfg.log:
         wandb.log({"total_parameters": total_params}, commit=False)
 
     parameter_limit = getattr(cfg, "parameter_limit", None)
@@ -81,7 +79,7 @@ def main(cfg: DictConfig):
         print(
             f"Parameter limit of {parameter_limit:,} exceeded. Skipping this run."
         )
-        if cfg.wandb:
+        if cfg.log:
             wandb.log(
                 {
                     "parameter_threshold_exceeded": True,
@@ -100,14 +98,17 @@ def main(cfg: DictConfig):
     # TODO: Consider `DistributedDataParallel` for distributed training NLP on large datasets
     # TODO: Consider HyperOptArgumentParser for hyperparameter optimization
     trainer = instantiate(cfg.trainer)
+    if not cfg.log:
+        trainer.logger = None
     print(f"Using device: {trainer.accelerator}")
     ############################# task instantiation #############################
     # TODO: Recursively instantiate routine with hydra
-    routine = instantiate(cfg.routine, model=model)
+    routine_factory = instantiate(cfg.routine)
+    routine = routine_factory(model=model)
     trainer.fit(routine, datamodule=data_module)
     trainer.test(routine, datamodule=data_module)
 
-    if cfg.wandb:
+    if cfg.log:
         wandb.finish()
 
 

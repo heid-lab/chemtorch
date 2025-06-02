@@ -75,7 +75,7 @@ def main(cfg: DictConfig):
     print(f"INFO: Final config:\n{OmegaConf.to_yaml(resolved_cfg)}")
 
     ##### INITIALIZE W&B ##########################################################
-    if cfg.wandb:
+    if cfg.log:
         wandb.init(
             project=cfg.project_name,
             group=cfg.group_name,
@@ -124,7 +124,7 @@ def main(cfg: DictConfig):
         print(
             f"Model has {total_params:,} parameters, which exceeds the parameter limit of {parameter_limit:,}. Skipping this run."
         )
-        if cfg.wandb:
+        if cfg.log:
             wandb.log(
                 {
                     "total_parameters": total_params,
@@ -134,7 +134,7 @@ def main(cfg: DictConfig):
             wandb.run.summary["status"] = "parameter_threshold_exceeded"
         return False
 
-    if cfg.wandb:
+    if cfg.log:
         wandb.log({"total_parameters": total_params}, commit=False)
 
     ############################# task instantiation #############################
@@ -148,7 +148,7 @@ def main(cfg: DictConfig):
     )
     # train()
 
-    if cfg.wandb:
+    if cfg.log:
         wandb.finish()
 
 

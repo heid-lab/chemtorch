@@ -11,8 +11,8 @@ defaults:
   - override hydra/hydra_logging: disabled
   - _self_
 
-# WANDB
-wandb: false
+# LOGGING (Weight and Biases)
+log: false
 project_name: deepreaction
 group_name: null
 run_name: null
