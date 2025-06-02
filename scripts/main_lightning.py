@@ -2,11 +2,9 @@ import os
 
 import hydra
 from hydra.utils import instantiate
-from lightning import Trainer, seed_everything
-from lightning.pytorch.callbacks import ModelCheckpoint
+from lightning import seed_everything
 from lightning.pytorch.loggers import WandbLogger
 from sklearn.metrics import mean_absolute_error, root_mean_squared_error
-import torch
 from omegaconf import DictConfig, OmegaConf
 
 import wandb
@@ -103,20 +101,7 @@ def main(cfg: DictConfig):
     print(f"Using device: {trainer.accelerator}")
     ############################# task instantiation #############################
     # TODO: Recursively instantiate routine with hydra
-    routine = SupervisedLearningRoutine(
-        model=model,
-        loss=instantiate(cfg.task.loss),
-        optimizer=instantiate(cfg.task.optimizer),
-        lr_scheduler=instantiate(cfg.task.scheduler),
-        # TODO: Use TorchMetrics and update tracking in SupervisedRoutine
-        # TODO: Instantiate from cfg
-        metrics={
-            'rmse': root_mean_squared_error,
-            'mae': mean_absolute_error
-        },
-        pretrained_path=getattr(cfg, 'pretrained_path', None),
-        resume_training=getattr(cfg, 'resume_training', False),
-    )
+    routine = instantiate(cfg.routine, model=model)
     trainer.fit(routine, datamodule=data_module)
     trainer.test(routine, datamodule=data_module)
 

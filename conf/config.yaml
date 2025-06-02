@@ -5,7 +5,8 @@ defaults:
   - dataset: graph
   - dataloader: pyg_dataloader
   - model: gcn
-  - task: regression
+  - trainer: default
+  - routine: regression
   - override hydra/job_logging: disabled
   - override hydra/hydra_logging: disabled
   - _self_

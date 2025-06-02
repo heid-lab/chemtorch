@@ -1,7 +1,7 @@
-from ast import Dict, Tuple
+from typing import Dict, Tuple
 from torchmetrics import Metric, MetricCollection
 import os
-from typing import Any, Callable, Iterator, Literal
+from typing import Callable, Iterator, Literal
 import lightning as L
 from torch import nn, optim
 import torch
