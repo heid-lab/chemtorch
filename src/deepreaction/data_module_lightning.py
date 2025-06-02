@@ -12,6 +12,7 @@ class DataModule(L.LightningDataModule):
         dataset_factory: Callable[[pd.DataFrame], Any],
         dataloader_factory: Callable,
     ):
+        super().__init__()
         self.data_pipeline = data_pipeline
         self.dataset_factory = dataset_factory
         self.dataloader_factory = dataloader_factory
