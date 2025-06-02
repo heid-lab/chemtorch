@@ -39,7 +39,7 @@ class DataModule(L.LightningDataModule):
     
     def get_dataset_property(
             self, 
-            stage: Literal['train', 'val', 'test', 'predict'],
+            stage: Literal['fit', 'val', 'test', 'predict'],
             property: str
         ) -> Any:
         """
@@ -63,12 +63,16 @@ class DataModule(L.LightningDataModule):
         else:
             raise AttributeError(f"Dataset does not have a property '{property}' (must be a @property).")
 
-    def _assign_datasets_from_pipeline_output(self, dp_out, stage: str = None):
+    def _assign_datasets_from_pipeline_output(
+            self, 
+            dp_out: Any, 
+            stage: Literal['fit', 'val', 'test', 'predict'] = None
+        ):
         """
         Assign datasets based on the type of dp_out and the stage.
         """
         if stage is not None:
-            if stage in ['train', 'val', 'test']:
+            if stage in ['fit', 'val', 'test']:
                 if not isinstance(dp_out, DataSplit):
                     raise ValueError(
                         "Data pipeline output must be DataSplit for 'train', 'val', or 'test' stages."
