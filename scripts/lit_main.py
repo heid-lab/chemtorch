@@ -44,7 +44,7 @@ def main(cfg: DictConfig):
             OmegaConf.update(
                 cfg=cfg, 
                 key=dataset_property, 
-                val=data_module.get_dataset_property(stage='train', property=dataset_property),
+                value=data_module.get_dataset_property(stage='train', property=dataset_property),
                 merge=True
             )
 
