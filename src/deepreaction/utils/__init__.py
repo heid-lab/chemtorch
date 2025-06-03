@@ -9,5 +9,6 @@ from .misc import (
     load_standardizer, 
     get_generator, 
     set_seed, 
-    check_early_stopping
+    check_early_stopping,
+    order_config_by_signature
 )
