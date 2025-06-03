@@ -14,6 +14,7 @@ from deepreaction.utils import enforce_base_init
 # save preprocessing time for repeated runs with the same dataset.
 # Note: Update precompute_time property to return 0 or time taken
 # to load from disk.
+# TODO: Generalize to unlabbeled datasets.
 T = TypeVar("T")
 class DatasetBase(Generic[T]):
     """
@@ -226,3 +227,23 @@ class DatasetBase(Generic[T]):
         if not self.precompute_all:
             raise RuntimeError("Precomputation is not enabled for this dataset.")
         return self._precompute_time
+
+    @property
+    def mean(self) -> float:
+        """
+        Get the mean of the labels in the dataset.
+
+        Returns:
+            float: The mean of the labels.
+        """
+        return self.dataframe['label'].mean().item()
+    
+    @property
+    def std(self) -> float:
+        """
+        Get the standard deviation of the labels in the dataset.
+
+        Returns:
+            float: The standard deviation of the labels.
+        """
+        return self.dataframe['label'].std().item()

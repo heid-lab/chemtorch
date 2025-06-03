@@ -22,7 +22,7 @@ from deepreaction.utils.standardizer import Standardizer
 # torch.autograd.set_detect_anomaly(True)
 
 
-def predict(model, loader, stdzer, device):
+def predict(model, loader, stdzer: Standardizer, device):
     model.eval()
     preds = []
     with torch.no_grad():
@@ -31,8 +31,8 @@ def predict(model, loader, stdzer, device):
             y = y.to(device)
             out = model(X)         # shape: (batch_size, 1)
             out = out.squeeze(-1)       # shape: (batch_size)
-            pred = stdzer(out, rev=True)
-            preds.extend(pred.cpu().detach().tolist())
+            preds = stdzer.destandardize(out)
+            preds.extend(preds.cpu().detach().tolist())
     return preds
 
 
@@ -41,7 +41,7 @@ def train_epoch(
     train_loader,
     optimizer,
     loss_fn,
-    stdzer,
+    stdzer: Standardizer,
     device,
     clip_grad_norm,
     clip_grad_norm_value,
@@ -57,7 +57,7 @@ def train_epoch(
 
         out = model(X)
         out = out.squeeze(-1)
-        result = loss_fn(out, stdzer(y))
+        result = loss_fn(out, stdzer.standardize(y))
         result.backward()
 
         if clip_grad_norm:

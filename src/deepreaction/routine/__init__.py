@@ -1,1 +1,2 @@
-from .supervised_learning_routine import SupervisedLearningRoutine
+from .supervised_routine import SupervisedRoutine
+from .regression_routine import RegressionRoutine

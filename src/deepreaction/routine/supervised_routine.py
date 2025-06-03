@@ -14,18 +14,55 @@ from deepreaction.utils.standardizer import Standardizer
 
 
 
-class SupervisedLearningRoutine(L.LightningModule):
+class SupervisedRoutine(L.LightningModule):
     """
-    A routine for supervised learning tasks using PyTorch Lightning.
+    A flexible LightningModule wrapper for supervised tasks, supporting both training and inference.
+
+    This class can be used for:
+      - Full training/validation/testing with loss, optimizer, scheduler, and metrics.
+      - Inference-only (prediction), requiring only the model.
+
+    Args:
+        model (nn.Module): The model to be trained or used for inference.
+        loss (Callable, optional): The loss function to be used. Required for training/validation/testing.
+        optimizer (Callable, optional): A factory function that takes in the model's parameters 
+            and returns an optimizer instance. Required for training/validation/testing.
+        lr_scheduler (Callable, optional): A factory function that takes in the optimizer
+            and returns a learning rate scheduler instance. Only needed for training.
+        metrics (MetricCollection | Dict[str, MetricCollection], optional): A collection of metrics to be used for evaluation.
+            It can be a single MetricCollection or a dictionary of metric collections with keys 'train', 
+            'val', or 'test'. Only needed for training/validation/testing.
+        pretrained_path (str, optional): Path to a pre-trained model checkpoint.
+        resume_training (bool, optional): Whether to resume training from a checkpoint.
+
+    Raises:
+        TypeError: If `metrics` is not a MetricCollection or a dictionary of MetricCollections.
+        ValueError: If `metrics` is a dictionary, but its keys are not 'train', 'val', or 'test',
+            or if the keys are not unique.
+
+    Examples:
+        # Training usage
+        >>> routine = SupervisedRoutine(
+        ...     model=my_model,
+        ...     loss=my_loss_fn,
+        ...     optimizer=lambda params: torch.optim.Adam(params, lr=1e-3),
+        ...     lr_scheduler=lambda opt: torch.optim.lr_scheduler.StepLR(opt, step_size=10),
+        ...     metrics=my_metrics,
+        ... )
+        >>> trainer = pl.Trainer(...)
+        >>> trainer.fit(routine, datamodule=my_datamodule)
+
+        # Inference-only usage
+        >>> routine = SupervisedRoutine(model=my_model)
+        >>> preds = routine(torch.randn(8, 16))  # Forward pass for prediction
     """
     def __init__(
             self, 
             model: nn.Module, 
-            loss: Callable, 
-            optimizer: Callable[[Iterator[nn.Parameter]], Optimizer],
+            loss: Callable = None, 
+            optimizer: Callable[[Iterator[nn.Parameter]], Optimizer] = None,
             lr_scheduler: Callable[[Optimizer], LRScheduler] = None,
             metrics: MetricCollection | Dict[str, MetricCollection] = None,
-            standardizer_path: str = None,
             pretrained_path: str = None,
             resume_training: bool = False,
         ):
@@ -34,6 +71,7 @@ class SupervisedLearningRoutine(L.LightningModule):
         
         Args:
             model (nn.Module): The model to be trained.
+            standardizer (Standardizer, optional): A Standardizer instance to destandardize the models predictions with.
             loss (Callable): The loss function to be used.
             optimizer (Callable): A factory function that takes in the models parameters 
                 and returns an optimizer instance. For example, a partially instantiated 
@@ -43,7 +81,6 @@ class SupervisedLearningRoutine(L.LightningModule):
             metrics (MetricCollection | Dict[str, MetricCollection], optional): A collection of metrics to be used for evaluation.
                 It can be a single MetricCollection or a dictionary of metric collections with keys 'train', 
                 'val', or 'test'. Defaults to `None`, which means no metrics are used.
-            standardizer_path (str, optional): Path to a standardizer model. Defaults to `None`.
             pretrained_path (str, optional): Path to a pre-trained model checkpoint. Defaults to `None`.
             resume_training (bool, optional): Whether to resume training from a checkpoint. Defaults to `False`.
         
@@ -58,7 +95,6 @@ class SupervisedLearningRoutine(L.LightningModule):
         self.optimizer: Optimizer = optimizer(params=self.model.parameters())
         self.lr_scheduler: LRScheduler = lr_scheduler(self.optimizer) if lr_scheduler else None
         self.metrics = self._init_metrics(metrics) if metrics else None
-        self.standardizer_path = standardizer_path
         self.pretrained_path = pretrained_path
         self.resume_training = resume_training
 
@@ -66,8 +102,6 @@ class SupervisedLearningRoutine(L.LightningModule):
     def setup(self, stage: str = None):
         if self.pretrained_path:
             self._load_pretrained(self.pretrained_path, self.resume_training)
-        if self.standardizer_path:
-            self.standardizer = torch.load(self.standardizer_path)
 
     def configure_optimizers(self):
         if self.lr_scheduler:
@@ -82,8 +116,6 @@ class SupervisedLearningRoutine(L.LightningModule):
 
     def forward(self, inputs: torch.Tensor) -> torch.Tensor:
         preds = self.model(inputs)
-        if hasattr(self, 'standardizer'):
-            preds = self.standardizer(preds, rev=True)
         return preds
     
     def training_step(self, batch: Tuple[torch.Tensor, torch.Tensor]) -> torch.Tensor:
@@ -94,6 +126,8 @@ class SupervisedLearningRoutine(L.LightningModule):
     
     def test_step(self, batch: Tuple[torch.Tensor, torch.Tensor]) -> torch.Tensor:
         return self._step(batch, stage="test")
+    
+    # TODO: Optionally track mertics for prediction step
 
     ########### Private Methods ##########################################################
     def _step(
@@ -176,11 +210,3 @@ class SupervisedLearningRoutine(L.LightningModule):
         missing_keys = [key for key in keys if key not in checkpoint]
         if missing_keys:
             raise ValueError(f"Checkpoint is missing required keys: {missing_keys}")
-
-    def _load_standardizer(self, path: str):
-        if not os.path.exists(path):
-            raise ValueError(f"Standardizer path does not exist: {path}")
-        params = torch.load(path)
-        standardizer = Standardizer(mean=params['mean'], std=params['std'])
-        self.log("standardizer_loaded", True, prog_bar=True)
-        return standardizer

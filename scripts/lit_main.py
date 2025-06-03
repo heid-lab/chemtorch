@@ -7,7 +7,6 @@ from omegaconf import DictConfig, OmegaConf
 
 import wandb
 from deepreaction.data_module_lightning import DataModule
-from deepreaction.routine.supervised_learning_routine import SupervisedLearningRoutine
 
 OmegaConf.register_new_resolver("eval", eval)   # TODO: What is this?
 
@@ -29,11 +28,9 @@ def main(cfg: DictConfig):
         dataset_factory=dataset_factory,
         dataloader_factory=dataloader_factory,
     )
-    data_module.prepare_data()
-    data_module.setup()
 
     ##### UPDATE GLOBAL CONFIG FROM DATASET ATTRIBUTES ##############################
-    dataset_properties = cfg.get("runtime_dataset_properties", [])
+    dataset_properties = cfg.get("runtime_agrs_from_train_dataset_props", [])
     if dataset_properties:
         print(
             "INFO: Updating global config with properties of training dataset"
