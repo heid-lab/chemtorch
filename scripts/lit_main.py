@@ -6,7 +6,7 @@ from lightning import seed_everything
 from omegaconf import DictConfig, OmegaConf
 
 import wandb
-from deepreaction.data_module_lightning import DataModule
+from deepreaction.data_module import DataModule
 
 OmegaConf.register_new_resolver("eval", eval)   # TODO: What is this?
 
