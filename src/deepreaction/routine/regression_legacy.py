@@ -5,15 +5,15 @@ import time
 import hydra
 import numpy as np
 import torch
-from omegaconf import DictConfig, OmegaConf
+from omegaconf import DictConfig
+
+from torch.optim.lr_scheduler import ReduceLROnPlateau
 from sklearn.metrics import mean_absolute_error, root_mean_squared_error
-from torch import nn
 
 import wandb
 from deepreaction.utils.misc import (
     check_early_stopping,
     load_model,
-    load_standardizer,
     save_model,
     save_standardizer,
 )
@@ -24,7 +24,7 @@ from deepreaction.utils.standardizer import Standardizer
 
 def predict(model, loader, stdzer: Standardizer, device):
     model.eval()
-    preds = []
+    preds_list = []
     with torch.no_grad():
         for X, y in loader:
             X = X.to(device)
@@ -32,8 +32,8 @@ def predict(model, loader, stdzer: Standardizer, device):
             out = model(X)         # shape: (batch_size, 1)
             out = out.squeeze(-1)       # shape: (batch_size)
             preds = stdzer.destandardize(out)
-            preds.extend(preds.cpu().detach().tolist())
-    return preds
+            preds_list.extend(preds.cpu().detach().tolist())
+    return preds_list
 
 
 def train_epoch(
@@ -65,7 +65,7 @@ def train_epoch(
                 model.parameters(), clip_grad_norm_value
             )
         optimizer.step()
-        loss_all += loss_fn(stdzer(out, rev=True), y)
+        loss_all += loss_fn(stdzer.destandardize(out), y)
 
     epoch_time = time.time() - start_time
     return math.sqrt(loss_all / len(train_loader.dataset)), epoch_time
@@ -86,7 +86,7 @@ def train(
     model_path,
     loss: DictConfig,
     optimizer: DictConfig,
-    scheduler: DictConfig,
+    lr_scheduler: DictConfig,
     use_wandb=False,
 ):
 
@@ -98,12 +98,12 @@ def train(
     if use_wandb:
         wandb.run.summary["status"] = "training"
 
-    requires_metric = getattr(scheduler, "requires_metric", False)
 
     optimizer_partial = hydra.utils.instantiate(optimizer)
     optimizer = optimizer_partial(params=model.parameters())
-    scheduler_partial = hydra.utils.instantiate(scheduler.scheduler)
-    scheduler = scheduler_partial(optimizer)
+    scheduler_partial = hydra.utils.instantiate(lr_scheduler)
+    lr_scheduler = scheduler_partial(optimizer)
+    requires_metric = isinstance(lr_scheduler, ReduceLROnPlateau)
 
     loss_fn = hydra.utils.instantiate(loss)
     print(model)
@@ -133,9 +133,9 @@ def train(
 
         try:
             if requires_metric:
-                scheduler.step(val_loss)
+                lr_scheduler.step(val_loss)
             else:
-                scheduler.step()
+                lr_scheduler.step()
         except TypeError as e:
             raise TypeError(
                 f"Scheduler step failed. Check if requires_metric is properly configured: {e}"

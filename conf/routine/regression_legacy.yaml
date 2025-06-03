@@ -4,7 +4,7 @@ _recursive_: False
 defaults:
   - loss: mse
   - optimizer: adamw
-  - scheduler: cosine_with_warmup
+  - lr_scheduler: cosine_with_warmup
   - _self_
 
 epochs: 30
@@ -21,5 +21,5 @@ min_delta: 0.01
 save_model_parameters: false
 model_path: null
 
-# LOGGING???
-use_wandb: ${wandb}
+# LOGGING
+use_wandb: ${log}

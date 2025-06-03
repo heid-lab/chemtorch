@@ -5,6 +5,7 @@ import torch
 from omegaconf import DictConfig, OmegaConf
 
 import wandb
+from deepreaction.routine.regression_legacy import train
 from deepreaction.utils import DataSplit
 from deepreaction.utils import load_model, set_seed
 
@@ -134,16 +135,15 @@ def main(cfg: DictConfig):
     if cfg.log:
         wandb.log({"total_parameters": total_params}, commit=False)
 
-    ############################# task instantiation #############################
+    ############################# routine instantiation #############################
     hydra.utils.instantiate(
-        cfg.task,
+        cfg.routine,
         train_loader=train_loader,
         val_loader=val_loader,
         test_loader=test_loader,
         model=model,
         device=device,
     )
-    # train()
 
     if cfg.log:
         wandb.finish()
