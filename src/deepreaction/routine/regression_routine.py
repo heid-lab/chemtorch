@@ -56,6 +56,7 @@ class RegressionRoutine(SupervisedRoutine):
     @override
     def forward(self, inputs: torch.Tensor) -> torch.Tensor:
         preds = self.model(inputs)
+        preds = preds.squeeze(-1) if preds.ndim > 1 else preds
         if self.standardizer:
             preds = self.standardizer.destandardize(preds)
         return preds
