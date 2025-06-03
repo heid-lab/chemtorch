@@ -11,6 +11,8 @@ defaults:
   - override hydra/hydra_logging: disabled
   - _self_
 
+dataloader:
+  num_workers: 7
 
 # LOGGING (Weight and Biases)
 log: false
@@ -19,7 +21,9 @@ group_name: null
 run_name: null
 
 # INITIALIZATION
-seed: 0 # use 0
+seed: 0
+
+parameter_limit: null
 
 # TODO: Bad practice, find a proper solution to pass these dataset
 # properties to the model/routine
@@ -31,24 +35,15 @@ runtime_agrs_from_train_dataset_props:
   - mean
   - std
 
-dataloader:
-  num_workers: 7
-
-# DEVICE (redunadant to trainer config)
+# DEVICE (deprecated)
 use_cuda: true
 device: gpu
 
-# FOR SWEEPING
-parameter_limit: null
-
-# lambda_param: 0.1
-# extra_loss: null
-# margin: 1
-
-# MODEL LOADING
+# MODEL LOADING (deprecated)
 use_loaded_model: false
 pretrained_path: null
 
+# TODO: What is this used for?
 hydra:
   output_subdir: null
   run:
