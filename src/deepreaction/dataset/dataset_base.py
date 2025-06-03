@@ -10,6 +10,7 @@ from deepreaction.transform import AbstractTransform
 from deepreaction.utils import enforce_base_init
 
 
+# TODO: Centralize logging
 # TODO: Consider saving the precomputed data objects to disk to 
 # save preprocessing time for repeated runs with the same dataset.
 # Note: Update precompute_time property to return 0 or time taken

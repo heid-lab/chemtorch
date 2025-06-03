@@ -88,10 +88,7 @@ def main(cfg: DictConfig):
             + datasets.val.precompute_time
             + datasets.test.precompute_time
         )
-        wandb.log(
-            {"Precompute_time": precompute_time},
-            commit=False,
-        )
+        wandb.log({"Precompute_time": precompute_time}, commit=False)
 
 
     ##### MODEL ##################################################################

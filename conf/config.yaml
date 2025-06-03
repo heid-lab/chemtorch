@@ -31,6 +31,9 @@ runtime_agrs_from_train_dataset_props:
   - mean
   - std
 
+dataloader:
+  num_workers: 7
+
 # DEVICE (redunadant to trainer config)
 use_cuda: true
 device: gpu

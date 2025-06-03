@@ -124,31 +124,43 @@ class SupervisedRoutine(L.LightningModule):
         return preds
     
     def training_step(self, batch: Tuple[torch.Tensor, torch.Tensor]) -> torch.Tensor:
-        return self._step(batch, stage="train")
+        return self._step(batch, split="train")
 
     def validation_step(self, batch: Tuple[torch.Tensor, torch.Tensor]) -> torch.Tensor:
-        return self._step(batch, stage="val")
+        return self._step(batch, split="val")
     
     def test_step(self, batch: Tuple[torch.Tensor, torch.Tensor]) -> torch.Tensor:
-        return self._step(batch, stage="test")
+        return self._step(batch, split="test")
     
     ########### Private Methods ##########################################################
     def _step(
         self, 
         batch: Tuple[torch.Tensor, torch.Tensor], 
-        stage: Literal['train', 'val', 'test'],
+        split: Literal['train', 'val', 'test'],
     ) -> torch.Tensor:
         """
         Perform a training, validation, or test step.
         """
         inputs, targets = batch
+        batch_size = inputs.size(0)
         preds = self.forward(inputs)
         loss = self.loss(preds, targets)
-        # TODO: Log correctly
-        self.log(f"{stage}_loss", loss, on_step=True, on_epoch=True, prog_bar=True)
 
-        if self.metrics and stage in self.metrics:
-            self.log_dict(self.metrics[stage], on_step=False, on_epoch=True)
+        is_train_step = split == "train"
+        self.log(f"{split}_loss", loss, 
+            on_step=is_train_step, 
+            on_epoch=not is_train_step,
+            batch_size=batch_size,
+            prog_bar = True, 
+        )
+
+        if self.metrics and split in self.metrics:
+            self.metrics[split].update(preds, targets)
+            self.log_dict(self.metrics[split], 
+                on_step=False, 
+                on_epoch=True,
+                batch_size=batch_size
+            )
 
         return loss
     
@@ -170,7 +182,7 @@ class SupervisedRoutine(L.LightningModule):
         else:
             raise TypeError("Metrics must be a torchmetrics.MetricCollection or a dictionary of MetricCollections.")
 
-        # Register as attributes for Lightning
+        # Register each MetricCollections as an attributes for Lightning
         for stage, metric_collection in metrics_dict.items():
             setattr(self, f"{stage}_metrics", metric_collection)
         return metrics_dict

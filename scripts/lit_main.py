@@ -77,11 +77,7 @@ def main(cfg: DictConfig):
             f"Parameter limit of {parameter_limit:,} exceeded. Skipping this run."
         )
         if cfg.log:
-            wandb.log(
-                {
-                    "parameter_threshold_exceeded": True,
-                }
-            )
+            wandb.log({"parameter_threshold_exceeded": True,})
             wandb.run.summary["status"] = "parameter_threshold_exceeded"
         return False
 
