@@ -10,10 +10,6 @@ from torch.optim.lr_scheduler import LRScheduler
 from torchmetrics import Metric, MetricCollection
 
 
-from deepreaction.utils.standardizer import Standardizer
-
-
-
 class SupervisedRoutine(L.LightningModule):
     """
     A flexible LightningModule wrapper for supervised tasks, supporting both training and inference.
@@ -22,26 +18,9 @@ class SupervisedRoutine(L.LightningModule):
       - Full training/validation/testing with loss, optimizer, scheduler, and metrics.
       - Inference-only (prediction), requiring only the model.
 
-    Args:
-        model (nn.Module): The model to be trained or used for inference.
-        loss (Callable, optional): The loss function to be used. Required for training/validation/testing.
-        optimizer (Callable, optional): A factory function that takes in the model's parameters 
-            and returns an optimizer instance. Required for training/validation/testing.
-        lr_scheduler (Callable, optional): A factory function that takes in the optimizer
-            and returns a learning rate scheduler instance. Only needed for training.
-        metrics (MetricCollection | Dict[str, MetricCollection], optional): A collection of metrics to be used for evaluation.
-            It can be a single MetricCollection or a dictionary of metric collections with keys 'train', 
-            'val', or 'test'. Only needed for training/validation/testing.
-        pretrained_path (str, optional): Path to a pre-trained model checkpoint.
-        resume_training (bool, optional): Whether to resume training from a checkpoint.
+    Example usage:
 
-    Raises:
-        TypeError: If `metrics` is not a MetricCollection or a dictionary of MetricCollections.
-        ValueError: If `metrics` is a dictionary, but its keys are not 'train', 'val', or 'test',
-            or if the keys are not unique.
-
-    Examples:
-        # Training usage
+        >>> # Training usage
         >>> routine = SupervisedRoutine(
         ...     model=my_model,
         ...     loss=my_loss_fn,
@@ -52,7 +31,7 @@ class SupervisedRoutine(L.LightningModule):
         >>> trainer = pl.Trainer(...)
         >>> trainer.fit(routine, datamodule=my_datamodule)
 
-        # Inference-only usage
+        >>> # Inference-only usage
         >>> routine = SupervisedRoutine(model=my_model)
         >>> preds = routine(torch.randn(8, 16))  # Forward pass for prediction
     """
@@ -62,28 +41,54 @@ class SupervisedRoutine(L.LightningModule):
             loss: Callable = None, 
             optimizer: Callable[[Iterator[nn.Parameter]], Optimizer] = None,
             lr_scheduler: Callable[[Optimizer], LRScheduler] = None,
-            metrics: MetricCollection | Dict[str, MetricCollection] = None,
             pretrained_path: str = None,
             resume_training: bool = False,
+            metrics: MetricCollection | Dict[str, MetricCollection] = None,
         ):
         """
-        Initialize the SupervisedLearningRoutine.
+        Initialize the SupervisedRoutine.
         
         Args:
-            model (nn.Module): The model to be trained.
-            standardizer (Standardizer, optional): A Standardizer instance to destandardize the models predictions with.
-            loss (Callable): The loss function to be used.
-            optimizer (Callable): A factory function that takes in the models parameters 
-                and returns an optimizer instance. For example, a partially instantiated 
-                PyTorch optimizer.
+            model (nn.Module): The model to be trained or used for inference.
+            loss (Callable, optional): The loss function to be used. Required for training/validation/testing.
+            optimizer (Callable, optional): A factory function that takes in the model's parameters 
+                and returns an optimizer instance. Required for training/validation/testing.
             lr_scheduler (Callable, optional): A factory function that takes in the optimizer
-                and returns a learning rate scheduler instance. Defaults to `None`, which means no scheduler is used.
-            metrics (MetricCollection | Dict[str, MetricCollection], optional): A collection of metrics to be used for evaluation.
-                It can be a single MetricCollection or a dictionary of metric collections with keys 'train', 
-                'val', or 'test'. Defaults to `None`, which means no metrics are used.
-            pretrained_path (str, optional): Path to a pre-trained model checkpoint. Defaults to `None`.
-            resume_training (bool, optional): Whether to resume training from a checkpoint. Defaults to `False`.
-        
+                and returns a learning rate scheduler instance. Only needed for training.
+            pretrained_path (str, optional): Path to a pre-trained model checkpoint.
+            resume_training (bool, optional): Whether to resume training from a checkpoint.
+            metrics (MetricCollection or Dict[str, MetricCollection], optional): Metrics to use for evaluation.
+                - If a single `MetricCollection` is provided, it will be cloned for 'val' and 'test' stages.
+                - If a dictionary is provided, it must map keys 'train', 'val', and/or 'test' to 
+                `MetricCollection` instances. This allows you to specify different metrics for each stage.
+                In both cases, the metrics will be registered as attributes of the LightningModule for proper logging.
+
+                Example usage:
+                    >>> from torchmetrics import MetricCollection, MeanAbsoluteError, MeanSquaredError
+                    ...
+                    >>> # Single MetricCollection for val/test
+                    >>> metrics = MetricCollection({
+                    ...     "mae": MeanAbsoluteError(),
+                    ...     "rmse": MeanSquaredError(squared=False),
+                    ... })
+                    >>> routine = SupervisedRoutine(
+                    ...     model=my_model,
+                    ...     loss=my_loss_fn,
+                    ...     optimizer=lambda params: torch.optim.Adam(params, lr=1e-3),
+                    ...     metrics=metrics,
+                    ... )
+                    >>> # Distinct metrics for each stage
+                    >>> metrics_dict = {
+                    ...     "train": MetricCollection({"mae": MeanAbsoluteError()}),
+                    ...     "val": MetricCollection({"rmse": MeanSquaredError(squared=False)}),
+                    ... }
+                    >>> routine = SupervisedRoutine(
+                    ...     model=my_model,
+                    ...     loss=my_loss_fn,
+                    ...     optimizer=lambda params: torch.optim.Adam(params, lr=1e-3),
+                    ...     metrics=metrics_dict,
+                    ... )
+
         Raises:
             TypeError: If `metrics` is not a MetricCollection or a dictionary of MetricCollections.
             ValueError: If `metrics` is a dictionary, but its keys are not 'train', 'val', or 'test',
@@ -99,7 +104,7 @@ class SupervisedRoutine(L.LightningModule):
         self.resume_training = resume_training
 
     ########## Lightning DataModule Methods ##############################################
-    def setup(self, stage: str = None):
+    def setup(self, stage: Literal['fit', 'validate', 'test', 'predict'] = None):
         if self.pretrained_path:
             self._load_pretrained(self.pretrained_path, self.resume_training)
 
@@ -127,8 +132,6 @@ class SupervisedRoutine(L.LightningModule):
     def test_step(self, batch: Tuple[torch.Tensor, torch.Tensor]) -> torch.Tensor:
         return self._step(batch, stage="test")
     
-    # TODO: Optionally track mertics for prediction step
-
     ########### Private Methods ##########################################################
     def _step(
         self, 
@@ -150,8 +153,9 @@ class SupervisedRoutine(L.LightningModule):
         return loss
     
     def _init_metrics(self, metrics: MetricCollection | Dict[str, MetricCollection]) -> Dict[str, MetricCollection]:
+        metrics_dict = {}
         if isinstance(metrics, MetricCollection):
-            return {
+            metrics_dict = {
                 "val": metrics.clone(prefix="val_"),
                 "test": metrics.clone(prefix="test_"),
             }
@@ -162,9 +166,14 @@ class SupervisedRoutine(L.LightningModule):
                 raise ValueError("Metric dictionary keys must be any of 'train', 'val', and 'test'.")
             if len(metrics) != len(set(metrics.keys())):
                 raise ValueError("Metric dictionary keys must be unique.")
-            return metrics
+            metrics_dict = metrics
         else:
             raise TypeError("Metrics must be a torchmetrics.MetricCollection or a dictionary of MetricCollections.")
+
+        # Register as attributes for Lightning
+        for stage, metric_collection in metrics_dict.items():
+            setattr(self, f"{stage}_metrics", metric_collection)
+        return metrics_dict
 
     def _validate_metrics(self, metrics: Dict[str, Metric]):
         """
