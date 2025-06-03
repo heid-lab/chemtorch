@@ -62,12 +62,23 @@ class SupervisedLearningRoutine(L.LightningModule):
         self.pretrained_path = pretrained_path
         self.resume_training = resume_training
 
-    def setup(self, stage=None):
-        # Default implementation, override in subclass if needed and call super().setup(stage)
+    ########## Lightning DataModule Methods ##############################################
+    def setup(self, stage: str = None):
         if self.pretrained_path:
             self._load_pretrained(self.pretrained_path, self.resume_training)
         if self.standardizer_path:
             self.standardizer = torch.load(self.standardizer_path)
+
+    def configure_optimizers(self):
+        if self.lr_scheduler:
+            # Return both optimizer and scheduler
+            return {
+                "optimizer": self.optimizer,
+                "lr_scheduler": self.lr_scheduler,
+            }
+        else:
+            # Return only the optimizer
+            return self.optimizer
 
     def forward(self, inputs: torch.Tensor) -> torch.Tensor:
         preds = self.model(inputs)
@@ -84,12 +95,7 @@ class SupervisedLearningRoutine(L.LightningModule):
     def test_step(self, batch: Tuple[torch.Tensor, torch.Tensor]) -> torch.Tensor:
         return self._step(batch, stage="test")
 
-    def on_validation_epoch_end(self):
-        self._compute_and_log_metrics('val')
-
-    def on_test_epoch_end(self):
-        self._compute_and_log_metrics('test')
-
+    ########### Private Methods ##########################################################
     def _step(
         self, 
         batch: Tuple[torch.Tensor, torch.Tensor], 
@@ -108,16 +114,6 @@ class SupervisedLearningRoutine(L.LightningModule):
             self.log_dict(self.metrics[stage], on_step=False, on_epoch=True)
 
         return loss
-    def configure_optimizers(self):
-        if self.lr_scheduler:
-            # Return both optimizer and scheduler
-            return {
-                "optimizer": self.optimizer,
-                "lr_scheduler": self.lr_scheduler,
-            }
-        else:
-            # Return only the optimizer
-            return self.optimizer
     
     def _init_metrics(self, metrics: MetricCollection | Dict[str, MetricCollection]) -> Dict[str, MetricCollection]:
         if isinstance(metrics, MetricCollection):
