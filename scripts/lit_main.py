@@ -42,7 +42,7 @@ def main(cfg: DictConfig):
             OmegaConf.update(
                 cfg=cfg, 
                 key=dataset_property, 
-                value=data_module.get_dataset_property(stage='train', property=dataset_property),
+                value=data_module.get_dataset_property(key='train', property=dataset_property),
                 merge=True
             )
 
@@ -102,7 +102,6 @@ def main(cfg: DictConfig):
         trainer.logger = None
     print(f"Using device: {trainer.accelerator}")
     ############################# task instantiation #############################
-    # TODO: Recursively instantiate routine with hydra
     routine_factory = instantiate(cfg.routine)
     routine = routine_factory(model=model)
     trainer.fit(routine, datamodule=data_module)

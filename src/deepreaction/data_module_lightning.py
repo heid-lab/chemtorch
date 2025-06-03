@@ -2,51 +2,43 @@ import builtins
 from typing import Any, Callable, Literal
 import lightning as L
 import pandas as pd
+from torch.utils.data import Dataset, DataLoader
 
 from deepreaction.utils.data_split import DataSplit
 
 class DataModule(L.LightningDataModule):
     def __init__(
         self,
-        data_pipeline: Callable[..., DataSplit],
-        dataset_factory: Callable[[pd.DataFrame], Any],
-        dataloader_factory: Callable,
+        data_pipeline: Callable[..., DataSplit | pd.DataFrame],
+        dataset_factory: Callable[[pd.DataFrame], Dataset],
+        dataloader_factory: Callable[[Dataset, bool], DataLoader],
     ):
+        """
+        Initialize the DataModule with a data pipeline, dataset factory, and dataloader factory.
+        
+        Args:
+            data_pipeline (Callable): A callable that returns a DataSplit or a pandas DataFrame.
+            dataset_factory (Callable): A callable that creates datasets from pandas DataFrames.
+            dataloader_factory (Callable): A callable that creates DataLoader instances from datasets.
+                It should accept a dataset and a boolean indicating whether to shuffle the data.
+        
+        Raises:
+            TypeError: If the output of the data pipeline is not a DataSplit or a pandas DataFrame.
+        """
         super().__init__()
-        self.data_pipeline = data_pipeline
-        self.dataset_factory = dataset_factory
+        self._init_datasets(data_pipeline, dataset_factory)
         self.dataloader_factory = dataloader_factory
 
-    def prepare_data(self):
-        """Download and preprocess dataset here if needed."""
-        pass
-
-    def setup(self, stage: str = None):
-        dp_out = self.data_pipeline()
-        self._assign_datasets_from_pipeline_output(dp_out, stage)
-
-    def train_dataloader(self):
-        return self._make_dataloader('train')
-        
-    def val_dataloader(self):
-        return self._make_dataloader('val')
-        
-    def test_dataloader(self):
-        return self._make_dataloader('test')
-    
-    def predict_dataloader(self):
-        return self._make_dataloader('predict')
-    
     def get_dataset_property(
             self, 
-            stage: Literal['fit', 'val', 'test', 'predict'],
+            key: Literal['train', 'val', 'test', 'predict'],
             property: str
         ) -> Any:
         """
         Retrieve a property from the dataset of the specified stage.
 
         Args:
-            stage (str): Of which dataset to get the property from:
+            key (str): Of which dataset to get the property from:
             'train', 'val', 'test', or 'predict'.
             property (str): The name of the property to retrieve.
 
@@ -56,61 +48,95 @@ class DataModule(L.LightningDataModule):
         Raises:
             AttributeError: If the property does not exist in the train dataset or is not a @property.
         """
-        dataset = self._get_dataset(stage)
+        dataset = self._get_dataset(key)
         # Check if the attribute is a property of the dataset's class
         if hasattr(type(dataset), property) and isinstance(getattr(type(dataset), property), builtins.property):
             return getattr(dataset, property)
         else:
             raise AttributeError(f"Dataset does not have a property '{property}' (must be a @property).")
 
-    def _assign_datasets_from_pipeline_output(
+    ########## Lightning DataModule Methods ##############################################
+    # TODO: Optionally, add `prepare_data()` to preprocess datasets and save preprocesssed data to disc.
+    # TODO: Optionally, move dataset initialization to `setup()` method to allow for lazy loading.
+    def train_dataloader(self):
+        return self._make_dataloader_or_raise('train')
+        
+    def val_dataloader(self):
+        return self._make_dataloader_or_raise('val')
+        
+    def test_dataloader(self):
+        return self._make_dataloader_or_raise('test')
+    
+    def predict_dataloader(self):
+        return self._make_dataloader_or_raise('predict')
+    
+    ########### Private Methods ##########################################################
+    def _init_datasets(
             self, 
-            dp_out: Any, 
-            stage: Literal['fit', 'val', 'test', 'predict'] = None
+            data_pipeline: Callable[..., DataSplit | pd.DataFrame], 
+            dataset_factory: Callable[[pd.DataFrame], Dataset]
         ):
         """
-        Assign datasets based on the type of dp_out and the stage.
+        Initialize datasets from the data pipeline. If the data pipeline returns a DataSplit,
+        it initializes train, validation, and test datasets. If it returns a pandas DataFrame,
+        it initializes a predict dataset.
+
+        Args:
+            data_pipeline (Callable): A callable that returns a DataSplit or a pandas DataFrame.
+            dataset_factory (Callable): A callable that creates datasets from pandas DataFrames.
+
+        Raises:
+            TypeError: If the output of the data pipeline is not a DataSplit or a pandas DataFrame.
         """
-        if stage is not None:
-            if stage in ['fit', 'val', 'test']:
-                if not isinstance(dp_out, DataSplit):
-                    raise ValueError(
-                        "Data pipeline output must be DataSplit for 'train', 'val', or 'test' stages."
-                    )
-                self.train_dataset = self.dataset_factory(dp_out.train)
-                self.val_dataset = self.dataset_factory(dp_out.val)
-                self.test_dataset = self.dataset_factory(dp_out.test)
-            elif stage == 'predict':
-                if not isinstance(dp_out, pd.DataFrame):
-                    raise ValueError(
-                        "Data pipeline output must be a pandas DataFrame for 'predict' stage."
-                    )
-                self.predict_dataset = self.dataset_factory(dp_out)
-            else:
-                raise ValueError(f"Unknown stage: {stage}")
+        # Note: Do not rename the dataset attributes, since _get_dataset relies on them 
+        # being named 'train_dataset', 'val_dataset', 'test_dataset', and 'predict_dataset'.
+        data = data_pipeline()
+        if isinstance(data, DataSplit):
+            self.train_dataset = dataset_factory(data.train)
+            self.val_dataset = dataset_factory(data.val)
+            self.test_dataset = dataset_factory(data.test)
+        elif isinstance(data, pd.DataFrame):
+            self.predict_dataset = dataset_factory(data)
         else:
-            # No stage specified: assign based on type only
-            if isinstance(dp_out, DataSplit):
-                self.train_dataset = self.dataset_factory(dp_out.train)
-                self.val_dataset = self.dataset_factory(dp_out.val)
-                self.test_dataset = self.dataset_factory(dp_out.test)
-            elif isinstance(dp_out, pd.DataFrame):
-                self.predict_dataset = self.dataset_factory(dp_out)
-            else:
-                raise TypeError(
-                    "Data pipeline output must be a DataSplit or a pandas DataFrame"
-                )
-        
-    def _get_dataset(self, stage: str):
-        if not stage in ['train', 'val', 'test', 'predict']:
-            raise ValueError(f"Unknown stage: {stage}. Must be one of 'train', 'val', 'test', or 'predict'.")
-        dataset_attr = f"{stage}_dataset"
-        if not hasattr(self, dataset_attr):
-            raise RuntimeError(f"{stage.capitalize()} dataset is not set up. Ensure data pipeline outputs expected type and setup() is called.")
-        return getattr(self, dataset_attr)
+            raise TypeError(
+                "Data pipeline must output either a DataSplit or a pandas DataFrame"
+            )
     
-    def _make_dataloader(self, stage: str):
+    def _get_dataset(self, key: Literal['train', 'val', 'test', 'predict']):
+        """
+        Retrieve the dataset for the specified key.
+
+        Args:
+            key (str): The key for which to retrieve the dataset ('train', 'val', 'test', 'predict').
+
+        Returns:
+            Any: The dataset corresponding to the specified key.
+
+        Raises:
+            ValueError: If the dataset for the specified key is not initialized.
+        """
+        dataset = getattr(self, f"{key}_dataset", None)
+        if dataset is None:
+            raise ValueError(f"{key.capitalize()} dataset is not initialized.")
+        return dataset
+    
+    def _make_dataloader_or_raise(
+            self,
+            key: Literal['train', 'val', 'test', 'predict'],
+    ):
+        """
+        Create a dataloader for the specified key or raise an error if the dataset is not initialized.
+
+        Args:
+            key (str): The key for which to create the dataloader ('train', 'val', 'test', 'predict').
+
+        Returns:
+            DataLoader: The created dataloader.
+
+        Raises:
+            ValueError: If the dataset for the specified key is not initialized.
+        """
         return self.dataloader_factory(
-            dataset=self._get_dataset(stage),
-            shuffle=(stage == 'train'),
+            dataset=self._get_dataset(key), 
+            shuffle=(key == 'train')
         )
