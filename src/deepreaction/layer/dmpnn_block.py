@@ -44,6 +44,10 @@ class DMPNNBlockLayer(GNNBlockLayer):
         # Activation
         batch.h = self.activation(batch.h)
 
+        # Optional dropout
+        if self.dropout is not None:
+            batch.h = self.dropout(batch.h)
+
         # Optional residual connection
         batch.h = self.mpnn_residual.apply(batch.h)
 
