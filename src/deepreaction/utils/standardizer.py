@@ -20,29 +20,29 @@ class Standardizer:
         self.mean = mean
         self.std = std
 
-    def __call__(self, x: Union[torch.Tensor, np.ndarray], rev=False) -> Union[torch.Tensor, np.ndarray]:
+    def standardize(self, x: Union[torch.Tensor, np.ndarray]) -> Union[torch.Tensor, np.ndarray]:
         """
-        Standardize or reverse standardize the input data.
+        Standardize the input data by subtracting the mean and dividing by the standard deviation.
 
         Args:
             x (Union[torch.Tensor, np.ndarray]): Input data to standardize.
-            rev (bool): If True, reverse the standardization.
 
         Returns:
-            Union[torch.Tensor, np.ndarray]: Standardized or reverse standardized data.
-
-        Raises:
-            TypeError: If input data is not of the same type as mean and std.
-            ValueError: If input data does not have the same shape as mean and std.
+            Union[torch.Tensor, np.ndarray]: Standardized data.
         """
-        if not isinstance(self.mean, float):
-            if not isinstance(x, type(self.mean)):
-                raise TypeError("x must be of the same type as mean and std, unless mean and std are floats.")
-            if x.shape != self.mean.shape:
-                raise ValueError("x must have the same shape as mean and std, unless mean and std are floats.")
-        if rev:
-            return (x * self.std) + self.mean
         return (x - self.mean) / self.std
+    
+    def destandardize(self, x: Union[torch.Tensor, np.ndarray]) -> Union[torch.Tensor, np.ndarray]:
+        """
+        Reverse the standardization of the input data by multiplying by the standard deviation
+
+        Args:
+            x (Union[torch.Tensor, np.ndarray]): Input data to reverse standardize.
+
+        Returns:
+            Union[torch.Tensor, np.ndarray]: Reverse standardized data.
+        """
+        return (x * self.std) + self.mean
 
     @staticmethod
     def validate(

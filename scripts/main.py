@@ -5,6 +5,7 @@ import torch
 from omegaconf import DictConfig, OmegaConf
 
 import wandb
+from deepreaction.routine.regression_legacy import train
 from deepreaction.utils import DataSplit
 from deepreaction.utils import load_model, set_seed
 from deepreaction.utils import order_config_by_signature
@@ -56,21 +57,18 @@ def main(cfg: DictConfig):
     print(f"INFO: Dataloaders instantiated successfully")
 
     ##### UPDATE GLOBAL CONFIG FROM DATASET ATTRIBUTES ##############################
-    cfg_updates_spec = cfg.get("update_cfg_from_dataset", {})
-    if cfg_updates_spec:
+    dataset_properties = cfg.get("runtime_agrs_from_train_dataset_props", [])
+    if dataset_properties:
         print(
-            "INFO: Updating global config from train dataset attributes:"
+            "INFO: Updating global config with properties of train dataset:"
         )
-        for cfg_path, dataset_attr_name in cfg_updates_spec.items():
-            if hasattr(train_loader.dataset, dataset_attr_name):
-                value = getattr(train_loader.dataset, dataset_attr_name)
-                OmegaConf.update(cfg, cfg_path, value, merge=True)
-                print(
-                    f"  - Updated cfg.{cfg_path} with dataset.{dataset_attr_name} (value: {value})"
-                )
+        for dataset_property in dataset_properties:
+            if hasattr(datasets.train, dataset_property):
+                value = getattr(train_loader.dataset, dataset_property)
+                OmegaConf.update(cfg, dataset_property, value, merge=True)
             else:
-                raise ValueError(
-                    f"Attribute '{dataset_attr_name}' (for cfg path '{cfg_path}') not found on datasets.train."
+                raise AttributeError(
+                    f"Attribute '{dataset_property}' not found on datasets.train."
                 )
 
     run_name = getattr(cfg, "run_name", None)
@@ -79,7 +77,7 @@ def main(cfg: DictConfig):
     print(f"INFO: Final config:\n{OmegaConf.to_yaml(resolved_cfg)}")
 
     ##### INITIALIZE W&B ##########################################################
-    if cfg.wandb:
+    if cfg.log:
         wandb.init(
             project=cfg.project_name,
             group=cfg.group_name,
@@ -92,10 +90,7 @@ def main(cfg: DictConfig):
             + datasets.val.precompute_time
             + datasets.test.precompute_time
         )
-        wandb.log(
-            {"Precompute_time": precompute_time},
-            commit=False,
-        )
+        wandb.log({"Precompute_time": precompute_time}, commit=False)
 
     ##### MODEL ##################################################################
     model = hydra.utils.instantiate(cfg.model)
@@ -128,7 +123,7 @@ def main(cfg: DictConfig):
         print(
             f"Model has {total_params:,} parameters, which exceeds the parameter limit of {parameter_limit:,}. Skipping this run."
         )
-        if cfg.wandb:
+        if cfg.log:
             wandb.log(
                 {
                     "total_parameters": total_params,
@@ -138,21 +133,20 @@ def main(cfg: DictConfig):
             wandb.run.summary["status"] = "parameter_threshold_exceeded"
         return False
 
-    if cfg.wandb:
+    if cfg.log:
         wandb.log({"total_parameters": total_params}, commit=False)
 
-    ############################# task instantiation #############################
+    ############################# routine instantiation #############################
     hydra.utils.instantiate(
-        cfg.task,
+        cfg.routine,
         train_loader=train_loader,
         val_loader=val_loader,
         test_loader=test_loader,
         model=model,
         device=device,
     )
-    # train()
 
-    if cfg.wandb:
+    if cfg.log:
         wandb.finish()
 
 

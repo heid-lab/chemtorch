@@ -1,18 +1,20 @@
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Dict, List, Optional, Tuple, Union
+from typing_extensions import override
 
-import hydra
 import torch
 
+from rdkit.Chem import Atom, Bond
 from torch_geometric.data import Data
-from omegaconf import DictConfig
 
+from deepreaction.featurizer.featurizer_base import FeaturizerBase
+from deepreaction.featurizer.featurizer_compose import FeaturizerCompose
+from deepreaction.representation.abstract_representation import AbstractRepresentation
 from deepreaction.representation.graph.graph_reprs_utils import (
     AtomOriginType,
     EdgeOriginType,
     make_mol,
     map_reac_to_prod,
 )
-from deepreaction.representation import AbstractRepresentation
 
 class DMG(AbstractRepresentation[Data]):
     """
@@ -23,22 +25,24 @@ class DMG(AbstractRepresentation[Data]):
     representing the reaction as a dual molecular graph.
 
     Usage:
-        dmg = DMG(atom_featurizer, bond_featurizer, ...)
-        data = dmg.forward(sample)
+        >>> dmg = DMG(atom_featurizer, bond_featurizer, ...)
+        >>> data = dmg.construct(sample)
+        >>> data = dmg(sample)
     """
 
     def __init__(
         self,
-        atom_featurizer,
-        bond_featurizer,
-        qm_featurizer=None,
-        single_featurizer=None,
+        # TODO: Rename atom_featurizer and bond_featurizer to node_featurizer and edge_featurizer
+        atom_featurizer: FeaturizerBase[Atom] | FeaturizerCompose,
+        bond_featurizer: FeaturizerBase[Bond] | FeaturizerCompose,
+        # TODO: Make this an optional dict of property: featurizer
+        qm_featurizer: Optional[FeaturizerBase[Atom] | FeaturizerCompose] = None,
+        single_featurizer: Optional[FeaturizerBase[Atom] | FeaturizerCompose] = None,
         connection_direction: str = "bidirectional",
         concat_origin_feature: bool = False,
-        pre_transform_list: Optional[List] = None,
+        pre_transform_list: Optional[List] = None,  # TODO: Remove
         extra_zero_fvec: bool = False,
-        *args,
-        **kwargs,
+        **kwargs # ignored, TODO: remove once all featurizers are passed explicitly
     ):
         self.atom_featurizer = atom_featurizer
         self.bond_featurizer = bond_featurizer
@@ -51,8 +55,8 @@ class DMG(AbstractRepresentation[Data]):
         self.pre_transform_list = pre_transform_list or []
         self.extra_zero_fvec = extra_zero_fvec
 
-
-    # override
+    # TODO: Break this function into smaller methods and reuse them in MolGraph class
+    @override
     def construct(self, smiles: str) -> Data:
         # Parse reactant and product SMILES
         smiles_reac, _, smiles_prod = smiles.split(">")
@@ -84,6 +88,7 @@ class DMG(AbstractRepresentation[Data]):
         edge_origin_type: List[EdgeOriginType] = []
 
         # --- Build reactant graph ---
+        # TODO: Delegate to MolGraph class 
         current_idx = 0
         for i in range(n_atoms_reac):
             f_atoms.append(self.atom_featurizer(mol_reac.GetAtomWithIdx(i)))
@@ -106,6 +111,7 @@ class DMG(AbstractRepresentation[Data]):
                     edge_origin_type.extend([EdgeOriginType.REACTANT, EdgeOriginType.REACTANT])
 
         # --- Build product graph ---
+        # TODO: Delegate to MolGraph class 
         offset = n_atoms_reac
         current_idx = offset
         for i in range(n_atoms_prod):
@@ -133,7 +139,7 @@ class DMG(AbstractRepresentation[Data]):
 
         # --- Connect graphs ---
         if self.connection_direction is not None:
-            f_bond = [0.0] * len(self.bond_featurizer(None))
+            f_bond = self.bond_featurizer(None)
             for i in range(n_atoms_reac):
                 if self.connection_direction == "bidirectional":
                     f_bonds.extend([f_bond, f_bond])

@@ -3,9 +3,9 @@ _target_: deepreaction.utils.CallableCompose
 callables:
   - _target_: deepreaction.data_pipeline.data_source.SingleCSVSource
     data_path: "data/barriers/rdb7new/data.csv"
-  - _target_: deepreaction.data_pipeline.data_splitter.IndexSplitter 
-    split_index_path: data/barriers_rdb7new/seed0.pkl
   - _target_: deepreaction.data_pipeline.column_mapper.ColumnFilterAndRename
     column_mapping:
       smiles: "rxn_smiles"
       label: "ea"
+  - _target_: deepreaction.data_pipeline.data_splitter.IndexSplitter 
+    split_index_path: data/barriers_rdb7new/seed0.pkl

@@ -1,0 +1,23 @@
+_target_: deepreaction.routine.RegressionRoutine
+_partial_: true   # model passed at runtime
+
+defaults:
+  - loss: mse
+  - optimizer: adamw
+  - lr_scheduler: cosine_with_warmup
+
+standardizer:
+  _target_: deepreaction.utils.Standardizer
+  mean: ${mean}   # root config updated with dataset properties at runtime
+  std: ${std}     # root config updated with dataset properties at runtime
+
+metrics: 
+  _target_: torchmetrics.MetricCollection
+  metrics: 
+    - _target_: torchmetrics.MeanSquaredError
+      squared: false
+    - _target_: torchmetrics.MeanAbsoluteError
+
+# Optional parameters:
+# pretrained_path: null
+# resume_training: false

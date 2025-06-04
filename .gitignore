@@ -33,9 +33,6 @@ wandb/
 # VS Code
 .vscode
 
-# Tools
-tools
-
 # Distribution / packaging
 .Python
 build/

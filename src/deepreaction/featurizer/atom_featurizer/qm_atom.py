@@ -15,8 +15,8 @@ class QMAtomFeaturizer(FeaturizerBase[Atom]):
         """
         orig = pd.read_pickle(f"{path}")
         features_dict = self._restructure_features_dict(orig)
-        feature_fns = self._make_feature_fns(features_dict)
-        super().__init__(feature_fns)
+        features = self._make_qm_feature_fns(features_dict)
+        super().__init__(features)
 
 
     @staticmethod
@@ -33,7 +33,7 @@ class QMAtomFeaturizer(FeaturizerBase[Atom]):
         return features_dict
 
     @staticmethod
-    def _make_feature_fns(features_dict: Dict[int, Dict[str, List[float]]]) -> List[Callable[[Atom], float]]:
+    def _make_qm_feature_fns(features_dict: Dict[int, Dict[str, List[float]]]) -> List[Callable[[Atom], float]]:
         """
         Create a list of QM atom feature functions.
         Each function takes an atom and returns the corresponding feature value extracted from the features_dict.

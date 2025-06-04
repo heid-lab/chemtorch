@@ -3,14 +3,20 @@ import time
 from typing import Callable, Optional, Tuple, TypeVar, Generic
 import pandas as pd
 import torch
+import wandb
 
 from deepreaction.representation import AbstractRepresentation
 from deepreaction.transform import AbstractTransform
 from deepreaction.utils import enforce_base_init
 
 
+# TODO: Centralize logging
+# TODO: Consider saving the precomputed data objects to disk to 
+# save preprocessing time for repeated runs with the same dataset.
+# Note: Update precompute_time property to return 0 or time taken
+# to load from disk.
+# TODO: Generalize to unlabbeled datasets.
 T = TypeVar("T")
-# TODO: Make label optional
 class DatasetBase(Generic[T]):
     """
     Base class for DeepReaction datasets.
@@ -19,7 +25,7 @@ class DatasetBase(Generic[T]):
     All datasets should subclass :class:`DatasetBase[T]` and implement the `_get_sample_by_idx` method.    
 
     Warning: If the subclass inherits from multiple classes, ensure that :class:`DatasetBase` is the first 
-    class in the inheritance list, otherwise the arguemnts of the `__init__` method may not be passed correctly.
+    class in the inheritance list to ensure correct method resolution order (MRO).
 
     Raises:
         RuntimeError: If the subclass does not call `super().__init__()` in its `__init__()` method.
@@ -96,7 +102,7 @@ class DatasetBase(Generic[T]):
 
         self.precompute_all = precompute_all
         self.precomputed_items = None
-        self.precompute_time = 0.0
+        self._precompute_time = 0.0
 
         if self.precompute_all:
             print(f"INFO: Precomputing {len(self.dataframe)} items...")
@@ -105,9 +111,9 @@ class DatasetBase(Generic[T]):
                 self._process_sample(idx)
                 for idx in range(len(self.dataframe))
             ]
-            self.precompute_time = time.time() - start_time
+            self._precompute_time = time.time() - start_time
             print(
-                f"INFO: Precomputation finished in {self.precompute_time:.2f}s."
+                f"INFO: Precomputation finished in {self._precompute_time:.2f}s."
             )
         else:
             if cache:
@@ -130,10 +136,10 @@ class DatasetBase(Generic[T]):
 
     def __getitem__(self, idx) -> torch.Tensor:
         """
-        Retrieve a processed fingerprint by its index.
+        Retrieve a processed item by its index.
 
         Args:
-            idx (int): Index of the sample to retrieve.
+            idx (int): Index of the item to retrieve.
 
         Returns:
             Data: A PyTorch `Tensor` object representing the molecular fingerprint.
@@ -209,3 +215,36 @@ class DatasetBase(Generic[T]):
     def __init_subclass__(cls):
         enforce_base_init(DatasetBase)(cls)
         return super().__init_subclass__()
+
+    
+    @property
+    def precompute_time(self) -> float:
+        """
+        Get the time taken to precompute all samples.
+
+        Returns:
+            float: The time in seconds taken to precompute all samples.
+        """
+        if not self.precompute_all:
+            raise RuntimeError("Precomputation is not enabled for this dataset.")
+        return self._precompute_time
+
+    @property
+    def mean(self) -> float:
+        """
+        Get the mean of the labels in the dataset.
+
+        Returns:
+            float: The mean of the labels.
+        """
+        return self.dataframe['label'].mean().item()
+    
+    @property
+    def std(self) -> float:
+        """
+        Get the standard deviation of the labels in the dataset.
+
+        Returns:
+            float: The standard deviation of the labels.
+        """
+        return self.dataframe['label'].std().item()

@@ -33,4 +33,13 @@ class FeaturizerBase(AbstractFeaturizer, Generic[T]):
 
 
     def __call__(self, item: Optional[T]) -> List[float]:
+        """
+        Featurize the given item using the features defined in this featurizer.
+        
+        Args:
+            item (Optional[T]): The item to be featurized. If `None`, a list of zeros will be returned.
+
+        Returns:
+            List[float]: The featurized representation of the item as a list of floats.
+        """
         return featurize(item, self.features)

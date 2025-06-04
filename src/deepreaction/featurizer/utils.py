@@ -1,5 +1,7 @@
 from typing import Any, Callable, List, Sequence, Tuple, Union
 
+from git import Optional
+
 def one_hot_with_unknown(
     value: Any,
     options: Sequence[Any]
@@ -11,7 +13,7 @@ def one_hot_with_unknown(
     return x
 
 def featurize(
-        item: Any, 
+        item: Optional[Any], 
         features: List[Union[Callable, Tuple[Callable, Sequence[Any]]]]
     ) -> List[float] | List[int]:
     """
@@ -28,11 +30,11 @@ def featurize(
     If `item` is None, returns a zero vector of the appropriate length.
 
     Args:
-        item: The object to featurize (e.g., an Atom or Bond).
+        item: The object to featurize (e.g., an Atom or Bond), or `None` to return a zero vector.
         features: A list of callables or (callable, options) tuples specifying how to extract each feature.
 
     Returns:
-        List[float]: The concatenated feature vector.
+        List[float]: The concatenated feature vector, or a list of zeros if `item` is `None`.
     
     Raises:
         TypeError: If `features` is not a list or if any feature is not callable or a (callable, options) tuple.
@@ -40,9 +42,20 @@ def featurize(
         ValueError: If any feature tuple does not have exactly two elements.
         RuntimeError: If an error occurs during feature extraction.
     """
+    if item is None:
+        # return a list of zeros with the size of the feature vector
+        dim = 0
+        for feature in features:
+            if isinstance(feature, tuple):
+                _, options = feature
+                dim += (len(options) + 1) if options else 1
+            else:
+                dim += 1
+        return [0] * dim
+
     # Validate features is a list
     if not isinstance(features, list):
-        raise TypeError(f"`features` must be a list, got {type(features)}")
+        raise TypeError(f"`features` must be a list or None, got {type(features)}")
 
     # Validate each feature
     for idx, feature in enumerate(features):
@@ -56,17 +69,6 @@ def featurize(
                 raise TypeError(f"Second element of tuple at index {idx} must be a sequence, got {type(options)}")
         elif not callable(feature):
             raise TypeError(f"Feature at index {idx} must be callable or a (callable, options) tuple, got {type(feature)}")
-
-    if item is None:
-        # return a list of zeros with the size of the feature vector
-        dim = 0
-        for feature in features:
-            if isinstance(feature, tuple):
-                _, options = feature
-                dim += (len(options) + 1) if options else 1
-            else:
-                dim += 1
-        return [0] * dim
 
     feature_vector = []
     for idx, feature in enumerate(features):

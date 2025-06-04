@@ -1,17 +1,20 @@
-from typing import List, Optional, Tuple
+from typing import List, Tuple, Union
+from typing_extensions import override
 
 import torch
 
 from torch_geometric.data import Data
-from rdkit import Chem
+from rdkit.Chem import Atom, Bond
 
+from deepreaction.featurizer.featurizer_base import FeaturizerBase
+from deepreaction.featurizer.featurizer_compose import FeaturizerCompose
+from deepreaction.representation.abstract_representation import AbstractRepresentation
 from deepreaction.representation.graph.graph_reprs_utils import (
     AtomOriginType,
     EdgeOriginType,
     make_mol,
     map_reac_to_prod,
 )
-from deepreaction.representation import AbstractRepresentation
 
 
 class CGR(AbstractRepresentation[Data]):
@@ -24,22 +27,30 @@ class CGR(AbstractRepresentation[Data]):
 
     # TODO: Update docstring once featurizers are passed explicitly
     Usage:
-        cgr = CGR(featurizer_cfg)
-        data = cgr.forward(sample)
+        >>> cgr = CGR(featurizer_cfg)
+        >>> data = cgr.construct(sample)
+        >>> data = cgr(sample)  # equivalent to above line
     """
 
     def __init__(
         self,
-        atom_featurizer,
-        bond_featurizer,
-        *args,
-        **kwargs,
+        atom_featurizer: FeaturizerBase[Atom] | FeaturizerCompose,
+        bond_featurizer: FeaturizerBase[Bond] | FeaturizerCompose,
+        **kwargs # ignored, TODO: remove once all featurizers are passed explicitly
     ):
+        """
+        Initialize the CGR representation with atom and bond featurizers.
+        
+        Args:
+            atom_featurizer (FeaturizerBase[Atom] | FeaturizerCompose):
+                A featurizer for atom features, which can be a single featurizer or a composed one.
+            bond_featurizer (FeaturizerBase[Bond] | FeaturizerCompose):
+                A featurizer for bond features, which can also be a single featurizer or a composed one.
+        """
         self.atom_featurizer = atom_featurizer
         self.bond_featurizer = bond_featurizer
 
-
-    # override
+    @override
     def construct(self, smiles: str) -> Data:
         """
         Construct a CGR graph from the sample.
@@ -57,7 +68,10 @@ class CGR(AbstractRepresentation[Data]):
         atom_origin_type_list: List[AtomOriginType] = []
 
         for i in range(n_atoms):
-            f_atoms_list.append(self._get_atom_features_internal(mol_reac, mol_prod, ri2pi, i))
+            atom_reac = mol_reac.GetAtomWithIdx(i)
+            atom_prod = mol_prod.GetAtomWithIdx(ri2pi[i])
+            f_atom = self._compute_feature_and_diff(self.atom_featurizer, atom_reac, atom_prod)
+            f_atoms_list.append(f_atom)
             atom_origin_type_list.append(AtomOriginType.REACTANT_PRODUCT)
 
         edge_index_list: List[Tuple[int, int]] = []
@@ -77,7 +91,7 @@ class CGR(AbstractRepresentation[Data]):
                 if bond_reac is None and bond_prod is None:  # No bond in either
                     continue
 
-                f_bond = self._get_bond_features_internal(bond_reac, bond_prod)
+                f_bond = self._compute_feature_and_diff(self.bond_featurizer, bond_reac, bond_prod)
 
                 # Add edges in both directions for an undirected graph
                 edge_index_list.append((i, j))
@@ -106,7 +120,7 @@ class CGR(AbstractRepresentation[Data]):
             data.edge_index = torch.empty((2, 0), dtype=torch.long)
             # Determine bond feature dimension for empty edge_attr
             dummy_bond_feat_len = len(
-                self._get_bond_features_internal(None, None)
+                self._compute_feature_and_diff(self.bond_featurizer, None, None)
             )
             data.edge_attr = torch.empty(
                 (0, dummy_bond_feat_len), dtype=torch.float
@@ -121,38 +135,21 @@ class CGR(AbstractRepresentation[Data]):
         # num_nodes is a standard PyG attribute
         data.num_nodes = n_atoms
 
-        return data
-        
+        return data 
 
-    def _get_atom_features_internal(
-        self, mol_reac: Chem.Mol, mol_prod: Chem.Mol, ri2pi: List[int], atom_idx: int
-    ) -> List[float]:
-        """Helper to generate CGR atom features using temporary internal attributes."""
-        f_atom_reac = self.atom_featurizer(mol_reac.GetAtomWithIdx(atom_idx))
-        # ri2pi[atom_idx] gives the corresponding product atom index
-        f_atom_prod = self.atom_featurizer(mol_prod.GetAtomWithIdx(ri2pi[atom_idx]))
-        f_atom_diff = [y - x for x, y in zip(f_atom_reac, f_atom_prod)]
-        return f_atom_reac + f_atom_diff
+    def _compute_feature_and_diff(self, featurizer, obj1, obj2) -> List[float]:
+        """
+        General helper to compute features and their difference for two objects (atom or bond).
 
+        Args:
+            featurizer: Callable that computes features for the object.
+            obj1: First object (e.g., atom or bond).
+            obj2: Second object (e.g., atom or bond).
 
-    def _get_bond_features_internal(
-        self, bond_reac: Optional[Chem.Bond], bond_prod: Optional[Chem.Bond]
-    ) -> List[float]:
-        """Helper to generate CGR bond features using temporary internal attributes."""
-        # Assuming self.bond_featurizer(None) returns a list of default values (e.g., zeros)
-        # of the correct base feature length. This is used to determine padding length.
-        base_bond_feat_len = len(self.bond_featurizer(None))
-
-        f_bond_reac = (
-            self.bond_featurizer(bond_reac)
-            if bond_reac
-            else [0.0]
-            * base_bond_feat_len  # Use float for consistency with PyTorch tensors
-        )
-        f_bond_prod = (
-            self.bond_featurizer(bond_prod)
-            if bond_prod
-            else [0.0] * base_bond_feat_len
-        )
-        f_bond_diff = [y - x for x, y in zip(f_bond_reac, f_bond_prod)]
-        return f_bond_reac + f_bond_diff
+        Returns:
+            List[float]: Features for obj1 concatenated with the difference (obj2 - obj1).
+        """
+        f1 = featurizer(obj1)
+        f2 = featurizer(obj2)
+        f_diff = [y - x for x, y in zip(f1, f2)]
+        return f1 + f_diff
