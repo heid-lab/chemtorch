@@ -1,3 +1,0 @@
-_target_: deepreaction.encoder.rwpe_enc_dmpnn.RWEncoderDMPNN
-out_channels: ${model.gnn.layer.hidden_channels}
-in_channels: ${eval:'${data.transform.randomwalk.walk_length} * ${data.representation.in_channel_multiplier}'}

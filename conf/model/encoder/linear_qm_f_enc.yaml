@@ -1,8 +1,0 @@
-linear_qm_f_enc:
-  _target_: deepreaction.encoder.linear_qm_f_enc.LinearQMFEncoder
-  in_channels: 13
-  out_channels: ${model.gnn.layer.hidden_channels}
-  bias: true
-  as_variable: true
-  do_both: false
-  both_hidden: ${model.gnn.layer.hidden_channels}
