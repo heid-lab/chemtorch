@@ -78,6 +78,7 @@ class GNNBlockLayer(nn.Module):
         # Opt-ins
         self.mpnn_norm = init_norm(norm, hidden_channels, norm_kwargs)
         self.mpnn_residual = ResidualConnection(use_mpnn_residual)
+        self.dropout = init_dropout(dropout)
 
         self.use_ffn = use_ffn
         if self.use_ffn:
@@ -85,7 +86,6 @@ class GNNBlockLayer(nn.Module):
             self.ffn_norm_in = init_norm(norm, hidden_channels, norm_kwargs)
             self.ffn_norm_out = init_norm(norm, hidden_channels, norm_kwargs)
             self.ffn_residual = ResidualConnection(use_residual=True)
-            self.dropout = init_dropout(dropout)
 
 
     def forward(self, batch: Batch) -> Batch:
@@ -108,6 +108,10 @@ class GNNBlockLayer(nn.Module):
         batch.x = normalize(batch.x, batch, self.mpnn_norm)
         # Activation
         batch.x = self.activation(batch.x)
+
+        # Optional dropout
+        if self.dropout is not None:
+            batch.x = self.dropout(batch.x)
 
         # Optional residual connection
         batch.x = self.mpnn_residual.apply(batch.x)

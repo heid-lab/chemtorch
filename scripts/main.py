@@ -95,7 +95,6 @@ def main(cfg: DictConfig):
     ##### MODEL ##################################################################
     model = hydra.utils.instantiate(cfg.model)
     model = model.to(device)
-    torch.save(model.state_dict(), "debug/model_init_weights.pth")
 
     if cfg.use_loaded_model:
         if not os.path.exists(cfg.pretrained_path):

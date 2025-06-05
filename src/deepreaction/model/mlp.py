@@ -1,5 +1,4 @@
 from typing import Any, Callable, Dict, List, Optional, Union
-from numpy import single
 from torch import nn
 import torch
 from torch_geometric.nn.resolver import activation_resolver
@@ -17,8 +16,8 @@ class MLP(nn.Module, DeepReactionModel[torch.Tensor]):
         out_channels: int, 
         hidden_dims: Optional[List[int]] = None,
         hidden_size: Optional[int] = None,
-        num_hidden_layers: Optional[int] = 0,
-        dropout_rate: float = 0.,
+        num_hidden_layers: Optional[int] = None,
+        dropout: float = 0.,
         act: Union[str, Callable, None] = "relu",
         act_kwargs: Optional[Dict[str, Any]] = None,
     ):
@@ -43,7 +42,7 @@ class MLP(nn.Module, DeepReactionModel[torch.Tensor]):
             hidden_dims (List[int], optional): List of hidden layer dimensions (preferred).
             hidden_size (int, optional): Hidden layer size (used if `hidden_dims` is not provided).
             num_hidden_layers (int, optional): Number of hidden layers (used if `hidden_dims` is not provided).
-            dropout_rate
+            dropout
               (float, optional): Dropout rate. Defaults to 0.
             act (str or Callable, optional): Activation function. Defaults to "relu".
             act_kwargs (Dict[str, Any], optional): Arguments for the activation function. Defaults to None.
@@ -82,7 +81,7 @@ class MLP(nn.Module, DeepReactionModel[torch.Tensor]):
         hidden_dims = self._resolve_hidden_dims(hidden_dims, hidden_size, num_hidden_layers)
 
         self.activation = activation_resolver(act, **(act_kwargs or {}))
-        self.dropout_rate = dropout_rate
+        self.dropout = dropout
 
         # Build layers
         self.layers = nn.Sequential()
@@ -102,30 +101,31 @@ class MLP(nn.Module, DeepReactionModel[torch.Tensor]):
     def _resolve_hidden_dims(hidden_dims, hidden_size, num_hidden_layers):
         # Predefined error messages
         val_err_misspecified_args = ValueError("Specify either hidden_dims OR hidden_size and num_hidden_layers, not both.")
-        single_layer_err = ValueError("MLP must have at least one hidden layer (len(hidden_dims) >= 1). For a single layer, use nn.Linear directly.")
+
+        if hidden_dims is None and hidden_size is None and num_hidden_layers is None:
+            return []
 
         if hidden_dims is not None:
             if hidden_size is not None or num_hidden_layers is not None:
                 raise val_err_misspecified_args
             if not isinstance(hidden_dims, list):
                 raise ValueError("hidden_dims must be a list or None")
-            if len(hidden_dims) < 1:
-                raise single_layer_err
             return hidden_dims
-        elif hidden_size is not None and num_hidden_layers is not None:
-            if num_hidden_layers < 1:
-                raise single_layer_err
-            return [hidden_size] * num_hidden_layers
         else:
-            raise val_err_misspecified_args
+            if num_hidden_layers is not None:
+                if num_hidden_layers < 1:
+                    return []
+                elif hidden_size is None:
+                    raise val_err_misspecified_args
+                return [hidden_size] * num_hidden_layers
 
     def _construct_linear(self, input_dim: int, output_dim: int) -> nn.Module:
         layers = []
-        if self.dropout_rate > 0:
-            layers.append(nn.Dropout(self.dropout_rate))
+        if self.dropout > 0:
+            layers.append(nn.Dropout(self.dropout))
         layers.append(nn.Linear(input_dim, output_dim))
         if self.activation is not None:
-            layers.append(self.activation())
+            layers.append(self.activation)
         return nn.Sequential(*layers)
 
 
