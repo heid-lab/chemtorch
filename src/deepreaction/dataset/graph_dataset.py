@@ -6,6 +6,7 @@ from torch_geometric.utils import degree
 
 from deepreaction.dataset.dataset_base import DatasetBase
 
+
 class GraphDataset(DatasetBase[Data], Dataset):
     """
     Data module for molecular graphs.
@@ -46,13 +47,14 @@ class GraphDataset(DatasetBase[Data], Dataset):
         max_degree = -1
         degree_histogram = None
 
-        if not isinstance(self[0], Data):
+        if not isinstance(self[0][0], Data):
             raise AttributeError(
-                f"'{self[0].__class__.__name__}' object cannot be used "
+                f"'{self[0][0].__class__.__name__}' object cannot be used "
                 f"to determine degree_statistics"
             )
 
         for data in self:
+            data = data[0]
             d = degree(
                 data.edge_index[1], num_nodes=data.num_nodes, dtype=torch.long
             )
@@ -74,7 +76,7 @@ class GraphDataset(DatasetBase[Data], Dataset):
             degree_histogram += torch.bincount(
                 d, minlength=degree_histogram.numel()
             )
-        
+
         return {
             "max_degree": max_degree,
             "degree_histogram": degree_histogram.tolist(),
@@ -83,7 +85,7 @@ class GraphDataset(DatasetBase[Data], Dataset):
     @property
     def num_node_features(self) -> int:
         """
-        Returns the number of node features in the dataset. 
+        Returns the number of node features in the dataset.
         Please refer to the PyTorch Geometric documentation of `torch_geometric.data.Dataset.num_node_features`
         for further details, if necessary.
         """
