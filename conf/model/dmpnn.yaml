@@ -34,4 +34,4 @@ gnn:
 
 head:
   in_channels: ${model.gnn._args_[0].layer.hidden_channels}
-  hidden_channels: ${model.gnn._args_[0].layer.hidden_channels}
+  hidden_size: ${model.gnn._args_[0].layer.hidden_channels}
