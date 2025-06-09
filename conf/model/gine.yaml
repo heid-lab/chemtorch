@@ -2,25 +2,38 @@ _target_: deepreaction.model.gnn.GNN
 
 defaults:
   - encoder: linear_enc
+  - layer: gine_block
   - pool: global_pool
   - head: mlp
 
-gnn:
-  _target_: deepreaction.layer.utils.Stack
-  _recursive_: false
-  depth: 12
-  layer:
-    _target_: deepreaction.layer.gnn_block.GNNBlockLayer
-    use_residual: true
-    use_ffn: false
-    dropout: 0.05
-    act:
-      _target_: torch.nn.Identity
-    norm: null
-    hidden_channels: 128
-    mpnn:
-      _target_: deepreaction.layer.mpnn_layer.gine_layer.GINELayer
-      in_channels: ${model.gnn.layer.hidden_channels}
-      out_channels: ${model.gnn.layer.hidden_channels}
+depth: 12
 
+encoder:
+  _target_: torch.nn.Sequential
+  _args_:
+  - _target_: deepreaction.encoder.linear_node_enc.LinearNodeEncoder
+    in_channels: ${num_node_features}
+    out_channels: ${model.layer.hidden_channels}
+    bias: true
+  - _target_: deepreaction.encoder.linear_edge_enc.LinearEdgeEncoder
+    in_channels: ${num_edge_features}
+    out_channels: ${model.layer.hidden_channels}
+    bias: true
 
+layer:
+  _target_: deepreaction.layer.gnn_block.GNNBlockLayer
+  use_residual: true
+  use_ffn: false
+  dropout: 0.05
+  act:
+    _target_: torch.nn.Identity
+  norm: null
+  hidden_channels: 128
+  mpnn:
+    _target_: deepreaction.layer.mpnn_layer.gine_layer.GINELayer
+    in_channels: ${model.layer.hidden_channels}
+    out_channels: ${model.layer.hidden_channels}
+
+head:
+  in_channels: ${model.layer.hidden_channels}
+  hidden_size: ${model.layer.hidden_channels}

@@ -8,5 +8,5 @@ use_ffn: true
 dropout: 0.1
 act: relu
 norm: null
-hidden_channels: ${model.gnn.layer.hidden_channels}
+hidden_channels: ${model.layer.hidden_channels}
 

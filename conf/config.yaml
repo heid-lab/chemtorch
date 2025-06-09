@@ -4,7 +4,7 @@ defaults:
   - data_ingestor: rdb7new
   - dataset: graph
   - dataloader: pyg_dataloader
-  - model: dmpnn
+  - model: pna
   - trainer: default
   - routine: regression_legacy
   - override hydra/job_logging: disabled
@@ -26,7 +26,7 @@ parameter_limit: null
 # properties to the model/routine
 runtime_agrs_from_train_dataset_props:
   # - fp_length
-  # - degree_statistics
+  - degree_statistics
   - num_node_features
   - num_edge_features
   - mean

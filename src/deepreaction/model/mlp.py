@@ -1,23 +1,25 @@
 from typing import Any, Callable, Dict, List, Optional, Union
-from torch import nn
+
 import torch
+from torch import nn
 from torch_geometric.nn.resolver import activation_resolver
 
 from deepreaction.model.abstract_model import DeepReactionModel
 
-# TODO: Remove and use `torch_geometric.nn.MLP` instead
+
 class MLP(nn.Module, DeepReactionModel[torch.Tensor]):
     """
     Multi-Layer Perceptron (MLP) with configurable layers and activation functions.
     """
+
     def __init__(
-        self, 
-        in_channels: int, 
-        out_channels: int, 
+        self,
+        in_channels: int,
+        out_channels: int,
         hidden_dims: Optional[List[int]] = None,
         hidden_size: Optional[int] = None,
         num_hidden_layers: Optional[int] = None,
-        dropout: float = 0.,
+        dropout: float = 0.0,
         act: Union[str, Callable, None] = "relu",
         act_kwargs: Optional[Dict[str, Any]] = None,
     ):
@@ -78,7 +80,9 @@ class MLP(nn.Module, DeepReactionModel[torch.Tensor]):
         super().__init__()
 
         # Validate and resolve hidden_dims
-        hidden_dims = self._resolve_hidden_dims(hidden_dims, hidden_size, num_hidden_layers)
+        hidden_dims = self._resolve_hidden_dims(
+            hidden_dims, hidden_size, num_hidden_layers
+        )
 
         self.activation = activation_resolver(act, **(act_kwargs or {}))
         self.dropout = dropout
@@ -88,9 +92,13 @@ class MLP(nn.Module, DeepReactionModel[torch.Tensor]):
         if not hidden_dims:  # Single-layer perceptron
             self.layers.append(nn.Linear(in_channels, out_channels))
         else:
-            self.layers.append(self._construct_linear(in_channels, hidden_dims[0]))
+            self.layers.append(
+                self._construct_linear(in_channels, hidden_dims[0])
+            )
             for i in range(1, len(hidden_dims)):
-                self.layers.append(self._construct_linear(hidden_dims[i-1], hidden_dims[i]))
+                self.layers.append(
+                    self._construct_linear(hidden_dims[i - 1], hidden_dims[i])
+                )
             self.layers.append(nn.Linear(hidden_dims[-1], out_channels))
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
@@ -100,9 +108,15 @@ class MLP(nn.Module, DeepReactionModel[torch.Tensor]):
     @staticmethod
     def _resolve_hidden_dims(hidden_dims, hidden_size, num_hidden_layers):
         # Predefined error messages
-        val_err_misspecified_args = ValueError("Specify either hidden_dims OR hidden_size and num_hidden_layers, not both.")
+        val_err_misspecified_args = ValueError(
+            "Specify either hidden_dims OR hidden_size and num_hidden_layers, not both."
+        )
 
-        if hidden_dims is None and hidden_size is None and num_hidden_layers is None:
+        if (
+            hidden_dims is None
+            and hidden_size is None
+            and num_hidden_layers is None
+        ):
             return []
 
         if hidden_dims is not None:
@@ -127,7 +141,3 @@ class MLP(nn.Module, DeepReactionModel[torch.Tensor]):
         if self.activation is not None:
             layers.append(self.activation)
         return nn.Sequential(*layers)
-
-
-
-

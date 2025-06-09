@@ -1,18 +1,22 @@
 from typing import Callable
 
 import torch
+import torch.nn.functional as F
 from torch import nn
 from torch_geometric.data import Batch
+from torch_geometric.nn.aggr import SumAggregation
 
 from deepreaction.model.abstract_model import DeepReactionModel
 
 
-class GNN(nn.Module, DeepReactionModel[Batch]):
+class DMPNN(nn.Module, DeepReactionModel[Batch]):
     def __init__(
         self,
+        depth: int,
         encoder: Callable[[Batch], Batch],
         layer: Callable[[Batch], Batch],
-        depth: int,
+        edge_to_node_in_channels: int,
+        edge_to_node_out_channels: int,
         pool: Callable[[Batch], torch.Tensor],
         head: Callable[[torch.Tensor], torch.Tensor],
     ):
@@ -28,6 +32,11 @@ class GNN(nn.Module, DeepReactionModel[Batch]):
         self.layers = nn.ModuleList()
         for _ in range(depth):
             self.layers.append(layer)
+        self.aggregation = SumAggregation()
+
+        self.edge_to_node = nn.Linear(
+            edge_to_node_in_channels, edge_to_node_out_channels
+        )
         self.pool = pool
         self.head = head
 
@@ -44,5 +53,9 @@ class GNN(nn.Module, DeepReactionModel[Batch]):
         batch = self.encoder(batch)
         for layer in self.layers:
             batch = layer(batch)
+        s = self.aggregation(batch.h, batch.edge_index[1])
+
+        batch.q = torch.cat([batch.x, s], dim=1)
+        batch.x = F.relu(self.edge_to_node(batch.q))
         batch = self.pool(batch)
         return self.head(batch)

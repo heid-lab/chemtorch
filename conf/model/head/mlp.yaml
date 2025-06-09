@@ -1,6 +1,6 @@
 _target_: deepreaction.model.mlp.MLP
-in_channels: ${model.gnn.layer.hidden_channels}      # Override in higher model config
-hidden_size: ${model.gnn.layer.hidden_channels}  # Override in higher model config
+in_channels: ${model.layer.hidden_channels}      # Override in higher model config
+hidden_size: ${model.layer.hidden_channels}  # Override in higher model config
 out_channels: 1
 num_hidden_layers: 2
 dropout: 0.02
