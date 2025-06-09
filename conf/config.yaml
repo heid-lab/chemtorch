@@ -1,7 +1,7 @@
 # main config 
 
 defaults:
-  - data_pipeline: rdb7
+  - data_ingestor: rdb7new
   - dataset: graph
   - dataloader: pyg_dataloader
   - model: dmpnn
@@ -10,9 +10,6 @@ defaults:
   - override hydra/job_logging: disabled
   - override hydra/hydra_logging: disabled
   - _self_
-
-dataloader:
-  num_workers: 7
 
 # LOGGING (Weight and Biases)
 log: false

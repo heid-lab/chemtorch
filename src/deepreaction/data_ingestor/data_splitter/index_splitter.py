@@ -3,8 +3,8 @@ import pickle
 import pandas as pd
 from typing_extensions import override
 
+from deepreaction.data_ingestor.data_splitter import DataSplitter
 from deepreaction.utils import DataSplit
-from deepreaction.data_pipeline.data_splitter import DataSplitter
 
 
 class IndexSplitter(DataSplitter):

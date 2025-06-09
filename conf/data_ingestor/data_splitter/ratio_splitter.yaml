@@ -1,0 +1,4 @@
+_target_: deepreaction.data_ingestor.data_splitter.RatioSplitter 
+train_ratio: 0.9
+val_ratio: 0.05
+test_ratio: 0.05

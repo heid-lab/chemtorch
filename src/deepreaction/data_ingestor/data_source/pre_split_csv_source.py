@@ -1,14 +1,16 @@
 import os
+
 import pandas as pd
 from typing_extensions import override
-from deepreaction.data_pipeline.data_source import DataSource
+
+from deepreaction.data_ingestor.data_source import DataSource
 from deepreaction.utils import DataSplit
 
 
 class PreSplitCSVSource(DataSource):
     def __init__(
-            self,
-            data_folder: str,
+        self,
+        data_folder: str,
     ):
         self.data_folder = data_folder
 
@@ -26,7 +28,9 @@ class PreSplitCSVSource(DataSource):
             file for file in files.values() if not os.path.exists(file)
         ]
         if missing_files:
-            raise FileNotFoundError(f"Missing files:\n{chr(10).join(missing_files)}")
+            raise FileNotFoundError(
+                f"Missing files:\n{chr(10).join(missing_files)}"
+            )
 
         train = pd.read_csv(files["train"])
         val = pd.read_csv(files["val"])

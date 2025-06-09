@@ -1,13 +1,15 @@
 import os
-from typing_extensions import override
+
 import pandas as pd
-from deepreaction.data_pipeline.data_source.data_source import DataSource
+from typing_extensions import override
+
+from deepreaction.data_ingestor.data_source.data_source import DataSource
 
 
 class SingleCSVSource(DataSource):
     def __init__(
-            self, 
-            data_path: str,   
+        self,
+        data_path: str,
     ):
         self.data_path = data_path
 

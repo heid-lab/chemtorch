@@ -1,9 +1,0 @@
-_target_: deepreaction.utils.CallableCompose
-
-callables:
-  - _target_: deepreaction.data_pipeline.data_source.PreSplitCSVSource
-    data_folder: "deepreaction_datasets/data/e2sn2/e2/barriers"
-  - _target_: deepreaction.data_pipeline.column_mapper.ColumnFilterAndRename
-    column_mapping:
-      smiles: "AAM"
-      label: "ea"
