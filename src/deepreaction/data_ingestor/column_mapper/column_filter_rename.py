@@ -1,11 +1,14 @@
 from typing import Union
+
 import pandas as pd
 from torch import nn
+from typing_extensions import override
 
+from deepreaction.data_ingestor.column_mapper.column_mapper import ColumnMapper
 from deepreaction.utils import DataSplit
 
 
-class ColumnFilterAndRename(nn.Module):
+class ColumnFilterAndRename(ColumnMapper):
     """
     A pipeline component that filters and renames columns in a DataFrame
     based on a provided column mapping.
@@ -22,7 +25,10 @@ class ColumnFilterAndRename(nn.Module):
         super(ColumnFilterAndRename, self).__init__()
         self.column_mapping = column_mapping
 
-    def forward(self, data: Union[DataSplit, pd.DataFrame]) -> Union[DataSplit, pd.DataFrame]:
+    @override
+    def __call__(
+        self, data: Union[DataSplit, pd.DataFrame]
+    ) -> Union[DataSplit, pd.DataFrame]:
         """
         Process the input data to filter and rename columns based on the column mapping.
 
@@ -42,19 +48,16 @@ class ColumnFilterAndRename(nn.Module):
         if isinstance(data, pd.DataFrame):
             return self._parse_dataframe(data)
         elif isinstance(data, DataSplit):
-            return DataSplit(
-                *map(self._parse_dataframe, data)
-            )
+            return DataSplit(*map(self._parse_dataframe, data))
         else:
             raise TypeError(
                 "Input must be a pandas DataFrame or a DataSplit object containing DataFrames"
             )
 
-
     def _parse_dataframe(self, data: pd.DataFrame) -> pd.DataFrame:
         """
         Parse the DataFrame to filter and rename columns based on the column mapping.
-        
+
         Args:
             data (pd.DataFrame): The input DataFrame.
 
@@ -69,7 +72,9 @@ class ColumnFilterAndRename(nn.Module):
             raise TypeError("Input must be a pandas DataFrame")
 
         missing_columns = [
-            col for col in self.column_mapping.values() if col not in data.columns
+            col
+            for col in self.column_mapping.values()
+            if col not in data.columns
         ]
         if missing_columns:
             raise KeyError(

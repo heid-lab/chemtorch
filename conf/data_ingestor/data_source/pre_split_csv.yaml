@@ -1,0 +1,2 @@
+_target_: deepreaction.data_ingestor.data_source.PreSplitCSVSource
+data_folder: "deepreaction_datasets/data/cycloaddition/barriers"

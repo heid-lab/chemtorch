@@ -1,0 +1,14 @@
+_target_: deepreaction.data_ingestor.SimpleDataIngestor
+
+defaults:
+  - data_source: pre_split_csv_source
+  - column_mapper: column_filter_and_rename
+  - data_splitter: null
+
+data_source:
+  data_folder: "deepreaction_datasets/data/e2sn2/e2/barriers"
+
+column_mapper:
+  column_mapping:
+    smiles: "AAM"
+    label: "ea"

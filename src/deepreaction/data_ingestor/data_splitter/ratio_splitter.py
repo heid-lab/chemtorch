@@ -1,11 +1,12 @@
-from typing_extensions import override
 import pandas as pd
-from deepreaction.data_pipeline.data_splitter import DataSplitter
+from typing_extensions import override
+
+from deepreaction.data_ingestor.data_splitter import DataSplitter
 from deepreaction.utils import DataSplit
 
 
 class RatioSplitter(DataSplitter):
-    
+
     def __init__(
         self,
         train_ratio: float = 0.8,
@@ -25,12 +26,12 @@ class RatioSplitter(DataSplitter):
         self.val_ratio = val_ratio
         self.test_ratio = test_ratio
 
-        if not (1 - 1e-4 < self.train_ratio + self.val_ratio + self.test_ratio < 1 + 1e-4):
-            raise ValueError(
-                "Ratios must sum to 1."
-            )
-        
-
+        if not (
+            1 - 1e-4
+            < self.train_ratio + self.val_ratio + self.test_ratio
+            < 1 + 1e-4
+        ):
+            raise ValueError("Ratios must sum to 1.")
 
     @override
     def __call__(self, df: pd.DataFrame) -> DataSplit:

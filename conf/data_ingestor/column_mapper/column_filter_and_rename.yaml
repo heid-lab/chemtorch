@@ -1,0 +1,4 @@
+_target_: deepreaction.data_ingestor.column_mapper.ColumnFilterAndRename
+column_mapping:
+  smiles: "rxn_smiles"
+  label: "G_act"

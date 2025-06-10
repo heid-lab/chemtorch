@@ -6,11 +6,15 @@ from omegaconf import DictConfig, OmegaConf
 
 import wandb
 from deepreaction.routine.regression_legacy import train
-from deepreaction.utils import DataSplit
-from deepreaction.utils import load_model, set_seed
-from deepreaction.utils import order_config_by_signature
+from deepreaction.utils import (
+    DataSplit,
+    load_model,
+    order_config_by_signature,
+    set_seed,
+)
 
 OmegaConf.register_new_resolver("eval", eval)
+
 
 @hydra.main(version_base=None, config_path="../conf", config_name="config")
 def main(cfg: DictConfig):
@@ -27,11 +31,11 @@ def main(cfg: DictConfig):
         device = torch.device("cpu")
     print(f"Using device: {device}")
 
-    ##### DATA PIPELINE #########################################################
-    data_pipeline = hydra.utils.instantiate(cfg.data_pipeline)
-    print(f"INFO: Datapipeline instantiated successfully")
-    dataframes = data_pipeline()
-    print(f"INFO: Datapipeline finished successfully")
+    ##### DATA INGESTOR #########################################################
+    data_ingestor = hydra.utils.instantiate(cfg.data_ingestor)
+    print(f"INFO: data_ingestor instantiated successfully")
+    dataframes = data_ingestor()
+    print(f"INFO: data_ingestor finished successfully")
 
     ##### DATA MODULE ###########################################################
     dataset_factory = hydra.utils.instantiate(cfg.dataset)
@@ -59,9 +63,7 @@ def main(cfg: DictConfig):
     ##### UPDATE GLOBAL CONFIG FROM DATASET ATTRIBUTES ##############################
     dataset_properties = cfg.get("runtime_agrs_from_train_dataset_props", [])
     if dataset_properties:
-        print(
-            "INFO: Updating global config with properties of train dataset:"
-        )
+        print("INFO: Updating global config with properties of train dataset:")
         for dataset_property in dataset_properties:
             if hasattr(datasets.train, dataset_property):
                 value = getattr(train_loader.dataset, dataset_property)
@@ -147,7 +149,6 @@ def main(cfg: DictConfig):
 
     if cfg.log:
         wandb.finish()
-
 
 
 if __name__ == "__main__":
