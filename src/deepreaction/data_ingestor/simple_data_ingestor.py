@@ -1,4 +1,3 @@
-# deepreaction/data_ingestor/simple_data_ingestor.py (new file)
 from typing import Optional
 
 import pandas as pd
@@ -46,26 +45,52 @@ class SimpleDataIngestor:
 
     def __call__(self) -> DataSplit:
         """
-        Executes the data ingestion pipeline.
+        Executes the data ingestion pipeline with validation.
 
         Returns:
             DataSplit: A named tuple containing the train, val, and test DataFrames.
 
         Raises:
-            ValueError: If data_splitter is required but not provided.
-            TypeError: If the components produce unexpected data types.
+            ValueError: If there is a configuration mismatch, such as:
+                        - A `data_splitter` is provided for a pre-split dataset.
+                        - A single DataFrame is loaded but no `data_splitter` is provided.
+            TypeError: If the components produce unexpected data types at any stage.
         """
-
         # load data
         raw_data = self.data_source.load()
 
         # map columns
         processed_data = self.column_mapper(raw_data)
 
-        # split data if necessary
-        if self.data_splitter is not None:
+        if isinstance(processed_data, pd.DataFrame):
+            # case: data is a single DataFrame, so a splitter is required
+            if self.data_splitter is None:
+                raise ValueError(
+                    "Data is a single DataFrame, but no 'data_splitter' was provided "
+                    "to split it into train, validation, and test sets."
+                )
             final_data_split = self.data_splitter(processed_data)
-        else:
+
+        elif isinstance(processed_data, DataSplit):
+            # case: data is already split. a splitter is redundant
+            if self.data_splitter is not None:
+                raise ValueError(
+                    "The data is already split (presplit dataset), but a 'data_splitter' "
+                    "was also provided. Please provide one or the other, not both."
+                )
             final_data_split = processed_data
+
+        else:
+            # case: the data is of an unexpected type
+            raise TypeError(
+                f"The data after column mapping has an unexpected type: {type(processed_data).__name__}. "
+                f"Expected a pandas DataFrame or a DataSplit object."
+            )
+
+        if not isinstance(final_data_split, DataSplit):
+            raise TypeError(
+                f"The final output of the ingestion pipeline is not a DataSplit object, "
+                f"but a {type(final_data_split).__name__}. There might be an issue with the data_splitter."
+            )
 
         return final_data_split
