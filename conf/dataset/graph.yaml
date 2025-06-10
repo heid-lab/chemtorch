@@ -5,7 +5,7 @@ defaults:
   - representation: cgr
 
 transform: null
-subsample: 0.1         
+subsample: 1         
 # preprocess_all: true
 # cache_graphs: true 
 # max_cache_size: null

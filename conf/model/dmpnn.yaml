@@ -7,29 +7,5 @@ defaults:
   - head: mlp
 
 depth: 3
-
-encoder:
-  _target_: deepreaction.encoder.node_to_edge_enc.NodeToEdgeEncoder
-  in_channels: ${eval:'${num_node_features} + ${num_edge_features}'}
-  out_channels: ${model.layer.hidden_channels}
-
-layer:
-  _target_: deepreaction.layer.dmpnn_block.DMPNNBlockLayer
-  use_residual: true
-  use_ffn: true
-  dropout: 0.1
-  act: relu
-  norm: null
-  hidden_channels: 128
-  mpnn:
-    _target_: deepreaction.layer.mpnn_layer.dmpnn_layer.DMPNNLayer
-    in_channels: ${model.layer.hidden_channels}
-    out_channels: ${model.layer.hidden_channels}
-    separate_nn: false
-
 edge_to_node_in_channels: ${eval:'${num_node_features} + ${model.layer.hidden_channels}'}
 edge_to_node_out_channels: ${model.layer.hidden_channels}
-
-head:
-  in_channels: ${model.layer.hidden_channels}
-  hidden_size: ${model.layer.hidden_channels}

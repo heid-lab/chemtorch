@@ -5,7 +5,7 @@ defaults:
 
 use_residual: false   # MPNN layer has its own residual
 use_ffn: false
-dropout: 0.0
+dropout: 0.05
 act: relu
 norm: null
-hidden_channels: ${model.layer.hidden_channels}
+hidden_channels: 64
