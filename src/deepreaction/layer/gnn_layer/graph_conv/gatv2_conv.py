@@ -1,6 +1,6 @@
 from torch import nn
 from torch_geometric.data import Batch
-from torch_geometric.nn import GATv2Conv
+from torch_geometric.nn import GATv2Conv as pyg_GATv2Conv
 
 
 class GATv2Conv(nn.Module):
@@ -28,7 +28,7 @@ class GATv2Conv(nn.Module):
 
         self.use_edge_attr = use_edge_attr
 
-        self.gat = GATv2Conv(
+        self.gat = pyg_GATv2Conv(
             in_channels=in_channels,
             out_channels=out_channels,
             heads=heads,
