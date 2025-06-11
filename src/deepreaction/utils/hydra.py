@@ -3,6 +3,7 @@ from collections import OrderedDict
 from hydra.utils import instantiate
 from omegaconf import DictConfig, OmegaConf
 import inspect
+from hydra._internal.instantiate._instantiate2 import _Keys  # Import the enum
 
 
 def resolve_target(target_str):
@@ -83,6 +84,7 @@ def filter_config_by_signature(cfg):
     Recursively filter configuration dictionaries to only include keys that match the argument
     names of their specified `_target_` class or function's constructor signature.
     If the signature supports **kwargs, do not filter.
+    Special Hydra keys (from _Keys) are always preserved.
 
     Args:
         cfg (dict or DictConfig): The configuration dictionary or OmegaConf DictConfig.
@@ -109,6 +111,9 @@ def filter_config_by_signature(cfg):
         cfg = OmegaConf.to_container(cfg, resolve=False)
     if not isinstance(cfg, dict):
         return cfg
+
+    hydra_keys = {k.value for k in _Keys}  # Set of special hydra keys
+
     if "_target_" in cfg:
         try:
             target = resolve_target(cfg["_target_"])
@@ -126,7 +131,7 @@ def filter_config_by_signature(cfg):
             }
             filtered = {}
             for k, v in cfg.items():
-                if k == "_target_" or k in param_names:
+                if k in hydra_keys or k in param_names:
                     filtered[k] = filter_config_by_signature(v)
             return filtered
         except Exception as e:
