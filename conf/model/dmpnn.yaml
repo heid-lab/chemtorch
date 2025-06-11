@@ -1,11 +1,9 @@
-_target_: deepreaction.model.dmpnn.DMPNN
+_target_: deepreaction.model.gnn.GNN
 
 defaults:
-  - encoder: node_to_edge_enc
-  - layer: dmpnn_block
+  - encoder: directed_edge_enc
+  - layer_stack: dmpnn_stack
   - pool: global_pool
   - head: mlp
 
-depth: 3
-edge_to_node_in_channels: ${eval:'${num_node_features} + ${model.layer.hidden_channels}'}
-edge_to_node_out_channels: ${model.layer.hidden_channels}
+hidden_channels: 128
