@@ -8,11 +8,8 @@ from torch_geometric.nn.conv.gcn_conv import gcn_norm
 from torch_geometric.typing import Adj, OptTensor, SparseTensor
 
 
-class GCNConvWithEdges(MessagePassing):
-    """GCN convolution with edge features.
-
-    This implementation is based on the GCN layer from PyTorch Geometric
-    but extended to incorporate edge features in the message passing.
+class GCNConv(MessagePassing):
+    """Graph convolution with edge features.
     """
 
     def __init__(
@@ -25,7 +22,7 @@ class GCNConvWithEdges(MessagePassing):
         normalize=False,
         **kwargs,
     ):
-        super(GCNConvWithEdges, self).__init__(aggr="add", **kwargs)
+        super(GCNConv, self).__init__(aggr="add", **kwargs)
 
         self.in_channels = in_channels
         self.out_channels = out_channels
@@ -122,7 +119,7 @@ class GCNLayer(nn.Module):
         self.use_edge_attr = use_edge_attr
 
         if use_edge_attr:
-            self.model = GCNConvWithEdges(
+            self.model = GCNConv(
                 in_channels, out_channels, edge_dim=in_channels
             )
         else:

@@ -6,16 +6,16 @@ from torch_geometric.data import Batch
 from torch_geometric.nn.resolver import activation_resolver
 
 from deepreaction.layer.utils import ResidualConnection, init_2_layer_ffn, init_dropout, init_norm, normalize
-from deepreaction.utils import enforce_base_init
+from deepreaction.utils.decorators.enforce_base_init import enforce_base_init
 
-class GNNBlockLayer(nn.Module):
+class GNNBlock(nn.Module):
     """
-    Base class for GNN block layers.
+    Base class for GNN blocks.
 
     This class provides utility functions and a template for implementing 
-    a GNN block layer.
+    a GNN blocks.
     Subclasses should call `super().__init__()` in their `__init__` method to 
-    pass initialization args to `GNNBlockLayer`, and override the `forward` 
+    pass initialization args to `GNNBlock`, and override the `forward` 
     method to implement custom lo
 
     Citation:
@@ -29,25 +29,24 @@ class GNNBlockLayer(nn.Module):
     """
     def __init__(
         self,
-        mpnn: nn.Module,
-        use_mpnn_residual: bool = False,
-        use_ffn: bool = False,
+        graph_conv: nn.Module,
+        residual: bool = False,
+        ffn: bool = False,
         dropout: float = 0.0,
         act: Union[str, Callable, None] = "relu",
         act_kwargs: Optional[Dict[str, Any]] = None,
         norm: Union[str, Callable, None] = None,
         norm_kwargs: Optional[Dict[str, Any]] = None,
         hidden_channels: int = None,
-        **kwargs: Any,  # TODO: Add suppoert for PNA 'degree_statistics'
     ):
         """
-        Initializes the GNNBlockLayer.
+        Initializes the GNNBlock.
 
         Args:
-            mpnn (nn.Module): The message passing neural network (MPNN) layer.
-            use_mpnn_residual (bool): Whether to use a residual connection for the MPNN (default: `False`).
-            use_ffn (bool): Whether to use a feed-forward network after the MPNN layer (default: `False`).
+            graph_conv (nn.Module): The graph convolution.
+            residual (bool): Whether to use a residual connection for the graph convolution (default: `False`).
             dropout (float): Dropout rate for the FFN (default: `0.0`).
+            ffn (bool): Whether to add two linear layers after the graph convolion (default: `False`).
             act (str or Callable, optional): The non-linear activation function to
                 use. (default: :obj:`"relu"`)
             act_kwargs (Dict[str, Any], optional): Arguments passed to the
@@ -58,29 +57,27 @@ class GNNBlockLayer(nn.Module):
             norm_kwargs (Dict[str, Any], optional): Arguments passed to the
                 respective normalization function defined by :obj:`norm`.
                 (default: :obj:`None`)
-            hidden_channels (int): Number of hidden channels (needs to be specified 
-                if a norm or FFN is use. Default: `None`).
 
         Raises:
             ValueError: If `hidden_channels` is not specified when using normalization or FFN.
             ValueError: If `fnn_dropout_rate` is less than `0`.
         """
-        super(GNNBlockLayer, self).__init__()
+        super(GNNBlock, self).__init__()
 
         if norm and hidden_channels is None:
             raise ValueError("hidden_channels must be specified when using normalization.")
-        if use_ffn and hidden_channels is None:
+        if ffn and hidden_channels is None:
             raise ValueError("hidden_channels must be specified when using FFN.")
 
-        self.mpnn = mpnn
+        self.graph_conv = graph_conv
         self.activation = activation_resolver(act, **(act_kwargs or {}))
 
         # Opt-ins
-        self.mpnn_norm = init_norm(norm, hidden_channels, norm_kwargs)
-        self.mpnn_residual = ResidualConnection(use_mpnn_residual)
+        self.norm = init_norm(norm, hidden_channels, norm_kwargs)
+        self.residual = ResidualConnection(residual)
         self.dropout = init_dropout(dropout)
 
-        self.use_ffn = use_ffn
+        self.use_ffn = ffn
         if self.use_ffn:
             self.ffn = init_2_layer_ffn(hidden_channels, dropout, self.activation)
             self.ffn_norm_in = init_norm(norm, hidden_channels, norm_kwargs)
@@ -99,13 +96,13 @@ class GNNBlockLayer(nn.Module):
             Batch: The output batch after processing.
         """
         # Register input for residual connection
-        self.mpnn_residual.register(batch.x)
+        self.residual.register(batch.x)
 
         # Message passing
-        batch = self.mpnn(batch)
+        batch = self.graph_conv(batch)
 
         # Optional normalization
-        batch.x = normalize(batch.x, batch, self.mpnn_norm)
+        batch.x = normalize(batch.x, batch, self.norm)
         # Activation
         batch.x = self.activation(batch.x)
 
@@ -114,7 +111,7 @@ class GNNBlockLayer(nn.Module):
             batch.x = self.dropout(batch.x)
 
         # Optional residual connection
-        batch.x = self.mpnn_residual.apply(batch.x)
+        batch.x = self.residual.apply(batch.x)
 
         # Optional Feed-Forward Network (FFN)
         if self.use_ffn:
@@ -129,7 +126,7 @@ class GNNBlockLayer(nn.Module):
 
 
     def __init_subclass__(cls) -> None:
-        enforce_base_init(GNNBlockLayer)(cls)
+        enforce_base_init(GNNBlock)(cls)
         return super().__init_subclass__()
 
 

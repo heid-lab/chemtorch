@@ -4,13 +4,12 @@ from torch_geometric.data import Batch
 from torch_geometric.utils import to_dense_batch
 from torch_geometric.nn.resolver import activation_resolver
 
-from deepreaction.layer.gnn_block import GNNBlockLayer
 from deepreaction.layer.utils import ResidualConnection, init_2_layer_ffn, init_dropout, init_norm, normalize
 
 
-class GPSLayer(nn.Module):
+class GPSBlock(nn.Module):
     """
-    Graph Propagation and Self-Attention Layer (GPSLayer) for Graph Neural Networks.
+    Graph Propagation and Self-Attention (GPS) Block for Graph Neural Networks.
     This layer combines message passing neural networks (MPNN) with self-attention
     mechanisms to capture both local and global information in graph-structured data.
 
@@ -22,25 +21,23 @@ class GPSLayer(nn.Module):
     """
     def __init__(
         self,
-        mpnn: nn.Module,
+        graph_conv: nn.Module,
         attention: nn.MultiheadAttention,
-        hidden_channels: int,
+        residual: bool = False,
         dropout = 0.0,
-        use_mpnn_residual: bool = False,
         act: Union[str, Callable, None] = "relu",
         act_kwargs: Optional[Dict[str, Any]] = None,
         norm: Union[str, Callable, None] = None,
         norm_kwargs: Optional[Dict[str, Any]] = None,
-        **kwargs: Any,  # TODO: Add suppoert for PNA 'degree_statistics'
+        hidden_channels: int = None,
     ):
         """
-        Initializes the GPSLayer.
+        Initializes the GPSBlock.
         
         Args:
-            mpnn (nn.Module): The message passing neural network (MPNN) layer.
+            graph_conv (nn.Module): The graph convolution.
             attention (nn.MultiheadAttention): The attention layer.
-            hidden_channels (int): Number of hidden channels.
-            use_mpnn_residual (bool): Whether to use a residual connection for the MPNN (default: `False`).
+            residual (bool): Whether to use a residual connection for the graph convolution (default: `False`).
             dropout (float): Dropout rate (default: `0.0`).
             act (str or Callable, optional): The non-linear activation function to
                 use. (default: :obj:`"relu"`)
@@ -52,6 +49,8 @@ class GPSLayer(nn.Module):
             norm_kwargs (Dict[str, Any], optional): Arguments passed to the
                 respective normalization function defined by :obj:`norm`.
                 (default: :obj:`None`)
+            hidden_channels (int): Number of hidden channels (needs to be specified 
+                if a norm or FFN is use. Default: `None`).
 
         Raises:
             ValueError: If `dropout` is less than `0`.
@@ -59,9 +58,9 @@ class GPSLayer(nn.Module):
         self.activation = activation_resolver(act, **(act_kwargs or {}))
         self.dropout = init_dropout(dropout)
 
-        self.mpnn = mpnn
-        self.mpnn_norm = init_norm(norm, hidden_channels, norm_kwargs)
-        self.mpnn_residual = ResidualConnection(use_mpnn_residual)
+        self.graph_conv = graph_conv
+        self.norm = init_norm(norm, hidden_channels, norm_kwargs)
+        self.residual = ResidualConnection(residual)
 
         self.attn = attention
         self.attn_residual = ResidualConnection(use_residual=True)
@@ -74,17 +73,17 @@ class GPSLayer(nn.Module):
 
     def forward(self, batch: Batch):
         # Register original input features for residual connection
-        self.mpnn_residual.register(batch.x)
+        self.residual.register(batch.x)
         self.ffn_residual.register(batch.x)
         self.attn_residual.register(batch.x)
 
         x_dense, mask = to_dense_batch(batch.x, batch.batch)
 
         # MPNN
-        batch = self.mpnn(batch)
+        batch = self.graph_conv(batch)
         h_mpnn = batch.x
-        h_mpnn = self.mpnn_residual.apply(h_mpnn)
-        h_mpnn = normalize(h_mpnn, batch, self.mpnn_norm)
+        h_mpnn = self.residual.apply(h_mpnn)
+        h_mpnn = normalize(h_mpnn, batch, self.norm)
 
         # Self-attention
         h_attn = self.attn(

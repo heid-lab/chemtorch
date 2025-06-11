@@ -6,7 +6,7 @@ import torch_geometric.nn as pyg_nn
 from torch_geometric.nn import Linear as Linear_pyg
 
 
-class PNALayer(nn.Module):
+class PNAConv(nn.Module):
     def __init__(
         self,
         in_channels: int,
@@ -16,7 +16,7 @@ class PNALayer(nn.Module):
         scalers=["identity", "amplification", "attenuation"],
         use_edge_attr: bool = True,
     ):
-        super(PNALayer, self).__init__()
+        super(PNAConv, self).__init__()
 
         if degree_statistics is None:
             raise ValueError(

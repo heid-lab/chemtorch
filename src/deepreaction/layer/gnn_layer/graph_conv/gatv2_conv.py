@@ -1,9 +1,11 @@
 from torch import nn
 from torch_geometric.data import Batch
-from torch_geometric.nn import GATConv
+from torch_geometric.nn import GATv2Conv
 
 
-class GATLayer(nn.Module):
+class GATv2Conv(nn.Module):
+    """Graph Attention Network Layer wrapper."""
+
     def __init__(
         self,
         in_channels: int,
@@ -13,10 +15,20 @@ class GATLayer(nn.Module):
         concat: bool = True,
         use_edge_attr: bool = True,
     ):
-        super(GATLayer, self).__init__()
+        """Initialize GAT layer.
+
+        Args:
+            in_channels: Number of input features
+            out_channels: Number of output features
+            heads: Number of attention heads
+            dropout: Dropout probability
+            concat: Whether to concatenate or average multi-head attention outputs
+        """
+        super(GATv2Conv, self).__init__()
+
         self.use_edge_attr = use_edge_attr
 
-        self.gat = GATConv(
+        self.gat = GATv2Conv(
             in_channels=in_channels,
             out_channels=out_channels,
             heads=heads,
@@ -26,6 +38,16 @@ class GATLayer(nn.Module):
         )
 
     def forward(self, batch: Batch) -> Batch:
+        """Forward pass of the GAT layer.
+
+        Args:
+            batch: PyG batch containing:
+                - x: Node features
+                - edge_index: Graph connectivity
+
+        Returns:
+            Updated batch with new node features
+        """
         if self.use_edge_attr:
             batch.x = self.gat(batch.x, batch.edge_index, batch.edge_attr)
         else:

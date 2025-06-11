@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 import torch_geometric.nn as pyg_nn
 from torch_geometric.nn import Linear as Linear_pyg
+from torch_geometric.nn import MessagePassing
 
 
 class GINEConvESLapPE(MessagePassing):

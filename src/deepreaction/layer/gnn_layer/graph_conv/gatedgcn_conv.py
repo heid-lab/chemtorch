@@ -7,7 +7,7 @@ from torch_geometric.nn import MessagePassing
 from torch_geometric.nn.resolver import activation_resolver
 from torch_scatter import scatter
 
-class GatedGCNLayer(MessagePassing):
+class GatedGCNConv(MessagePassing):
     """
     GatedGCN layer
     Residual Gated Graph ConvNets
@@ -25,7 +25,7 @@ class GatedGCNLayer(MessagePassing):
         act_kwargs: Optional[Dict[str, Any]] = None,
         # **kwargs,
     ):
-        super(GatedGCNLayer, self).__init__()
+        super(GatedGCNConv, self).__init__()
         self.activation = activation_resolver(act, **(act_kwargs or {}))
         self.A = pyg_nn.Linear(in_channels, out_channels, bias=True)
         self.B = pyg_nn.Linear(in_channels, out_channels, bias=True)

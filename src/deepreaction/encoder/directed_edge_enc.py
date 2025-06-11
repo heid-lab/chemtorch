@@ -5,14 +5,14 @@ from torch import nn
 from torch_geometric.data import Batch
 
 
-class NodeToEdgeEncoder(nn.Module):
+class DirectedEdgeEncoder(nn.Module):
 
     def __init__(
         self,
         in_channels: int,
         out_channels: int,
     ):
-        super(NodeToEdgeEncoder, self).__init__()
+        super(DirectedEdgeEncoder, self).__init__()
 
         self.edge_init = nn.Linear(in_channels, out_channels)
 

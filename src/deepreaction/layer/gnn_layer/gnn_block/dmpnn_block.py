@@ -2,17 +2,17 @@ from typing import Any, Callable, Dict, Literal, Optional, Union
 import torch.nn as nn
 from torch_geometric.data import Batch
 
-from deepreaction.layer.gnn_block import GNNBlockLayer
-from deepreaction.layer.mpnn_layer.dmpnn_layer import DMPNNLayer
+from deepreaction.layer.gnn_layer.gnn_block.gnn_block import GNNBlock
+from deepreaction.layer.gnn_layer.graph_conv.dmpnn_conv import DMPNNConv
 from deepreaction.layer.utils import normalize
 
 
-class DMPNNBlockLayer(GNNBlockLayer):
+class DMPNNBlock(GNNBlock):
     def __init__(
         self,
-        mpnn: DMPNNLayer,
-        use_residual: bool = False,
-        use_ffn: bool = False,
+        graph_conv: DMPNNConv,
+        residual: bool = False,
+        ffn: bool = False,
         dropout: float = 0.0,
         act: Union[str, Callable, None] = "relu",
         act_kwargs: Optional[Dict[str, Any]] = None,
@@ -20,10 +20,10 @@ class DMPNNBlockLayer(GNNBlockLayer):
         norm_kwargs: Optional[Dict[str, Any]] = None,
         hidden_channels: int = None,
     ):
-        super(DMPNNBlockLayer, self).__init__(
-            mpnn=mpnn,
-            use_mpnn_residual=use_residual,
-            use_ffn=use_ffn,
+        super(DMPNNBlock, self).__init__(
+            graph_conv=graph_conv,
+            residual=residual,
+            ffn=ffn,
             dropout=dropout,
             act=act,
             act_kwargs=act_kwargs,
@@ -35,12 +35,12 @@ class DMPNNBlockLayer(GNNBlockLayer):
     # override
     def forward(self, batch: Batch) -> Batch:
         # Register original input features for residual connection
-        self.mpnn_residual.register(batch.h_0)
+        self.residual.register(batch.h_0)
         # Message passing
-        batch = self.mpnn(batch)
+        batch = self.graph_conv(batch)
 
         # Optional normalization
-        batch.h = normalize(batch.h, batch, self.mpnn_norm)
+        batch.h = normalize(batch.h, batch, self.norm)
         # Activation
         batch.h = self.activation(batch.h)
 
@@ -49,7 +49,7 @@ class DMPNNBlockLayer(GNNBlockLayer):
             batch.h = self.dropout(batch.h)
 
         # Optional residual connection
-        batch.h = self.mpnn_residual.apply(batch.h)
+        batch.h = self.residual.apply(batch.h)
 
         # Optional Feed-Forward Network (FFN)
         if self.use_ffn:
@@ -61,6 +61,3 @@ class DMPNNBlockLayer(GNNBlockLayer):
             batch.h = normalize(batch.h, batch, self.ffn_norm_out)
 
         return batch
-
-
-    

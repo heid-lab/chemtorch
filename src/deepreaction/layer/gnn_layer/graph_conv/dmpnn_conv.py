@@ -5,8 +5,8 @@ from torch_geometric.data import Batch
 from torch_geometric.nn import MessagePassing
 
 
-class DMPNNLayer(MessagePassing):
-    """Directed Message Passing Neural Network Layer."""
+class DMPNNConv(MessagePassing):
+    """Directed Message Passing."""
 
     def __init__(
         self,
@@ -21,7 +21,7 @@ class DMPNNLayer(MessagePassing):
             out_channels: Number of output features
             separate_nn: Whether to use separate neural networks for real and artificial bonds
         """
-        super(DMPNNLayer, self).__init__()
+        super(DMPNNConv, self).__init__()
 
 
         self.separate_nn = separate_nn

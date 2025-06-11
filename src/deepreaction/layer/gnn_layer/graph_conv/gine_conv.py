@@ -3,7 +3,7 @@ import torch_geometric.nn as pyg_nn
 from torch_geometric.nn import Linear as Linear_pyg
 
 
-class GINELayer(nn.Module):
+class GINEConv(nn.Module):
     """Graph Isomorphism Network with Edge features (GINE) layer."""
 
     def __init__(
@@ -11,7 +11,7 @@ class GINELayer(nn.Module):
         in_channels: int,
         out_channels: int,
     ):
-        super(GINELayer, self).__init__()
+        super(GINEConv, self).__init__()
         gin_nn = nn.Sequential(
             Linear_pyg(in_channels, out_channels),
             nn.ReLU(),
