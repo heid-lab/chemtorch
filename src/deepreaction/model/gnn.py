@@ -11,23 +11,20 @@ class GNN(nn.Module, DeepReactionModel[Batch]):
     def __init__(
         self,
         encoder: Callable[[Batch], Batch],
-        layer: Callable[[Batch], Batch],
-        depth: int,
+        layer_stack: Callable[[Batch], Batch],
         pool: Callable[[Batch], torch.Tensor],
         head: Callable[[torch.Tensor], torch.Tensor],
     ):
         """
         Args:
             encoder (Callable[[Batch], Batch]): The encoder function that processes the input batch.
-            layer (Callable[[Batch], Batch]): The GNN layer that processes the batch.
+            layer_stack (Callable[[Batch], Batch]): The GNN layer stack that processes the batch.
             pool (Callable[[Batch], torch.Tensor]): The pooling function that converts the graph to a tensor.
             head (Callable[[torch.Tensor], torch.Tensor]): The head function for final prediction.
         """
         super().__init__()
         self.encoder = encoder
-        self.layers = nn.ModuleList()
-        for _ in range(depth):
-            self.layers.append(layer)
+        self.layer_stack = layer_stack
         self.pool = pool
         self.head = head
 
@@ -42,7 +39,6 @@ class GNN(nn.Module, DeepReactionModel[Batch]):
             torch.Tensor: The output predictions.
         """
         batch = self.encoder(batch)
-        for layer in self.layers:
-            batch = layer(batch)
+        batch = self.layer_stack(batch)
         batch = self.pool(batch)
         return self.head(batch)
