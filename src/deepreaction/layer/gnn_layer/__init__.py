@@ -1,5 +1,5 @@
 from .dmpnn_stack import DMPNNStack
-from .gnn_block import GNNBlock, DMPNNBlock
+from .gnn_block import GNNBlock, DMPNNBlock, GPSBlock
 from .graph_conv import (
     DMPNNConv,
     GATConv,

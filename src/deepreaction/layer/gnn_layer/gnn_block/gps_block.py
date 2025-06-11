@@ -50,11 +50,12 @@ class GPSBlock(nn.Module):
                 respective normalization function defined by :obj:`norm`.
                 (default: :obj:`None`)
             hidden_channels (int): Number of hidden channels (needs to be specified 
-                if a norm or FFN is use. Default: `None`).
+                if a norm is used. Default: `None`).
 
         Raises:
             ValueError: If `dropout` is less than `0`.
         """
+        super(GPSBlock, self).__init__()
         self.activation = activation_resolver(act, **(act_kwargs or {}))
         self.dropout = init_dropout(dropout)
 
