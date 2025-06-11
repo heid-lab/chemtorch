@@ -2,8 +2,7 @@ from typing import Dict
 from git import List, Union
 import torch
 import torch.nn as nn
-import torch_geometric.nn as pyg_nn
-from torch_geometric.nn import Linear as Linear_pyg
+from torch_geometric.nn import PNAConv as pyg_PNAConv
 
 
 class PNAConv(nn.Module):
@@ -35,7 +34,7 @@ class PNAConv(nn.Module):
         self.aggregators = list(aggregators)
         self.scalers = list(scalers)
         self.use_edge_attr = use_edge_attr
-        self.pna_layer = pyg_nn.PNAConv(
+        self.pna_layer = pyg_PNAConv(
             self.in_channels,
             self.out_channels,
             aggregators=self.aggregators,
