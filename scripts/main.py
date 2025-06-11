@@ -68,18 +68,18 @@ def main(cfg: DictConfig):
                     f"Attribute '{dataset_property}' not found on datasets.train."
                 )
 
-    run_name = getattr(cfg, "run_name", None)
-    resolved_cfg = OmegaConf.to_container(cfg, resolve=True)
-
-    print(f"INFO: Final config:\n{OmegaConf.to_yaml(resolved_cfg)}")
+    OmegaConf.resolve(cfg)
+    final_cfg_dict = OmegaConf.to_container(cfg, resolve=True)
+    print(f"INFO: Final config:\n{OmegaConf.to_yaml(final_cfg_dict)}")
 
     ##### INITIALIZE W&B ##########################################################
+    run_name = getattr(cfg, "run_name", None)
     if cfg.log:
         wandb.init(
             project=cfg.project_name,
             group=cfg.group_name,
             name=run_name,
-            config=resolved_cfg,
+            config=final_cfg_dict,
         )
         # TODO: Generalize for datasets w/o support for precomputation
         precompute_time = (
