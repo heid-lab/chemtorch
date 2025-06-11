@@ -1,14 +1,13 @@
 import torch
-import torch.nn.functional as F
-import torch_geometric.nn as pyg_nn
 from torch import Tensor
 from torch import nn
 from torch_geometric.nn import MessagePassing
+from torch_geometric.nn import GCNConv as pyg_GCNConv
 from torch_geometric.nn.conv.gcn_conv import gcn_norm
-from torch_geometric.typing import Adj, OptTensor, SparseTensor
+from torch_geometric.typing import SparseTensor
 
 
-class GCNConv(MessagePassing):
+class GCNEConv(MessagePassing):
     """Graph convolution with edge features.
     """
 
@@ -22,7 +21,7 @@ class GCNConv(MessagePassing):
         normalize=False,
         **kwargs,
     ):
-        super(GCNConv, self).__init__(aggr="add", **kwargs)
+        super(GCNEConv, self).__init__(aggr="add", **kwargs)
 
         self.in_channels = in_channels
         self.out_channels = out_channels
@@ -106,7 +105,7 @@ class GCNConv(MessagePassing):
         return f"{self.__class__.__name__}({self.in_channels}, {self.out_channels})"
 
 
-class GCNLayer(nn.Module):
+class GCNConv(nn.Module):
     """GCN layer that can optionally use edge attributes."""
 
     def __init__(
@@ -115,15 +114,15 @@ class GCNLayer(nn.Module):
         out_channels: int,
         use_edge_attr: bool = False,
     ):
-        super().__init__(in_channels, out_channels)
+        super(GCNConv, self).__init__()
         self.use_edge_attr = use_edge_attr
 
         if use_edge_attr:
-            self.model = GCNConv(
+            self.model = GCNEConv(
                 in_channels, out_channels, edge_dim=in_channels
             )
         else:
-            self.model = pyg_nn.GCNConv(in_channels, out_channels)
+            self.model = pyg_GCNConv(in_channels, out_channels)
 
     def forward(self, batch):
         if self.use_edge_attr:
