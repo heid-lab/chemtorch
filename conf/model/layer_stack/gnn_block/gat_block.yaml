@@ -1,12 +1,11 @@
-_target_: deepreaction.layer.gnn_layer.DMPNNBlock
+_target_: deepreaction.layer.gnn_layer.GNNBlock
 
 defaults:
-  - graph_conv: dmpnn_conv
+  - graph_conv: gat_conv
 
 residual: true
 ffn: true
-dropout: 0.1
+dropout: 0.05
 act: relu
 norm: null
 hidden_channels: ${model.hidden_channels}
-
