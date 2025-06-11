@@ -1,4 +1,4 @@
 _target_: deepreaction.encoder.equivstable_enc.EquivStableEncoder
 in_channels: ${eval:'${data.transform.lapPE.max_freqs} * ${data.representation.in_channel_multiplier}'}
-out_channels: ${model.layer.hidden_channels}
+out_channels: ${model.hidden_channels}
 raw_norm_type: null
