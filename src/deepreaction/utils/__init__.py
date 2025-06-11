@@ -1,3 +1,4 @@
+from .hydra import order_config_by_signature
 from .callable_compose import CallableCompose
 from .decorators.enforce_base_init import enforce_base_init
 from .standardizer import Standardizer
@@ -9,6 +10,5 @@ from .misc import (
     load_standardizer, 
     get_generator, 
     set_seed, 
-    check_early_stopping,
-    order_config_by_signature
+    check_early_stopping
 )
