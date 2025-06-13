@@ -26,11 +26,11 @@ def main(cfg: DictConfig):
         device = torch.device("cpu")
     print(f"Using device: {device}")
 
-    ##### DATA PIPELINE #########################################################
+    ##### DATA INGESTOR #########################################################
     data_ingestor = safe_instantiate(cfg.data_ingestor)
-    print(f"INFO: Datapipeline instantiated successfully")
+    print(f"INFO: Data ingestor instantiated successfully")
     dataframes = data_ingestor()
-    print(f"INFO: Datapipeline finished successfully")
+    print(f"INFO: Data ingestor finished successfully")
 
     ##### DATA MODULE ###########################################################
     dataset_factory = safe_instantiate(cfg.dataset)
