@@ -2,6 +2,6 @@ _target_: deepreaction.model.mlp.MLP
 in_channels: ${model.hidden_channels}
 hidden_size: ${model.hidden_channels}
 out_channels: 1
-num_hidden_layers: 2
+num_hidden_layers: 1
 dropout: 0.02
 act: relu

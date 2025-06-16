@@ -70,7 +70,6 @@ def main(cfg: DictConfig):
 
     OmegaConf.resolve(cfg)
     final_cfg_dict = OmegaConf.to_container(cfg, resolve=True)
-    print(f"INFO: Final config:\n{OmegaConf.to_yaml(final_cfg_dict)}")
 
     ##### INITIALIZE W&B ##########################################################
     run_name = getattr(cfg, "run_name", None)
@@ -88,6 +87,8 @@ def main(cfg: DictConfig):
             + datasets.test.precompute_time
         )
         wandb.log({"Precompute_time": precompute_time}, commit=False)
+
+    print(f"INFO: Final config:\n{OmegaConf.to_yaml(final_cfg_dict)}")
 
     ##### MODEL ##################################################################
     model = safe_instantiate(cfg.model)

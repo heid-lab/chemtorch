@@ -1,4 +1,5 @@
 from typing import Any, Callable, Dict, Literal, Optional, Union
+
 import torch.nn as nn
 from torch_geometric.data import Batch
 
@@ -55,7 +56,10 @@ class DMPNNBlock(GNNBlock):
         if self.use_ffn:
             self.ffn_residual.register(batch.h)
             batch.h = normalize(batch.h, batch, self.ffn_norm_in)
-            batch.h = self.ffn(batch.h)
+            batch.h = self.ffn_dropout1(
+                self.ffn_act_fn(self.ffn_linear1(batch.h))
+            )
+            batch.h = self.ffn_dropout2(self.ffn_linear2(batch.h))
             batch.h = self.dropout(batch.h)
             batch.h = self.ffn_residual.apply(batch.h)
             batch.h = normalize(batch.h, batch, self.ffn_norm_out)

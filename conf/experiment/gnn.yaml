@@ -1,6 +1,6 @@
 # @package _global_
 defaults:
-  - override /data_pipeline: rdb7new
+  - override /data_ingestor: rdb7new
   - override /dataset: graph
   - override /dataloader: pyg_dataloader
   - override /model: dmpnn
@@ -9,13 +9,25 @@ defaults:
   - _self_
 
 # LOGGING (Weight and Biases)
-log: false
-project_name: deepreaction
+log: true
+project_name: dmpnn_repro
 group_name: null
 run_name: null
 
 # INITIALIZATION
 seed: 0
+
+routine:
+  epochs: 200
+  patience: 30
+  lr_scheduler:
+    num_warmup_steps: 10
+
+
+model:
+  layer_stack:
+    dmpnn_blocks:
+      depth: 3
 
 parameter_limit: null
 

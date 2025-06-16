@@ -1,32 +1,38 @@
-from typing import Any, Callable, Dict, Union
-from torch import nn
-from typing import Optional
+from typing import Any, Callable, Dict, Optional, Union
 
+from torch import nn
 from torch_geometric.data import Batch
 from torch_geometric.nn.resolver import activation_resolver
 
-from deepreaction.layer.utils import ResidualConnection, init_2_layer_ffn, init_dropout, init_norm, normalize
+from deepreaction.layer.utils import (
+    ResidualConnection,
+    init_dropout,
+    init_norm,
+    normalize,
+)
 from deepreaction.utils.decorators.enforce_base_init import enforce_base_init
+
 
 class GNNBlock(nn.Module):
     """
     Base class for GNN blocks.
 
-    This class provides utility functions and a template for implementing 
+    This class provides utility functions and a template for implementing
     a GNN blocks.
-    Subclasses should call `super().__init__()` in their `__init__` method to 
-    pass initialization args to `GNNBlock`, and override the `forward` 
+    Subclasses should call `super().__init__()` in their `__init__` method to
+    pass initialization args to `GNNBlock`, and override the `forward`
     method to implement custom lo
 
     Citation:
-    Luo, Y., Shi, L., & Wu, X. M. (2025). Unlocking the Potential of Classic 
-    GNNs for Graph-level Tasks: Simple Architectures Meet Excellence. 
+    Luo, Y., Shi, L., & Wu, X. M. (2025). Unlocking the Potential of Classic
+    GNNs for Graph-level Tasks: Simple Architectures Meet Excellence.
     https://arxiv.org/abs/2502.09263
 
     Raises:
-        RuntimeError: If the subclass does not call `super().__init__()` in its 
+        RuntimeError: If the subclass does not call `super().__init__()` in its
             `__init__` method.
     """
+
     def __init__(
         self,
         graph_conv: nn.Module,
@@ -65,9 +71,13 @@ class GNNBlock(nn.Module):
         super(GNNBlock, self).__init__()
 
         if norm and hidden_channels is None:
-            raise ValueError("hidden_channels must be specified when using normalization.")
+            raise ValueError(
+                "hidden_channels must be specified when using normalization."
+            )
         if ffn and hidden_channels is None:
-            raise ValueError("hidden_channels must be specified when using FFN.")
+            raise ValueError(
+                "hidden_channels must be specified when using FFN."
+            )
 
         self.graph_conv = graph_conv
         self.activation = activation_resolver(act, **(act_kwargs or {}))
@@ -79,11 +89,14 @@ class GNNBlock(nn.Module):
 
         self.use_ffn = ffn
         if self.use_ffn:
-            self.ffn = init_2_layer_ffn(hidden_channels, dropout, self.activation)
             self.ffn_norm_in = init_norm(norm, hidden_channels, norm_kwargs)
+            self.ffn_linear1 = nn.Linear(hidden_channels, hidden_channels * 2)
+            self.ffn_linear2 = nn.Linear(hidden_channels * 2, hidden_channels)
+            self.ffn_act_fn = activation_resolver(act, **(act_kwargs or {}))
             self.ffn_norm_out = init_norm(norm, hidden_channels, norm_kwargs)
             self.ffn_residual = ResidualConnection(use_residual=True)
-
+            self.ffn_dropout1 = init_dropout(dropout)
+            self.ffn_dropout2 = init_dropout(dropout)
 
     def forward(self, batch: Batch) -> Batch:
         """
@@ -117,16 +130,16 @@ class GNNBlock(nn.Module):
         if self.use_ffn:
             self.ffn_residual.register(batch.x)
             batch.x = normalize(batch.x, batch, self.ffn_norm_in)
-            batch.x = self.ffn(batch.x)
+            batch.x = self.ffn_dropout1(
+                self.ffn_act_fn(self.ffn_linear1(batch.x))
+            )
+            batch.x = self.ffn_dropout2(self.ffn_linear2(batch.x))
             batch.x = self.dropout(batch.x)
             batch.x = self.ffn_residual.apply(batch.x)
             batch.x = normalize(batch.x, batch, self.ffn_norm_out)
 
         return batch
 
-
     def __init_subclass__(cls) -> None:
         enforce_base_init(GNNBlock)(cls)
         return super().__init_subclass__()
-
-
