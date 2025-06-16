@@ -1,5 +1,5 @@
 _target_: deepreaction.encoder.rwpe_enc.RWEncoder
 in_channels: ${eval:'${data.transform.randomwalk.walk_length} * ${data.representation.in_channel_multiplier}'}
-out_channels: ${model.gnn.layer.hidden_channels}
+out_channels: ${model.hidden_channels}
 transform_type: normal
 

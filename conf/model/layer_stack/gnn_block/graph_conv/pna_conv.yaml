@@ -1,0 +1,7 @@
+_target_: deepreaction.layer.gnn_layer.PNAConv
+in_channels: ${model.hidden_channels}
+out_channels: ${model.hidden_channels}
+aggregators: ['mean', 'max', 'sum'] # ['mean', 'max', 'min', 'std']
+scalers: ['identity'] # ['identity', 'amplification', 'attenuation']
+use_edge_attr: true
+degree_statistics: ${degree_statistics}

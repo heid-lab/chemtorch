@@ -1,0 +1,10 @@
+_target_: deepreaction.layer.gnn_layer.GPSBlock
+
+defaults:
+  - graph_conv: gatedgcn_conv
+  - attention: transformer
+
+residual: true
+norm: batch_norm
+dropout: 0.0
+hidden_channels: ${model.hidden_channels}

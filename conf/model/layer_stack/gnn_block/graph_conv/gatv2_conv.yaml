@@ -1,0 +1,7 @@
+_target_: deepreaction.layer.gnn_layer.GATv2Conv
+in_channels: ${model.hidden_channels}
+out_channels: ${eval:'${model.hidden_channels} // ${.heads}'}
+heads: 4
+dropout: 0.05
+concat: true
+use_edge_attr: true

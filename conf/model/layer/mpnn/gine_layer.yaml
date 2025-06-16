@@ -1,3 +1,0 @@
-_target_: deepreaction.layer.mpnn_layer.gine_layer.GINELayer
-in_channels: ${model.gnn.layer.hidden_channels}
-out_channels: ${model.gnn.layer.hidden_channels}

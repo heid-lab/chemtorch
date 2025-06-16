@@ -2,25 +2,9 @@ _target_: deepreaction.model.gnn.GNN
 
 defaults:
   - encoder: linear_enc
+  - layer_stack: layer_stack
+  - layer_stack/gnn_block/gine_block@layer_stack.layer
   - pool: global_pool
   - head: mlp
 
-gnn:
-  _target_: deepreaction.layer.utils.Stack
-  _recursive_: false
-  depth: 12
-  layer:
-    _target_: deepreaction.layer.gnn_block.GNNBlockLayer
-    use_residual: true
-    use_ffn: false
-    dropout: 0.05
-    act:
-      _target_: torch.nn.Identity
-    norm: null
-    hidden_channels: 128
-    mpnn:
-      _target_: deepreaction.layer.mpnn_layer.gine_layer.GINELayer
-      in_channels: ${model.gnn.layer.hidden_channels}
-      out_channels: ${model.gnn.layer.hidden_channels}
-
-
+hidden_channels: 128

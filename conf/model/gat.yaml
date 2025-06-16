@@ -2,26 +2,9 @@ _target_: deepreaction.model.gnn.GNN
 
 defaults:
   - encoder: linear_enc
+  - layer_stack: layer_stack
+  - layer_stack/gnn_block/gat_block@layer_stack.layer
   - pool: global_pool
   - head: mlp
 
-gnn:
-  _target_: deepreaction.layer.utils.Stack
-  _recursive_: false
-  depth: 12
-  layer:
-    _target_: deepreaction.layer.gnn_block.GNNBlockLayer
-    use_residual: true
-    use_ffn: true
-    dropout: 0.05
-    act: relu
-    norm: null
-    hidden_channels: 64
-    mpnn:
-      _target_: deepreaction.layer.mpnn_layer.gat_layer.GATLayer
-      in_channels: ${model.gnn.layer.hidden_channels}
-      out_channels: ${eval:'${model.gnn.layer.hidden_channels} // ${.heads}'}
-      dropout: 0.0
-      heads: 4
-      concat: true
-      use_edge_attr: true
+hidden_channels: 64

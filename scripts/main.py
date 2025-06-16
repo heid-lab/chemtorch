@@ -5,20 +5,15 @@ import torch
 from omegaconf import DictConfig, OmegaConf
 
 import wandb
-from deepreaction.routine.regression_legacy import train
-from deepreaction.utils import (
-    DataSplit,
-    load_model,
-    order_config_by_signature,
-    set_seed,
-)
+from deepreaction.utils import DataSplit, load_model, set_seed
+from deepreaction.utils.hydra import safe_instantiate
 
 OmegaConf.register_new_resolver("eval", eval)
 
 
 @hydra.main(version_base=None, config_path="../conf", config_name="config")
 def main(cfg: DictConfig):
-    cfg = OmegaConf.create(order_config_by_signature(cfg))
+    cfg = OmegaConf.create(cfg)
     # config mutable
     OmegaConf.set_struct(cfg, False)
 
@@ -32,19 +27,19 @@ def main(cfg: DictConfig):
     print(f"Using device: {device}")
 
     ##### DATA INGESTOR #########################################################
-    data_ingestor = hydra.utils.instantiate(cfg.data_ingestor)
-    print(f"INFO: data_ingestor instantiated successfully")
+    data_ingestor = safe_instantiate(cfg.data_ingestor)
+    print(f"INFO: Data ingestor instantiated successfully")
     dataframes = data_ingestor()
-    print(f"INFO: data_ingestor finished successfully")
+    print(f"INFO: Data ingestor finished successfully")
 
     ##### DATA MODULE ###########################################################
-    dataset_factory = hydra.utils.instantiate(cfg.dataset)
+    dataset_factory = safe_instantiate(cfg.dataset)
     print(f"INFO: Data module factory instantiated successfully")
     datasets = DataSplit(*map(lambda df: dataset_factory(df), dataframes))
     print(f"INFO: Data modules instantiated successfully")
 
     ##### DATALOADERS ###########################################################
-    dataloader_factory = hydra.utils.instantiate(cfg.dataloader)
+    dataloader_factory = safe_instantiate(cfg.dataloader)
 
     train_loader = dataloader_factory(
         dataset=datasets.train,
@@ -73,18 +68,17 @@ def main(cfg: DictConfig):
                     f"Attribute '{dataset_property}' not found on datasets.train."
                 )
 
-    run_name = getattr(cfg, "run_name", None)
-    resolved_cfg = OmegaConf.to_container(cfg, resolve=True)
-
-    print(f"INFO: Final config:\n{OmegaConf.to_yaml(resolved_cfg)}")
+    OmegaConf.resolve(cfg)
+    final_cfg_dict = OmegaConf.to_container(cfg, resolve=True)
 
     ##### INITIALIZE W&B ##########################################################
+    run_name = getattr(cfg, "run_name", None)
     if cfg.log:
         wandb.init(
             project=cfg.project_name,
             group=cfg.group_name,
             name=run_name,
-            config=resolved_cfg,
+            config=final_cfg_dict,
         )
         # TODO: Generalize for datasets w/o support for precomputation
         precompute_time = (
@@ -94,8 +88,10 @@ def main(cfg: DictConfig):
         )
         wandb.log({"Precompute_time": precompute_time}, commit=False)
 
+    print(f"INFO: Final config:\n{OmegaConf.to_yaml(final_cfg_dict)}")
+
     ##### MODEL ##################################################################
-    model = hydra.utils.instantiate(cfg.model)
+    model = safe_instantiate(cfg.model)
     model = model.to(device)
 
     if cfg.use_loaded_model:
@@ -138,7 +134,7 @@ def main(cfg: DictConfig):
         wandb.log({"total_parameters": total_params}, commit=False)
 
     ############################# routine instantiation #############################
-    hydra.utils.instantiate(
+    safe_instantiate(
         cfg.routine,
         train_loader=train_loader,
         val_loader=val_loader,

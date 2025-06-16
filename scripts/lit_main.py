@@ -1,12 +1,12 @@
 import os
 
 import hydra
-from hydra.utils import instantiate
 from lightning import seed_everything
 from omegaconf import DictConfig, OmegaConf
 
 import wandb
 from deepreaction.data_module import DataModule
+from deepreaction.utils.hydra import safe_instantiate
 
 OmegaConf.register_new_resolver("eval", eval)   # TODO: What is this?
 
@@ -20,9 +20,9 @@ def main(cfg: DictConfig):
     seed_everything(seed)
 
     ##### DATA MODULE ##############################################################
-    data_pipeline = instantiate(cfg.data_pipeline)
-    dataset_factory = instantiate(cfg.dataset)
-    dataloader_factory = instantiate(cfg.dataloader)
+    data_pipeline = safe_instantiate(cfg.data_pipeline)
+    dataset_factory = safe_instantiate(cfg.dataset)
+    dataloader_factory = safe_instantiate(cfg.dataloader)
     data_module = DataModule(
         data_pipeline=data_pipeline,
         dataset_factory=dataset_factory,
@@ -62,7 +62,7 @@ def main(cfg: DictConfig):
 
 
     ##### MODEL ##################################################################
-    model = instantiate(cfg.model)
+    model = safe_instantiate(cfg.model)
     # TODO: Use lightning for loading pretrained models and checkpoints
     total_params = sum(
         p.numel() for p in model.parameters() if p.requires_grad
@@ -90,12 +90,12 @@ def main(cfg: DictConfig):
     # TODO: Consider `SlurmCluster` class for building slurm scripts
     # TODO: Consider `DistributedDataParallel` for distributed training NLP on large datasets
     # TODO: Consider HyperOptArgumentParser for hyperparameter optimization
-    trainer = instantiate(cfg.trainer)
+    trainer = safe_instantiate(cfg.trainer)
     if not cfg.log:
         trainer.logger = None
     print(f"Using device: {trainer.accelerator}")
     ############################# task instantiation #############################
-    routine_factory = instantiate(cfg.routine)
+    routine_factory = safe_instantiate(cfg.routine)
     routine = routine_factory(model=model)
     trainer.fit(routine, datamodule=data_module)
     trainer.test(routine, datamodule=data_module)

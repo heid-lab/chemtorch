@@ -1,8 +1,0 @@
-_target_: deepreaction.layer.gps_layer.GPSLayer
-
-defaults:
-  - mpnn: gatedgcn_layer
-  - attention: transformer
-
-norm: batch_norm
-dropout: 0.0

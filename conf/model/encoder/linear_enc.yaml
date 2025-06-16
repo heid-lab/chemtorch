@@ -1,10 +1,4 @@
-_target_: torch.nn.Sequential
-_args_:
-- _target_: deepreaction.encoder.linear_node_enc.LinearNodeEncoder
-  in_channels: ${num_node_features}
-  out_channels: ${model.gnn.layer.hidden_channels}
-  bias: true
-- _target_: deepreaction.encoder.linear_edge_enc.LinearEdgeEncoder
-  in_channels: ${num_edge_features}
-  out_channels: ${model.gnn.layer.hidden_channels}
-  bias: true
+_target_: deepreaction.encoder.linear_enc.LinearEncoder
+num_node_features: ${num_node_features}
+num_edge_features: ${num_edge_features}
+out_channels: ${model.hidden_channels}

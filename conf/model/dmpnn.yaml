@@ -1,37 +1,9 @@
 _target_: deepreaction.model.gnn.GNN
 
 defaults:
+  - encoder: directed_edge_enc
+  - layer_stack: dmpnn_stack
   - pool: global_pool
   - head: mlp
 
-encoder:
-  _target_: deepreaction.encoder.node_to_edge_enc.NodeToEdgeEncoder
-  in_channels: ${eval:'${num_node_features} + ${num_edge_features}'}
-  out_channels: ${model.gnn._args_[0].layer.hidden_channels}
-
-gnn:
-  _target_: torch.nn.Sequential
-  _args_:
-  - _target_: deepreaction.layer.utils.Stack
-    _recursive_: false
-    depth: 3
-    layer:
-      _target_: deepreaction.layer.dmpnn_block.DMPNNBlockLayer
-      use_residual: true
-      use_ffn: true
-      dropout: 0.1
-      act: relu
-      norm: null
-      hidden_channels: 128
-      mpnn:
-        _target_: deepreaction.layer.mpnn_layer.dmpnn_layer.DMPNNLayer
-        in_channels: ${model.gnn._args_[0].layer.hidden_channels}
-        out_channels: ${model.gnn._args_[0].layer.hidden_channels}
-        separate_nn: false
-  - _target_: deepreaction.layer.dmpnn_last.DMPNNLastLayer
-    num_node_features: ${num_node_features}
-    hidden_channels: ${model.gnn._args_[0].layer.hidden_channels}
-
-head:
-  in_channels: ${model.gnn._args_[0].layer.hidden_channels}
-  hidden_channels: ${model.gnn._args_[0].layer.hidden_channels}
+hidden_channels: 128

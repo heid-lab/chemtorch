@@ -2,27 +2,9 @@ _target_: deepreaction.model.gnn.GNN
 
 defaults:
   - encoder: linear_enc
+  - layer_stack: layer_stack
+  - layer_stack/gnn_block/gatedgcn_block@layer_stack.layer
   - pool: global_pool
   - head: mlp
 
-gnn:
-  _target_: deepreaction.layer.utils.Stack
-  _recursive_: false
-  depth: 12
-  layer:
-    _target_: deepreaction.layer.gnn_block.GNNBlockLayer
-    use_residual: false  # MPNN layer has its own residual
-    use_ffn: true
-    dropout: 0.05
-    act: relu
-    norm: null
-    hidden_channels: 64
-    mpnn:
-      _target_: deepreaction.layer.mpnn_layer.gatedgcn_layer.GatedGCNLayer
-      in_channels: ${model.gnn.layer.hidden_channels}
-      out_channels: ${model.gnn.layer.hidden_channels}
-      dropout: ${..dropout}
-      act: ${..act}
-      use_residual: true
-      equivstable_pe: false
-
+hidden_channels: 64

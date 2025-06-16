@@ -1,0 +1,11 @@
+_target_: deepreaction.layer.gnn_layer.GNNBlock
+defaults:
+  - graph_conv: gine_conv
+
+residual: true
+ffn: false
+dropout: 0.05
+act:
+  _target_: torch.nn.Identity
+norm: null
+hidden_channels: ${model.hidden_channels}

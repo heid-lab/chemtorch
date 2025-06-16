@@ -1,9 +1,7 @@
 import inspect
 from math import floor
-from typing import Callable, Dict, Generic, Optional, TypeVar
+from typing import Callable, Dict, Optional, TypeVar
 from git import Union
-import hydra
-from omegaconf import DictConfig
 import torch
 from torch import nn
 from torch_geometric.data import Batch
@@ -150,44 +148,3 @@ class ResidualConnection:
         if not hasattr(self, "x"):
             raise RuntimeError("Residual connection not registered. Call `register` first.")
         return y + self.x if self.use_residual else y
-
-
-T = TypeVar("T")
-class Stack(nn.Module, Generic[T]):
-    """
-    A utility class for stacking a layer multiple times.
-
-    This class is useful for creating deep neural networks by stacking
-    the same layer multiple times.
-
-    Note, that the input and output types of the layer must be the same.
-    """
-    def __init__(
-            self, 
-            layer: DictConfig, 
-            depth: int,
-            share_weights: bool = False
-        ):
-        """
-        Initialize the Stack using Hydra for instantiation.
-
-        Args:
-            layer (DictConfig): The configuration for the layer to be stacked.
-            depth (int): The number of times to repeat the layer.
-            share_weights (bool): If True, share weights between the stacked layers.
-        """
-        super(Stack, self).__init__()
-        self.layers = nn.ModuleList()
-        if share_weights:
-            single_layer = hydra.utils.instantiate(layer)
-            for _ in range(depth):
-                self.layers.append(single_layer)
-        else:
-            for _ in range(depth):
-                new_layer = hydra.utils.instantiate(layer)
-                self.layers.append(new_layer)
-
-    def forward(self, x: T) -> T:
-        for layer in self.layers:
-            x = layer(x)
-        return x

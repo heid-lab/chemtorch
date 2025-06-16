@@ -1,0 +1,11 @@
+_target_: deepreaction.layer.gnn_layer.GNNBlock
+
+defaults:
+  - graph_conv: gatedgcn_conv
+
+residual: false   # MPNN layer has its own residual
+ffn: false
+dropout: 0.05
+act: relu
+norm: null
+hidden_channels: ${model.hidden_channels}
