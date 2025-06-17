@@ -39,17 +39,18 @@ def main(cfg: DictConfig):
     print(f"INFO: Data modules instantiated successfully")
 
     ##### DATALOADERS ###########################################################
-    dataloader_factory = safe_instantiate(cfg.dataloader)
-
-    train_loader = dataloader_factory(
+    train_loader = safe_instantiate(
+        cfg.dataloader,
         dataset=datasets.train,
         shuffle=True,
     )
-    val_loader = dataloader_factory(
+    val_loader = safe_instantiate(
+        cfg.dataloader,
         dataset=datasets.val,
         shuffle=False,
     )
-    test_loader = dataloader_factory(
+    test_loader = safe_instantiate(
+        cfg.dataloader,
         dataset=datasets.test,
         shuffle=False,
     )

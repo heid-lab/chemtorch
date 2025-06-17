@@ -6,7 +6,7 @@ defaults:
 dmpnn_blocks:
   _target_: deepreaction.layer.layer_stack.LayerStack
   _recursive_: false
-  depth: 12
+  depth: 3
 
 edge_to_node_embedding:
   _target_: deepreaction.layer.gnn_layer.dmpnn_stack.EdgeToNodeEmbedding

@@ -134,7 +134,6 @@ class GNNBlock(nn.Module):
                 self.ffn_act_fn(self.ffn_linear1(batch.x))
             )
             batch.x = self.ffn_dropout2(self.ffn_linear2(batch.x))
-            batch.x = self.dropout(batch.x)
             batch.x = self.ffn_residual.apply(batch.x)
             batch.x = normalize(batch.x, batch, self.ffn_norm_out)
 

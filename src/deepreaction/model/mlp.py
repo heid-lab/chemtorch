@@ -24,19 +24,11 @@ class MLP(nn.Module, DeepReactionModel[torch.Tensor]):
         act_kwargs: Optional[Dict[str, Any]] = None,
     ):
         """
-        Initialized an MLP.
+        Initializes an MLP. The architecture is built to match FFNHead's structure
+        and instantiation order precisely.
 
-        The MLP will have the following structure:
-        - Input layer: `in_channels` -> `hidden_dims[0]`
-        - Hidden layers: `hidden_dims[i-1]` -> `hidden_dims[i]` for each `i` in `range(1, len(hidden_dims))`
-        - Output layer: `hidden_dims[-1]` -> `out_channels`
-
-        The activation function is applied after each linear layer, except the last one.
-
-        The number and dimensions of hidden layers can be specified in two ways:
-        1. By providing a list of integers `hidden_dims`, where each integer specifies the number of neurons in that layer.
-        2. By providing a single integer `hidden_size` and the number of hidden layers `num_hidden_layers`, which will create
-           a uniform MLP with `num_hidden_layers` hidden layers (`hidden_size` -> `hidden_size`).
+        - A Dropout layer is placed before every Linear layer.
+        - Activation is applied after every hidden Linear layer.
 
         Args:
             in_channels (int): Input dimension.
@@ -44,38 +36,9 @@ class MLP(nn.Module, DeepReactionModel[torch.Tensor]):
             hidden_dims (List[int], optional): List of hidden layer dimensions (preferred).
             hidden_size (int, optional): Hidden layer size (used if `hidden_dims` is not provided).
             num_hidden_layers (int, optional): Number of hidden layers (used if `hidden_dims` is not provided).
-            dropout
-              (float, optional): Dropout rate. Defaults to 0.
+            dropout (float, optional): Dropout rate. Defaults to 0.
             act (str or Callable, optional): Activation function. Defaults to "relu".
-            act_kwargs (Dict[str, Any], optional): Arguments for the activation function. Defaults to None.
-
-        Raises:
-            ValueError: If both `hidden_dims` and `hidden_size` or `num_hidden_layers` are provided.
-            ValueError: If `hidden_dims` is not a list or is empty.
-            ValueError: If `num_hidden_layers` is less than 1.
-
-        Example:
-            >>> # 2 layer MLP
-            >>> mlp = MLP(
-            ...     in_channels=128,
-            ...     out_channels=10,
-            ...     hidden_dims=[64],
-            ...     dropout_rate=0.5,
-            ... )
-            >>> print(mlp)
-            MLP(
-              (layers): Sequential(
-                (0): Sequential(
-                  (0): Dropout(p=0.5, inplace=False)
-                  (1): Linear(in_features=128, out_features=64, bias=True)
-                  (2): ReLU()
-                )
-                (1): Sequential(
-                  (0): Dropout(p=0.5, inplace=False)
-                  (1): Linear(in_features=64, out_features=10, bias=True)
-                )
-              )
-            )
+            act_kwargs (Dict[str, Any], optional): Arguments for the activation function.
         """
         super().__init__()
 
@@ -87,19 +50,24 @@ class MLP(nn.Module, DeepReactionModel[torch.Tensor]):
         self.activation = activation_resolver(act, **(act_kwargs or {}))
         self.dropout = dropout
 
-        # Build layers
-        self.layers = nn.Sequential()
-        if not hidden_dims:  # Single-layer perceptron
-            self.layers.append(nn.Linear(in_channels, out_channels))
-        else:
-            self.layers.append(
-                self._construct_linear(in_channels, hidden_dims[0])
-            )
-            for i in range(1, len(hidden_dims)):
-                self.layers.append(
-                    self._construct_linear(hidden_dims[i - 1], hidden_dims[i])
-                )
-            self.layers.append(nn.Linear(hidden_dims[-1], out_channels))
+        layers = []
+        current_dim = in_channels
+
+        # [Dropout, Linear, Activation]
+        for hidden_dim in hidden_dims:
+            if dropout > 0.0:
+                layers.append(nn.Dropout(dropout))
+            layers.append(nn.Linear(current_dim, hidden_dim))
+            if self.activation is not None:
+                layers.append(self.activation)
+            current_dim = hidden_dim
+
+        # [Dropout, Linear]
+        if dropout > 0.0:
+            layers.append(nn.Dropout(dropout))
+        layers.append(nn.Linear(current_dim, out_channels))
+
+        self.layers = nn.Sequential(*layers)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         """Forward pass of the MLP."""
@@ -132,12 +100,3 @@ class MLP(nn.Module, DeepReactionModel[torch.Tensor]):
                 elif hidden_size is None:
                     raise val_err_misspecified_args
                 return [hidden_size] * num_hidden_layers
-
-    def _construct_linear(self, input_dim: int, output_dim: int) -> nn.Module:
-        layers = []
-        if self.dropout > 0:
-            layers.append(nn.Dropout(self.dropout))
-        layers.append(nn.Linear(input_dim, output_dim))
-        if self.activation is not None:
-            layers.append(self.activation)
-        return nn.Sequential(*layers)

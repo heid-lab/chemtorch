@@ -60,7 +60,6 @@ class DMPNNBlock(GNNBlock):
                 self.ffn_act_fn(self.ffn_linear1(batch.h))
             )
             batch.h = self.ffn_dropout2(self.ffn_linear2(batch.h))
-            batch.h = self.dropout(batch.h)
             batch.h = self.ffn_residual.apply(batch.h)
             batch.h = normalize(batch.h, batch, self.ffn_norm_out)
 
