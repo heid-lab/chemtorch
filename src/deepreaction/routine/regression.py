@@ -6,9 +6,8 @@ import hydra
 import numpy as np
 import torch
 from omegaconf import DictConfig
-
-from torch.optim.lr_scheduler import ReduceLROnPlateau
 from sklearn.metrics import mean_absolute_error, root_mean_squared_error
+from torch.optim.lr_scheduler import ReduceLROnPlateau
 
 import wandb
 from deepreaction.utils.misc import (
@@ -29,8 +28,8 @@ def predict(model, loader, stdzer: Standardizer, device):
         for X, y in loader:
             X = X.to(device)
             y = y.to(device)
-            out = model(X)         # shape: (batch_size, 1)
-            out = out.squeeze(-1)       # shape: (batch_size)
+            out = model(X)  # shape: (batch_size, 1)
+            out = out.squeeze(-1)  # shape: (batch_size)
             preds = stdzer.destandardize(out)
             preds_list.extend(preds.cpu().detach().tolist())
     return preds_list
@@ -90,14 +89,12 @@ def train(
     use_wandb=False,
 ):
 
-    train_labels = train_loader.dataset.get_labels()
-    mean = np.mean(train_labels)
-    std = np.std(train_labels)
+    mean = train_loader.dataset.mean
+    std = train_loader.dataset.std
     stdzer = Standardizer(mean, std)
 
     if use_wandb:
         wandb.run.summary["status"] = "training"
-
 
     optimizer_partial = hydra.utils.instantiate(optimizer)
     optimizer = optimizer_partial(params=model.parameters())

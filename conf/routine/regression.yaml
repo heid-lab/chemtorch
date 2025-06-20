@@ -1,23 +1,25 @@
-_target_: deepreaction.routine.RegressionRoutine
-_partial_: true   # model passed at runtime
+_target_: deepreaction.routine.regression.train
+_recursive_: False
 
 defaults:
   - loss: mse
   - optimizer: adamw
-  - lr_scheduler: cosine_with_warmup
+  - lr_scheduler: graphgps_cosine_with_warmup
+  - _self_
 
-standardizer:
-  _target_: deepreaction.utils.Standardizer
-  mean: ${mean}   # root config updated with dataset properties at runtime
-  std: ${std}     # root config updated with dataset properties at runtime
+epochs: 30
 
-metrics: 
-  _target_: torchmetrics.MetricCollection
-  metrics: 
-    - _target_: torchmetrics.MeanSquaredError
-      squared: false
-    - _target_: torchmetrics.MeanAbsoluteError
+# OPTIMIZER STABILITY
+clip_grad_norm: true
+clip_grad_norm_value: 1
 
-# Optional parameters:
-# pretrained_path: null
-# resume_training: false
+# EARLY STOPPING
+patience: 10
+min_delta: 0.01
+
+# MODEL SAVING 
+save_model_parameters: false
+model_path: null
+
+# LOGGING
+use_wandb: ${log}

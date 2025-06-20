@@ -5,7 +5,7 @@ defaults:
   - override /dataloader: pyg_dataloader
   - override /model: dmpnn
   - override /trainer: default
-  - override /routine: regression_legacy
+  - override /routine: regression
   - _self_
 
 # LOGGING (Weight and Biases)

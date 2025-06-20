@@ -1,6 +1,9 @@
 import torch
 from typing_extensions import override
-from deepreaction.routine.supervised_routine import SupervisedRoutine
+
+from deepreaction.routine.lightning_routine.supervised_routine import (
+    SupervisedRoutine,
+)
 from deepreaction.utils.standardizer import Standardizer
 
 
