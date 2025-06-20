@@ -1,8 +1,12 @@
-import torch
 from typing import Any, Callable, Dict, Optional, Union
+
+import torch
 from torch import nn
 from torch_geometric.data import Batch
-from torch_geometric.nn.resolver import activation_resolver, aggregation_resolver
+from torch_geometric.nn.resolver import (
+    activation_resolver,
+    aggregation_resolver,
+)
 
 from deepreaction.layer.gnn_layer.gnn_block.dmpnn_block import DMPNNBlock
 from deepreaction.layer.layer_stack import LayerStack
@@ -14,6 +18,7 @@ class EdgeToNodeEmbedding(nn.Module):
     aggregates the edge embeddings based on the node indices, concatenates them with the node features,
     and passes them through a linear layer followed by an activation function to produce node embeddings.
     """
+
     def __init__(
         self,
         embedding_size: int,
@@ -37,7 +42,7 @@ class EdgeToNodeEmbedding(nn.Module):
 
         self.linear = nn.Linear(
             in_features=num_node_features + embedding_size,
-            out_features=embedding_size
+            out_features=embedding_size,
         )
         self.activation = activation_resolver(act, **(act_kwargs or {}))
         self.aggregation = aggregation_resolver(aggr, **(aggr_kwargs or {}))
@@ -45,14 +50,16 @@ class EdgeToNodeEmbedding(nn.Module):
     def forward(self, batch: Batch) -> Batch:
         """
         Forward pass through the EdgeToNodeEmbedding layer.
-        
+
         Args:
             batch (Batch): The input batch of graphs containing node features and edge embeddings.
-            
+
         Returns:
             Batch: The output batch with updated node features.
         """
-        h_aggr = self.aggregation(batch.h, batch.edge_index[1])
+        h_aggr = self.aggregation(
+            batch.h, batch.edge_index[1], dim_size=batch.num_nodes
+        )
         batch.q = torch.cat([batch.x, h_aggr], dim=1)
         batch.x = self.linear(batch.q)
         batch.x = self.activation(batch.x)
@@ -65,6 +72,7 @@ class DMPNNStack(nn.Module):
     followed by an edge-to-node embedding layer, which generates node embeddings from the original node
     features and the edge embeddings obtained from the directed message passing steps.
     """
+
     def __init__(
         self,
         dmpnn_blocks: LayerStack[Batch],
