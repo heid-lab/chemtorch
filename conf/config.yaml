@@ -22,15 +22,13 @@ seed: 0
 
 parameter_limit: null
 
-# TODO: Bad practice, find a proper solution to pass these dataset
-# properties to the model/routine
-runtime_agrs_from_train_dataset_props:
+runtime_args_from_train_dataset_props:
   # - fp_length
   # - degree_statistics
-  - num_node_features
-  - num_edge_features
-  - mean
-  - std
+  # - num_node_features
+  # - num_edge_features
+  # - mean
+  # - std
 
 # DEVICE (deprecated)
 use_cuda: true
