@@ -124,7 +124,7 @@ class GraphDataset(DatasetBase[Data], Dataset):
             idx (int): Index of the item to retrieve.
 
         Returns:
-            Data: A PyTorch `Tensor` object representing the molecular fingerprint.
+            Data: A PyTorch Geometric `Data` object representing the molecular graph.
         """
         if self.precompute_all:
             if self.precomputed_items is None:
