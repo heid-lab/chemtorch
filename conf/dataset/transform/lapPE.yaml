@@ -1,8 +1,0 @@
-lapPE:
-  _target_: deepreaction.transform.lapPE.LapPE
-  eigvec_norm: L2
-  max_freqs: 1
-  attr_name: [EigVals, EigVecs]
-  laplacian_norm_type: null
-  is_undirected: false # TODO: can probably determine this automatically
-  type: graph

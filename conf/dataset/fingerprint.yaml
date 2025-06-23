@@ -3,6 +3,9 @@ _partial_: true
 
 defaults:
   - representation: drfp
-
-transform: null
-subsample: 1   
+  - transform: null
+  
+precompute_all: true
+cache: true
+max_size_cache: null
+subsample: null   

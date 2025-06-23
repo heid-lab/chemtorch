@@ -3,9 +3,9 @@ _partial_: true
 
 defaults:
   - representation: simple_token
-
-transform: null
-subsample: 1         
-# preprocess_all: true
-# cache_graphs: true 
-# max_cache_size: null
+  - transform: null
+  
+precompute_all: true
+cache: true
+max_size_cache: null
+subsample: null         

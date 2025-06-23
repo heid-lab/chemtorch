@@ -1,5 +1,0 @@
-RWSE:
-  _target_: deepreaction.transform.RWSE.RWSE
-  times: 20
-  attr_name: randomwalkpe
-  type: graph

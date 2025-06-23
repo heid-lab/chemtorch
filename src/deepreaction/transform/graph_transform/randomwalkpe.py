@@ -1,6 +1,5 @@
 import torch
 import torch_geometric
-
 from torch_geometric.data import Data
 from torch_geometric.utils import (
     get_self_loop_attr,
@@ -10,6 +9,7 @@ from torch_geometric.utils import (
     to_torch_coo_tensor,
     to_torch_csr_tensor,
 )
+
 from deepreaction.transform.abstract_transform import AbstractTransform
 
 
@@ -17,7 +17,6 @@ class RandomWalkPETransform(AbstractTransform[Data]):
     """
     This code includes implementations adapted from PyTorch Geometric
     (https://github.com/pyg-team/pytorch_geometric)
-    # TODO: check out how to cite code
     """
 
     def __init__(
@@ -29,7 +28,6 @@ class RandomWalkPETransform(AbstractTransform[Data]):
         super().__init__()
         self.walk_length = walk_length
         self.attr_name = attr_name
-
 
     # override
     def __call__(self, data: Data) -> Data:
