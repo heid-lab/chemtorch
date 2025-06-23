@@ -21,13 +21,7 @@ seed: 0
 
 parameter_limit: null
 
-runtime_args_from_train_dataset_props:
-  # - fp_length
-  # - degree_statistics
-  # - num_node_features
-  # - num_edge_features
-  # - mean
-  # - std
+runtime_args_from_train_dataset_props: null
 
 # DEVICE (deprecated)
 use_cuda: true
