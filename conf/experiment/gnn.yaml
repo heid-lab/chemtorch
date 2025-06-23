@@ -17,6 +17,11 @@ run_name: null
 # INITIALIZATION
 seed: 0
 
+dataloader:
+  generator:
+    _target_: deepreaction.utils.get_generator
+    seed: 0
+
 routine:
   epochs: 200
   patience: 30
