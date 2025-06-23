@@ -82,7 +82,7 @@ class SimpleTokenRepresentation(AbstractRepresentation[torch.Tensor]):
         else:
             token_ids = token_ids[: self.max_sentence_length]
 
-        return torch.tensor([token_ids], dtype=torch.long)
+        return torch.tensor([token_ids], dtype=torch.float)
 
     def __len__(self) -> int:
         """Returns the size of the vocabulary."""
