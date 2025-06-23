@@ -6,7 +6,7 @@ defaults:
   - data_splitter: ratio_splitter
 
 data_source:
-  data_path: "deepreaction_datasets/data/rdb7/barriers/rdb7_full.csv"
+  data_path: "deepreaction_datasets/data/rdb7/barriers/rdb7_full.csv" # example data folder
 
 column_mapper:
   column_mapping:

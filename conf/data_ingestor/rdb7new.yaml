@@ -6,7 +6,7 @@ defaults:
   - data_splitter: index_splitter
 
 data_source:
-  data_path: "data/barriers_rdb7new/data.csv"
+  data_path: "data/barriers_rdb7new/data.csv" # example data folder
 
 column_mapper:
   column_mapping:

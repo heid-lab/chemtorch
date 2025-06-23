@@ -6,7 +6,7 @@ defaults:
   - data_splitter: null
 
 data_source:
-  data_folder: "data/uspto_1k"
+  data_folder: "data/uspto_1k" # example data folder
   
 column_mapper:
   column_mapping:

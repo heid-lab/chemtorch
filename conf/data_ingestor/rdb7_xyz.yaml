@@ -6,7 +6,7 @@ defaults:
   - data_splitter: ratio_splitter
 
 data_source:
-  data_path: "data/barriers_rdb7_norev/data.csv"
+  data_path: "data/barriers_rdb7_norev/data.csv" # example data folder
 
 column_mapper:
   column_mapping:

@@ -6,7 +6,7 @@ defaults:
   - data_splitter: null
 
 data_source:
-  data_folder: "deepreaction_datasets/data/e2sn2/Sn2/barriers"
+  data_folder: "deepreaction_datasets/data/e2sn2/Sn2/barriers" # example data folder
   
 column_mapper:
   column_mapping:

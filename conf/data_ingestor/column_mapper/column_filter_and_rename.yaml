@@ -3,5 +3,5 @@ column_mapping: null
 
 # e.g.
 # column_mapping:
-#   smiles: "rxn_smiles"
-#   label: "G_act"
+#   smiles: "smiles"
+#   label: "Ea"
