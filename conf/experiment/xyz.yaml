@@ -5,7 +5,6 @@ defaults:
   - override /dataset/representation: xyz_representation
   - override /dataloader: pyg_dataloader
   - override /model: dimenetplusplus
-  - override /trainer: default
   - override /routine: regression
   - _self_
 
@@ -29,10 +28,6 @@ parameter_limit: null
 # TODO: Bad practice, find a proper solution to pass these dataset
 # properties to the model/routine
 runtime_args_from_train_dataset_props:
-  # - fp_length
-  # - degree_statistics
-  # - num_node_features
-  # - num_edge_features
   - mean
   - std
 

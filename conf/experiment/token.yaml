@@ -4,7 +4,6 @@ defaults:
   - override /dataset: token
   - override /dataloader: torch_dataloader
   - override /model: han
-  - override /trainer: default
   - override /routine: classification
   - override /routine/loss: cross_entropy
   - _self_
@@ -30,11 +29,6 @@ parameter_limit: null
 # properties to the model/routine
 runtime_args_from_train_dataset_props:
   - vocab_size
-  # - degree_statistics
-  # - num_node_features
-  # - num_edge_features
-  # - mean
-  # - std
 
 # DEVICE (deprecated)
 use_cuda: true

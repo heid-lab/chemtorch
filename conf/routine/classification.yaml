@@ -9,17 +9,17 @@ defaults:
 
 epochs: 30
 
-# OPTIMIZER STABILITY
+# gradient clipping
 clip_grad_norm: true
 clip_grad_norm_value: 1
 
-# EARLY STOPPING
+# early stopping
 patience: 10
 min_delta: 0.01
 
-# MODEL SAVING 
+# model saving
 save_model_parameters: false
 model_path: null
 
-# LOGGING
+# logging
 use_wandb: ${log}

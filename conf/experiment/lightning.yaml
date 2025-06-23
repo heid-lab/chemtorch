@@ -1,15 +1,16 @@
 # @package _global_
 defaults:
+  - /trainer: default
   - override /data_ingestor: rdb7new
   - override /dataset: graph
   - override /dataloader: pyg_dataloader
   - override /model: dmpnn
-  - override /routine: regression
+  - override /routine: lightning_routine/regression
   - _self_
 
 # LOGGING (Weight and Biases)
 log: true
-project_name: dmpnn_repro
+project_name: lightning
 group_name: null
 run_name: null
 
@@ -17,15 +18,10 @@ run_name: null
 seed: 0
 
 dataloader:
+  _partial_: true
   generator:
     _target_: deepreaction.utils.get_generator
     seed: 0
-
-routine:
-  epochs: 200
-  patience: 30
-  lr_scheduler:
-    num_warmup_steps: 10
 
 parameter_limit: null
 

@@ -6,6 +6,9 @@ defaults:
   - optimizer: adamw
   - lr_scheduler: cosine_with_warmup
 
+lr_scheduler:
+  num_training_steps: 10000
+
 standardizer:
   _target_: deepreaction.utils.Standardizer
   mean: ${mean}   # root config updated with dataset properties at runtime

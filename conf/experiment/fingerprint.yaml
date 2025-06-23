@@ -4,7 +4,6 @@ defaults:
   - override /dataset: fingerprint
   - override /dataloader: torch_dataloader
   - override /model: mlp
-  - override /trainer: default
   - override /routine: classification
   - _self_
 

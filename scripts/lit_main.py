@@ -8,7 +8,7 @@ import wandb
 from deepreaction.data_module import DataModule
 from deepreaction.utils.hydra import safe_instantiate
 
-OmegaConf.register_new_resolver("eval", eval)   # TODO: What is this?
+OmegaConf.register_new_resolver("eval", eval)
 
 
 @hydra.main(version_base=None, config_path="../conf", config_name="config")
@@ -20,7 +20,7 @@ def main(cfg: DictConfig):
     seed_everything(seed)
 
     ##### DATA MODULE ##############################################################
-    data_pipeline = safe_instantiate(cfg.data_pipeline)
+    data_pipeline = safe_instantiate(cfg.data_ingestor)
     dataset_factory = safe_instantiate(cfg.dataset)
     dataloader_factory = safe_instantiate(cfg.dataloader)
     data_module = DataModule(
@@ -30,20 +30,23 @@ def main(cfg: DictConfig):
     )
 
     ##### UPDATE GLOBAL CONFIG FROM DATASET ATTRIBUTES ##############################
-    dataset_properties = cfg.get("runtime_agrs_from_train_dataset_props", [])
+    dataset_properties = cfg.get("runtime_args_from_train_dataset_props", [])
     if dataset_properties:
         print(
             "INFO: Updating global config with properties of training dataset"
         )
         for dataset_property in dataset_properties:
             OmegaConf.update(
-                cfg=cfg, 
-                key=dataset_property, 
-                value=data_module.get_dataset_property(key='train', property=dataset_property),
-                merge=True
+                cfg=cfg,
+                key=dataset_property,
+                value=data_module.get_dataset_property(
+                    key="train", property=dataset_property
+                ),
+                merge=True,
             )
 
     run_name = getattr(cfg, "run_name", None)
+    OmegaConf.resolve(cfg)
     resolved_cfg = OmegaConf.to_container(cfg, resolve=True)
 
     # print(f"INFO: Final config:\n{OmegaConf.to_yaml(resolved_cfg)}")
@@ -56,10 +59,14 @@ def main(cfg: DictConfig):
             name=run_name,
             config=resolved_cfg,
         )
-        for stage in ['train', 'val', 'test']:
-            precompute_time = data_module.get_dataset_property(stage, 'precompute_time')
-            wandb.log({f"{stage}_precompute_time": precompute_time}, commit=False,)
-
+        for stage in ["train", "val", "test"]:
+            precompute_time = data_module.get_dataset_property(
+                stage, "precompute_time"
+            )
+            wandb.log(
+                {f"{stage}_precompute_time": precompute_time},
+                commit=False,
+            )
 
     ##### MODEL ##################################################################
     model = safe_instantiate(cfg.model)
@@ -77,10 +84,13 @@ def main(cfg: DictConfig):
             f"Parameter limit of {parameter_limit:,} exceeded. Skipping this run."
         )
         if cfg.log:
-            wandb.log({"parameter_threshold_exceeded": True,})
+            wandb.log(
+                {
+                    "parameter_threshold_exceeded": True,
+                }
+            )
             wandb.run.summary["status"] = "parameter_threshold_exceeded"
         return False
-
 
     ###### TRAINER ##########################################################
     # TODO: Add profiler
