@@ -58,7 +58,6 @@ class DRFP(AbstractRepresentation[torch.Tensor]):
         self.root_central_atom = root_central_atom
         self.include_hydrogens = include_hydrogens
 
-    # override
     def construct(self, smiles: str) -> torch.Tensor:
         """
         Generates a DRFP fingerprint for a single reaction SMILES string.
@@ -85,7 +84,7 @@ class DRFP(AbstractRepresentation[torch.Tensor]):
             radius=self.radius,
             min_radius=self.min_radius,
             rings=self.rings,
-            get_atom_indices=False,  # not needed for the fingerprint itself
+            get_atom_indices=False,
             root_central_atom=self.root_central_atom,
             include_hydrogens=self.include_hydrogens,
         )
@@ -94,7 +93,6 @@ class DRFP(AbstractRepresentation[torch.Tensor]):
             hashed_diff_np,
             length=self.n_folded_length,
         )
-        # Convert the NumPy array to a PyTorch Tensor
         return torch.from_numpy(fingerprint_np).to(torch.float32)
 
 

@@ -1,5 +1,8 @@
 _target_: deepreaction.dataset.FingerprintDataset
+_partial_: true
 
 defaults:
   - representation: drfp
+
 transform: null
+subsample: 1   
