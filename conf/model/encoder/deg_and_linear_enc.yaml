@@ -1,4 +1,4 @@
-_target_: deepreaction.utils.callable_compose.CallableCompose
+_target_: torch.nn.Sequential
 
 defaults:
   - deg_enc@deg_enc
@@ -14,7 +14,7 @@ linear_enc:
   out_channels: ${model.hidden_channels}
 
 # order matters!
-callables:
+_args_:
   - ${model.encoder.deg_enc}
   - ${model.encoder.linear_enc}
 
