@@ -1,4 +1,4 @@
 _target_: deepreaction.encoder.linear_enc.LinearEncoder
-num_node_features: ${num_node_features}
-num_edge_features: ${num_edge_features}
+node_encoder_in_channels: ${num_node_features}
+edge_encoder_in_channels: ${num_edge_features}
 out_channels: ${model.hidden_channels}

@@ -1,0 +1,21 @@
+_target_: deepreaction.utils.callable_compose.CallableCompose
+
+defaults:
+  - deg_enc@deg_enc
+  - linear_enc@linear_enc
+
+deg_enc:
+  in_channels: 7
+  out_channels: ${model.hidden_channels} 
+
+linear_enc:
+  node_encoder_in_channels: ${eval:'${num_node_features} + ${model.encoder.deg_enc.out_channels}'}
+  edge_encoder_in_channels: ${num_edge_features}
+  out_channels: ${model.hidden_channels}
+
+# order matters!
+callables:
+  - ${model.encoder.deg_enc}
+  - ${model.encoder.linear_enc}
+
+
