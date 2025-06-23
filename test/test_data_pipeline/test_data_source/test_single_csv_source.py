@@ -1,6 +1,10 @@
-import pytest
 import pandas as pd
-from deepreaction.data_pipeline.data_source.single_csv_source import SingleCSVSource
+import pytest
+
+from deepreaction.data_ingestor.data_source.single_csv_source import (
+    SingleCSVSource,
+)
+
 
 @pytest.fixture
 def single_csv_file(tmp_path):
@@ -9,6 +13,7 @@ def single_csv_file(tmp_path):
     df = pd.DataFrame({"col1": [1, 2, 3], "col2": [4, 5, 6]})
     df.to_csv(file_path, index=False)
     return str(file_path)
+
 
 def test_single_csv_source(single_csv_file):
     """Test instantiation and forward pass of SingleCSVSource."""

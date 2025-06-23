@@ -1,7 +1,9 @@
 import pandas as pd
 import pytest
+
+from deepreaction.data_ingestor.column_mapper import ColumnFilterAndRename
 from deepreaction.utils import DataSplit
-from deepreaction.data_pipeline.column_mapper import ColumnFilterAndRename
+
 
 def test_column_filter_and_rename_success():
     # Mock input DataFrames
@@ -21,6 +23,7 @@ def test_column_filter_and_rename_success():
     for df in processed_data_split:
         assert list(df.columns) == ["X", "Y"]
 
+
 def test_column_filter_and_rename_missing_columns():
     # Mock input DataFrames
     train_df = pd.DataFrame({"A": [1, 2], "B": [3, 4]})
@@ -38,6 +41,7 @@ def test_column_filter_and_rename_missing_columns():
     with pytest.raises(KeyError):
         column_mapper(data_split)
 
+
 def test_column_filter_and_rename_invalid_input():
     # Invalid input (not a DataSplit object or a pandas DataFrame)
     invalid_input = {"A": [1, 2], "B": [3, 4]}
@@ -52,6 +56,7 @@ def test_column_filter_and_rename_invalid_input():
     with pytest.raises(TypeError):
         column_mapper(invalid_input)
 
+
 def test_column_filter_and_rename_single_dataframe_success():
     # Mock input DataFrame
     df = pd.DataFrame({"A": [1, 2], "B": [3, 4], "C": [5, 6]})
@@ -63,6 +68,7 @@ def test_column_filter_and_rename_single_dataframe_success():
     assert processed_df["X"].tolist() == [1, 2]
     assert processed_df["Y"].tolist() == [3, 4]
 
+
 def test_column_filter_and_rename_single_dataframe_missing_column():
     # Mock input DataFrame
     df = pd.DataFrame({"A": [1, 2], "B": [3, 4]})
@@ -70,6 +76,7 @@ def test_column_filter_and_rename_single_dataframe_missing_column():
     column_mapper = ColumnFilterAndRename(column_mapping)
     with pytest.raises(KeyError):
         column_mapper(df)
+
 
 def test_column_filter_and_rename_single_dataframe_invalid_input():
     # Invalid input (not a DataFrame)

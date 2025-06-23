@@ -1,7 +1,8 @@
 import pandas as pd
 import pytest
+
+from deepreaction.data_ingestor.data_source import PreSplitCSVSource
 from deepreaction.utils import DataSplit
-from deepreaction.data_pipeline.data_source import PreSplitCSVSource
 
 
 @pytest.fixture
@@ -48,5 +49,7 @@ def test_split_csv_source_empty_files(tmp_path):
         (data_folder / f"{split}.csv").write_text("")  # Create empty files
 
     reader = PreSplitCSVSource(data_folder=str(data_folder))
-    with pytest.raises(pd.errors.EmptyDataError, match="No columns to parse from file"):
+    with pytest.raises(
+        pd.errors.EmptyDataError, match="No columns to parse from file"
+    ):
         reader.load()

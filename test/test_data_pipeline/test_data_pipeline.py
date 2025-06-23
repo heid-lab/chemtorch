@@ -1,30 +1,43 @@
-import pytest
 import pandas as pd
+import pytest
 from torch import nn
 
-from deepreaction.utils import DataSplit, CallableCompose
-from deepreaction.data_pipeline.column_mapper import ColumnFilterAndRename
-from deepreaction.data_pipeline.data_splitter import DataSplitter, RatioSplitter
-from deepreaction.data_pipeline.data_source import DataSource, SingleCSVSource, PreSplitCSVSource
+from deepreaction.data_ingestor.column_mapper import ColumnFilterAndRename
+from deepreaction.data_ingestor.data_source import (
+    DataSource,
+    PreSplitCSVSource,
+    SingleCSVSource,
+)
+from deepreaction.data_ingestor.data_splitter import (
+    DataSplitter,
+    RatioSplitter,
+)
+from deepreaction.utils import CallableCompose, DataSplit
+
 
 class NoOpMockSource(DataSource):
     def load(self):
         return None  # Return invalid data
 
+
 class NoOpMockSplitter(DataSplitter):
     def forward(self, raw):
         return None  # Return invalid data
+
 
 @pytest.fixture
 def single_csv_file(tmp_path):
     """Fixture to create a temporary CSV file for testing SingleCSVSource."""
     file_path = tmp_path / "data.csv"
-    df = pd.DataFrame({
-        "col1": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], 
-        "col2": [11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
-        })
+    df = pd.DataFrame(
+        {
+            "col1": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+            "col2": [11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
+        }
+    )
     df.to_csv(file_path, index=False)
     return str(file_path)
+
 
 @pytest.fixture
 def split_csv_folder(tmp_path):
@@ -35,6 +48,7 @@ def split_csv_folder(tmp_path):
         df = pd.DataFrame({"col1": [1, 2, 3], "col2": [4, 5, 6]})
         df.to_csv(folder_path / f"{split}.csv", index=False)
     return str(folder_path)
+
 
 def test_preprocessing_with_single_csv_source(single_csv_file):
     """Test the data pipeline with SingleCSVSource and RatioSplitter."""
@@ -51,11 +65,16 @@ def test_preprocessing_with_single_csv_source(single_csv_file):
     assert not data_split.val.empty
     assert not data_split.test.empty
 
-def test_preprocessing_with_single_csv_source_and_column_mapper(single_csv_file):
+
+def test_preprocessing_with_single_csv_source_and_column_mapper(
+    single_csv_file,
+):
     """Test the data pipeline with SingleCSVSource, RatioSplitter, and ColumnFilterAndRename."""
     source = SingleCSVSource(data_path=single_csv_file)
     splitter = RatioSplitter(train_ratio=0.8, val_ratio=0.1, test_ratio=0.1)
-    column_mapper = ColumnFilterAndRename(column_mapping={"new_col1": "col1", "new_col2": "col2"})
+    column_mapper = ColumnFilterAndRename(
+        column_mapping={"new_col1": "col1", "new_col2": "col2"}
+    )
 
     # Load data and process through the pipeline
     data = source.load()
@@ -69,10 +88,15 @@ def test_preprocessing_with_single_csv_source_and_column_mapper(single_csv_file)
         assert not df.empty
         assert list(df.columns) == ["new_col1", "new_col2"]
 
-def test_preprocessing_with_split_csv_source_and_column_mapper(split_csv_folder):
+
+def test_preprocessing_with_split_csv_source_and_column_mapper(
+    split_csv_folder,
+):
     """Test the data pipeline with SplitCSVSource and ColumnFilterAndRename."""
     source = PreSplitCSVSource(data_folder=split_csv_folder)
-    column_mapper = ColumnFilterAndRename(column_mapping={"new_col1": "col1", "new_col2": "col2"})
+    column_mapper = ColumnFilterAndRename(
+        column_mapping={"new_col1": "col1", "new_col2": "col2"}
+    )
 
     # Load data and process through the pipeline
     data = source.load()

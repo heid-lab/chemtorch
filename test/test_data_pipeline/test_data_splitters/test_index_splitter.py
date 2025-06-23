@@ -1,8 +1,10 @@
 import pickle
+
 import pandas as pd
 import pytest
+
+from deepreaction.data_ingestor.data_splitter import IndexSplitter
 from deepreaction.utils import DataSplit
-from deepreaction.data_pipeline.data_splitter import IndexSplitter
 
 
 @pytest.fixture
@@ -59,13 +61,17 @@ def test_index_splitter(sample_dataframe, index_pickle_file):
     assert data_split.test.equals(sample_dataframe.iloc[[7, 8, 9]])
 
     # Check that the total number of rows matches the input
-    total_rows = len(data_split.train) + len(data_split.val) + len(data_split.test)
+    total_rows = (
+        len(data_split.train) + len(data_split.val) + len(data_split.test)
+    )
     assert total_rows == len(sample_dataframe)
 
 
 def test_index_splitter_invalid_pickle(invalid_index_pickle_file):
     """Test IndexSplitter with an invalid pickle file."""
-    with pytest.raises(ValueError, match="Pickle file must contain exactly 3 arrays"):
+    with pytest.raises(
+        ValueError, match="Pickle file must contain exactly 3 arrays"
+    ):
         IndexSplitter(split_index_path=invalid_index_pickle_file)
 
 
@@ -79,11 +85,15 @@ def test_index_splitter_empty_dataframe(index_pickle_file):
 
 def test_index_splitter_malformed_pickle(malformed_pickle_file):
     """Test IndexSplitter with a malformed pickle file."""
-    with pytest.raises(ValueError, match="Pickle file must contain exactly 3 arrays"):
+    with pytest.raises(
+        ValueError, match="Pickle file must contain exactly 3 arrays"
+    ):
         IndexSplitter(split_index_path=malformed_pickle_file)
 
 
-def test_index_splitter_out_of_bounds_indices(index_pickle_file, sample_dataframe):
+def test_index_splitter_out_of_bounds_indices(
+    index_pickle_file, sample_dataframe
+):
     """Test IndexSplitter with indices that are out of bounds."""
     # Overwrite the pickle file with out-of-bounds indices
     with open(index_pickle_file, "wb") as f:
@@ -96,7 +106,11 @@ def test_index_splitter_out_of_bounds_indices(index_pickle_file, sample_datafram
 def test_index_splitter_duplicate_indices(tmp_path, sample_dataframe):
     """Test IndexSplitter with duplicate indices across splits."""
     split_index_path = tmp_path / "dup_indices.pkl"
-    indices = [[0, 1, 2], [2, 3], [4, 5]]  # Index 2 appears in both train and val
+    indices = [
+        [0, 1, 2],
+        [2, 3],
+        [4, 5],
+    ]  # Index 2 appears in both train and val
     with open(split_index_path, "wb") as f:
         pickle.dump([indices], f)
     splitter = IndexSplitter(split_index_path=str(split_index_path))
@@ -117,13 +131,17 @@ def test_index_splitter_duplicate_indices(tmp_path, sample_dataframe):
     assert data_split.test.equals(sample_dataframe.iloc[[4, 5]])
 
     # Check that the total number of rows matches the input (allowing for duplicates)
-    total_rows = len(data_split.train) + len(data_split.val) + len(data_split.test)
+    total_rows = (
+        len(data_split.train) + len(data_split.val) + len(data_split.test)
+    )
     assert total_rows == 7
 
 
 def test_index_splitter_invalid_pickle(invalid_index_pickle_file):
     """Test IndexSplitter with an invalid pickle file."""
-    with pytest.raises(ValueError, match="Pickle file must contain exactly 3 arrays"):
+    with pytest.raises(
+        ValueError, match="Pickle file must contain exactly 3 arrays"
+    ):
         IndexSplitter(split_index_path=invalid_index_pickle_file)
 
 
