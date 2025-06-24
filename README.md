@@ -58,6 +58,15 @@ python scripts/main.py +experiment=fingerprint dataset.subsample=0.001
 python scripts/main.py +experiment=xyz dataset.subsample=0.05
 ```
 
+Using the terminal, you can easily change hyperparameters. For example, to change the dataset:
+``` 
+python scripts/main.py +experiment=graph dataset.subsample=0.05 data_ingestor=sn2
+```
+
+For simple sweeps, you can:
+```
+python scripts/main.py --multirun +experiment=graph dataset.subsample=0.05 data_ingestor=sn2,e2,cycloadd
+```
 
 ## Citation
 If you use this code in your research, please cite the following paper:
