@@ -1,8 +1,10 @@
 <div align="center">
 
-# chemtorch
+# ChemTorch
 
 </div>
+
+![ChemTorch](images/chemtorch.png)
 
 ## Installation
 
