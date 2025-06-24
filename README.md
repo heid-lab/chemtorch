@@ -1,10 +1,14 @@
 <div align="center">
 
-# ChemTorch
+![ChemTorch](images/chemtorch.png)
 
 </div>
 
-![ChemTorch](images/chemtorch.png)
+## Contents
+- [Installation](#installation)
+- [Data](#data)
+- [Usage](#usage)
+- [Citation](#citation)
 
 ## Installation
 
@@ -30,3 +34,33 @@ pip install torch-scatter torch-sparse -f https://data.pyg.org/whl/torch-${TORCH
 ## Data
 
 Get the data from https://github.com/heid-lab/reaction_database and add it to the `data` folder.
+
+## Usage
+
+For a short demo, see `scripts/demo.ipynb`.
+
+```
+python scripts/main.py +experiment=graph dataset.subsample=0.05
+```
+```
+python scripts/main.py +experiment=token dataset.subsample=0.05
+```
+```
+python scripts/main.py +experiment=fingerprint dataset.subsample=0.001
+```
+```
+python scripts/main.py +experiment=xyz dataset.subsample=0.05
+```
+
+
+## Citation
+If you use this code in your research, please cite the following paper:
+
+```
+@article{}
+```
+
+This framework was inspired by:
+- [GraphGPS](https://github.com/rampasek/GraphGPS/tree/main)
+- [GraphGym](https://github.com/snap-stanford/GraphGym)
+- [lightning-hydra-template](https://github.com/ashleve/lightning-hydra-template)
