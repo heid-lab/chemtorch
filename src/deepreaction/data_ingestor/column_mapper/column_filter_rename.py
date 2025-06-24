@@ -1,7 +1,6 @@
 from typing import Union
 
 import pandas as pd
-from torch import nn
 from typing_extensions import override
 
 from deepreaction.data_ingestor.column_mapper.column_mapper import ColumnMapper

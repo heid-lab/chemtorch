@@ -1,5 +1,4 @@
-from typing import Dict, List, Optional, Tuple, Union
-from typing_extensions import override
+from typing import Dict, List, Optional, Tuple
 
 import torch
 

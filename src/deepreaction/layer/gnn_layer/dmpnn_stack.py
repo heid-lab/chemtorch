@@ -8,8 +8,7 @@ from torch_geometric.nn.resolver import (
     aggregation_resolver,
 )
 
-from deepreaction.layer.gnn_layer.gnn_block.dmpnn_block import DMPNNBlock
-from deepreaction.layer.layer_stack import LayerStack
+from chemtorch.layer.layer_stack import LayerStack
 
 
 class EdgeToNodeEmbedding(nn.Module):

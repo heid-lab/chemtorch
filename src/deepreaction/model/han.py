@@ -1,8 +1,6 @@
-from typing import Callable
 
 import torch
 import torch.nn as nn
-from torch import nn
 from torch.nn import functional as F
 from torch_geometric.data import Batch
 

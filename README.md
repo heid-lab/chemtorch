@@ -1,122 +1,87 @@
 <div align="center">
 
-# deepreaction
+![ChemTorch](images/chemtorch.png)
 
-<a href="https://pytorch.org/"><img alt="PyTorch" src="https://img.shields.io/badge/PyTorch-black?logo=PyTorch"></a>
-<a href="https://hydra.cc/docs/intro/"><img alt="Config: Hydra" src="https://img.shields.io/badge/Config-Hydra-89b8cd"></a>
-
-
-![deepreaction_logo.png](./images/deepreaction.png)
+[Installation](#installation) | [Data](#data) | [Usage](#usage) | [Citation](#citation)
 
 </div>
 
-## Description
-deepreaction package
+## Introduction
 
+ChemTorch is a modular framework for developing and benchmarking deep learning models on chemical reaction data. The framework supports multiple families of reaction representations, neural network architectures, and downstream tasks.
 
-## Contents
-- [Installation](#installation)
-- [Data](#data)
-- [Code Structure](#code-structure)
-- [Hydra](#configuration-with-hydra)
+The code is provided under MIT license, making it freely available for both academic and commercial use.
 
 ## Installation
 
-Clone this repository and change directory:
-```
-git clone ssh://git@gitlab.tuwien.ac.at:822/e165-03-1_theoretische_materialchemie/deepreaction.git
-cd deepreaction
-```
-We recommend to install the package inside a Conda environment (or any other virtual environment of your choice).
-
-**Note:** For `torch_scatter`and `torch_sparse`, you need might also need to install specific binaries: 
-```
-pip install torch-scatter torch-sparse -f https://data.pyg.org/whl/torch-${TORCH}+${CUDA}.html
-```
-where `${TORCH}` should be replaced by your PyTorch version (e.g., 2.6.0), and `${CUDA}` should be replaced by your CUDA version (e.g., `cpu`, `cu118` or `cu121`).
-
-Here we is an example installation of PyTorch 2.5.1 for CPU. To install for GPUs, follow the PyTorch and `torch_geometric` installation instructions.
+### Via conda
 
 ```
-conda create -n deepreaction python=3.10 && \
-conda activate deepreaction && \
-pip install rdkit numpy scikit-learn pandas && \
-pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu && \
-pip install --upgrade hydra-core && \
+conda create -n chemtorch python=3.10 && \
+conda activate chemtorch && \
+pip install rdkit numpy==1.26.4 scikit-learn pandas && \
+pip install torch==2.5.1 && \
+pip install hydra-core && \
 pip install torch_geometric && \
 pip install pyg_lib torch_scatter torch_sparse torch_cluster torch_spline_conv -f https://data.pyg.org/whl/torch-2.5.0+cpu.html && \
 pip install wandb && \
 pip install -e .
 ```
 
+For GPU usage
+```
+pip install torch-scatter torch-sparse -f https://data.pyg.org/whl/torch-${TORCH}+${CUDA}.html
+```
+
+### Via uv
+
+For installing with uv, first install uv, for example via
+```
+pip install uv
+```
+
+Then run
+```
+uv sync -n
+uv add torch_scatter torch_sparse torch_cluster torch_spline_conv torch_geometric  --no-build-isolation -n
+```
+
 ## Data
-Put the data in a data folder.
 
-## Code Structure
-The main idea of the code structure is to have easily exchangeable components which are identified by having their own folders. Each folder has their respective config folder in `conf`. Each component has a base class which has to be followed.
+Get the data from https://github.com/heid-lab/reaction_database and add it to the `data` folder.
 
-Example data flow:
-- `data.py` loads data and returns a dataloader, it uses:
-    - `featurizer`: gets/computes features
-    - `representation`: the data and features are put in a representation
-    - `transform`: transforms data objects by (1) precomputing positional/structural encodings and/or (2) transforming the graph structure (e.g., adding dummy node)
+## Usage
 
-A model follows the following design:
-- A `model` defines (1) some model specific code which is not covered by components + (2) its components:
-    - `encoder`: Encodes features and possible positional/structural encodings
-    - Layers: `mpnn_layer` and/or `att_layer`: backbone of the model
-    - `pool`: pooling function
-    - `head`: task-specific prediction head
-- `act`: activation functions to be used
+For a short demo, see `scripts/demo.ipynb`.
 
+To run the experiments, you can use the following commands:
+
+Graph-based: GNN + CGR
 ```
-deepreaction/
-├── act/                    (activation functions, config in conf/model/)
-├── att_layer/              (attention layers, config in conf/model/)
-├── encoder/                (encoders, config in conf/model/)
-├── featurizer/             (featurizers, config in conf/data/)
-├── head/                   (prediction heads, config in conf/model/)
-├── model/                  (models, config in conf/model/)
-├── mpnn_layer/             (message passing layers, config in conf/model/)
-├── pool/                   (pooling functions, config in conf/model/)
-├── representation/         (representations, config in conf/data/)
-├── transform/              (transformations, config in conf/data/)
-├── data.py
-├── predict.py
-├── train.py
-└── utils.py
+python scripts/main.py +experiment=graph dataset.subsample=0.05
+```
+Token-based: HAN + Tokenized SMILES
+```
+python scripts/main.py +experiment=token dataset.subsample=0.05
+```
+Fingerprint-based: MLP + DRFP
+```
+python scripts/main.py +experiment=fingerprint dataset.subsample=0.001
+```
+3D-based: DimeNetplusplus + XYZ coordinates
+```
+python scripts/main.py +experiment=xyz dataset.subsample=0.05
 ```
 
-## Configuration with Hydra
-In the `conf` folder:
-- `*.yaml`: Main config files
-- `data/`: Data configs
-    - `dataset_cfg/`: Dataset configs
-    - `featurizer_cfg/`: Featurizer configs
-    - `representation/`: Representation configs
-    - `transform_cfg/`: Transformation configs
-    - `*.yaml`: Possible data configs to be passed in the main config
-        - E.g., `e2_feat1_cgr_dummy.yaml` could specifiy which dataset, features, representation, and transformation to use.
-- `model/`: Model configs
-    - `act_cfg/`: Activation function configs
-    - `att_layer_cfg/`: Attention layer configs
-    - `encoder_cfg/`: Encoder configs
-    - `head_cfg/`: Prediction head configs
-    - `mpnn_cfg/`: Message passing layer configs
-    - `pool_cfg/`: Pooling function configs
-    - `*.yaml`: Possible model configs to be passed in the main config
-        - E.g., `dmpnn_opt.yaml` could specifiy a model architecture with specific hyperparameters for a regression task
-
-https://medium.com/@bezzam/hydra-for-cleaner-python-code-and-better-reproducibility-in-research-c035028101f9 
-https://www.kdnuggets.com/2023/03/hydra-configs-deep-learning-experiments.html
-
-
-## Weights and Biases
-Set wandb=True to log the results to Weights and Biases. You need to have an account and set the environment variable WANDB_API_KEY to your API key. One way to do this, is to add the following to your shell script:
-```
-export WANDB_API_KEY="YOUR KEY HERE"
+Using the terminal, you can easily change hyperparameters. For example, to change the dataset:
+``` 
+python scripts/main.py +experiment=graph dataset.subsample=0.05 data_ingestor=sn2
 ```
 
+For simple sweeps, you can:
+```
+python scripts/main.py --multirun +experiment=graph dataset.subsample=0.05 data_ingestor=sn2,e2,cycloadd
+```
 
 ## Citation
 If you use this code in your research, please cite the following paper:
@@ -129,4 +94,3 @@ This framework was inspired by:
 - [GraphGPS](https://github.com/rampasek/GraphGPS/tree/main)
 - [GraphGym](https://github.com/snap-stanford/GraphGym)
 - [lightning-hydra-template](https://github.com/ashleve/lightning-hydra-template)
-

@@ -1,5 +1,4 @@
-from typing import List, Tuple, Union
-from typing_extensions import override
+from typing import List, Tuple
 
 import torch
 

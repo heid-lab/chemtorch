@@ -1,6 +1,6 @@
 # @package _global_
 defaults:
-  - override /data_ingestor: rdb7new
+  - override /data_ingestor: rdb7_fwd_rev_spiekermann
   - override /dataset: graph
   - override /dataloader: pyg_dataloader
   - override /model: dmpnn
@@ -8,8 +8,8 @@ defaults:
   - _self_
 
 # LOGGING (Weight and Biases)
-log: true
-project_name: dmpnn_repro
+log: false
+project_name: graph
 group_name: null
 run_name: null
 

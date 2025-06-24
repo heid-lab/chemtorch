@@ -97,23 +97,17 @@ def main(cfg: DictConfig):
 
     if cfg.use_loaded_model:
         if not os.path.exists(cfg.pretrained_path):
-            raise ValueError(
-                f"Pretrained model not found at {cfg.pretrained_path}"
-            )
+            raise ValueError(f"Pretrained model not found at {cfg.pretrained_path}")
 
         model, _, _, _ = load_model(model, None, cfg.pretrained_path)
 
         try:
-            sample_batch = next(iter(train_loader))
-            model(sample_batch.to(device))
+            X, y = next(iter(train_loader))
+            model(X.to(device))
         except Exception as e:
-            raise ValueError(
-                f"Pretrained model incompatible with dataset: {str(e)}"
-            )
+            raise ValueError(f"Pretrained model incompatible with dataset: {str(e)}")
 
-    total_params = sum(
-        p.numel() for p in model.parameters() if p.requires_grad
-    )
+    total_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
     print(f"Total parameters: {total_params:,}")
 
     parameter_limit = getattr(cfg, "parameter_limit", None)

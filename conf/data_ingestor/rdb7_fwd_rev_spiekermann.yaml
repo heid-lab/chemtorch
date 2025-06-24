@@ -3,17 +3,15 @@ _target_: deepreaction.data_ingestor.SimpleDataIngestor
 defaults:
   - data_source: single_csv_source
   - column_mapper: column_filter_and_rename
-  - data_splitter: ratio_splitter
+  - data_splitter: index_splitter
 
 data_source:
-  data_path: "data/rgd1/barriers/data.csv"
+  data_path: "data/rdb7/barriers/forward_reverse_spiekermann_splits/data.csv"
 
 column_mapper:
   column_mapping:
-    smiles: "smiles"
+    smiles: "rxn_smiles"
     label: "ea"
 
 data_splitter:
-  train_ratio: 0.9
-  val_ratio: 0.05
-  test_ratio: 0.05
+  split_index_path: "data/rdb7/barriers/forward_reverse_spiekermann_splits/seed0.pkl"

@@ -1,7 +1,7 @@
 # main config 
 
 defaults:
-  - data_ingestor: rdb7new
+  - data_ingestor: rdb7_fwd
   - dataset: graph
   - dataloader: pyg_dataloader
   - model: dmpnn

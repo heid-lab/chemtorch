@@ -1,4 +1,4 @@
-from typing import List, Any, Sequence
+from typing import List, Sequence
 
 from deepreaction.featurizer.abstract_featurizer import AbstractFeaturizer
 

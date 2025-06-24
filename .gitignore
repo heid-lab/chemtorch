@@ -12,17 +12,8 @@ __pycache__/
 # Data folder
 data/*
 
-# Results
-results
-
-# Saved models
-saved_models/
-
-# yaml files in experiment
-conf/experiment/old/*.yaml
-
-# data.tar.gz
-data.tar.gz
+# multirun
+multirun/
 
 # DS_Store
 .DS_Store

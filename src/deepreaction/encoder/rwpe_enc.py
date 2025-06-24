@@ -1,6 +1,4 @@
 import torch
-import torch.nn.functional as F
-import torch_geometric as pyg
 from torch import nn
 from torch_geometric.data import Batch
 

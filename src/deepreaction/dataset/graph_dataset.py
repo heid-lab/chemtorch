@@ -3,7 +3,6 @@ from functools import lru_cache
 from typing import (
     Callable,
     Dict,
-    Generic,
     List,
     Optional,
     Tuple,
@@ -128,7 +127,7 @@ class GraphDataset(DatasetBase[Data], Dataset):
         """
         if self.precompute_all:
             if self.precomputed_items is None:
-                raise RuntimeError(f"Precomputed items are not available.")
+                raise RuntimeError("Precomputed items are not available.")
             return self.precomputed_items[idx]
         else:
             return self.process_sample(idx)

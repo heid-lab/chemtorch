@@ -6,7 +6,7 @@ defaults:
   - data_splitter: null
 
 data_source:
-  data_folder: "deepreaction_datasets/data/cycloaddition/barriers" # example data folder
+  data_folder: "data/cycloadd/barriers/pre_split"
 
 column_mapper:
   column_mapping:

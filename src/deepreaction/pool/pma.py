@@ -4,7 +4,7 @@ from typing import Optional
 
 import torch
 from torch import nn
-from torch.nn import LayerNorm, Linear, MultiheadAttention, Parameter
+from torch.nn import LayerNorm, Linear, MultiheadAttention
 from torch_geometric.data import Batch
 from torch_geometric.utils import to_dense_batch
 

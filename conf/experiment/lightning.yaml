@@ -1,7 +1,7 @@
 # @package _global_
 defaults:
   - /trainer: default
-  - override /data_ingestor: rdb7new
+  - override /data_ingestor: rdb7_fwd_rev_spiekermann
   - override /dataset: graph
   - override /dataloader: pyg_dataloader
   - override /model: dmpnn
@@ -9,7 +9,7 @@ defaults:
   - _self_
 
 # LOGGING (Weight and Biases)
-log: true
+log: false
 project_name: lightning
 group_name: null
 run_name: null

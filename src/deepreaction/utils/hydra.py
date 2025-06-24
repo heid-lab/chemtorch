@@ -72,7 +72,7 @@ def order_config_by_signature(cfg):
                 if k not in ordered:
                     ordered[k] = order_config_by_signature(cfg[k])
             return dict(ordered)  # <-- convert to dict before returning!
-        except Exception as e:
+        except Exception:
             # If target can't be resolved, fallback to original order
             pass
     # Otherwise, just recurse into children
@@ -134,7 +134,7 @@ def filter_config_by_signature(cfg):
                 if k in hydra_keys or k in param_names:
                     filtered[k] = filter_config_by_signature(v)
             return filtered
-        except Exception as e:
+        except Exception:
             # If target can't be resolved, fallback to original
             pass
     # Otherwise, just recurse into children

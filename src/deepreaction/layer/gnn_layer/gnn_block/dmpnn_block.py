@@ -1,6 +1,5 @@
-from typing import Any, Callable, Dict, Literal, Optional, Union
+from typing import Any, Callable, Dict, Optional, Union
 
-import torch.nn as nn
 from torch_geometric.data import Batch
 
 from deepreaction.layer.gnn_layer.gnn_block.gnn_block import GNNBlock

@@ -1,6 +1,6 @@
 import inspect
 from math import floor
-from typing import Callable, Dict, Optional, TypeVar
+from typing import Callable, Dict, Optional
 from git import Union
 import torch
 from torch import nn

@@ -1,5 +1,4 @@
 import torch.nn as nn
-import torch_geometric.nn as pyg_nn
 from torch_geometric.nn import Linear as pyg_Linear
 from torch_geometric.nn import GINEConv as pyg_GINEConv
 
