@@ -1,0 +1,10 @@
+_target_: chemtorch.model.gnn.GNN
+
+defaults:
+  - encoder: linear_enc
+  - layer_stack: layer_stack
+  - layer_stack/gnn_block/gatedgcn_block@layer_stack.layer
+  - pool: global_pool
+  - head: mlp
+
+hidden_channels: 64

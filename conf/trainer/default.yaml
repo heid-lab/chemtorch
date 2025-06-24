@@ -1,0 +1,26 @@
+_target_: lightning.Trainer
+
+default_root_dir: ./lightning_logs
+
+logger: 
+  _target_: lightning.pytorch.loggers.WandbLogger
+  log_model: true
+
+callbacks:
+  - _target_: lightning.pytorch.callbacks.EarlyStopping
+    monitor: val_loss
+    min_delta: 0.01
+    patience: 10
+    mode: min
+  - _target_: lightning.pytorch.callbacks.ModelCheckpoint
+    # Checkpoints are saved to lightning_logs/<project_name>/<data_pipeline>/<model>/seed_<seed>_<timestamp>/checkpoints
+    dirpath: ${trainer.default_root_dir}/${project_name}/${hydra:runtime.choices.data_pipeline}/${hydra:runtime.choices.model}/seed_${seed}_${now:%Y-%m-%d_%H-%M-%S}/checkpoints
+    monitor: val_loss
+    save_top_k: 1
+    save_last: true
+
+accelerator: auto
+max_epochs: -1  # -1 means no limit
+gradient_clip_val: 1.0
+
+

@@ -1,0 +1,3 @@
+_target_: chemtorch.featurizer.atom_featurizer.qm_atom.QMAtomFeaturizer
+
+path: ${data_cfg.dataset_cfg.data_folder}/atom_qm_features.pkl

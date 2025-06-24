@@ -1,0 +1,52 @@
+# @package _global_
+defaults:
+  - override /data_ingestor: rdb7new
+  - override /dataset: graph
+  - override /dataloader: pyg_dataloader
+  - override /model: dmpnn
+  - override /routine: regression
+  - _self_
+
+# LOGGING (Weight and Biases)
+log: true
+project_name: dmpnn_repro
+group_name: null
+run_name: null
+
+# INITIALIZATION
+seed: 0
+
+dataloader:
+  generator:
+    _target_: chemtorch.utils.get_generator
+    seed: 0
+
+routine:
+  epochs: 200
+  patience: 30
+  lr_scheduler:
+    num_warmup_steps: 10
+
+parameter_limit: null
+
+# TODO: Bad practice, find a proper solution to pass these dataset
+# properties to the model/routine
+runtime_args_from_train_dataset_props:
+  - num_node_features
+  - num_edge_features
+  - mean
+  - std
+
+# DEVICE (deprecated)
+use_cuda: true
+device: gpu
+
+# MODEL LOADING (deprecated)
+use_loaded_model: false
+pretrained_path: null
+
+# TODO: What is this used for?
+hydra:
+  output_subdir: null
+  run:
+    dir: .

@@ -1,0 +1,11 @@
+_target_: chemtorch.featurizer.FeaturizerCompose
+
+featurizers:
+  - _target_: chemtorch.featurizer.OrganicAtomicNumberOneHotFeaturizer
+  - _target_: chemtorch.featurizer.AtomDegreeFeaturizer
+  - _target_: chemtorch.featurizer.AtomFormalChargeFeaturizer
+  - _target_: chemtorch.featurizer.AtomHCountFeaturizer
+  - _target_: chemtorch.featurizer.AtomHybridizationFeaturizer
+  - _target_: chemtorch.featurizer.AtomIsAromaticFeaturizer
+  - _target_: chemtorch.featurizer.CentiAtomMassFeaturizer
+  - _target_: chemtorch.featurizer.AtomIsInRingFeaturizer

@@ -1,0 +1,5 @@
+_target_: chemtorch.layer.layer_stack.LayerStack
+_recursive_: false
+
+layer: null
+depth: 12

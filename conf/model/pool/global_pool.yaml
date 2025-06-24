@@ -1,0 +1,2 @@
+_target_: chemtorch.pool.pool.GlobalPool
+aggr: add

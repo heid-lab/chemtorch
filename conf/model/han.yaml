@@ -1,0 +1,7 @@
+_target_: chemtorch.model.han.HAN
+
+embedding_in_channels: ${vocab_size}
+embedding_hidden_channels: 200
+gru_hidden_channels: 200
+class_num: 1000
+dropout: 0.2

@@ -1,0 +1,14 @@
+_target_: chemtorch.data_ingestor.SimpleDataIngestor
+
+defaults:
+  - data_source: pre_split_csv_source
+  - column_mapper: column_filter_and_rename
+  - data_splitter: null
+
+data_source:
+  data_folder: "chemtorch_datasets/data/rgd1/barriers" # example data folder
+
+column_mapper:
+  column_mapping:
+    smiles: "smiles"
+    label: "ea"

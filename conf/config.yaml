@@ -1,0 +1,32 @@
+# main config 
+
+defaults:
+  - data_ingestor: rdb7new
+  - dataset: graph
+  - dataloader: pyg_dataloader
+  - model: dmpnn
+  - routine: regression
+  - override hydra/job_logging: disabled
+  - override hydra/hydra_logging: disabled
+  - _self_
+
+# LOGGING (Weight and Biases)
+log: false
+project_name: chemtorch
+group_name: null
+run_name: null
+
+# INITIALIZATION
+seed: 0
+
+parameter_limit: null
+
+runtime_args_from_train_dataset_props: null
+
+use_loaded_model: false
+pretrained_path: null
+
+hydra:
+  output_subdir: null
+  run:
+    dir: .

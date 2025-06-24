@@ -1,0 +1,4 @@
+_target_: chemtorch.layer.gnn_layer.DMPNNConv
+in_channels: ${model.hidden_channels}
+out_channels: ${model.hidden_channels}
+separate_nn: false
