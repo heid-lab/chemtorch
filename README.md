@@ -39,15 +39,21 @@ Get the data from https://github.com/heid-lab/reaction_database and add it to th
 
 For a short demo, see `scripts/demo.ipynb`.
 
+To run the experiments, you can use the following commands:
+
+Graph-based: GNN + CGR
 ```
 python scripts/main.py +experiment=graph dataset.subsample=0.05
 ```
+Token-based: HAN + Tokenized SMILES
 ```
 python scripts/main.py +experiment=token dataset.subsample=0.05
 ```
+Fingerprint-based: MLP + DRFP
 ```
 python scripts/main.py +experiment=fingerprint dataset.subsample=0.001
 ```
+3D-based: DimeNetplusplus + XYZ coordinates
 ```
 python scripts/main.py +experiment=xyz dataset.subsample=0.05
 ```
