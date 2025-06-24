@@ -29,4 +29,4 @@ pip install torch-scatter torch-sparse -f https://data.pyg.org/whl/torch-${TORCH
 
 ## Data
 
-Get the data from https://github.com/heid-lab/reaction_database
+Get the data from https://github.com/heid-lab/reaction_database and add it to the `data` folder.

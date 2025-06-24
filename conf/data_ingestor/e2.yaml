@@ -1,14 +1,19 @@
 _target_: chemtorch.data_ingestor.SimpleDataIngestor
 
 defaults:
-  - data_source: pre_split_csv_source
+  - data_source: single_csv_source
   - column_mapper: column_filter_and_rename
-  - data_splitter: null
+  - data_splitter: ratio_splitter
 
 data_source:
-  data_folder: "chemtorch_datasets/data/e2sn2/e2/barriers" # example data folder
+  data_path: "data/e2/barriers/forward/data.csv"
 
 column_mapper:
   column_mapping:
-    smiles: "AAM"
+    smiles: "smiles"
     label: "ea"
+
+data_splitter:
+  train_ratio: 0.9
+  val_ratio: 0.05
+  test_ratio: 0.05

@@ -6,7 +6,7 @@ defaults:
   - data_splitter: ratio_splitter
 
 data_source:
-  data_path: "chemtorch_datasets/data/rdb7/barriers/rdb7_full.csv" # example data folder
+  data_path: "data/rdb7/barriers/forward/data.csv"
 
 column_mapper:
   column_mapping:

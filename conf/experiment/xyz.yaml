@@ -1,6 +1,6 @@
 # @package _global_
 defaults:
-  - override /data_ingestor: rdb7_xyz
+  - override /data_ingestor: rdb7_fwd_xyz
   - override /dataset: graph
   - override /dataset/representation: xyz_representation
   - override /dataloader: pyg_dataloader
@@ -9,7 +9,7 @@ defaults:
   - _self_
 
 # LOGGING (Weight and Biases)
-log: true
+log: false
 project_name: xyz
 group_name: null
 run_name: null

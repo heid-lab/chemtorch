@@ -9,8 +9,8 @@ defaults:
   - _self_
 
 # LOGGING (Weight and Biases)
-log: true
-project_name: uspto
+log: false
+project_name: token
 group_name: null
 run_name: null
 

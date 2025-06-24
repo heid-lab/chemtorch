@@ -6,7 +6,7 @@ defaults:
   - data_splitter: index_splitter
 
 data_source:
-  data_path: "data/barriers_rdb7new/data.csv" # example data folder
+  data_path: "data/rdb7/barriers/forward_reverse_spiekermann_splits/data.csv"
 
 column_mapper:
   column_mapping:
@@ -14,4 +14,4 @@ column_mapper:
     label: "ea"
 
 data_splitter:
-  split_index_path: data/barriers_rdb7new/seed0.pkl
+  split_index_path: "data/rdb7/barriers/forward_reverse_spiekermann_splits/seed0.pkl"

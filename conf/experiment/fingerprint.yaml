@@ -8,7 +8,7 @@ defaults:
   - _self_
 
 # LOGGING (Weight and Biases)
-log: true
+log: false
 project_name: fingerprint
 group_name: null
 run_name: null
