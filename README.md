@@ -12,6 +12,8 @@
 
 ## Installation
 
+### Via conda
+
 ```
 conda create -n chemtorch python=3.10 && \
 conda activate chemtorch && \
@@ -30,6 +32,20 @@ For GPU usage
 ```
 pip install torch-scatter torch-sparse -f https://data.pyg.org/whl/torch-${TORCH}+${CUDA}.html
 ```
+
+### Via uv
+
+For installing with uv, first install uv, for example via
+```
+pip install uv
+```
+
+Then run
+```
+uv sync -n
+uv add torch_scatter torch_sparse torch_cluster torch_spline_conv torch_geometric  --no-build-isolation -n
+````
+
 
 ## Data
 
