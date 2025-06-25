@@ -46,6 +46,8 @@ uv sync -n
 uv add torch_scatter torch_sparse torch_cluster torch_spline_conv torch_geometric  --no-build-isolation -n
 ````
 
+For running scripts, replace `python ...` with `uv run`
+
 
 ## Data
 
