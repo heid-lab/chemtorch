@@ -2,13 +2,15 @@
 
 ![ChemTorch](images/chemtorch.png)
 
+[Installation](#installation) | [Data](#data) | [Usage](#usage) | [Citation](#citation)
+
 </div>
 
-## Contents
-- [Installation](#installation)
-- [Data](#data)
-- [Usage](#usage)
-- [Citation](#citation)
+## Introduction
+
+ChemTorch is a modular framework for developing and benchmarking deep learning models on chemical reaction data. The framework supports multiple families of reaction representations, neural network architectures, and downstream tasks.
+
+The code is provided under MIT license, making it freely available for both academic and commercial use.
 
 ## Installation
 
@@ -44,10 +46,7 @@ Then run
 ```
 uv sync -n
 uv add torch_scatter torch_sparse torch_cluster torch_spline_conv torch_geometric  --no-build-isolation -n
-````
-
-For running scripts, replace `python ...` with `uv run`
-
+```
 
 ## Data
 
