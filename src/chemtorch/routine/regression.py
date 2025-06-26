@@ -1,9 +1,7 @@
 import math
-import os
 import time
 
 import hydra
-import numpy as np
 import torch
 import wandb
 from omegaconf import DictConfig

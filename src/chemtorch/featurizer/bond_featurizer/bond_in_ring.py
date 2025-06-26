@@ -1,4 +1,4 @@
-from rdkit.Chem.rdchem import Bond, BondType
+from rdkit.Chem.rdchem import Bond
 
 from chemtorch.featurizer.featurizer_base import FeaturizerBase
 

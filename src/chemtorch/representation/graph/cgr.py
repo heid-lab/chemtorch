@@ -1,4 +1,4 @@
-from typing import List, Tuple, Union
+from typing import List, Tuple
 
 import torch
 from rdkit.Chem import Atom, Bond

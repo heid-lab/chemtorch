@@ -1,4 +1,4 @@
-from typing import Any, List, Sequence
+from typing import List, Sequence
 
 from chemtorch.featurizer.abstract_featurizer import AbstractFeaturizer
 

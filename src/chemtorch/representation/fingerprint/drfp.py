@@ -2,7 +2,7 @@
 
 from collections import defaultdict
 from hashlib import blake2b
-from typing import Dict, Iterable, List, Optional, Set, Tuple, Union
+from typing import Dict, Iterable, List, Set, Tuple, Union
 
 import numpy as np
 import torch

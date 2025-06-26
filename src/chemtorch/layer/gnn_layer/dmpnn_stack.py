@@ -8,7 +8,6 @@ from torch_geometric.nn.resolver import (
     aggregation_resolver,
 )
 
-from chemtorch.layer.gnn_layer.gnn_block.dmpnn_block import DMPNNBlock
 from chemtorch.layer.layer_stack import LayerStack
 
 
