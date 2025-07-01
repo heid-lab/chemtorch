@@ -1,6 +1,7 @@
 import os
 
 import pandas as pd
+import numpy as np
 from typing_extensions import override
 
 from chemtorch.data_ingestor.data_source import DataSource
@@ -35,4 +36,29 @@ class PreSplitCSVSource(DataSource):
         train = pd.read_csv(files["train"])
         val = pd.read_csv(files["val"])
         test = pd.read_csv(files["test"])
+
+        train_coord = np.load(f"data/rdb7/train_mace_mp_ts.npz")
+        val_coord = np.load(f"data/rdb7/val_mace_mp_ts.npz")
+        test_coord = np.load(f"data/rdb7/test_mace_mp_ts.npz")
+
         return DataSplit(train=train, val=val, test=test)
+
+class PreSplitCoordinateSource(DataSource):
+    def __init__(
+        self,
+        data_folder: str,
+    ):
+        self.data_folder = data_folder
+
+    @override
+    def load(self) -> DataSplit:
+        """
+        Load coordinates from pre-split coordinate files.
+        """
+        train_coord = np.load(f"{self.data_folder}/train_mace_mp_ts.npz")
+        val_coord = np.load(f"{self.data_folder}/val_mace_mp_ts.npz")
+        test_coord = np.load(f"{self.data_folder}/test_mace_mp_ts.npz")
+
+        return DataSplit(
+            train=train_coord, val=val_coord, test=test_coord
+        )
