@@ -51,6 +51,7 @@ class GraphDataset(DatasetBase[Data], Dataset):
         cache: bool = True,
         max_cache_size: Optional[int] = None,
         subsample: Optional[int | float] = None,
+        coordinates: Optional[np.ndarray] = None,
     ):
         """
         Initialize the GraphDataset.
@@ -63,6 +64,7 @@ class GraphDataset(DatasetBase[Data], Dataset):
             cache (bool): If True and `precompute_all` is False, cache processed samples.
             max_cache_size (Optional[int]): Maximum size of the LRU cache.
             subsample: The number (int) or fraction (float) of samples to use.
+            coordinates (Optional[np.ndarray]): Coordinate data corresponding to the dataframe.
         """
 
         super().__init__(root=None, transform=None, pre_transform=None)
@@ -81,6 +83,7 @@ class GraphDataset(DatasetBase[Data], Dataset):
         self.dataframe = self._subsample_data(dataframe, subsample)
         self.representation = representation
         self.transform = transform
+        self.coordinates = coordinates
 
         self.precompute_all = precompute_all
         self.precomputed_items = None
@@ -183,7 +186,18 @@ class GraphDataset(DatasetBase[Data], Dataset):
             row = self.dataframe.iloc[idx]
             label = torch.tensor(row["label"], dtype=torch.float)
             sample = row.drop("label")
-            data_obj = self.representation(**sample)
+
+            # Use coordinates if available
+            extra_atom_features = None
+            if self.coordinates is not None:
+                # Extract coordinates for this sample
+                coord_keys = list(self.coordinates.keys())
+                extra_atom_features = self.coordinates["array"][idx]
+                data_obj = self.representation(**sample, extra_atom_features=extra_atom_features)
+
+            else:
+                data_obj = self.representation(**sample)
+
             if self.transform:
                 data_obj = self.transform(data_obj)
         except Exception as e:

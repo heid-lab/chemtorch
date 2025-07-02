@@ -7,8 +7,14 @@ from typing_extensions import override
 from chemtorch.data_ingestor.data_source import DataSource
 from chemtorch.utils import DataSplit
 
+def npz_to_df(path: str) -> pd.DataFrame:
+    arrs = np.load(path)
+    return pd.DataFrame({
+        "key":   arrs.files,
+        "array": [arrs[k] for k in arrs.files]
+    })
 
-class PreSplitCSVSource(DataSource):
+class PreSplitCoordinateSource(DataSource):
     def __init__(
         self,
         data_folder: str,
@@ -37,8 +43,8 @@ class PreSplitCSVSource(DataSource):
         val = pd.read_csv(files["val"])
         test = pd.read_csv(files["test"])
 
-        train_coord = np.load(f"data/rdb7/train_mace_mp_ts.npz")
-        val_coord = np.load(f"data/rdb7/val_mace_mp_ts.npz")
-        test_coord = np.load(f"data/rdb7/test_mace_mp_ts.npz")
+        train_coord = npz_to_df(f"{self.data_folder}/train_mace_mp_ts.npz")
+        val_coord   = npz_to_df(f"{self.data_folder}/val_mace_mp_ts.npz")
+        test_coord  = npz_to_df(f"{self.data_folder}/test_mace_mp_ts.npz")
 
-        return DataSplit(train=train, val=val, test=test)
+        return DataSplit(train=train, val=val, test=test, train_coord=train_coord, val_coord=val_coord, test_coord=test_coord)

@@ -37,6 +37,7 @@ class CGR(AbstractRepresentation[Data]):
         self,
         atom_featurizer: FeaturizerBase[Atom] | FeaturizerCompose,
         bond_featurizer: FeaturizerBase[Bond] | FeaturizerCompose,
+        extra_atom_features=None,
         **kwargs  # ignored, TODO: remove once all featurizers are passed explicitly
     ):
         """
@@ -50,9 +51,10 @@ class CGR(AbstractRepresentation[Data]):
         """
         self.atom_featurizer = atom_featurizer
         self.bond_featurizer = bond_featurizer
-
+        self.extra_atom_features = extra_atom_features
+   
     @override
-    def construct(self, smiles: str) -> Data:
+    def construct(self, smiles: str, idx: int = None, extra_atom_features=None, **kwargs) -> Data:
         """
         Construct a CGR graph from the sample.
         """
@@ -114,6 +116,11 @@ class CGR(AbstractRepresentation[Data]):
         # --- Assign to PyG Data attributes ---
         data = Data()
         data.x = torch.tensor(f_atoms_list, dtype=torch.float)
+
+        if extra_atom_features is not None:
+            data.extra_atom_features = torch.tensor(
+                extra_atom_features, dtype=torch.float
+            )
 
         if edge_index_list:
             data.edge_index = (

@@ -8,3 +8,6 @@ class DataSplit(NamedTuple):
     train: Any
     val: Any
     test: Any
+    train_coord: Any = None
+    val_coord: Any = None
+    test_coord: Any = None

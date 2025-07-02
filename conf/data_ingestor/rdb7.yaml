@@ -1,7 +1,7 @@
 _target_: chemtorch.data_ingestor.SimpleDataIngestor
 
 defaults:
-  - data_source: pre_split_csv_source
+  - data_source: pre_split_coordinate_source
   - column_mapper: column_filter_and_rename
   - data_splitter: null
 
