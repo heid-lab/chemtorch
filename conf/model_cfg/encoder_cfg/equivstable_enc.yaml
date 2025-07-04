@@ -1,5 +1,0 @@
-equivstable_enc: 
-  _target_: deepreaction.encoder.equivstable_enc.EquivStableEncoder
-  in_channels: ${eval:'${data.representation_cfg.pre_transform_cfg.lapPE.max_freqs} * ${data.representation_cfg.in_channel_multiplier}'}
-  out_channels: ${model_cfg.layer_cfg.mpnn_cfg.in_channels}
-  raw_norm_type: null

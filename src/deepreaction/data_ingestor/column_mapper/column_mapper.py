@@ -1,0 +1,14 @@
+from abc import ABC, abstractmethod
+from typing import Union
+
+import pandas as pd
+
+from deepreaction.utils import DataSplit
+
+
+class ColumnMapper(ABC):
+    @abstractmethod
+    def __call__(
+        self, data: Union[pd.DataFrame, DataSplit]
+    ) -> Union[pd.DataFrame, DataSplit]:
+        pass

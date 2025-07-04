@@ -3,12 +3,13 @@
 from typing import Optional
 
 import torch
-from torch import Tensor, nn
+from torch import nn
 from torch.nn import LayerNorm, Linear, MultiheadAttention, Parameter
+from torch_geometric.data import Batch
 from torch_geometric.utils import to_dense_batch
 
 
-class MultiheadAttentionBlock(torch.nn.Module):
+class MultiheadAttentionBlock(nn.Module):
     def __init__(
         self,
         channels: int,
@@ -42,11 +43,11 @@ class MultiheadAttentionBlock(torch.nn.Module):
 
     def forward(
         self,
-        x: Tensor,
-        y: Tensor,
-        x_mask: Optional[Tensor] = None,
-        y_mask: Optional[Tensor] = None,
-    ) -> Tensor:
+        x: torch.Tensor,
+        y: torch.Tensor,
+        x_mask: Optional[torch.Tensor] = None,
+        y_mask: Optional[torch.Tensor] = None,
+    ) -> torch.Tensor:
         """"""  # noqa: D419
         if y_mask is not None:
             y_mask = ~y_mask
@@ -111,7 +112,7 @@ class SetAttentionBlock(torch.nn.Module):
     def reset_parameters(self):
         self.mab.reset_parameters()
 
-    def forward(self, x: Tensor, mask: Optional[Tensor] = None) -> Tensor:
+    def forward(self, x: torch.Tensor, mask: Optional[torch.Tensor] = None) -> torch.Tensor:
         return self.mab(x, x, mask, mask)
 
     def __repr__(self) -> str:
@@ -154,7 +155,7 @@ class PMA(nn.Module):
         for decoder in self.decoders:
             decoder.reset_parameters()
 
-    def forward(self, batch) -> Tensor:
+    def forward(self, batch: Batch) -> torch.Tensor:
         x, mask = to_dense_batch(batch.x, batch.batch)
         x = self.lin(x).relu()
         x = self.mab(self.seed.expand(x.size(0), -1, -1), x, y_mask=mask)

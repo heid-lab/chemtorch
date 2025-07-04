@@ -1,0 +1,9 @@
+_target_: deepreaction.representation.fingerprint.drfp.DRFP
+_recursive_: False
+
+n_folded_length: 2048
+min_radius: 0
+radius: 3
+rings: True
+root_central_atom: True
+include_hydrogens: False

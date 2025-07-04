@@ -1,0 +1,6 @@
+_target_: torch_geometric.loader.DataLoader
+
+batch_size: 50
+num_workers: 0
+pin_memory: true
+

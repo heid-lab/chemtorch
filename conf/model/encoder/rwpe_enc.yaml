@@ -1,0 +1,4 @@
+_target_: deepreaction.encoder.rwpe_enc.RWEncoder
+in_channels: ${dataset.transform.walk_length}
+out_channels: ${model.hidden_channels} 
+as_variable: false

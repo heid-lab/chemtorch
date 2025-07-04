@@ -1,8 +1,0 @@
-_target_: deepreaction.layer.att_layer.deepreaction_att_layer.deepreactionAttLayer
-in_channels: ${model_cfg.hidden_channels}
-out_channels: ${model_cfg.hidden_channels}
-num_heads: 4
-dropout: 0.5
-batch_first: true
-layer_norm: ${model_cfg.layer_cfg.layer_norm}
-batch_norm: ${model_cfg.layer_cfg.batch_norm}

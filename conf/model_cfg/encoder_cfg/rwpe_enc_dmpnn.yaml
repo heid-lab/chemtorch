@@ -1,4 +1,0 @@
-rwpe_enc_dmpnn:
-  _target_: deepreaction.encoder.rwpe_enc_dmpnn.RWEncoderDMPNN
-  out_channels: ${model_cfg.layer_cfg.mpnn_cfg.in_channels}
-  in_channels: ${eval:'${data.representation_cfg.pre_transform_cfg.randomwalk.walk_length} * ${data.representation_cfg.in_channel_multiplier}'}

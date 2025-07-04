@@ -1,9 +1,0 @@
-_target_: deepreaction.layer.att_layer.react_prod_att_layer.ReactantProductAttLayer
-in_channels: ${model_cfg.hidden_channels}
-out_channels: ${model_cfg.hidden_channels}
-hidden_size: ${model_cfg.hidden_channels}
-attention: reactants_products # reactants, products, reactants_products
-num_heads: 4
-dropout: 0.02
-layer_norm: false
-batch_norm: false

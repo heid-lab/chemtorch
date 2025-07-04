@@ -1,0 +1,5 @@
+_target_: deepreaction.layer.layer_stack.LayerStack
+_recursive_: false
+
+layer: null
+depth: 12

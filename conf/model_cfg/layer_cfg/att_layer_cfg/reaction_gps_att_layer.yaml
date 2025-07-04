@@ -1,7 +1,0 @@
-_target_: deepreaction.layer.att_layer.reaction_gps_att_layer.ReactantProductAttLayer
-attention: reactants # reactants or products or reactants_products
-in_channels: ${model_cfg.hidden_channels}
-out_channels: ${model_cfg.hidden_channels}
-num_heads: 4
-dropout: 0.5
-batch_first: true

@@ -1,0 +1,2 @@
+_target_: deepreaction.data_ingestor.data_splitter.IndexSplitter 
+split_index_path: null

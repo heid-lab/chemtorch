@@ -1,0 +1,9 @@
+_target_: deepreaction.model.gnn.GNN
+
+defaults:
+  - encoder: directed_edge_enc
+  - layer_stack: dmpnn_stack
+  - pool: global_pool
+  - head: mlp
+
+hidden_channels: 128

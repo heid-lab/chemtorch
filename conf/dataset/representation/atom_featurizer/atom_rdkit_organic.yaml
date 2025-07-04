@@ -1,0 +1,11 @@
+_target_: deepreaction.featurizer.FeaturizerCompose
+
+featurizers:
+  - _target_: deepreaction.featurizer.OrganicAtomicNumberOneHotFeaturizer
+  - _target_: deepreaction.featurizer.AtomDegreeFeaturizer
+  - _target_: deepreaction.featurizer.AtomFormalChargeFeaturizer
+  - _target_: deepreaction.featurizer.AtomHCountFeaturizer
+  - _target_: deepreaction.featurizer.AtomHybridizationFeaturizer
+  - _target_: deepreaction.featurizer.AtomIsAromaticFeaturizer
+  - _target_: deepreaction.featurizer.CentiAtomMassFeaturizer
+  - _target_: deepreaction.featurizer.AtomIsInRingFeaturizer

@@ -1,0 +1,7 @@
+_target_: deepreaction.data_ingestor.column_mapper.ColumnFilterAndRename
+column_mapping: null
+
+# e.g.
+# column_mapping:
+#   smiles: "smiles"
+#   label: "Ea"

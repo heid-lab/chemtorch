@@ -1,0 +1,6 @@
+_target_: deepreaction.featurizer.FeaturizerCompose
+
+featurizers:
+  - _target_: deepreaction.featurizer.BondTypeFeaturizer
+  - _target_: deepreaction.featurizer.BondIsConjugatedFeaturizer
+  - _target_: deepreaction.featurizer.BondInRingFeaturizer

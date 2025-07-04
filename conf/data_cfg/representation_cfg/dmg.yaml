@@ -1,7 +1,0 @@
-_target_: deepreaction.representation.dmg.DMG
-_recursive_: False
-in_channel_multiplier: 1
-connection_direction: null
-concat_origin_feature: false
-pre_transform_cfg: null
-extra_zero_fvec: false

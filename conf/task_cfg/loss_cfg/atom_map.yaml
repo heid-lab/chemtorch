@@ -1,3 +1,0 @@
-_target_: deepreaction.loss.atom_map.AtomMapContrastiveLoss
-reduction: mean
-temperature: 0.1

@@ -1,0 +1,4 @@
+_target_: deepreaction.transform.graph_transform.randomwalkpe.RandomWalkPETransform
+walk_length: 20
+attr_name: randomwalkpe
+type: graph

@@ -1,0 +1,14 @@
+_target_: deepreaction.layer.gnn_layer.dmpnn_stack.DMPNNStack
+
+defaults:
+  - gnn_block/dmpnn_block@dmpnn_blocks.layer
+
+dmpnn_blocks:
+  _target_: deepreaction.layer.layer_stack.LayerStack
+  _recursive_: false
+  depth: 3
+
+edge_to_node_embedding:
+  _target_: deepreaction.layer.gnn_layer.dmpnn_stack.EdgeToNodeEmbedding
+  embedding_size: ${model.hidden_channels}
+  num_node_features: ${num_node_features}

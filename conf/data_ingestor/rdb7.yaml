@@ -1,0 +1,19 @@
+_target_: deepreaction.data_ingestor.SimpleDataIngestor
+
+defaults:
+  - data_source: single_csv_source
+  - column_mapper: column_filter_and_rename
+  - data_splitter: ratio_splitter
+
+data_source:
+  data_path: "deepreaction_datasets/data/rdb7/barriers/rdb7_full.csv" # example data folder
+
+column_mapper:
+  column_mapping:
+    smiles: "smiles"
+    label: "dE0"
+
+data_splitter:
+  train_ratio: 0.9
+  val_ratio: 0.05
+  test_ratio: 0.05

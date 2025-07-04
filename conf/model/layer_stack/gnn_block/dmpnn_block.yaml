@@ -1,0 +1,12 @@
+_target_: deepreaction.layer.gnn_layer.DMPNNBlock
+
+defaults:
+  - graph_conv: dmpnn_conv
+
+residual: true
+ffn: true
+dropout: 0.1
+act: relu
+norm: null
+hidden_channels: ${model.hidden_channels}
+

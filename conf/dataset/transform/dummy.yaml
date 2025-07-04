@@ -1,0 +1,6 @@
+_target_: deepreaction.transform.graph_transform.dummy.DummyNodeTransform
+mode: global
+connection_type: to_dummy
+dummy_dummy_connection: null
+feature_init: zeros
+type: graph

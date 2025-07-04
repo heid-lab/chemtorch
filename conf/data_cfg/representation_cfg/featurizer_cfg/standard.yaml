@@ -1,4 +1,0 @@
-defaults:
-  - atom_featurizer_cfg: atom_rdkit_organic
-  - bond_featurizer_cfg: bond_rdkit_base
-  - _self_
