@@ -1,0 +1,49 @@
+
+program: scripts/main.py  # Executing the main.py script
+
+name: pure_FlowMatching_model # Name of the sweep
+project: deeprxn
+
+method: bayes   # also possible: grid
+metric:
+  goal: minimize
+  name: val_rmse
+
+parameters:
+  model.feature_out_channels:
+    values: [64, 128, 256, 512]
+  model.feature_hidden_channels:
+    values: [64, 128, 256, 512]
+  model.features_dropout:
+    values: [0, 0.1,]
+  model.layer_stack.dmpnn_blocks.depth:
+    values: [2, 4, 6]
+  model.hidden_channels:
+    values: [600, 900, 1200]
+  model.head.dropout:
+    values: [0, 0.1]
+  model.head.hidden_size:
+    values: [100, 300, 600]
+  model.head.num_hidden_layers:
+    values: [0, 2, 4]    
+
+early_terminate:
+  type: hyperband
+  # s: 2  # Specify the total number of brackets (required for max_iter)
+  eta: 3 # Specify the bracket multiplier schedule (default: 3).
+  min_iter: 20 # Specify the minimum number of iterations.
+  max_iter: 100 # Specify the maximum number of iterations.
+
+command:
+  - ${env}
+  - python
+  - ${program}
+  - ${args_no_hyphens}
+  - +experiment=3d_features
+  - log=true
+  - data_ingestor=rdb7_cv
+  - data_ingestor.data_source.test_coordinate=test_mace_mp_ts_flowMatching.npz
+  - data_ingestor.data_source.train_coordinate=train_mace_mp_ts_flowMatching.npz
+  - data_ingestor.data_source.val_coordinate=val_mace_mp_ts_flowMatching.npz
+
+

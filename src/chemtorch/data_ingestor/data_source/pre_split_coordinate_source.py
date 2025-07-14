@@ -18,8 +18,14 @@ class PreSplitCoordinateSource(DataSource):
     def __init__(
         self,
         data_folder: str,
+        test_coordinate: str = "None",
+        val_coordinate: str = "None",
+        train_coordinate: str = "None",
     ):
         self.data_folder = data_folder
+        self.test_coordinate = test_coordinate
+        self.val_coordinate = val_coordinate
+        self.train_coordinate = train_coordinate
 
     @override
     def load(self) -> DataSplit:
@@ -43,8 +49,8 @@ class PreSplitCoordinateSource(DataSource):
         val = pd.read_csv(files["val"])
         test = pd.read_csv(files["test"])
 
-        train_coord = npz_to_df(f"{self.data_folder}/train_mace_mp_ts.npz")
-        val_coord   = npz_to_df(f"{self.data_folder}/val_mace_mp_ts.npz")
-        test_coord  = npz_to_df(f"{self.data_folder}/test_mace_mp_ts.npz")
+        train_coord = npz_to_df(f"{self.data_folder}/{self.train_coordinate}")
+        val_coord   = npz_to_df(f"{self.data_folder}/{self.val_coordinate}")
+        test_coord  = npz_to_df(f"{self.data_folder}/{self.test_coordinate}")
 
         return DataSplit(train=train, val=val, test=test, train_coord=train_coord, val_coord=val_coord, test_coord=test_coord)

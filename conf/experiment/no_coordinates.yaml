@@ -4,7 +4,6 @@ defaults:
   - override /dataset: graph
   - override /dataloader: pyg_dataloader
   - override /model: dmpnn
-  - override /model/encoder: feature_enc
   - override /routine: regression
   - _self_
 
@@ -18,9 +17,7 @@ run_name: null
 seed: 0
 
 model:
-  # hidden_channels: 1200
-  encoder:
-    in_channels: ${eval:'${num_node_features} + ${num_edge_features} + 256'}  # Correct calculation for feature_enc
+  hidden_channels: 1200
   layer_stack:
     dmpnn_blocks:
       depth: 6

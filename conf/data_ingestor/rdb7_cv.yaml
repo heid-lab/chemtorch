@@ -6,10 +6,10 @@ defaults:
   - data_splitter: null
 
 data_source:
-  data_folder: "data/rdb7"
-  test_coordinate: "test_mace_mp_ts.npz"
-  val_coordinate: "val_mace_mp_ts.npz"
-  train_coordinate: "train_mace_mp_ts.npz"
+  data_folder: "data/rdb7_cv"
+  test_coordinate: "test_mace_mp_ts_flowMatching.npz"
+  val_coordinate: "val_mace_mp_ts_flowMatching.npz"
+  train_coordinate: "train_mace_mp_ts_flowMatching.npz"
 
 column_mapper:
   column_mapping:

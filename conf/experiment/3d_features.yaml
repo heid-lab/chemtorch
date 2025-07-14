@@ -4,29 +4,42 @@ defaults:
   - override /dataset: graph
   - override /dataloader: pyg_dataloader
   - override /model: dmpnn
+  - override /model/encoder: feature_enc_relu
   - override /routine: regression
   - _self_
 
 # LOGGING (Weight and Biases)
 log: false
-project_name: graph
+project_name: chemtorch
 group_name: null
 run_name: null
 
 # INITIALIZATION
 seed: 0
 
+data_ingestor:
+  data_source:
+    test_coordinate: "test_mace_mp_ts.npz"
+
 model:
-  hidden_channels: 1200
+  feature_in_channels: 256  # Length of the extra_atom_features vector
+  feature_out_channels: 512
+  features_dropout: 0
+  feature_hidden_channels: 128 
+  encoder:
+    in_channels: ${eval:'${num_node_features} + ${num_edge_features} + 256'}
+  hidden_channels: 900
   layer_stack:
     dmpnn_blocks:
-      depth: 6
+      depth: 2
       layer:
         ffn: false
+    # edge_to_node_embedding:       # Only when using feature_enc
+    #   num_node_features: ${eval:'${num_node_features} + 256'}
   head:
     num_hidden_layers: 0
-    dropout: 0.1
-    hidden_size: 600
+    dropout: 0
+    hidden_size: 100
 
 dataloader:
   generator:

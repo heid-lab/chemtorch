@@ -6,7 +6,7 @@ defaults:
   - data_splitter: null
 
 data_source:
-  data_folder: "data/rdb7"
+  data_folder: "data/rgd1"
   test_coordinate: "test_mace_mp_ts.npz"
   val_coordinate: "val_mace_mp_ts.npz"
   train_coordinate: "train_mace_mp_ts.npz"
@@ -14,4 +14,4 @@ data_source:
 column_mapper:
   column_mapping:
     smiles: "smiles"
-    label: "dE0"
+    label: "ea"

@@ -17,11 +17,11 @@ class FeatureEncoder(nn.Module):
 
     def forward(self, batch: Batch) -> Batch:
 
-        batch.x1 = torch.cat([batch.x, batch.extra_atom_features], dim=1)
+        batch.x = torch.cat([batch.x, batch.extra_atom_features], dim=1)
         row, col = batch.edge_index
 
         batch.h_0 = F.relu(
-            self.edge_init(torch.cat([batch.x1[row], batch.edge_attr], dim=1))
+            self.edge_init(torch.cat([batch.x[row], batch.edge_attr], dim=1))
         )
         batch.h = batch.h_0
 
