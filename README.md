@@ -82,7 +82,7 @@ Before training, verify that you have the following files in your `data/rdb7` di
 
 * `train`/`val`/`test` CSV files
 * `train_mace_mp_ts.npz` and `val_mace_mp_ts.npz` (for model training)
-* `test_mace_mp_ts.npz`, `test_mace_mp_ts_diffusion.npz`, or `test_mace_mp_ts_flow_matching.npz` (for ground truth prediction)
+* `test_mace_mp_ts.npz`, `test_mace_mp_ts_diffusion.npz`, or `test_mace_mp_ts_flow_matching.npz` (depending on which coordinates you want to choose for the prediction)
 
 To train a model with the hyperparameters used to produce Table IV, run the following script:
 
