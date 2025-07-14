@@ -1,0 +1,17 @@
+_target_: chemtorch.data_ingestor.SimpleDataIngestor
+
+defaults:
+  - data_source: pre_split_coordinate_source
+  - column_mapper: column_filter_and_rename
+  - data_splitter: null
+
+data_source:
+  data_folder: "data/rdb7"
+  test_coordinate: "test_mace_mp_ts.npz"
+  val_coordinate: "val_mace_mp_ts.npz"
+  train_coordinate: "train_mace_mp_ts.npz"
+
+column_mapper:
+  column_mapping:
+    smiles: "smiles"
+    label: "dE0"

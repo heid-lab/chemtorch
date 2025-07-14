@@ -1,0 +1,77 @@
+# @package _global_
+defaults:
+  - override /data_ingestor: rdb7
+  - override /dataset: graph
+  - override /dataloader: pyg_dataloader
+  - override /model: dmpnn
+  - override /model/encoder: feature_enc_relu
+  - override /routine: regression
+  - _self_
+
+# LOGGING (Weight and Biases)
+log: false
+project_name: chemtorch
+group_name: null
+run_name: null
+
+# INITIALIZATION
+seed: 0
+
+data_ingestor:
+  data_source:
+    test_coordinate: "test_mace_mp_ts.npz"
+
+model:
+  feature_in_channels: 256  # Length of the extra_atom_features vector
+  feature_out_channels: 512
+  features_dropout: 0
+  feature_hidden_channels: 128 
+  encoder:
+    in_channels: ${eval:'${num_node_features} + ${num_edge_features} + 256'}
+  hidden_channels: 900
+  layer_stack:
+    dmpnn_blocks:
+      depth: 2
+      layer:
+        ffn: false
+    # edge_to_node_embedding:       # Only when using feature_enc
+    #   num_node_features: ${eval:'${num_node_features} + 256'}
+  head:
+    num_hidden_layers: 0
+    dropout: 0
+    hidden_size: 100
+
+dataloader:
+  generator:
+    _target_: chemtorch.utils.get_generator
+    seed: 0
+
+routine:
+  epochs: 100
+  patience: 100
+  lr_scheduler:
+    num_warmup_steps: 10
+
+parameter_limit: null
+
+# TODO: Bad practice, find a proper solution to pass these dataset
+# properties to the model/routine
+runtime_args_from_train_dataset_props:
+  - num_node_features
+  - num_edge_features
+  - mean
+  - std
+
+# DEVICE (deprecated)
+use_cuda: true
+device: gpu
+
+# MODEL LOADING (deprecated)
+use_loaded_model: false
+pretrained_path: null
+
+# TODO: What is this used for?
+hydra:
+  output_subdir: null
+  run:
+    dir: .

@@ -1,0 +1,7 @@
+_target_: chemtorch.encoder.feature_enc_relu.FeatureEncoderRelu
+feature_in_channels: ${model.feature_in_channels}
+features_dropout: ${model.features_dropout}
+feature_hidden_channels: ${model.feature_hidden_channels}
+feature_out_channels: ${model.feature_out_channels}
+edge_embedding_size: ${model.hidden_channels}
+modified_in_channels:  ${eval:'${model.feature_out_channels} + ${num_node_features} + ${num_edge_features}'}
