@@ -54,9 +54,13 @@ uv run flow_train.py -m \
 
 ## 3. Creating Descriptors from Coordinates [Optional]
 
+> **📝 Note:**  
+> You need to install `pip install mace-torch` and `pip install ase` to use the following notebook
+
+
 If you wish to create the descriptors yourself:
 
-  1.  Use the provided train/val/test CSV files and their corresponding XYZ files found in `data/rdb7` or `data/rgd1`.
+  1.  Use the provided train/val/test CSV files and their corresponding XYZ files found in `data/rdb7`.
 
    2.  Run the `create_coord_descriptor.ipynb` notebook.
 
