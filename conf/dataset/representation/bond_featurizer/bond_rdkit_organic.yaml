@@ -1,6 +1,6 @@
-_target_: deepreaction.featurizer.FeaturizerCompose
+_target_: chemtorch.featurizer.FeaturizerCompose
 
 featurizers:
-  - _target_: deepreaction.featurizer.BondTypeFeaturizer
-  - _target_: deepreaction.featurizer.BondIsConjugatedFeaturizer
-  - _target_: deepreaction.featurizer.BondInRingFeaturizer
+  - _target_: chemtorch.featurizer.BondTypeFeaturizer
+  - _target_: chemtorch.featurizer.BondIsConjugatedFeaturizer
+  - _target_: chemtorch.featurizer.BondInRingFeaturizer

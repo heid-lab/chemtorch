@@ -1,4 +1,4 @@
-_target_: deepreaction.routine.classification.train
+_target_: chemtorch.routine.classification.train
 _recursive_: False
 
 defaults:

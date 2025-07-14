@@ -1,4 +1,4 @@
-_target_: deepreaction.model.mlp.MLP
+_target_: chemtorch.model.mlp.MLP
 
 in_channels: ${model.hidden_channels}
 hidden_size: ${model.hidden_channels}

@@ -1,4 +1,4 @@
-_target_: deepreaction.data_ingestor.SimpleDataIngestor
+_target_: chemtorch.data_ingestor.SimpleDataIngestor
 
 defaults:
   - data_source: pre_split_csv

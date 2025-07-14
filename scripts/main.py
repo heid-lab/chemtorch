@@ -5,8 +5,8 @@ import torch
 from omegaconf import DictConfig, OmegaConf
 
 import wandb
-from deepreaction.utils import DataSplit, load_model, set_seed
-from deepreaction.utils.hydra import safe_instantiate
+from chemtorch.utils import DataSplit, load_model, set_seed
+from chemtorch.utils.hydra import safe_instantiate
 
 OmegaConf.register_new_resolver("eval", eval)
 

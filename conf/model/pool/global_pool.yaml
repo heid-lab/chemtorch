@@ -1,2 +1,2 @@
-_target_: deepreaction.pool.pool.GlobalPool
+_target_: chemtorch.pool.pool.GlobalPool
 aggr: add

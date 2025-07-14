@@ -1,1 +1,1 @@
-_target_: deepreaction.featurizer.single_featurizer.conjugated.ConjugatedFeaturizer
+_target_: chemtorch.featurizer.single_featurizer.conjugated.ConjugatedFeaturizer

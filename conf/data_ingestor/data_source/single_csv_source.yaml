@@ -1,2 +1,2 @@
-_target_: deepreaction.data_ingestor.data_source.SingleCSVSource
+_target_: chemtorch.data_ingestor.data_source.SingleCSVSource
 data_path: null

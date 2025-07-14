@@ -1,7 +1,7 @@
 import pandas as pd
 import pytest
 
-from deepreaction.data_ingestor.data_source.single_csv_source import (
+from chemtorch.data_ingestor.data_source.single_csv_source import (
     SingleCSVSource,
 )
 

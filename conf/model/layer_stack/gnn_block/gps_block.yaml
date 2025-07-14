@@ -1,4 +1,4 @@
-_target_: deepreaction.layer.gnn_layer.GPSBlock
+_target_: chemtorch.layer.gnn_layer.GPSBlock
 
 defaults:
   - graph_conv: gatedgcn_conv

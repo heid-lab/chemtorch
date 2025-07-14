@@ -1,8 +1,8 @@
 import pandas as pd
 import pytest
 
-from deepreaction.data_ingestor.column_mapper import ColumnFilterAndRename
-from deepreaction.utils import DataSplit
+from chemtorch.data_ingestor.column_mapper import ColumnFilterAndRename
+from chemtorch.utils import DataSplit
 
 
 def test_column_filter_and_rename_success():

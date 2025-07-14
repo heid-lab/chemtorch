@@ -1,2 +1,2 @@
-_target_: deepreaction.data_ingestor.data_source.PreSplitCSVSource
+_target_: chemtorch.data_ingestor.data_source.PreSplitCSVSource
 data_folder: null

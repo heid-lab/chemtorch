@@ -2,17 +2,17 @@ import pandas as pd
 import pytest
 from torch import nn
 
-from deepreaction.data_ingestor.column_mapper import ColumnFilterAndRename
-from deepreaction.data_ingestor.data_source import (
+from chemtorch.data_ingestor.column_mapper import ColumnFilterAndRename
+from chemtorch.data_ingestor.data_source import (
     DataSource,
     PreSplitCSVSource,
     SingleCSVSource,
 )
-from deepreaction.data_ingestor.data_splitter import (
+from chemtorch.data_ingestor.data_splitter import (
     DataSplitter,
     RatioSplitter,
 )
-from deepreaction.utils import CallableCompose, DataSplit
+from chemtorch.utils import CallableCompose, DataSplit
 
 
 class NoOpMockSource(DataSource):

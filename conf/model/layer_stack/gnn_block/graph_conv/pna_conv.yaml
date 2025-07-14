@@ -1,4 +1,4 @@
-_target_: deepreaction.layer.gnn_layer.PNAConv
+_target_: chemtorch.layer.gnn_layer.PNAConv
 in_channels: ${model.hidden_channels}
 out_channels: ${model.hidden_channels}
 aggregators: ['mean', 'max', 'sum'] # ['mean', 'max', 'min', 'std']

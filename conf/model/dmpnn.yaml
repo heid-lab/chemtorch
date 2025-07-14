@@ -1,4 +1,4 @@
-_target_: deepreaction.model.gnn.GNN
+_target_: chemtorch.model.gnn.GNN
 
 defaults:
   - encoder: directed_edge_enc

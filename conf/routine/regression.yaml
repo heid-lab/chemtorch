@@ -1,4 +1,4 @@
-_target_: deepreaction.routine.regression.train
+_target_: chemtorch.routine.regression.train
 _recursive_: False
 
 defaults:

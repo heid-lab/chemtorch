@@ -1,4 +1,4 @@
-_target_: deepreaction.layer.gnn_layer.GATv2Conv
+_target_: chemtorch.layer.gnn_layer.GATv2Conv
 in_channels: ${model.hidden_channels}
 out_channels: ${eval:'${model.hidden_channels} // ${.heads}'}
 heads: 4

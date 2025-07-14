@@ -1,4 +1,4 @@
-_target_: deepreaction.routine.RegressionRoutine
+_target_: chemtorch.routine.RegressionRoutine
 _partial_: true   # model passed at runtime
 
 defaults:
@@ -10,7 +10,7 @@ lr_scheduler:
   num_training_steps: 10000
 
 standardizer:
-  _target_: deepreaction.utils.Standardizer
+  _target_: chemtorch.utils.Standardizer
   mean: ${mean}   # root config updated with dataset properties at runtime
   std: ${std}     # root config updated with dataset properties at runtime
 
