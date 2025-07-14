@@ -1,4 +1,4 @@
-_target_: deepreaction.representation.graph.cgr.CGR
+_target_: chemtorch.representation.graph.cgr.CGR
 
 defaults:
   - atom_featurizer: atom_rdkit_organic

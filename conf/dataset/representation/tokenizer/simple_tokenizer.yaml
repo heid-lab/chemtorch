@@ -1,1 +1,1 @@
-_target_: deepreaction.tokenizer.simple_tokenizer.SimpleTokenizer
+_target_: chemtorch.tokenizer.simple_tokenizer.SimpleTokenizer

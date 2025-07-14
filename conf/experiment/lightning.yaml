@@ -20,7 +20,7 @@ seed: 0
 dataloader:
   _partial_: true
   generator:
-    _target_: deepreaction.utils.get_generator
+    _target_: chemtorch.utils.get_generator
     seed: 0
 
 parameter_limit: null

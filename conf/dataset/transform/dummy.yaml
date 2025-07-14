@@ -1,4 +1,4 @@
-_target_: deepreaction.transform.graph_transform.dummy.DummyNodeTransform
+_target_: chemtorch.transform.graph_transform.dummy.DummyNodeTransform
 mode: global
 connection_type: to_dummy
 dummy_dummy_connection: null

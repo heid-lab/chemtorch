@@ -12,7 +12,7 @@ defaults:
 
 # LOGGING (Weight and Biases)
 log: false
-project_name: deepreaction
+project_name: chemtorch
 group_name: null
 run_name: null
 

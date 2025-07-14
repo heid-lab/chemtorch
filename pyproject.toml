@@ -3,7 +3,7 @@ requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "deepreaction"
+name = "chemtorch"
 authors = [
     { name = "Esther Heid", email = "esther.heid@tuwien.ac.at" },
 ]
@@ -33,4 +33,4 @@ dynamic = ["version"]
 where = ["src"]
 
 [tool.setuptools.dynamic]
-version = { attr = "deepreaction.__version__" }
+version = { attr = "chemtorch.__version__" }

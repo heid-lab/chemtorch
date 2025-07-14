@@ -1,4 +1,4 @@
-_target_: deepreaction.data_ingestor.column_mapper.ColumnFilterAndRename
+_target_: chemtorch.data_ingestor.column_mapper.ColumnFilterAndRename
 column_mapping: null
 
 # e.g.

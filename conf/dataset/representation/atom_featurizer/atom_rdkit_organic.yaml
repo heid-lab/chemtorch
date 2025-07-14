@@ -1,11 +1,11 @@
-_target_: deepreaction.featurizer.FeaturizerCompose
+_target_: chemtorch.featurizer.FeaturizerCompose
 
 featurizers:
-  - _target_: deepreaction.featurizer.OrganicAtomicNumberOneHotFeaturizer
-  - _target_: deepreaction.featurizer.AtomDegreeFeaturizer
-  - _target_: deepreaction.featurizer.AtomFormalChargeFeaturizer
-  - _target_: deepreaction.featurizer.AtomHCountFeaturizer
-  - _target_: deepreaction.featurizer.AtomHybridizationFeaturizer
-  - _target_: deepreaction.featurizer.AtomIsAromaticFeaturizer
-  - _target_: deepreaction.featurizer.CentiAtomMassFeaturizer
-  - _target_: deepreaction.featurizer.AtomIsInRingFeaturizer
+  - _target_: chemtorch.featurizer.OrganicAtomicNumberOneHotFeaturizer
+  - _target_: chemtorch.featurizer.AtomDegreeFeaturizer
+  - _target_: chemtorch.featurizer.AtomFormalChargeFeaturizer
+  - _target_: chemtorch.featurizer.AtomHCountFeaturizer
+  - _target_: chemtorch.featurizer.AtomHybridizationFeaturizer
+  - _target_: chemtorch.featurizer.AtomIsAromaticFeaturizer
+  - _target_: chemtorch.featurizer.CentiAtomMassFeaturizer
+  - _target_: chemtorch.featurizer.AtomIsInRingFeaturizer

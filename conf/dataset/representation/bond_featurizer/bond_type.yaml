@@ -1,1 +1,1 @@
-_target_: deepreaction.featurizer.BondTypeFeaturizer
+_target_: chemtorch.featurizer.BondTypeFeaturizer

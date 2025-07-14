@@ -1,1 +1,1 @@
-_target_: deepreaction.featurizer.AtomIsInRingFeaturizer
+_target_: chemtorch.featurizer.AtomIsInRingFeaturizer

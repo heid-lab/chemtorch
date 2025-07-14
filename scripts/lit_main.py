@@ -5,8 +5,8 @@ from lightning import seed_everything
 from omegaconf import DictConfig, OmegaConf
 
 import wandb
-from deepreaction.data_module import DataModule
-from deepreaction.utils.hydra import safe_instantiate
+from chemtorch.data_module import DataModule
+from chemtorch.utils.hydra import safe_instantiate
 
 OmegaConf.register_new_resolver("eval", eval)
 
@@ -32,9 +32,7 @@ def main(cfg: DictConfig):
     ##### UPDATE GLOBAL CONFIG FROM DATASET ATTRIBUTES ##############################
     dataset_properties = cfg.get("runtime_args_from_train_dataset_props", [])
     if dataset_properties:
-        print(
-            "INFO: Updating global config with properties of training dataset"
-        )
+        print("INFO: Updating global config with properties of training dataset")
         for dataset_property in dataset_properties:
             OmegaConf.update(
                 cfg=cfg,
@@ -60,9 +58,7 @@ def main(cfg: DictConfig):
             config=resolved_cfg,
         )
         for stage in ["train", "val", "test"]:
-            precompute_time = data_module.get_dataset_property(
-                stage, "precompute_time"
-            )
+            precompute_time = data_module.get_dataset_property(stage, "precompute_time")
             wandb.log(
                 {f"{stage}_precompute_time": precompute_time},
                 commit=False,
@@ -71,18 +67,14 @@ def main(cfg: DictConfig):
     ##### MODEL ##################################################################
     model = safe_instantiate(cfg.model)
     # TODO: Use lightning for loading pretrained models and checkpoints
-    total_params = sum(
-        p.numel() for p in model.parameters() if p.requires_grad
-    )
+    total_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
     print(f"Total parameters: {total_params:,}")
     if cfg.log:
         wandb.log({"total_parameters": total_params}, commit=False)
 
     parameter_limit = getattr(cfg, "parameter_limit", None)
     if parameter_limit is not None and total_params > parameter_limit:
-        print(
-            f"Parameter limit of {parameter_limit:,} exceeded. Skipping this run."
-        )
+        print(f"Parameter limit of {parameter_limit:,} exceeded. Skipping this run.")
         if cfg.log:
             wandb.log(
                 {

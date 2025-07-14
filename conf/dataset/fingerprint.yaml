@@ -1,4 +1,4 @@
-_target_: deepreaction.dataset.FingerprintDataset
+_target_: chemtorch.dataset.FingerprintDataset
 _partial_: true
 
 defaults:

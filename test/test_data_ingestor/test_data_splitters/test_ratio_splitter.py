@@ -1,8 +1,8 @@
 import pandas as pd
 import pytest
 
-from deepreaction.data_ingestor.data_splitter import RatioSplitter
-from deepreaction.utils import DataSplit
+from chemtorch.data_ingestor.data_splitter import RatioSplitter
+from chemtorch.utils import DataSplit
 
 
 def test_ratio_splitter(sample_dataframe):
@@ -24,39 +24,25 @@ def test_ratio_splitter(sample_dataframe):
     assert not data_split.test.empty
 
     # Check that the total number of rows matches the input
-    total_rows = (
-        len(data_split.train) + len(data_split.val) + len(data_split.test)
-    )
+    total_rows = len(data_split.train) + len(data_split.val) + len(data_split.test)
     assert total_rows == len(sample_dataframe)
 
     # Check that the ratios are approximately correct
-    assert len(data_split.train) == pytest.approx(
-        0.7 * len(sample_dataframe), abs=1
-    )
-    assert len(data_split.val) == pytest.approx(
-        0.2 * len(sample_dataframe), abs=1
-    )
-    assert len(data_split.test) == pytest.approx(
-        0.1 * len(sample_dataframe), abs=1
-    )
+    assert len(data_split.train) == pytest.approx(0.7 * len(sample_dataframe), abs=1)
+    assert len(data_split.val) == pytest.approx(0.2 * len(sample_dataframe), abs=1)
+    assert len(data_split.test) == pytest.approx(0.1 * len(sample_dataframe), abs=1)
 
 
 def test_ratio_splitter_invalid_ratios():
     """Test RatioSplitter with invalid ratios."""
     with pytest.raises(ValueError, match="Ratios must sum to 1"):
-        RatioSplitter(
-            train_ratio=0.5, val_ratio=0.3, test_ratio=0.3
-        )  # Sum > 1
+        RatioSplitter(train_ratio=0.5, val_ratio=0.3, test_ratio=0.3)  # Sum > 1
 
     with pytest.raises(ValueError, match="Ratios must sum to 1"):
-        RatioSplitter(
-            train_ratio=0.5, val_ratio=0.5, test_ratio=0.2
-        )  # Sum > 1
+        RatioSplitter(train_ratio=0.5, val_ratio=0.5, test_ratio=0.2)  # Sum > 1
 
     with pytest.raises(ValueError, match="Ratios must sum to 1"):
-        RatioSplitter(
-            train_ratio=0.5, val_ratio=0.4, test_ratio=0.0
-        )  # Sum < 1
+        RatioSplitter(train_ratio=0.5, val_ratio=0.4, test_ratio=0.0)  # Sum < 1
 
 
 def test_ratio_splitter_empty_dataframe():

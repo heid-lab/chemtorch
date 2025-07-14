@@ -1,5 +1,6 @@
 import pytest
-from deepreaction.utils import enforce_base_init
+from chemtorch.utils import enforce_base_init
+
 
 def test_subclass_calls_super_init():
     class Base:
@@ -20,6 +21,7 @@ def test_subclass_calls_super_init():
     assert obj._initialized_by_base
     assert obj.value == 42
 
+
 def test_subclass_missing_super_init_raises():
     class Base:
         def __init__(self):
@@ -37,6 +39,7 @@ def test_subclass_missing_super_init_raises():
     with pytest.raises(RuntimeError) as excinfo:
         BadSub()
     assert "must call super().__init__()" in str(excinfo.value)
+
 
 def test_grandchild_must_call_super_init():
     class Base:
@@ -66,6 +69,7 @@ def test_grandchild_must_call_super_init():
     # Should not raise
     GoodGrandchild()
 
+
 def test_subclass_computes_arg_for_super_init():
     class Base:
         def __init__(self, value):
@@ -85,6 +89,7 @@ def test_subclass_computes_arg_for_super_init():
     obj = SubWithComputedArg(10)
     assert obj.value == 20
     assert obj.x == 10
+
 
 def test_multiple_inheritance_with_enforce_base_init():
     class BaseA:
@@ -116,5 +121,6 @@ def test_multiple_inheritance_with_enforce_base_init():
             BaseB.__init__(self, b)
 
     import pytest
+
     with pytest.raises(RuntimeError):
         BadChild(1, 2)

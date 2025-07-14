@@ -1,1 +1,1 @@
-_target_: deepreaction.featurizer.single_featurizer.atom_num.AtomicNumberFeaturizer
+_target_: chemtorch.featurizer.single_featurizer.atom_num.AtomicNumberFeaturizer
