@@ -9,7 +9,7 @@ This guide explains how to reproduce results using extra 3D information with Che
 
 ## 1. Install ChemTorch
 
-First, you need to install [ChemTorch](https://github.com/example/chemtorch)
+First, you need to install [ChemTorch](https://github.com/heid-lab/chemtorch)
 
 ### Via Conda
 
