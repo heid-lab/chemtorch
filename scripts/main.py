@@ -2,9 +2,9 @@ import os
 
 import hydra
 import torch
+import wandb
 from omegaconf import DictConfig, OmegaConf
 
-import wandb
 from chemtorch.utils import DataSplit, load_model, set_seed
 from chemtorch.utils.hydra import safe_instantiate
 
@@ -35,14 +35,20 @@ def main(cfg: DictConfig):
     ##### DATA MODULE ###########################################################
     dataset_factory = safe_instantiate(cfg.dataset)
     print(f"INFO: Data module factory instantiated successfully")
-    datasets = DataSplit(*map(lambda df: dataset_factory(df), dataframes))
+    
+    # Create datasets with both dataframes and coordinates
+    train_dataset = dataset_factory(dataframes.train, coordinates=dataframes.train_coord)
+    val_dataset = dataset_factory(dataframes.val, coordinates=dataframes.val_coord)
+    test_dataset = dataset_factory(dataframes.test, coordinates=dataframes.test_coord)
+    
+    datasets = DataSplit(train=train_dataset, val=val_dataset, test=test_dataset)
     print(f"INFO: Data modules instantiated successfully")
 
     ##### DATALOADERS ###########################################################
     train_loader = safe_instantiate(
         cfg.dataloader,
         dataset=datasets.train,
-        shuffle=True,
+        shuffle=False,
     )
     val_loader = safe_instantiate(
         cfg.dataloader,
@@ -97,17 +103,23 @@ def main(cfg: DictConfig):
 
     if cfg.use_loaded_model:
         if not os.path.exists(cfg.pretrained_path):
-            raise ValueError(f"Pretrained model not found at {cfg.pretrained_path}")
+            raise ValueError(
+                f"Pretrained model not found at {cfg.pretrained_path}"
+            )
 
         model, _, _, _ = load_model(model, None, cfg.pretrained_path)
 
         try:
-            X, y = next(iter(train_loader))
-            model(X.to(device))
+            sample_batch = next(iter(train_loader))
+            model(sample_batch.to(device))
         except Exception as e:
-            raise ValueError(f"Pretrained model incompatible with dataset: {str(e)}")
+            raise ValueError(
+                f"Pretrained model incompatible with dataset: {str(e)}"
+            )
 
-    total_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
+    total_params = sum(
+        p.numel() for p in model.parameters() if p.requires_grad
+    )
     print(f"Total parameters: {total_params:,}")
 
     parameter_limit = getattr(cfg, "parameter_limit", None)

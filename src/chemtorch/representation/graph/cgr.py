@@ -1,15 +1,15 @@
 from typing import List, Tuple
-from typing_extensions import override
-
 
 import torch
-
-from torch_geometric.data import Data
 from rdkit.Chem import Atom, Bond
+from torch_geometric.data import Data
+from typing_extensions import override
 
 from chemtorch.featurizer.featurizer_base import FeaturizerBase
 from chemtorch.featurizer.featurizer_compose import FeaturizerCompose
-from chemtorch.representation.abstract_representation import AbstractRepresentation
+from chemtorch.representation.abstract_representation import (
+    AbstractRepresentation,
+)
 from chemtorch.representation.graph.graph_reprs_utils import (
     AtomOriginType,
     EdgeOriginType,
@@ -37,7 +37,8 @@ class CGR(AbstractRepresentation[Data]):
         self,
         atom_featurizer: FeaturizerBase[Atom] | FeaturizerCompose,
         bond_featurizer: FeaturizerBase[Bond] | FeaturizerCompose,
-        **kwargs,  # ignored, TODO: remove once all featurizers are passed explicitly
+        extra_atom_features=None,
+        **kwargs  # ignored, TODO: remove once all featurizers are passed explicitly
     ):
         """
         Initialize the CGR representation with atom and bond featurizers.
@@ -50,9 +51,10 @@ class CGR(AbstractRepresentation[Data]):
         """
         self.atom_featurizer = atom_featurizer
         self.bond_featurizer = bond_featurizer
-
+        self.extra_atom_features = extra_atom_features
+   
     @override
-    def construct(self, smiles: str) -> Data:
+    def construct(self, smiles: str, idx: int = None, extra_atom_features=None, **kwargs) -> Data:
         """
         Construct a CGR graph from the sample.
         """
@@ -89,9 +91,13 @@ class CGR(AbstractRepresentation[Data]):
                 # These must exist due to checks in map_reac_to_prod
                 idx_prod_i = ri2pi[i]
                 idx_prod_j = ri2pi[j]
-                bond_prod = mol_prod.GetBondBetweenAtoms(idx_prod_i, idx_prod_j)
+                bond_prod = mol_prod.GetBondBetweenAtoms(
+                    idx_prod_i, idx_prod_j
+                )
 
-                if bond_reac is None and bond_prod is None:  # No bond in either
+                if (
+                    bond_reac is None and bond_prod is None
+                ):  # No bond in either
                     continue
 
                 f_bond = self._compute_feature_and_diff(
@@ -111,9 +117,16 @@ class CGR(AbstractRepresentation[Data]):
         data = Data()
         data.x = torch.tensor(f_atoms_list, dtype=torch.float)
 
+        if extra_atom_features is not None:
+            data.extra_atom_features = torch.tensor(
+                extra_atom_features, dtype=torch.float
+            )
+
         if edge_index_list:
             data.edge_index = (
-                torch.tensor(edge_index_list, dtype=torch.long).t().contiguous()
+                torch.tensor(edge_index_list, dtype=torch.long)
+                .t()
+                .contiguous()
             )
             data.edge_attr = torch.tensor(f_bonds_list, dtype=torch.float)
             data.edge_origin_type = torch.tensor(
@@ -123,13 +136,19 @@ class CGR(AbstractRepresentation[Data]):
             data.edge_index = torch.empty((2, 0), dtype=torch.long)
             # Determine bond feature dimension for empty edge_attr
             dummy_bond_feat_len = len(
-                self._compute_feature_and_diff(self.bond_featurizer, None, None)
+                self._compute_feature_and_diff(
+                    self.bond_featurizer, None, None
+                )
             )
-            data.edge_attr = torch.empty((0, dummy_bond_feat_len), dtype=torch.float)
+            data.edge_attr = torch.empty(
+                (0, dummy_bond_feat_len), dtype=torch.float
+            )
             data.edge_origin_type = torch.empty((0), dtype=torch.long)
 
         data.smiles = smiles  # Store original reaction SMILES
-        data.atom_origin_type = torch.tensor(atom_origin_type_list, dtype=torch.long)
+        data.atom_origin_type = torch.tensor(
+            atom_origin_type_list, dtype=torch.long
+        )
 
         # num_nodes is a standard PyG attribute
         data.num_nodes = n_atoms

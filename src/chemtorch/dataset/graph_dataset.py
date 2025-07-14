@@ -43,12 +43,15 @@ class GraphDataset(DatasetBase[Data], Dataset):
     def __init__(
         self,
         dataframe: pd.DataFrame,
-        representation: Union[AbstractRepresentation[Data], Callable[..., Data]],
+        representation: Union[
+            AbstractRepresentation[Data], Callable[..., Data]
+        ],
         transform: Optional[AbstractTransform[T] | Callable[[T], T]] = None,
         precompute_all: bool = True,
         cache: bool = True,
         max_cache_size: Optional[int] = None,
         subsample: Optional[int | float] = None,
+        coordinates: Optional[np.ndarray] = None,
     ):
         """
         Initialize the GraphDataset.
@@ -61,6 +64,7 @@ class GraphDataset(DatasetBase[Data], Dataset):
             cache (bool): If True and `precompute_all` is False, cache processed samples.
             max_cache_size (Optional[int]): Maximum size of the LRU cache.
             subsample: The number (int) or fraction (float) of samples to use.
+            coordinates (Optional[np.ndarray]): Coordinate data corresponding to the dataframe.
         """
 
         super().__init__(root=None, transform=None, pre_transform=None)
@@ -79,6 +83,7 @@ class GraphDataset(DatasetBase[Data], Dataset):
         self.dataframe = self._subsample_data(dataframe, subsample)
         self.representation = representation
         self.transform = transform
+        self.coordinates = coordinates
 
         self.precompute_all = precompute_all
         self.precomputed_items = None
@@ -91,7 +96,9 @@ class GraphDataset(DatasetBase[Data], Dataset):
                 self._process_sample(idx) for idx in range(len(self.dataframe))
             ]
             self._precompute_time = time.time() - start_time
-            print(f"INFO: Precomputation finished in {self._precompute_time:.2f}s.")
+            print(
+                f"INFO: Precomputation finished in {self._precompute_time:.2f}s."
+            )
         else:
             if cache:
                 self.process_sample = lru_cache(max_size=max_cache_size)(
@@ -179,7 +186,18 @@ class GraphDataset(DatasetBase[Data], Dataset):
             row = self.dataframe.iloc[idx]
             label = torch.tensor(row["label"], dtype=torch.float)
             sample = row.drop("label")
-            data_obj = self.representation(**sample)
+
+            # Use coordinates if available
+            extra_atom_features = None
+            if self.coordinates is not None:
+                # Extract coordinates for this sample
+                coord_keys = list(self.coordinates.keys())
+                extra_atom_features = self.coordinates["array"][idx]
+                data_obj = self.representation(**sample, extra_atom_features=extra_atom_features)
+
+            else:
+                data_obj = self.representation(**sample)
+
             if self.transform:
                 data_obj = self.transform(data_obj)
         except Exception as e:
@@ -195,7 +213,9 @@ class GraphDataset(DatasetBase[Data], Dataset):
             float: The time in seconds taken to precompute all samples.
         """
         if not self.precompute_all:
-            raise RuntimeError("Precomputation is not enabled for this dataset.")
+            raise RuntimeError(
+                "Precomputation is not enabled for this dataset."
+            )
         return self._precompute_time
 
     @property
@@ -255,19 +275,27 @@ class GraphDataset(DatasetBase[Data], Dataset):
 
         for data in self:
             data = data[0]
-            d = degree(data.edge_index[1], num_nodes=data.num_nodes, dtype=torch.long)
+            d = degree(
+                data.edge_index[1], num_nodes=data.num_nodes, dtype=torch.long
+            )
             max_degree = max(max_degree, int(d.max()))
 
             if degree_histogram is None:
-                degree_histogram = torch.zeros(max_degree + 1, dtype=torch.long)
+                degree_histogram = torch.zeros(
+                    max_degree + 1, dtype=torch.long
+                )
             elif max_degree >= degree_histogram.numel():
                 # Resize the degree_histogram tensor to accommodate the new max_degree
                 new_size = max_degree + 1
                 resized_histogram = torch.zeros(new_size, dtype=torch.long)
-                resized_histogram[: degree_histogram.numel()] = degree_histogram
+                resized_histogram[: degree_histogram.numel()] = (
+                    degree_histogram
+                )
                 degree_histogram = resized_histogram
 
-            degree_histogram += torch.bincount(d, minlength=degree_histogram.numel())
+            degree_histogram += torch.bincount(
+                d, minlength=degree_histogram.numel()
+            )
 
         return {
             "max_degree": max_degree,

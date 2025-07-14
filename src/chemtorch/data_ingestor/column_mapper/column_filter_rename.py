@@ -70,15 +70,21 @@ class ColumnFilterAndRename(ColumnMapper):
         if not isinstance(data, pd.DataFrame):
             raise TypeError("Input must be a pandas DataFrame")
 
-        missing_columns = [
-            col for col in self.column_mapping.values() if col not in data.columns
-        ]
-        if missing_columns:
-            raise KeyError(
-                f"The following columns are missing from the DataFrame: {missing_columns}"
+        if not "array" in data.columns:
+            missing_columns = [
+                col
+                for col in self.column_mapping.values()
+                if col not in data.columns
+            ]
+            if missing_columns:
+                raise KeyError(
+                    f"The following columns are missing from the DataFrame: {missing_columns}"
+                )
+
+            renamed_data = data[list(self.column_mapping.values())].rename(
+                columns={v: k for k, v in self.column_mapping.items()}
             )
 
-        renamed_data = data[list(self.column_mapping.values())].rename(
-            columns={v: k for k, v in self.column_mapping.items()}
-        )
-        return renamed_data
+            return renamed_data
+        
+        return data
