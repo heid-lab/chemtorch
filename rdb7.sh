@@ -25,7 +25,7 @@ python scripts/main.py --multirun \
     data_ingestor=rdb7 \
     data_ingestor.data_source.data_folder=data/rdb7,data/rdb7_rxn_split,data/rdb7_barrier_split \
     seed=0,1,2 \
-    log=true \
+    log=false \
     routine.optimizer.lr=0.0001 \
     model.hidden_channels=900 \
     model.layer_stack.dmpnn_blocks.depth=3 \
@@ -42,7 +42,7 @@ python scripts/main.py --multirun \
     data_ingestor=rdb7 \
     data_ingestor.data_source.data_folder=data/rdb7 \
     seed=0,1,2 \
-    log=true \
+    log=false \
     group_name=rdb7_diffusion \
     routine.optimizer.lr=0.001 \
     model.hidden_channels=900 \
@@ -61,7 +61,7 @@ python scripts/main.py --multirun \
     +experiment=3d_features \
     data_ingestor=rdb7 \
     data_ingestor.data_source.data_folder=data/rdb7,data/rdb7_rxn_split,data/rdb7_barrier_split \
-    log=true \
+    log=false \
     group_name=rdb7_flowMatching \
     seed=0,1,2 \
     routine.optimizer.lr=0.001 \
@@ -83,7 +83,7 @@ HYDRA_FULL_ERROR=1 python scripts/main.py --multirun \
     +experiment=no_coordinates \
     data_ingestor=rdb7 \
     data_ingestor.data_source.data_folder=data/rdb7,data/rdb7_rxn_split,data/rdb7_barrier_split \
-    log=true \
+    log=false \
     group_name=rdb7_no_coordinates \
     seed=0,1,2 \
     routine.optimizer.lr=0.001 \
