@@ -9,9 +9,8 @@ This guide explains how to reproduce results using extra 3D information with Che
 
 ## 1. Install ChemTorch
 
-First, you need to install [ChemTorch](https://github.com/heid-lab/chemtorch)
+First, 
 
-### Via Conda
 
 ```bash
 conda create -n chemtorch python=3.10 && \
@@ -24,13 +23,15 @@ pip install torch_scatter torch_sparse torch_cluster torch_spline_conv -f [https
 pip install wandb && \
 pip install lightning && \
 pip install ipykernel && \
-pip install -e .
 ```
 
 For GPU usage:
 ```bash
 pip install torch-scatter torch-sparse -f [https://data.pyg.org/whl/torch-$](https://data.pyg.org/whl/torch-$){TORCH}+${CUDA}.html
 ```
+
+Then you need to install [ChemTorch](https://github.com/heid-lab/chemtorch) using this fork. First, clone it with `git clone https://github.com/JohannesKarwou/chemtorch.git` and then do `pip install -e .`
+
 > **📝 Note:**  
 > Replace TORCH with your PyTorch version (e.g., 2.6.0) and CUDA with your CUDA version (cpu, cu118, or cu121).
 
