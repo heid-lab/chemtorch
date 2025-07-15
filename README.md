@@ -88,9 +88,10 @@ Before training, verify that you have the following files in your `data/rdb7` di
 To train a model with the hyperparameters used to produce Table IV, run the following script:
 
 ```bash
-bash table_4.sh
+bash rdb7.sh
 ```
 
+This script will run four grouped multi-run experiments (using `Hydra`) on the RDB7 dataset—first with ground-truth 3D coordinates, then with diffusion and flow-matching coordinates, and finally without any coordinates—logging each run to its own `.log` file. For each run it sweeps over three random seeds and, for each experiment, iterates through three data splits (random, reaction-core, and barrier), applying the specified learning rates and model hyperparameters. For RGD1 there exists exaclty the same script called `rgd1.sh`, note this takes much longer and you need to get the RGD1 data from zenodo as mentioned in the beginning of this README
 
 
 -------------------------------
