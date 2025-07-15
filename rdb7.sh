@@ -35,12 +35,12 @@ python scripts/main.py --multirun \
     model.feature_hidden_channels=200 \
     model.feature_out_channels=256 > ground_truth_rdb7.log
 
-# Diffusion coordinates for the test set
+# Diffusion coordinates for the test set, for diffusion coordinates we only use the random split
 echo "Using diffusion coordinates for rdb7"
 python scripts/main.py --multirun \
     +experiment=3d_features \
     data_ingestor=rdb7 \
-    data_ingestor.data_source.data_folder=data/rdb7,data/rdb7_rxn_split,data/rdb7_barrier_split \
+    data_ingestor.data_source.data_folder=data/rdb7 \
     seed=0,1,2 \
     log=true \
     group_name=rdb7_diffusion \

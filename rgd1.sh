@@ -35,12 +35,12 @@ python scripts/main.py --multirun \
     model.feature_hidden_channels=200 \
     model.feature_out_channels=256 > ground_truth_rgd1.log
 
-# Diffusion coordinates for the test set
+# Diffusion coordinates for the test set we only use the random split
 echo "Using diffusion coordinates for rgd1"
 python scripts/main.py --multirun \
     +experiment=3d_features \
     data_ingestor=rgd1 \
-    data_ingestor.data_source.data_folder=data/rgd1,data/rgd1_rxn_split,data/rgd1_barrier_split \
+    data_ingestor.data_source.data_folder=data/rgd1 \
     seed=0,1,2 \
     log=true \
     group_name=rgd1_diffusion \
