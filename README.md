@@ -19,7 +19,7 @@ pip install rdkit numpy==1.26.4 scikit-learn pandas && \
 pip install torch==2.5.1 && \
 pip install hydra-core && \
 pip install torch_geometric && \
-pip install torch_scatter torch_sparse torch_cluster torch_spline_conv -f [https://data.pyg.org/whl/torch-2.5.0+cpu.html](https://data.pyg.org/whl/torch-2.5.0+cpu.html) && \
+pip install torch_scatter torch_sparse torch_cluster torch_spline_conv -f https://data.pyg.org/whl/torch-2.5.0+cpu.html && \
 pip install wandb && \
 pip install lightning && \
 pip install ipykernel && \
@@ -30,7 +30,11 @@ For GPU usage:
 pip install torch-scatter torch-sparse -f [https://data.pyg.org/whl/torch-$](https://data.pyg.org/whl/torch-$){TORCH}+${CUDA}.html
 ```
 
-Then you need to install [ChemTorch](https://github.com/heid-lab/chemtorch) using this fork. First, clone it with `git clone https://github.com/JohannesKarwou/chemtorch.git` and then do `pip install -e .`
+Then you need to install [ChemTorch](https://github.com/heid-lab/chemtorch) using this fork. First, clone it with
+```bash
+git clone https://github.com/JohannesKarwou/chemtorch.git
+``` 
+and then do `pip install -e .`
 
 > **📝 Note:**  
 > Replace TORCH with your PyTorch version (e.g., 2.6.0) and CUDA with your CUDA version (cpu, cu118, or cu121).
