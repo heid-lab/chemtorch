@@ -52,7 +52,7 @@ python scripts/main.py --multirun \
     model.head.num_hidden_layers=0 \
     model.feature_hidden_channels=128 \
     model.feature_out_channels=256 \
-    data_ingestor.data_source.test_coordinate=test_mace_mp_ts_diffusion_rgd1.npz > diffusion.log
+    data_ingestor.data_source.test_coordinate=test_mace_mp_ts_diffusion.npz > diffusion.log
 
 
 # Flow matching coordinates for the test set
@@ -74,7 +74,7 @@ python scripts/main.py --multirun \
     model.feature_out_channels=512 \
     model.features_dropout=0.1 \
     model.encoder.modified_in_channels=622 \
-    data_ingestor.data_source.test_coordinate=test_mace_mp_ts_flowMatching_rgd1.npz > flowMatching.log
+    data_ingestor.data_source.test_coordinate=test_mace_mp_ts_flowMatching.npz > flowMatching.log
 
 
 # Using no coordinates

@@ -13,7 +13,7 @@ conda activate chemtorch
 
 # The first three experiments use the ground truth coordinates 
 # for training and validation. They only differ in the data source used for testing. 
-# The last experiment is without coordinates.
+# The last experiment is without any coordinates.
 # For each experiment we vary the data source, so we do each experiment first for the 
 # random split (data/rdb7),then for the reaction core split (data/rdb7_rxn_split) and
 # finally for the barrier split (data/rdb7_barrier_split).
@@ -52,7 +52,7 @@ python scripts/main.py --multirun \
     model.head.num_hidden_layers=0 \
     model.feature_hidden_channels=128 \
     model.feature_out_channels=256 \
-    data_ingestor.data_source.test_coordinate=test_mace_mp_ts_diffusion_rdb7.npz > diffusion.log
+    data_ingestor.data_source.test_coordinate=test_mace_mp_ts_diffusion.npz > diffusion.log
 
 
 # Flow matching coordinates for the test set
@@ -74,7 +74,7 @@ python scripts/main.py --multirun \
     model.feature_out_channels=512 \
     model.features_dropout=0.1 \
     model.encoder.modified_in_channels=622 \
-    data_ingestor.data_source.test_coordinate=test_mace_mp_ts_flowMatching_rdb7.npz > flowMatching.log
+    data_ingestor.data_source.test_coordinate=test_mace_mp_ts_flowMatching.npz > flowMatching.log
 
 
 # Using no coordinates
