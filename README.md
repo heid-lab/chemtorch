@@ -60,7 +60,7 @@ uv run flow_train.py -m \
 ## 3. Creating Descriptors from Coordinates [Optional]
 
 > **📝 Note:**  
-> You need to install `pip install mace-torch` and `pip install ase` to use the following notebook
+> You need to install `pip install mace-torch ase rdkit` to use the following notebook
 
 
 If you wish to create the descriptors yourself:
