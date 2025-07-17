@@ -36,15 +36,15 @@ pip install torch-scatter torch-sparse -f https://data.pyg.org/whl/torch-${TORCH
 
 ### Via uv
 
-For installing with uv, first install uv, for example via
+For installing with `uv`, first install `torch`, `setuptools` and `uv`, for example via
 ```
-pip install uv
+pip install torch setuptools uv
 ```
 
 Then run
 ```
-uv sync -n
-uv add torch_scatter torch_sparse torch_cluster torch_spline_conv torch_geometric  --no-build-isolation -n
+uv sync --activate
+uv add torch_scatter torch_sparse torch_cluster torch_spline_conv torch_geometric  --no-build-isolation --activate
 ```
 
 ## Data
