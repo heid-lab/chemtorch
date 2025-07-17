@@ -1,4 +1,4 @@
-name: 🧪 Run Pytest
+name: 🧪tests
 
 on: [push, pull_request]
 
