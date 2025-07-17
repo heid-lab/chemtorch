@@ -92,7 +92,7 @@ If you use this code in your research, please cite the following paper:
 	title = {ChemTorch: A Deep Learning Framework for Benchmarking and Developing Chemical Reaction Property Prediction Models},
 	doi = {10.26434/chemrxiv-2025-9mggj},
 	journal = {ChemRxiv},
-	author = {Landsheere, Jasper De and Zamyatin, Anton and Karwounopoulos, Johannes and Heid, Esther},
+	author = {De Landsheere, Jasper and Zamyatin, Anton and Karwounopoulos, Johannes and Heid, Esther},
 	year = {2025},
 }
 ```
