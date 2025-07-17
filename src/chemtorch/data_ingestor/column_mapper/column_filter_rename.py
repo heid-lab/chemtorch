@@ -1,7 +1,12 @@
 from typing import Union
 
 import pandas as pd
-from typing_extensions import override
+try:
+    # Python ≥ 3.12
+    from typing import override  # type: ignore
+except ImportError:
+    # Python < 3.12
+    from typing_extensions import override  # type: ignore
 
 from chemtorch.data_ingestor.column_mapper.column_mapper import ColumnMapper
 from chemtorch.utils import DataSplit

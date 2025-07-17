@@ -1,5 +1,10 @@
 import torch
-from typing_extensions import override
+try:
+    # Python ≥ 3.12
+    from typing import override  # type: ignore
+except ImportError:
+    # Python < 3.12
+    from typing_extensions import override  # type: ignore
 
 from chemtorch.routine.lightning_routine.supervised_routine import (
     SupervisedRoutine,

@@ -4,7 +4,12 @@ from typing import List, Tuple
 import torch
 from rdkit import Chem
 from torch_geometric.data import Data
-from typing_extensions import override
+try:
+    # Python ≥ 3.12
+    from typing import override  # type: ignore
+except ImportError:
+    # Python < 3.12
+    from typing_extensions import override  # type: ignore
 
 from chemtorch.representation.abstract_representation import (
     AbstractRepresentation,
