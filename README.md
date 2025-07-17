@@ -2,8 +2,17 @@
 
 ![ChemTorch](images/chemtorch.png)
 
-[Installation](#installation) | [Data](#data) | [Usage](#usage) | [Citation](#citation)
-[![🧪tests](https://github.com/heid-lab/chemtorch/actions/workflows/pytest.yml/badge.svg)](https://github.com/heid-lab/chemtorch/actions/workflows/pytest.yml)
+[![tests](https://github.com/heid-lab/chemtorch/actions/workflows/pytest.yml/badge.svg)](https://github.com/heid-lab/chemtorch/actions)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Python](https://img.shields.io/badge/dynamic/toml?url=https://raw.githubusercontent.com/heid-lab/chemtorch/main/pyproject.toml&query=$.project.requires-python&label=python&color=blue)](#)
+<!--
+When chemtorch is on PyPI uncomment this ^^
+[![PyPI version](https://img.shields.io/pypi/v/chemtorch.svg)](https://pypi.org/project/chemtorch)
+[![Python versions](https://img.shields.io/pypi/pyversions/chemtorch.svg)](https://pypi.org/project/chemtorch)
+[![Downloads](https://img.shields.io/github/downloads/heid-lab/chemtorch/total.svg)](https://github.com/heid-lab/chemtorch/releases)
+-->
+
+[Installation](#installation) | [Data](#data) | [Usage](#usage) | [Citation](#citation)
 
 </div>
 
@@ -52,6 +61,13 @@ uv add torch_scatter torch_sparse torch_cluster torch_spline_conv torch_geometri
 
 Get the data from https://github.com/heid-lab/reaction_database and add it to the `data` folder.
 
+<!-- TODO: Add the following sections:
+## ✨ Highlights/Features
+## 🤝 Contributing
+## 💬 Support
+## 🚀 Roadmap
+
+<!-- TODO: move this to web documentation -->
 ## Usage
 
 For a short demo, see `scripts/demo.ipynb`.
