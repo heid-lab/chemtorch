@@ -3,6 +3,7 @@
 ![ChemTorch](images/chemtorch.png)
 
 [Installation](#installation) | [Data](#data) | [Usage](#usage) | [Citation](#citation)
+[![🧪tests](https://github.com/heid-lab/chemtorch/actions/workflows/pytest.yml/badge.svg)](https://github.com/heid-lab/chemtorch/actions/workflows/pytest.yml)
 
 </div>
 
