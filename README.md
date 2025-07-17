@@ -20,7 +20,7 @@ The code is provided under MIT license, making it freely available for both acad
 conda create -n chemtorch python=3.10 && \
 conda activate chemtorch && \
 pip install rdkit numpy==1.26.4 scikit-learn pandas && \
-pip install torch==2.5.1 && \
+pip install torch && \
 pip install hydra-core && \
 pip install torch_geometric && \
 pip install torch_scatter torch_sparse torch_cluster torch_spline_conv -f https://data.pyg.org/whl/torch-2.5.0+cpu.html && \
@@ -36,9 +36,9 @@ pip install torch-scatter torch-sparse -f https://data.pyg.org/whl/torch-${TORCH
 
 ### Via uv
 
-For installing with uv, first install uv, for example via
+For installing with `uv`, first install `torch` and `uv`, for example via
 ```
-pip install uv
+pip install torch uv
 ```
 
 Then run
@@ -88,7 +88,13 @@ python scripts/main.py --multirun +experiment=graph dataset.subsample=0.05 data_
 If you use this code in your research, please cite the following paper:
 
 ```
-@article{}
+@article{landsheere_chemtorch_2025,
+	title = {ChemTorch: A Deep Learning Framework for Benchmarking and Developing Chemical Reaction Property Prediction Models},
+	doi = {10.26434/chemrxiv-2025-9mggj},
+	journal = {ChemRxiv},
+	author = {De Landsheere, Jasper and Zamyatin, Anton and Karwounopoulos, Johannes and Heid, Esther},
+	year = {2025},
+}
 ```
 
 This framework was inspired by:
