@@ -12,6 +12,7 @@ from chemtorch.data_ingestor.data_splitter import (
     DataSplitter,
     RatioSplitter,
 )
+from chemtorch.data_ingestor.simple_data_ingestor import SimpleDataIngestor
 from chemtorch.utils import CallableCompose, DataSplit
 
 
@@ -99,9 +100,11 @@ def test_preprocessing_with_split_csv_source_and_column_mapper(
     )
 
     # Load data and process through the pipeline
-    data = source.load()
-    pipeline = nn.Sequential(column_mapper)
-    data_split = pipeline.forward(data)
+    pipeline = SimpleDataIngestor(
+        data_source=source,
+        column_mapper=column_mapper,
+    )
+    data_split = pipeline()
 
     # Assertions
     assert isinstance(data_split, DataSplit)
