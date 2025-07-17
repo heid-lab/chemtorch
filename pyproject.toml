@@ -34,3 +34,8 @@ where = ["src"]
 
 [tool.setuptools.dynamic]
 version = { attr = "chemtorch.__version__" }
+
+[dependency-groups]
+dev = [
+    "pytest>=8.4.1",
+]
