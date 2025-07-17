@@ -37,7 +37,7 @@ jobs:
           --cov=./src \
           --cov-report=xml:coverage.xml \
           --cov-report=term-missing
-				
+
     - name: Post coverage comment
       if: ${{ github.event_name == 'pull_request' }}
       uses: MishaKav/pytest-coverage-comment@main
