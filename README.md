@@ -88,7 +88,13 @@ python scripts/main.py --multirun +experiment=graph dataset.subsample=0.05 data_
 If you use this code in your research, please cite the following paper:
 
 ```
-@article{}
+@article{landsheere_chemtorch_2025,
+	title = {ChemTorch: A Deep Learning Framework for Benchmarking and Developing Chemical Reaction Property Prediction Models},
+	doi = {10.26434/chemrxiv-2025-9mggj},
+	journal = {ChemRxiv},
+	author = {Landsheere, Jasper De and Zamyatin, Anton and Karwounopoulos, Johannes and Heid, Esther},
+	year = {2025},
+}
 ```
 
 This framework was inspired by:
