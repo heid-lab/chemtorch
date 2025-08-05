@@ -42,7 +42,7 @@ def main(cfg: DictConfig):
         key = "test"
     else:
         key = "predict"
-    dataset_properties = cfg.get("runtime_args_from_train_dataset_props", [])
+    dataset_properties = cfg.get("runtime_args_from_dataset", [])
     if dataset_properties:
         for dataset_property in dataset_properties:
             OmegaConf.update(

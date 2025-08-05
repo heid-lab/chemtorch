@@ -32,7 +32,7 @@ routine:
 
 parameter_limit: null
 
-runtime_args_from_train_dataset_props:
+runtime_args_from_dataset:
   - fp_length
 
 # DEVICE (deprecated)

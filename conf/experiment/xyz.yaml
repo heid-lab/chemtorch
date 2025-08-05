@@ -27,7 +27,7 @@ parameter_limit: null
 
 # TODO: Bad practice, find a proper solution to pass these dataset
 # properties to the model/routine
-runtime_args_from_train_dataset_props:
+runtime_args_from_dataset:
   - mean
   - std
 
