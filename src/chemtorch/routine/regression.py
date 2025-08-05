@@ -6,6 +6,8 @@ import torch
 from omegaconf import DictConfig
 from sklearn.metrics import mean_absolute_error, root_mean_squared_error
 from torch.optim.lr_scheduler import ReduceLROnPlateau
+from typing import Callable
+from torch import Tensor
 
 import wandb
 from chemtorch.utils.misc import (
@@ -19,21 +21,27 @@ from chemtorch.utils.standardizer import Standardizer
 # torch.autograd.set_detect_anomaly(True)
 
 
-def predict(model, loader, stdzer: Standardizer, device):
+def _predict_loader(model, loader, stdzer: Standardizer, device):
     model.eval()
     preds_list = []
     with torch.no_grad():
         for X, y in loader:
             X = X.to(device)
             y = y.to(device)
-            out = model(X)  # shape: (batch_size, 1)
-            out = out.squeeze(-1)  # shape: (batch_size)
-            preds = stdzer.destandardize(out)
-            preds_list.extend(preds.cpu().detach().tolist())
+            preds = _predict_batch(model, X, stdzer, device)
+            preds_list.extend(preds)
     return preds_list
 
+def _predict_batch(model: Callable[[Tensor], Tensor], X, stdzer: Standardizer, device):
+    model.eval()
+    with torch.no_grad():
+        X = X.to(device)
+        out = model(X)  # shape: (batch_size, 1)
+        out = out.squeeze(-1)  # shape: (batch_size)
+        preds = stdzer.destandardize(out)
+    return preds.cpu().detach().tolist()
 
-def train_epoch(
+def _train_epoch(
     model,
     train_loader,
     optimizer,
@@ -47,7 +55,7 @@ def train_epoch(
     model.train()
     loss_all = 0
 
-    for X, y in train_loader:
+    for batch_idx, (X, y) in enumerate(train_loader):
         X = X.to(device)
         y = y.to(device)
         optimizer.zero_grad()
@@ -89,7 +97,7 @@ def train(
     stdzer = Standardizer(mean, std)
 
     if use_wandb:
-        wandb.run.summary["status"] = "training"
+        wandb.run.summary["status"] = "training"    # type: ignore
 
     optimizer_partial = hydra.utils.instantiate(optimizer)
     optimizer = optimizer_partial(params=model.parameters())
@@ -108,7 +116,7 @@ def train(
 
     early_stop_counter = 0
     for epoch in range(start_epoch, epochs):
-        train_loss, epoch_time = train_epoch(
+        train_loss, epoch_time = _train_epoch(
             model=model,
             train_loader=train_loader,
             optimizer=optimizer,
@@ -118,7 +126,7 @@ def train(
             clip_grad_norm=clip_grad_norm,
             clip_grad_norm_value=clip_grad_norm_value,
         )
-        val_preds = predict(model, val_loader, stdzer, device)
+        val_preds = _predict_loader(model, val_loader, stdzer, device)
         val_loss = root_mean_squared_error(val_preds, val_loader.dataset.get_labels())
 
         try:
@@ -170,7 +178,7 @@ def train(
     # TODO: look into keeping track of best model state, now we use last model state
     if save_model_parameters:
         model, _, _, _ = load_model(model, optimizer, model_path)
-    test_preds = predict(model, test_loader, stdzer, device)
+    test_preds = _predict_loader(model, test_loader, stdzer, device)
     test_labels = test_loader.dataset.get_labels()
     test_rmse = root_mean_squared_error(test_preds, test_labels)
     test_mae = mean_absolute_error(test_preds, test_labels)
@@ -179,4 +187,4 @@ def train(
 
     if use_wandb:
         wandb.log({"test_rmse": test_rmse, "test_mae": test_mae})
-        wandb.run.summary["status"] = "completed"
+        wandb.run.summary["status"] = "completed"  # type: ignore
