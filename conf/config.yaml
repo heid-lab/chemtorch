@@ -28,8 +28,8 @@ use_cuda: true
 device: gpu
 
 # MODEL LOADING (deprecated)
-use_loaded_model: false
-pretrained_path: null
+load_model: false
+ckpt_path: null
 
 # TODO: What is this used for?
 hydra:

@@ -39,18 +39,16 @@ def main(cfg: DictConfig):
     print(f"INFO: Data modules instantiated successfully")
 
     ##### DATALOADERS ###########################################################
-    train_loader = safe_instantiate(
-        cfg.dataloader,
+    data_loader_factory = safe_instantiate(cfg.dataloader)
+    train_loader = data_loader_factory(
         dataset=datasets.train,
         shuffle=True,
     )
-    val_loader = safe_instantiate(
-        cfg.dataloader,
+    val_loader = data_loader_factory(
         dataset=datasets.val,
         shuffle=False,
     )
-    test_loader = safe_instantiate(
-        cfg.dataloader,
+    test_loader = data_loader_factory(
         dataset=datasets.test,
         shuffle=False,
     )
@@ -79,7 +77,7 @@ def main(cfg: DictConfig):
             project=cfg.project_name,
             group=cfg.group_name,
             name=run_name,
-            config=final_cfg_dict,
+            config=final_cfg_dict,  # type: ignore
         )
         # TODO: Generalize for datasets w/o support for precomputation
         precompute_time = (
@@ -95,11 +93,11 @@ def main(cfg: DictConfig):
     model = safe_instantiate(cfg.model)
     model = model.to(device)
 
-    if cfg.use_loaded_model:
-        if not os.path.exists(cfg.pretrained_path):
-            raise ValueError(f"Pretrained model not found at {cfg.pretrained_path}")
+    if cfg.load_model:
+        if not os.path.exists(cfg.ckpt_path):
+            raise ValueError(f"Pretrained model not found at {cfg.ckpt_path}")
 
-        model, _, _, _ = load_model(model, None, cfg.pretrained_path)
+        model, _, _, _ = load_model(model, None, cfg.ckpt_path)
 
         try:
             X, y = next(iter(train_loader))
@@ -122,7 +120,7 @@ def main(cfg: DictConfig):
                     "parameter_threshold_exceeded": True,
                 }
             )
-            wandb.run.summary["status"] = "parameter_threshold_exceeded"
+            wandb.run.summary["status"] = "parameter_threshold_exceeded"    # type: ignore
         return False
 
     if cfg.log:

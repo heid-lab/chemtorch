@@ -41,7 +41,7 @@ class SupervisedRoutine(L.LightningModule):
             loss: Callable = None, 
             optimizer: Callable[[Iterator[nn.Parameter]], Optimizer] = None,
             lr_scheduler: Callable[[Optimizer], LRScheduler] = None,
-            pretrained_path: str = None,
+            ckpt_path: str = None,
             resume_training: bool = False,
             metrics: Union[Metric, MetricCollection, Dict[str, Union[Metric, MetricCollection]]] = None,
         ):
@@ -55,7 +55,7 @@ class SupervisedRoutine(L.LightningModule):
                 and returns an optimizer instance. Required for training/validation/testing.
             lr_scheduler (Callable, optional): A factory function that takes in the optimizer
                 and returns a learning rate scheduler instance. Only needed for training.
-            pretrained_path (str, optional): Path to a pre-trained model checkpoint.
+            ckpt_path (str, optional): Path to a pre-trained model checkpoint.
             resume_training (bool, optional): Whether to resume training from a checkpoint.
             metrics (Metric, MetricCollection or Dict[str, Metric/MetricCollection], optional): Metrics to use for evaluation.
                 - If a single `Metric` is provided, it will be cloned for 'train', 'val' and 'test' stages.
@@ -110,7 +110,7 @@ class SupervisedRoutine(L.LightningModule):
         self.optimizer_factory = optimizer
         self.lr_scheduler_factory = lr_scheduler
         self.metrics = self._init_metrics(metrics) if metrics else None
-        self.pretrained_path = pretrained_path
+        self.ckpt_path = ckpt_path
         self.resume_training = resume_training
 
     ########## LightningModule Methods ##############################################
@@ -120,8 +120,8 @@ class SupervisedRoutine(L.LightningModule):
                 raise ValueError("Loss function must be defined for training.")
             if self.optimizer_factory is None:
                 raise ValueError("Optimizer must be defined for training.")
-        if self.pretrained_path:
-            self._load_pretrained(self.pretrained_path, self.resume_training)
+        if self.ckpt_path:
+            self._load_pretrained(self.ckpt_path, self.resume_training)
 
     def configure_optimizers(self):
         if self.optimizer_factory is None:
