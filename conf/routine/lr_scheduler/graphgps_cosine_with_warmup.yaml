@@ -1,7 +1,11 @@
 _target_: torch.optim.lr_scheduler.LambdaLR
 _partial_: true
+# ignored during instantiate, only here for uniform override syntax across lr_scheduler configs (e.g. lr_scheduler.num_training_steps)
+num_warmup_steps: 10
+num_training_steps: ${routine.epochs}
+num_cycles: 0.5
 lr_lambda:
   _target_: chemtorch.scheduler.graphgps_cosine_with_warmup_lr.get_cosine_scheduler_with_warmup
-  num_warmup_steps: 10
-  num_training_steps: ${routine.epochs}
-  num_cycles: 0.5
+  num_warmup_steps: ${..num_warmup_steps}
+  num_training_steps: ${..num_training_steps}
+  num_cycles: ${..num_cycles}
