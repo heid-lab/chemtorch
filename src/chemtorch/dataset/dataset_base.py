@@ -14,7 +14,6 @@ from chemtorch.utils import enforce_base_init
 # save preprocessing time for repeated runs with the same dataset.
 # Note: Update precompute_time property to return 0 or time taken
 # to load from disk.
-# TODO: Generalize to unlabbeled datasets.
 T = TypeVar("T")
 class DatasetBase(Generic[T]):
     """
@@ -22,6 +21,10 @@ class DatasetBase(Generic[T]):
 
     This class defines the standard interface for datasets in the DeepReaction framework.
     All datasets should subclass :class:`DatasetBase[T]` and implement the `_get_sample_by_idx` method.    
+
+    The dataset can handle both labeled and unlabeled data. If the input DataFrame contains a 'label' 
+    column, the dataset will return tuples of (data_object, label). Otherwise, it will return only 
+    the data objects.
 
     Warning: If the subclass inherits from multiple classes, ensure that :class:`DatasetBase` is the first 
     class in the inheritance list to ensure correct method resolution order (MRO).
@@ -39,11 +42,15 @@ class DatasetBase(Generic[T]):
         ...     def __call__(self, data: int) -> int:
         ...         return data * 2
         ...
-        >>> df = pd.DataFrame([{"a": 1, "b": 2}, {"a": 3, "b": 4}])
-        >>> dataset = DatasetBase(df, MyRepresentation, MyTransform)
-        >>> result = dataset._process_sample_by_idx(0)
-        >>> print(result)
-        6
+        >>> # Example with labels
+        >>> df_labeled = pd.DataFrame([{"a": 1, "b": 2, "label": 10}, {"a": 3, "b": 4, "label": 20}])
+        >>> dataset_labeled = DatasetBase(df_labeled, MyRepresentation, MyTransform)
+        >>> result = dataset_labeled[0]  # Returns (data_object, label)
+        >>> 
+        >>> # Example without labels
+        >>> df_unlabeled = pd.DataFrame([{"a": 1, "b": 2}, {"a": 3, "b": 4}])
+        >>> dataset_unlabeled = DatasetBase(df_unlabeled, MyRepresentation, MyTransform)
+        >>> result = dataset_unlabeled[0]  # Returns only data_object
     """
     
 
@@ -61,7 +68,9 @@ class DatasetBase(Generic[T]):
         Initialize the DatasetBase.
 
         Args:
-            dataframe (pd.DataFrame): The input data as a pandas DataFrame. Each row represents a single sample.
+            dataframe (pd.DataFrame): The input data as a pandas DataFrame. Each row represents a single sample. If the dataset 
+                contains a `label` column, it will be returned alongside the computed representation. Otherwise, only the 
+                representation will be returned.
             representation (RepresentationBase[T] | Callable[..., T]): A stateless class or callable that 
                 constructs the data object consumed by the model. Must take in the fields of a single sample 
                 from the :attr:`dataframe` (row) as keyword arguments and return an object of type T.
@@ -77,17 +86,11 @@ class DatasetBase(Generic[T]):
 
         Raises:
             ValueError: If the `dataframe` is not a pandas DataFrame.
-            ValueError: If the `dataframe` does not contain a 'label' column.
             ValueError: If the `representation` is not a RepresentationBase or a callable.
             ValueError: If the `transform` is not a TransformBase, a callable, or None.
         """
         if not isinstance(dataframe, pd.DataFrame):
             raise ValueError("Dataframe must be a pandas DataFrame.")
-        # TODO: Accept unlabeled data (e.g. for inference only or unsupervised learning)
-        if "label" not in dataframe.columns:
-            raise ValueError(
-                f"Dataframe must contain a 'label' column, received columns: {dataframe.columns}"
-            )
         if not isinstance(representation, (AbstractRepresentation, Callable)):
             raise ValueError(
                 "Representation must be an instance of AbstractRepresentation or Callable."
@@ -99,6 +102,7 @@ class DatasetBase(Generic[T]):
         self.dataframe = self._subsample_data(dataframe, subsample)
         self.representation = representation
         self.transform = transform
+        self.has_labels = 'label' in self.dataframe.columns
 
         self.precompute_all = precompute_all
         self.precomputed_items = None
@@ -114,7 +118,10 @@ class DatasetBase(Generic[T]):
             # print(f"INFO: Precomputation finished in {self._precompute_time:.2f}s.")
         else:
             if cache:
-                self.process_sample = lru_cache(max_size=max_cache_size)(self._process_sample)
+                if max_cache_size is None:
+                    self.process_sample = lru_cache(maxsize=None)(self._process_sample)
+                else:
+                    self.process_sample = lru_cache(maxsize=max_cache_size)(self._process_sample)
             else:
                 self.process_sample = self._process_sample
 
@@ -129,7 +136,7 @@ class DatasetBase(Generic[T]):
         """
         return len(self.dataframe)
 
-    def __getitem__(self, idx) -> torch.Tensor:
+    def __getitem__(self, idx) -> T | Tuple[T, torch.Tensor]:
         """
         Retrieve a processed item by its index.
 
@@ -137,7 +144,8 @@ class DatasetBase(Generic[T]):
             idx (int): Index of the item to retrieve.
 
         Returns:
-            Data: A PyTorch `Tensor` object representing the molecular fingerprint.
+            T | Tuple[T, torch.Tensor]: If the dataset has labels, returns a tuple of (data_object, label).
+                Otherwise, returns only the data object of type T.
         """
         if self.precompute_all:
             if self.precomputed_items is None:
@@ -153,8 +161,13 @@ class DatasetBase(Generic[T]):
         Retrieve the labels for the dataset.
 
         Returns:
-            pd.Series: The labels for the dataset.
+            pd.Series: The labels for the dataset if they exist.
+            
+        Raises:
+            RuntimeError: If the dataset does not contain labels.
         """
+        if not self.has_labels:
+            raise RuntimeError("Dataset does not contain labels.")
         return self.dataframe["label"].values
 
     def _subsample_data(
@@ -178,7 +191,7 @@ class DatasetBase(Generic[T]):
         else:
             raise ValueError("Subsample must be an int or a float.")
 
-    def _process_sample(self, idx: int) -> Tuple[T, torch.Tensor]:
+    def _process_sample(self, idx: int) -> T | Tuple[T, torch.Tensor]:
         """
         Process a sample by its index.
         
@@ -190,21 +203,30 @@ class DatasetBase(Generic[T]):
             idx (int): The index of the sample to process.
 
         Returns:
-            Tuple[T, torch.Tensor]: A tuple containing the processed data object and its label.
+            T | Tuple[T, torch.Tensor]: If the dataset has labels, returns a tuple of (data_object, label).
+                Otherwise, returns only the data object of type T.
 
         Raises:
             RuntimeError: If there is an error processing the sample at the given index.
         """
         try:
             row = self.dataframe.iloc[idx]
-            label = torch.tensor(row['label'], dtype=torch.float)
-            sample = row.drop("label")
+            if self.has_labels:
+                label = torch.tensor(row['label'], dtype=torch.float)
+                sample = row.drop("label")
+            else:
+                sample = row
             data_obj = self.representation(**sample)
             if self.transform:
                 data_obj = self.transform(data_obj)
+            
+            if self.has_labels:
+                return data_obj, label
+            else:
+                return data_obj
         except Exception as e:
             raise RuntimeError(f"Error processing sample at index {idx}: {e}")
-        return data_obj, label
+    
     
 
     def __init_subclass__(cls):
@@ -231,8 +253,13 @@ class DatasetBase(Generic[T]):
 
         Returns:
             float: The mean of the labels.
+            
+        Raises:
+            RuntimeError: If the dataset does not contain labels.
         """
-        return self.dataframe['label'].mean().item()
+        if not self.has_labels:
+            raise RuntimeError("Dataset does not contain labels.")
+        return self.dataframe['label'].mean()
     
     @property
     def std(self) -> float:
@@ -241,5 +268,10 @@ class DatasetBase(Generic[T]):
 
         Returns:
             float: The standard deviation of the labels.
+            
+        Raises:
+            RuntimeError: If the dataset does not contain labels.
         """
-        return self.dataframe['label'].std().item()
+        if not self.has_labels:
+            raise RuntimeError("Dataset does not contain labels.")
+        return self.dataframe['label'].std()

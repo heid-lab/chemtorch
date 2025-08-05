@@ -31,6 +31,9 @@ device: gpu
 load_model: false
 ckpt_path: null
 
+# PREDICTION
+prediction_save_path: null
+
 # TODO: What is this used for?
 hydra:
   output_subdir: null

@@ -4,6 +4,7 @@ import lightning as L
 import pandas as pd
 from torch.utils.data import Dataset, DataLoader
 
+from chemtorch.dataset.dataset_base import DatasetBase
 from chemtorch.utils.data_split import DataSplit
 
 Stage = Literal["train", "val", "test", "predict"]
@@ -12,8 +13,8 @@ class DataModule(L.LightningDataModule):
     def __init__(
         self,
         data_pipeline: Callable[..., DataSplit | pd.DataFrame],
-        dataset_factory: Callable[[pd.DataFrame], Dataset],
-        dataloader_factory: Callable[[Dataset, bool], DataLoader],  # updated signature
+        dataset_factory: Callable[[pd.DataFrame], DatasetBase],
+        dataloader_factory: Callable[[DatasetBase, bool], DataLoader],  # updated signature
     ):
         """
         Initialize the DataModule with a data pipeline, dataset factory, and dataloader factory.
@@ -76,7 +77,7 @@ class DataModule(L.LightningDataModule):
     def _init_datasets(
         self,
         data_pipeline: Callable[..., DataSplit | pd.DataFrame],
-        dataset_factory: Callable[[pd.DataFrame], Dataset],
+        dataset_factory: Callable[[pd.DataFrame], DatasetBase],
     ):
         """
         Initialize datasets from the data pipeline. If the data pipeline returns a DataSplit,
@@ -104,7 +105,7 @@ class DataModule(L.LightningDataModule):
                 "Data pipeline must output either a DataSplit or a pandas DataFrame"
             )
 
-    def _get_dataset(self, key: Stage) -> Dataset:
+    def _get_dataset(self, key: Stage) -> DatasetBase:
         """
         Retrieve the dataset for the specified key.
 
