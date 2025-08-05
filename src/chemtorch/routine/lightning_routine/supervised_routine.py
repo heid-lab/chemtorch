@@ -1,4 +1,4 @@
-from typing import Dict, Tuple, Callable, Iterator, Literal
+from typing import Dict, Tuple, Callable, Iterator, Literal, Union, Mapping
 
 import os
 import torch
@@ -43,7 +43,7 @@ class SupervisedRoutine(L.LightningModule):
             lr_scheduler: Callable[[Optimizer], LRScheduler] = None,
             pretrained_path: str = None,
             resume_training: bool = False,
-            metrics: MetricCollection | Dict[str, MetricCollection] = None,
+            metrics: Union[Metric, MetricCollection, Dict[str, Union[Metric, MetricCollection]]] = None,
         ):
         """
         Initialize the SupervisedRoutine.
@@ -57,16 +57,25 @@ class SupervisedRoutine(L.LightningModule):
                 and returns a learning rate scheduler instance. Only needed for training.
             pretrained_path (str, optional): Path to a pre-trained model checkpoint.
             resume_training (bool, optional): Whether to resume training from a checkpoint.
-            metrics (MetricCollection or Dict[str, MetricCollection], optional): Metrics to use for evaluation.
-                - If a single `MetricCollection` is provided, it will be cloned for 'val' and 'test' stages.
+            metrics (Metric, MetricCollection or Dict[str, Metric/MetricCollection], optional): Metrics to use for evaluation.
+                - If a single `Metric` is provided, it will be cloned for 'train', 'val' and 'test' stages.
+                - If a single `MetricCollection` is provided, it will be cloned for 'train', 'val' and 'test' stages.
                 - If a dictionary is provided, it must map keys 'train', 'val', and/or 'test' to 
-                `MetricCollection` instances. This allows you to specify different metrics for each stage.
-                In both cases, the metrics will be registered as attributes of the LightningModule for proper logging.
+                `Metric` or `MetricCollection` instances. This allows you to specify different metrics for each stage.
+                In all cases, the metrics will be registered as attributes of the LightningModule for proper logging.
 
                 Example usage:
                     >>> from torchmetrics import MetricCollection, MeanAbsoluteError, MeanSquaredError
                     ...
-                    >>> # Single MetricCollection for val/test
+                    >>> # Single Metric for all stages
+                    >>> metric = MeanAbsoluteError()
+                    >>> routine = SupervisedRoutine(
+                    ...     model=my_model,
+                    ...     loss=my_loss_fn,
+                    ...     optimizer=lambda params: torch.optim.Adam(params, lr=1e-3),
+                    ...     metrics=metric,
+                    ... )
+                    >>> # Single MetricCollection for all stages
                     >>> metrics = MetricCollection({
                     ...     "mae": MeanAbsoluteError(),
                     ...     "rmse": MeanSquaredError(squared=False),
@@ -77,10 +86,11 @@ class SupervisedRoutine(L.LightningModule):
                     ...     optimizer=lambda params: torch.optim.Adam(params, lr=1e-3),
                     ...     metrics=metrics,
                     ... )
-                    >>> # Distinct metrics for each stage
+                    >>> # Distinct metrics for each stage (mix of single metrics and collections)
                     >>> metrics_dict = {
-                    ...     "train": MetricCollection({"mae": MeanAbsoluteError()}),
-                    ...     "val": MetricCollection({"rmse": MeanSquaredError(squared=False)}),
+                    ...     "train": MeanAbsoluteError(),  # Single metric
+                    ...     "val": MetricCollection({"rmse": MeanSquaredError(squared=False)}),  # Collection
+                    ...     "test": MeanSquaredError(),  # Single metric
                     ... }
                     >>> routine = SupervisedRoutine(
                     ...     model=my_model,
@@ -90,37 +100,60 @@ class SupervisedRoutine(L.LightningModule):
                     ... )
 
         Raises:
-            TypeError: If `metrics` is not a MetricCollection or a dictionary of MetricCollections.
+            TypeError: If `metrics` is not a Metric, MetricCollection, or a dictionary of Metrics/MetricCollections.
             ValueError: If `metrics` is a dictionary, but its keys are not 'train', 'val', or 'test',
                 or if the keys are not unique.
         """
         super().__init__()
         self.model = model
         self.loss = loss
-        self.optimizer: Optimizer = optimizer(params=self.model.parameters())
-        self.lr_scheduler: LRScheduler = lr_scheduler(self.optimizer) if lr_scheduler else None
+        self.optimizer_factory = optimizer
+        self.lr_scheduler_factory = lr_scheduler
         self.metrics = self._init_metrics(metrics) if metrics else None
         self.pretrained_path = pretrained_path
         self.resume_training = resume_training
 
-    ########## Lightning DataModule Methods ##############################################
+    ########## LightningModule Methods ##############################################
     def setup(self, stage: Literal['fit', 'validate', 'test', 'predict'] = None):
+        if stage in ['fit', 'validate', 'test']:
+            if self.loss is None:
+                raise ValueError("Loss function must be defined for training.")
+            if self.optimizer_factory is None:
+                raise ValueError("Optimizer must be defined for training.")
         if self.pretrained_path:
             self._load_pretrained(self.pretrained_path, self.resume_training)
 
     def configure_optimizers(self):
-        if self.lr_scheduler:
+        if self.optimizer_factory is None:
+            return None
+            
+        optimizer = self.optimizer_factory(self.model.parameters())
+        
+        # Load optimizer state if resuming training
+        if hasattr(self, '_checkpoint_state') and self.resume_training:
+            if 'optimizer_state_dict' in self._checkpoint_state:
+                optimizer.load_state_dict(self._checkpoint_state['optimizer_state_dict'])
+        
+        if self.lr_scheduler_factory:
+            lr_scheduler = self.lr_scheduler_factory(optimizer)
+            
+            # Load scheduler state if resuming training
+            if hasattr(self, '_checkpoint_state') and self.resume_training:
+                if 'lr_scheduler_state_dict' in self._checkpoint_state:
+                    lr_scheduler.load_state_dict(self._checkpoint_state['lr_scheduler_state_dict'])
+            
             # Return both optimizer and scheduler
             return {
-                "optimizer": self.optimizer,
-                "lr_scheduler": self.lr_scheduler,
+                "optimizer": optimizer,
+                "lr_scheduler": lr_scheduler,
             }
         else:
             # Return only the optimizer
-            return self.optimizer
+            return optimizer
 
     def forward(self, inputs: torch.Tensor) -> torch.Tensor:
         preds = self.model(inputs)
+        preds = preds.squeeze(-1) if preds.ndim > 1 else preds
         return preds
     
     def training_step(self, batch: Tuple[torch.Tensor, torch.Tensor]) -> torch.Tensor:
@@ -131,10 +164,10 @@ class SupervisedRoutine(L.LightningModule):
     
     def test_step(self, batch: Tuple[torch.Tensor, torch.Tensor]) -> torch.Tensor:
         return self._step(batch, split="test")
-    
+
     ########### Private Methods ##########################################################
     def _step(
-        self, 
+        self,
         batch: Tuple[torch.Tensor, torch.Tensor], 
         split: Literal['train', 'val', 'test'],
     ) -> torch.Tensor:
@@ -144,47 +177,92 @@ class SupervisedRoutine(L.LightningModule):
         inputs, targets = batch
         batch_size = inputs.size(0)
         preds = self.forward(inputs)
-        loss = self.loss(preds, targets)
+        loss = self._loss(preds, targets)
 
-        is_train_step = split == "train"
         self.log(f"{split}_loss", loss, 
-            on_step=is_train_step, 
-            on_epoch=not is_train_step,
+            on_step=True, 
             batch_size=batch_size,
             prog_bar = True, 
         )
 
         if self.metrics and split in self.metrics:
-            self.metrics[split].update(preds, targets)
-            self.log_dict(self.metrics[split], 
-                on_step=False, 
-                on_epoch=True,
-                batch_size=batch_size
-            )
+            self._update_metrics(self.metrics[split], preds, targets)
+            if isinstance(self.metrics[split], Metric):
+                self.log(
+                    self.metrics[split].name, 
+                    self.metrics[split], 
+                    on_step=False, 
+                    on_epoch=True,
+                    batch_size=batch_size,
+                )
+            else:
+                self.log_dict(
+                    self.metrics[split], 
+                    on_step=False, 
+                    on_epoch=True,
+                    batch_size=batch_size
+                )
 
         return loss
     
+    def _loss(self, preds: torch.Tensor, targets: torch.Tensor) -> torch.Tensor:
+        """
+        Compute the loss for the given predictions and targets.
+        Override this method to customize loss computation.
+        """
+        return self.loss(preds, targets)
+
+    def _update_metrics(self, metrics: Metric | MetricCollection, preds: torch.Tensor, targets: torch.Tensor):
+        """
+        Update the metrics with the current predictions and targets.
+        Override this method to customize metric updates.
+        """
+        metrics.update(preds, targets)
+    
     def _init_metrics(self, metrics: MetricCollection | Dict[str, MetricCollection]) -> Dict[str, MetricCollection]:
         metrics_dict = {}
-        if isinstance(metrics, MetricCollection):
+        if isinstance(metrics, Metric):
+            # Single metric for all stages
             metrics_dict = {
+                "train": metrics.clone(),
+                "val": metrics.clone(), 
+                "test": metrics.clone(),
+            }
+            metrics_dict["train"].prefix = "train_"
+            metrics_dict["val"].prefix = "val_"
+            metrics_dict["test"].prefix = "test_"
+        elif isinstance(metrics, MetricCollection):
+            # Single MetricCollection for all stages
+            metrics_dict = {
+                "train": metrics.clone(prefix="train_"),
                 "val": metrics.clone(prefix="val_"),
                 "test": metrics.clone(prefix="test_"),
             }
         elif isinstance(metrics, dict):
-            if not all(isinstance(v, MetricCollection) for v in metrics.values()):
-                raise TypeError("Metrics must be instances of torchmetrics.MetricCollection.")
+            # Dictionary that assigns each stage its own Metric/MetricCollection
+            if not all(isinstance(v, (Metric, MetricCollection)) for v in metrics.values()):
+                raise TypeError("Metrics must be instances of torchmetrics.Metric or torchmetrics.MetricCollection.")
             if not all(k in ["train", "val", "test"] for k in metrics.keys()):
                 raise ValueError("Metric dictionary keys must be any of 'train', 'val', and 'test'.")
             if len(metrics) != len(set(metrics.keys())):
                 raise ValueError("Metric dictionary keys must be unique.")
-            metrics_dict = metrics
+            
+            # Clone metrics and ensure proper prefixes
+            for stage, metric in metrics.items():
+                if isinstance(metric, Metric):
+                    cloned_metric = metric.clone()
+                    cloned_metric.prefix = f"{stage}_"
+                    metrics_dict[stage] = cloned_metric
+                else:
+                    metrics_dict[stage] = metric.clone(prefix=f"{stage}_")
         else:
-            raise TypeError("Metrics must be a torchmetrics.MetricCollection or a dictionary of MetricCollections.")
+            raise TypeError(f"Metrics must be a torchmetrics.Metric, torchmetrics.MetricCollection, or a dictionary of Metrics/MetricCollections, got {type(metrics)}")
 
-        # Register each MetricCollections as an attributes for Lightning
-        for stage, metric_collection in metrics_dict.items():
-            setattr(self, f"{stage}_metrics", metric_collection)
+
+        # Register each metric/MetricCollection as an attribute (required by Lightning for logging)
+        for stage, metric in metrics_dict.items():
+            setattr(self, f"{stage}_metrics", metric)
+
         return metrics_dict
 
     def _validate_metrics(self, metrics: Dict[str, Metric]):
@@ -200,7 +278,7 @@ class SupervisedRoutine(L.LightningModule):
             raise ValueError(f"Pretrained path does not exist: {path}")
 
         checkpoint = torch.load(path, map_location='cpu', weights_only=True)
-        # PyTorch deserializes checkpoint on CPU and then moves them to the device-type
+        # NOTE:PyTorch deserializes checkpoint on CPU and then moves them to the device-type
         # it saved on (e.g. 'cuda') by default. This can lead to surged in memory usage
         # if the model is large. To avoid this, we load the checkpoint on CPU and move 
         # the model to the correct device later.
@@ -211,16 +289,16 @@ class SupervisedRoutine(L.LightningModule):
         keys = ['model_state_dict']
         if resume_training:
             keys += ['optimizer_state_dict']
-            if self.lr_scheduler:
+            if self.lr_scheduler_factory:
                 keys.append('lr_scheduler_state_dict')
         self._validate_checkpoint_dict(checkpoint, keys)
 
         # Load state dictionaries
         self.model.load_state_dict(checkpoint['model_state_dict'])
         if resume_training:
-            self.optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
-            if self.lr_scheduler:
-                self.lr_scheduler.load_state_dict(checkpoint['lr_scheduler_state_dict'])
+            # Note: optimizer and lr_scheduler state dicts will be loaded by Lightning
+            # when configure_optimizers is called, so we store the checkpoint for later use
+            self._checkpoint_state = checkpoint
 
         self.log("pretrained_model_loaded", True, prog_bar=True)
 

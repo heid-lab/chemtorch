@@ -5,7 +5,9 @@ try:
 except ImportError:
     # Python < 3.12
     from typing_extensions import override  # type: ignore
+from typing import Any, Tuple, Literal
 
+from torchmetrics import Metric, MetricCollection
 from chemtorch.routine.lightning_routine.supervised_routine import (
     SupervisedRoutine,
 )
@@ -49,7 +51,7 @@ class RegressionRoutine(SupervisedRoutine):
         >>> preds = routine(torch.randn(8, 16))  # Returns raw model predictions
     """
 
-    def __init__(self, standardizer: Standardizer = None, *args, **kwargs):
+    def __init__(self, standardizer: Standardizer | None = None, *args, **kwargs):
         """
         Initialize a regression routine with an optional standardizer.
 
@@ -62,9 +64,33 @@ class RegressionRoutine(SupervisedRoutine):
         self.standardizer = standardizer
 
     @override
-    def forward(self, inputs: torch.Tensor) -> torch.Tensor:
-        preds = self.model(inputs)
-        preds = preds.squeeze(-1) if preds.ndim > 1 else preds
+    def predict_step(self, *args: Any, **kwargs: Any) -> Any:
+        preds = super().predict_step(*args, **kwargs)
         if self.standardizer:
             preds = self.standardizer.destandardize(preds)
         return preds
+    
+    @override
+    def _loss(self, preds: torch.Tensor, targets: torch.Tensor) -> torch.Tensor:
+        if self.standardizer:
+            targets = self.standardizer.standardize(targets)
+        return super()._loss(preds, targets)
+
+    @override
+    def _update_metrics(self, metrics: Metric | MetricCollection, preds: torch.Tensor, targets: torch.Tensor):
+        if self.standardizer:
+            preds = self.standardizer.destandardize(preds)
+        return super()._update_metrics(metrics, preds, targets)
+
+    def on_save_checkpoint(self, checkpoint: dict) -> None:
+        if self.standardizer:
+            checkpoint['standardizer_mean'] = self.standardizer.mean
+            checkpoint['standardizer_std'] = self.standardizer.std
+
+    def on_load_checkpoint(self, checkpoint: dict) -> None:
+        if 'standardizer_mean' in checkpoint and 'standardizer_std' in checkpoint:
+            from chemtorch.utils.standardizer import Standardizer
+            self.standardizer = Standardizer(
+                mean=checkpoint['standardizer_mean'],
+                std=checkpoint['standardizer_std']
+            )
