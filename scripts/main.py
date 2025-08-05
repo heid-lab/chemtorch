@@ -55,7 +55,7 @@ def main(cfg: DictConfig):
     print(f"INFO: Dataloaders instantiated successfully")
 
     ##### UPDATE GLOBAL CONFIG FROM DATASET ATTRIBUTES ##############################
-    dataset_properties = cfg.get("runtime_args_from_train_dataset_props", [])
+    dataset_properties = cfg.get("runtime_args_from_dataset", [])
     if dataset_properties:
         print("INFO: Updating global config with properties of train dataset:")
         for dataset_property in dataset_properties:

@@ -21,7 +21,7 @@ seed: 0
 
 parameter_limit: null
 
-runtime_args_from_train_dataset_props: null
+runtime_args_from_dataset: null
 
 # DEVICE (deprecated)
 use_cuda: true
