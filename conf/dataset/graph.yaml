@@ -7,5 +7,5 @@ defaults:
 
 precompute_all: true
 cache: true
-max_size_cache: null
+max_cache_size: null
 subsample: null
