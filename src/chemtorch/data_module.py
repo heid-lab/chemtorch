@@ -6,13 +6,14 @@ from torch.utils.data import Dataset, DataLoader
 
 from chemtorch.utils.data_split import DataSplit
 
+Stage = Literal["train", "val", "test", "predict"]
 
 class DataModule(L.LightningDataModule):
     def __init__(
         self,
         data_pipeline: Callable[..., DataSplit | pd.DataFrame],
         dataset_factory: Callable[[pd.DataFrame], Dataset],
-        dataloader_factory: Callable[[Dataset, bool], DataLoader],
+        dataloader_factory: Callable[[Dataset, bool], DataLoader],  # updated signature
     ):
         """
         Initialize the DataModule with a data pipeline, dataset factory, and dataloader factory.
@@ -30,9 +31,7 @@ class DataModule(L.LightningDataModule):
         self._init_datasets(data_pipeline, dataset_factory)
         self.dataloader_factory = dataloader_factory
 
-    def get_dataset_property(
-        self, key: Literal["train", "val", "test", "predict"], property: str
-    ) -> Any:
+    def get_dataset_property(self, key: Stage, property: str) -> Any:
         """
         Retrieve a property from the dataset of the specified stage.
 
@@ -105,7 +104,7 @@ class DataModule(L.LightningDataModule):
                 "Data pipeline must output either a DataSplit or a pandas DataFrame"
             )
 
-    def _get_dataset(self, key: Literal["train", "val", "test", "predict"]):
+    def _get_dataset(self, key: Stage) -> Dataset:
         """
         Retrieve the dataset for the specified key.
 
@@ -123,10 +122,7 @@ class DataModule(L.LightningDataModule):
             raise ValueError(f"{key.capitalize()} dataset is not initialized.")
         return dataset
 
-    def _make_dataloader_or_raise(
-        self,
-        key: Literal["train", "val", "test", "predict"],
-    ):
+    def _make_dataloader_or_raise(self, key: Stage) -> DataLoader:
         """
         Create a dataloader for the specified key or raise an error if the dataset is not initialized.
 
@@ -140,5 +136,6 @@ class DataModule(L.LightningDataModule):
             ValueError: If the dataset for the specified key is not initialized.
         """
         return self.dataloader_factory(
-            dataset=self._get_dataset(key), shuffle=(key == "train")
+            dataset=self._get_dataset(key), 
+            shuffle=(key == "train")
         )
