@@ -1,15 +1,19 @@
-import os
+from pathlib import Path
+from typing import List
 
 import hydra
-from lightning import seed_everything
+import torch
+import lightning as L
+import wandb
 from omegaconf import DictConfig, OmegaConf
 
-import wandb
-from chemtorch.data_module import DataModule
+from chemtorch.data_module import DataModule, Stage
 from chemtorch.utils.hydra import safe_instantiate
+from chemtorch.utils.misc import save_predictions
 
 OmegaConf.register_new_resolver("eval", eval)
 
+ROOT_DIR = Path(__file__).parent.parent
 
 @hydra.main(version_base=None, config_path="../conf", config_name="config")
 def main(cfg: DictConfig):
@@ -17,7 +21,7 @@ def main(cfg: DictConfig):
     OmegaConf.set_struct(cfg, False)
 
     seed = getattr(cfg, "seed", 0)
-    seed_everything(seed)
+    L.seed_everything(seed) # different results when using custom set_seed
 
     ##### DATA MODULE ##############################################################
     data_pipeline = safe_instantiate(cfg.data_ingestor)
@@ -30,15 +34,22 @@ def main(cfg: DictConfig):
     )
 
     ##### UPDATE GLOBAL CONFIG FROM DATASET ATTRIBUTES ##############################
+    if "train" in cfg.tasks:
+        key = "train"
+    elif "validate" in cfg.tasks:
+        key = "val"
+    elif "test" in cfg.tasks:
+        key = "test"
+    else:
+        key = "predict"
     dataset_properties = cfg.get("runtime_args_from_train_dataset_props", [])
     if dataset_properties:
-        print("INFO: Updating global config with properties of training dataset")
         for dataset_property in dataset_properties:
             OmegaConf.update(
                 cfg=cfg,
                 key=dataset_property,
                 value=data_module.get_dataset_property(
-                    key="train", property=dataset_property
+                    key=key, property=dataset_property
                 ),
                 merge=True,
             )
@@ -55,34 +66,23 @@ def main(cfg: DictConfig):
             project=cfg.project_name,
             group=cfg.group_name,
             name=run_name,
-            config=resolved_cfg,
+            config=resolved_cfg, # type: ignore
         )
-        for stage in ["train", "val", "test"]:
+        stages: List[Stage] = []
+        if "train" in cfg.tasks:
+            stages.append("train")
+        if "validate" in cfg.tasks:
+            stages.append("val")
+        if "test" in cfg.tasks:
+            stages.append("test")
+        if "predict" in cfg.tasks:
+            stages.append("predict")
+        for stage in stages:
             precompute_time = data_module.get_dataset_property(stage, "precompute_time")
             wandb.log(
                 {f"{stage}_precompute_time": precompute_time},
                 commit=False,
             )
-
-    ##### MODEL ##################################################################
-    model = safe_instantiate(cfg.model)
-    # TODO: Use lightning for loading pretrained models and checkpoints
-    total_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
-    print(f"Total parameters: {total_params:,}")
-    if cfg.log:
-        wandb.log({"total_parameters": total_params}, commit=False)
-
-    parameter_limit = getattr(cfg, "parameter_limit", None)
-    if parameter_limit is not None and total_params > parameter_limit:
-        print(f"Parameter limit of {parameter_limit:,} exceeded. Skipping this run.")
-        if cfg.log:
-            wandb.log(
-                {
-                    "parameter_threshold_exceeded": True,
-                }
-            )
-            wandb.run.summary["status"] = "parameter_threshold_exceeded"
-        return False
 
     ###### TRAINER ##########################################################
     # TODO: Add profiler
@@ -92,15 +92,64 @@ def main(cfg: DictConfig):
     # TODO: Consider `SlurmCluster` class for building slurm scripts
     # TODO: Consider `DistributedDataParallel` for distributed training NLP on large datasets
     # TODO: Consider HyperOptArgumentParser for hyperparameter optimization
-    trainer = safe_instantiate(cfg.trainer)
+    trainer: L.Trainer = safe_instantiate(cfg.trainer)
     if not cfg.log:
         trainer.logger = None
-    print(f"Using device: {trainer.accelerator}")
-    ############################# task instantiation #############################
+    # print(f"Using device: {trainer.accelerator}")
+
+    ##### MODEL ##################################################################
+    model: torch.nn.Module = safe_instantiate(cfg.model)
+    # print(model)
+    # print(cfg.model)
+    # TODO: Use lightning for loading pretrained models and checkpoints
+    total_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
+    # print(f"Total parameters: {total_params:,}")
+    if cfg.log:
+        wandb.log({"total_parameters": total_params}, commit=False)
+
+    parameter_limit = getattr(cfg, "parameter_limit", None)
+    if parameter_limit is not None and total_params > parameter_limit:
+        # print(f"Parameter limit of {parameter_limit:,} exceeded. Skipping this run.")
+        if cfg.log:
+            wandb.log(
+                {
+                    "parameter_threshold_exceeded": True,
+                }
+            )
+            wandb.run.summary["status"] = "parameter_threshold_exceeded"  # type: ignore
+        return False
+    
+    ###### ROUTINE ##########################################################
     routine_factory = safe_instantiate(cfg.routine)
-    routine = routine_factory(model=model)
-    trainer.fit(routine, datamodule=data_module)
-    trainer.test(routine, datamodule=data_module)
+    routine: L.LightningModule = routine_factory(model=model)
+    
+    ckpt_path = None
+    if cfg.load_model:
+        if cfg.ckpt_path is None:
+            raise ValueError("ckpt_path must be provided when load_model is True.")
+        ckpt_path = cfg.ckpt_path
+
+    ###### EXECUTION ##########################################################
+    if "fit" in cfg.tasks:
+        trainer.fit(routine, datamodule=data_module, ckpt_path=ckpt_path)
+    if "validate" in cfg.tasks:
+        trainer.validate(routine, datamodule=data_module, ckpt_path=ckpt_path)
+    if "test" in cfg.tasks:
+        trainer.test(routine, datamodule=data_module, ckpt_path=ckpt_path)
+    if "predict" in cfg.tasks:
+        preds = trainer.predict(routine, datamodule=data_module, ckpt_path=ckpt_path)
+
+        if preds:
+            # Save predictions to a copy of the original dataframe
+            predict_dataset = data_module._get_dataset("predict")
+            predict_df = predict_dataset.dataframe.copy()
+            save_predictions(
+                preds=preds,
+                reference_df=predict_df,
+                save_path=cfg.prediction_save_path,
+                log_func=wandb.log if cfg.log else None,
+                root_dir=ROOT_DIR
+            )
 
     if cfg.log:
         wandb.finish()
