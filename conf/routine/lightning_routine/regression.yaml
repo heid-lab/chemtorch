@@ -1,26 +1,47 @@
 _target_: chemtorch.routine.RegressionRoutine
-_partial_: true   # model passed at runtime
+_partial_: true     # Model passed at runtime
+_convert_: object   # Convert DictConfig objects to regular Python objects (otherwise the dicts passed to MetricCollection will not work correctly)
 
 defaults:
   - loss: mse
   - optimizer: adamw
-  - lr_scheduler: cosine_with_warmup
+  - lr_scheduler: graphgps_cosine_with_warmup
 
 lr_scheduler:
-  num_training_steps: 10000
+  # TODO: set to very large number until it can be set dynamically to trainer.max_epochs
+  # via hydra interpolation. Doesn't work now because of hydra's limited interpolation
+  # capabilities. Relates to https://github.com/heid-lab/chemtorch/issues/11
+  # num_training_steps: 10000
+  num_training_steps: ${trainer.max_epochs}
 
 standardizer:
   _target_: chemtorch.utils.Standardizer
   mean: ${mean}   # root config updated with dataset properties at runtime
   std: ${std}     # root config updated with dataset properties at runtime
 
-metrics: 
-  _target_: torchmetrics.MetricCollection
-  metrics: 
-    - _target_: torchmetrics.MeanSquaredError
-      squared: false
-    - _target_: torchmetrics.MeanAbsoluteError
+metrics:
+  train:
+    _target_: torchmetrics.MetricCollection
+    metrics:
+      rmse:  
+        _target_: torchmetrics.MeanSquaredError
+        squared: false
+  val: 
+    _target_: torchmetrics.MetricCollection
+    metrics:
+      rmse:  
+        _target_: torchmetrics.MeanSquaredError
+        squared: false
+  test: 
+    _target_: torchmetrics.MetricCollection
+    metrics:
+      rmse:  
+        _target_: torchmetrics.MeanSquaredError
+        squared: false
+      mae:
+        _target_: torchmetrics.MeanAbsoluteError
+
 
 # Optional parameters:
-# pretrained_path: null
+# ckpt_path: null
 # resume_training: false
