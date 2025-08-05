@@ -396,7 +396,7 @@ class TestCheckpointHandling:
                     loss=loss_function,
                     optimizer=lambda params: torch.optim.Adam(params, lr=1e-3),
                     ckpt_path=f.name,
-                    resume_training=False
+                    resume_training=False  # Only load model, not optimizer/scheduler
                 )
                 
                 # Mock the log method
@@ -406,6 +406,9 @@ class TestCheckpointHandling:
                 
                 # Verify log was called
                 routine.log.assert_called_with("pretrained_model_loaded", True, prog_bar=True)
+                
+                # Should not have checkpoint state for optimizer/scheduler
+                assert not hasattr(routine, '_checkpoint_state')
                 
             finally:
                 os.unlink(f.name)
@@ -440,6 +443,78 @@ class TestCheckpointHandling:
                 with pytest.raises(ValueError, match="Checkpoint is missing required keys"):
                     routine.setup(stage="fit")
                     
+            finally:
+                os.unlink(f.name)
+    
+    def test_load_checkpoint_for_inference(self, simple_model, sample_batch):
+        """Test loading checkpoint for inference without training components."""
+        # Create a checkpoint with just model state
+        with tempfile.NamedTemporaryFile(suffix='.pt', delete=False) as f:
+            checkpoint = {
+                'model_state_dict': simple_model.state_dict()
+            }
+            torch.save(checkpoint, f.name)
+            
+            try:
+                # Create routine for inference only (no loss/optimizer)
+                routine = SupervisedRoutine(
+                    model=SimpleModel(),  # Fresh model with different weights
+                    ckpt_path=f.name,
+                    resume_training=False  # Not resuming training, just loading for inference
+                )
+                
+                # Mock the log method
+                routine.log = Mock()
+                
+                # Setup for prediction should work
+                routine.setup(stage="predict")
+                
+                # Should be able to do inference
+                inputs, _ = sample_batch
+                output = routine.forward(inputs)
+                
+                assert output.shape == (4,)
+                assert isinstance(output, torch.Tensor)
+                
+                # Verify model was loaded
+                routine.log.assert_called_with("pretrained_model_loaded", True, prog_bar=True)
+                
+                # Should not have checkpoint state for optimizer/scheduler
+                assert not hasattr(routine, '_checkpoint_state')
+                
+            finally:
+                os.unlink(f.name)
+    
+    def test_load_checkpoint_missing_optimizer_state_with_resume(self, simple_model, loss_function):
+        """Test warning when resuming training but checkpoint lacks optimizer state."""
+        # Create checkpoint with model but missing optimizer state
+        with tempfile.NamedTemporaryFile(suffix='.pt', delete=False) as f:
+            checkpoint = {
+                'model_state_dict': simple_model.state_dict()
+                # Missing optimizer_state_dict and lr_scheduler_state_dict
+            }
+            torch.save(checkpoint, f.name)
+            
+            try:
+                routine = SupervisedRoutine(
+                    model=simple_model,
+                    loss=loss_function,
+                    optimizer=lambda params: torch.optim.Adam(params, lr=1e-3),
+                    lr_scheduler=lambda opt: torch.optim.lr_scheduler.StepLR(opt, step_size=10),
+                    ckpt_path=f.name,
+                    resume_training=True  # Want to resume but checkpoint doesn't have optimizer state
+                )
+                
+                # Mock the log method
+                routine.log = Mock()
+                
+                # Should issue warnings about missing optimizer/scheduler states
+                with pytest.warns(UserWarning, match="checkpoint does not contain 'optimizer_state_dict'"):
+                    routine.setup(stage="fit")
+                
+                # Model should still be loaded
+                routine.log.assert_called_with("pretrained_model_loaded", True, prog_bar=True)
+                
             finally:
                 os.unlink(f.name)
 
@@ -584,17 +659,19 @@ class TestEdgeCasesAndHardBugs:
         assert routine.test_metrics.prefix == "test_"
     
     def test_checkpoint_resume_without_checkpoint_state(self, simple_model, loss_function):
-        """Test edge case where resume_training=True but no checkpoint state exists."""
+        """Test edge case where resume_training=True but no checkpoint was provided."""
         routine = SupervisedRoutine(
             model=simple_model,
             loss=loss_function,
             optimizer=lambda params: torch.optim.Adam(params, lr=1e-3),
             lr_scheduler=lambda opt: torch.optim.lr_scheduler.StepLR(opt, step_size=10),
-            resume_training=True  # But no checkpoint loaded
+            resume_training=True  # But no checkpoint path provided
         )
         
-        # Should not crash when no _checkpoint_state exists
-        # TODO: Should raise a warning
+        # Should issue a warning when no checkpoint path was provided
+        with pytest.warns(UserWarning, match="resume_training=True but no checkpoint path was provided"):
+            routine.setup(stage="fit")
+        
         config = routine.configure_optimizers()
         assert isinstance(config, dict)
         assert "optimizer" in config
@@ -792,5 +869,86 @@ class TestEdgeCasesAndHardBugs:
         # Should be different if reset worked properly
         assert first_epoch_result != second_epoch_result
     
+    def test_checkpoint_resume_training_state(self, simple_model, loss_function):
+        """Test that training is actually resumed from the provided checkpoint."""
+        # Create an optimizer and train for one step to generate state
+        original_routine = SupervisedRoutine(
+            model=simple_model,
+            loss=loss_function,
+            optimizer=lambda params: torch.optim.Adam(params, lr=1e-3),
+            lr_scheduler=lambda opt: torch.optim.lr_scheduler.StepLR(opt, step_size=2)
+        )
+        
+        # Perform one training step to create optimizer/scheduler state
+        sample_inputs = torch.randn(4, 10)
+        sample_targets = torch.randn(4)
+        
+        original_config = original_routine.configure_optimizers()
+        assert isinstance(original_config, dict)  # Should be dict when scheduler is present
+        original_optimizer = original_config["optimizer"]
+        original_scheduler = original_config["lr_scheduler"]["scheduler"]
+        
+        # Perform a dummy training step to update optimizer state
+        loss = original_routine.loss(original_routine.model(sample_inputs), sample_targets)
+        loss.backward()
+        original_optimizer.step()
+        original_scheduler.step()
+        
+        # Get the state after training
+        original_optimizer_state = original_optimizer.state_dict()
+        original_scheduler_state = original_scheduler.state_dict()
+        original_model_state = original_routine.model.state_dict()
+        
+        # Create checkpoint with all states
+        checkpoint = {
+            'model_state_dict': original_model_state,
+            'optimizer_state_dict': original_optimizer_state,
+            'lr_scheduler_state_dict': original_scheduler_state
+        }
+        
+        with tempfile.NamedTemporaryFile(suffix='.pt', delete=False) as f:
+            torch.save(checkpoint, f.name)
+            
+            try:
+                # Create new routine with fresh model and resume training
+                new_model = SimpleModel()  # Fresh model with random weights
+                new_routine = SupervisedRoutine(
+                    model=new_model,
+                    loss=loss_function,
+                    optimizer=lambda params: torch.optim.Adam(params, lr=1e-3),
+                    lr_scheduler=lambda opt: torch.optim.lr_scheduler.StepLR(opt, step_size=2),
+                    ckpt_path=f.name,
+                    resume_training=True
+                )
+                
+                # Mock logging
+                new_routine.log = Mock()
+                
+                # Setup should load the checkpoint
+                new_routine.setup(stage="fit")
+                
+                # Configure optimizers should restore the state
+                new_config = new_routine.configure_optimizers()
+                assert isinstance(new_config, dict)  # Should be dict when scheduler is present
+                new_optimizer = new_config["optimizer"]
+                new_scheduler = new_config["lr_scheduler"]["scheduler"]
+                
+                # Verify that states were properly restored
+                # Model state should be loaded
+                for orig_param, new_param in zip(simple_model.parameters(), new_model.parameters()):
+                    assert torch.allclose(orig_param.data, new_param.data), "Model weights should be restored"
+                
+                # Optimizer state should be loaded (check learning rate and step count)
+                assert new_optimizer.state_dict()['param_groups'][0]['lr'] == original_optimizer_state['param_groups'][0]['lr']
+                
+                # Scheduler state should be loaded (check step count)
+                assert new_scheduler.state_dict()['last_epoch'] == original_scheduler_state['last_epoch']
+                
+                # Verify that the routine was set up for resuming
+                assert new_routine.resume_training == True
+                
+            finally:
+                os.unlink(f.name)
 
-# TODO: test whether training is actually resumed from the provided checkpoint
+
+# Test to verify that checkpoint loading behavior works correctly

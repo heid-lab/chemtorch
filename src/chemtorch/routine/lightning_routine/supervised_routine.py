@@ -1,6 +1,7 @@
 from typing import Dict, Tuple, Callable, Iterator, Literal, Union, Mapping, Any
 
 import os
+import warnings
 import torch
 import lightning as L
 
@@ -141,8 +142,18 @@ class SupervisedRoutine(L.LightningModule):
                 raise ValueError("Loss function must be defined for training.")
             if self.optimizer_factory is None:
                 raise ValueError("Optimizer must be defined for training.")
+        
+        # Handle checkpoint loading
         if self.ckpt_path:
             self._load_pretrained(self.ckpt_path, self.resume_training)
+        elif self.resume_training:
+            # Resume training requested but no checkpoint provided
+            warnings.warn(
+                "resume_training=True but no checkpoint path was provided. "
+                "Training will start from scratch with random initialization.",
+                UserWarning,
+                stacklevel=2
+            )
 
     def configure_optimizers(self):
         if self.optimizer_factory is None:
@@ -152,9 +163,8 @@ class SupervisedRoutine(L.LightningModule):
         optimizer = self.optimizer_factory(self.model.parameters())
         
         # Load optimizer state if resuming training
-        if hasattr(self, '_checkpoint_state') and self.resume_training:
-            if 'optimizer_state_dict' in self._checkpoint_state:
-                optimizer.load_state_dict(self._checkpoint_state['optimizer_state_dict'])
+        if self.resume_training and hasattr(self, '_checkpoint_state') and 'optimizer_state_dict' in self._checkpoint_state:
+            optimizer.load_state_dict(self._checkpoint_state['optimizer_state_dict'])
         
         # Handle lr_scheduler configuration
         if self.lr_scheduler_config is None:
@@ -178,9 +188,8 @@ class SupervisedRoutine(L.LightningModule):
             raise TypeError(f"LR scheduler must be callable or dict, got {type(self.lr_scheduler_config)}")
         
         # Load scheduler state if resuming training
-        if hasattr(self, '_checkpoint_state') and self.resume_training:
-            if 'lr_scheduler_state_dict' in self._checkpoint_state:
-                lr_scheduler.load_state_dict(self._checkpoint_state['lr_scheduler_state_dict'])
+        if self.resume_training and hasattr(self, '_checkpoint_state') and 'lr_scheduler_state_dict' in self._checkpoint_state:
+            lr_scheduler.load_state_dict(self._checkpoint_state['lr_scheduler_state_dict'])
         
         # Return optimizer and scheduler configuration
         return {
@@ -321,19 +330,31 @@ class SupervisedRoutine(L.LightningModule):
         # We also use `weights_only=True` to load only the model weights, out of securtiy
         # reasons.
 
-        # Validate the checkpoint dictionary
-        keys = ['model_state_dict']
-        if resume_training:
-            keys += ['optimizer_state_dict']
-            if self.lr_scheduler_config:
-                keys.append('lr_scheduler_state_dict')
-        self._validate_checkpoint_dict(checkpoint, keys)
+        # Always validate that model state dict is present
+        required_keys = ['model_state_dict']
+        self._validate_checkpoint_dict(checkpoint, required_keys)
 
-        # Load state dictionaries
+        # Always load the model state dict
         self.model.load_state_dict(checkpoint['model_state_dict'])
+
+        # Store checkpoint state for potential optimizer/scheduler loading if resuming training
         if resume_training:
-            # Note: optimizer and lr_scheduler state dicts will be loaded by Lightning
-            # when configure_optimizers is called, so we store the checkpoint for later use
+            # When resuming training, we expect optimizer state dict to be present
+            if 'optimizer_state_dict' not in checkpoint:
+                warnings.warn(
+                    "resume_training=True but checkpoint does not contain 'optimizer_state_dict'. "
+                    "Optimizer will start with fresh initialization.",
+                    UserWarning,
+                    stacklevel=2
+                )
+            if self.lr_scheduler_config and 'lr_scheduler_state_dict' not in checkpoint:
+                warnings.warn(
+                    "resume_training=True but checkpoint does not contain 'lr_scheduler_state_dict'. "
+                    "LR scheduler will start with fresh initialization.",
+                    UserWarning,
+                    stacklevel=2
+                )
+            # Store checkpoint for later use in configure_optimizers
             self._checkpoint_state = checkpoint
 
         self.log("pretrained_model_loaded", True, prog_bar=True)
