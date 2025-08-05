@@ -8,6 +8,7 @@ import wandb
 from omegaconf import DictConfig, OmegaConf
 
 from chemtorch.data_module import DataModule, Stage
+from chemtorch.utils.cli import cli_chemtorch_logo
 from chemtorch.utils.hydra import safe_instantiate
 from chemtorch.utils.misc import save_predictions
 
@@ -17,6 +18,7 @@ ROOT_DIR = Path(__file__).parent.parent
 
 @hydra.main(version_base=None, config_path="../conf", config_name="config")
 def main(cfg: DictConfig):
+    cli_chemtorch_logo()
     # config mutable
     OmegaConf.set_struct(cfg, False)
 
