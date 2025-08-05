@@ -259,7 +259,7 @@ class DatasetBase(Generic[T]):
         """
         if not self.has_labels:
             raise RuntimeError("Dataset does not contain labels.")
-        return self.dataframe['label'].mean()
+        return self.dataframe['label'].mean().item()
     
     @property
     def std(self) -> float:
@@ -274,4 +274,4 @@ class DatasetBase(Generic[T]):
         """
         if not self.has_labels:
             raise RuntimeError("Dataset does not contain labels.")
-        return self.dataframe['label'].std()
+        return self.dataframe['label'].std().item()
