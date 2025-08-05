@@ -1,4 +1,4 @@
-from typing import Dict, Tuple, Callable, Iterator, Literal, Union, Mapping
+from typing import Dict, Tuple, Callable, Iterator, Literal, Union, Mapping, Any
 
 import os
 import torch
@@ -39,8 +39,8 @@ class SupervisedRoutine(L.LightningModule):
             self, 
             model: nn.Module, 
             loss: Callable = None, 
-            optimizer: Callable[[Iterator[nn.Parameter]], Optimizer] = None,
-            lr_scheduler: Callable[[Optimizer], LRScheduler] = None,
+            optimizer: Union[Callable[[Iterator[nn.Parameter]], Optimizer], None] = None,
+            lr_scheduler: Union[Callable[[Optimizer], LRScheduler], Dict[str, Any], None] = None,
             ckpt_path: str = None,
             resume_training: bool = False,
             metrics: Union[Metric, MetricCollection, Dict[str, Union[Metric, MetricCollection]]] = None,
@@ -53,8 +53,29 @@ class SupervisedRoutine(L.LightningModule):
             loss (Callable, optional): The loss function to be used. Required for training/validation/testing.
             optimizer (Callable, optional): A factory function that takes in the model's parameters 
                 and returns an optimizer instance. Required for training/validation/testing.
-            lr_scheduler (Callable, optional): A factory function that takes in the optimizer
-                and returns a learning rate scheduler instance. Only needed for training.
+                
+                Example:
+                    optimizer=lambda params: torch.optim.Adam(params, lr=1e-3)
+                    
+            lr_scheduler (Callable or Dict, optional): Either a factory function that takes in the optimizer
+                and returns a learning rate scheduler instance, or a Lightning config dictionary containing
+                a "scheduler" key with the partially instantiated scheduler factory and optional Lightning-specific keys.
+                Only needed for training.
+                
+                Examples:
+                    # Factory function approach
+                    lr_scheduler=lambda opt: torch.optim.lr_scheduler.StepLR(opt, step_size=10)
+                    
+                    # Lightning config dictionary approach
+                    lr_scheduler={
+                        "scheduler": partial_scheduler_factory,  # e.g., functools.partial(torch.optim.lr_scheduler.StepLR, step_size=10)
+                        # Lightning-specific keys (optional):
+                        "interval": "epoch",
+                        "frequency": 1,
+                        "monitor": "val_loss",
+                        # etc.
+                    }
+                    
             ckpt_path (str, optional): Path to a pre-trained model checkpoint.
             resume_training (bool, optional): Whether to resume training from a checkpoint.
             metrics (Metric, MetricCollection or Dict[str, Metric/MetricCollection], optional): Metrics to use for evaluation.
@@ -108,13 +129,13 @@ class SupervisedRoutine(L.LightningModule):
         self.model = model
         self.loss = loss
         self.optimizer_factory = optimizer
-        self.lr_scheduler_factory = lr_scheduler
-        self.metrics = self._init_metrics(metrics) if metrics else None
+        self.lr_scheduler_config = lr_scheduler
+        self.metrics = self._init_metrics(metrics) if metrics and (not isinstance(metrics, dict) or len(metrics) > 0) else None
         self.ckpt_path = ckpt_path
         self.resume_training = resume_training
 
     ########## LightningModule Methods ##############################################
-    def setup(self, stage: Literal['fit', 'validate', 'test', 'predict'] = None):
+    def setup(self, stage: Literal['fit', 'validate', 'test', 'predict'] | None = None):
         if stage in ['fit', 'validate', 'test']:
             if self.loss is None:
                 raise ValueError("Loss function must be defined for training.")
@@ -126,7 +147,8 @@ class SupervisedRoutine(L.LightningModule):
     def configure_optimizers(self):
         if self.optimizer_factory is None:
             return None
-            
+        
+        # Create optimizer from factory function
         optimizer = self.optimizer_factory(self.model.parameters())
         
         # Load optimizer state if resuming training
@@ -134,22 +156,37 @@ class SupervisedRoutine(L.LightningModule):
             if 'optimizer_state_dict' in self._checkpoint_state:
                 optimizer.load_state_dict(self._checkpoint_state['optimizer_state_dict'])
         
-        if self.lr_scheduler_factory:
-            lr_scheduler = self.lr_scheduler_factory(optimizer)
-            
-            # Load scheduler state if resuming training
-            if hasattr(self, '_checkpoint_state') and self.resume_training:
-                if 'lr_scheduler_state_dict' in self._checkpoint_state:
-                    lr_scheduler.load_state_dict(self._checkpoint_state['lr_scheduler_state_dict'])
-            
-            # Return both optimizer and scheduler
-            return {
-                "optimizer": optimizer,
-                "lr_scheduler": lr_scheduler,
-            }
-        else:
-            # Return only the optimizer
+        # Handle lr_scheduler configuration
+        if self.lr_scheduler_config is None:
+            # Return just the optimizer
             return optimizer
+        
+        if callable(self.lr_scheduler_config):
+            # Factory function approach
+            lr_scheduler = self.lr_scheduler_config(optimizer)
+            lr_scheduler_config = {"scheduler": lr_scheduler}
+        elif isinstance(self.lr_scheduler_config, dict):
+            # Lightning config dictionary approach
+            config = self.lr_scheduler_config.copy()
+            if "scheduler" not in config:
+                raise ValueError("LR scheduler config dictionary must contain 'scheduler' key with the scheduler factory")
+            
+            scheduler_factory = config.pop("scheduler")
+            lr_scheduler = scheduler_factory(optimizer)
+            lr_scheduler_config = {"scheduler": lr_scheduler, **config}
+        else:
+            raise TypeError(f"LR scheduler must be callable or dict, got {type(self.lr_scheduler_config)}")
+        
+        # Load scheduler state if resuming training
+        if hasattr(self, '_checkpoint_state') and self.resume_training:
+            if 'lr_scheduler_state_dict' in self._checkpoint_state:
+                lr_scheduler.load_state_dict(self._checkpoint_state['lr_scheduler_state_dict'])
+        
+        # Return optimizer and scheduler configuration
+        return {
+            "optimizer": optimizer,
+            "lr_scheduler": lr_scheduler_config,
+        }
 
     def forward(self, inputs: torch.Tensor) -> torch.Tensor:
         preds = self.model(inputs)
@@ -189,13 +226,13 @@ class SupervisedRoutine(L.LightningModule):
             self._update_metrics(self.metrics[split], preds, targets)
             if isinstance(self.metrics[split], Metric):
                 self.log(
-                    self.metrics[split].name, 
+                    self.metrics[split]._get_name(), 
                     self.metrics[split], 
                     on_step=False, 
                     on_epoch=True,
                     batch_size=batch_size,
                 )
-            else:
+            elif isinstance(self.metrics[split], MetricCollection):
                 self.log_dict(
                     self.metrics[split], 
                     on_step=False, 
@@ -219,25 +256,21 @@ class SupervisedRoutine(L.LightningModule):
         """
         metrics.update(preds, targets)
     
-    def _init_metrics(self, metrics: MetricCollection | Dict[str, MetricCollection]) -> Dict[str, MetricCollection]:
+    def _init_metrics(self, metrics: Union[Metric, MetricCollection, Dict[str, Union[Metric, MetricCollection]]]) -> Dict[str, Union[Metric, MetricCollection]]:
         metrics_dict = {}
         if isinstance(metrics, Metric):
-            # Single metric for all stages
-            metrics_dict = {
-                "train": metrics.clone(),
-                "val": metrics.clone(), 
-                "test": metrics.clone(),
-            }
-            metrics_dict["train"].prefix = "train_"
-            metrics_dict["val"].prefix = "val_"
-            metrics_dict["test"].prefix = "test_"
+            # Single metric for all stages - clone and reset state
+            for stage in ["train", "val", "test"]:
+                cloned_metric = metrics.clone()
+                cloned_metric.reset()
+                cloned_metric.prefix = f"{stage}_"
+                metrics_dict[stage] = cloned_metric
         elif isinstance(metrics, MetricCollection):
-            # Single MetricCollection for all stages
-            metrics_dict = {
-                "train": metrics.clone(prefix="train_"),
-                "val": metrics.clone(prefix="val_"),
-                "test": metrics.clone(prefix="test_"),
-            }
+            # Single MetricCollection for all stages - clone and reset state
+            for stage in ["train", "val", "test"]:
+                cloned_collection = metrics.clone(prefix=f"{stage}_")
+                cloned_collection.reset()
+                metrics_dict[stage] = cloned_collection
         elif isinstance(metrics, dict):
             # Dictionary that assigns each stage its own Metric/MetricCollection
             if not all(isinstance(v, (Metric, MetricCollection)) for v in metrics.values()):
@@ -251,10 +284,13 @@ class SupervisedRoutine(L.LightningModule):
             for stage, metric in metrics.items():
                 if isinstance(metric, Metric):
                     cloned_metric = metric.clone()
+                    cloned_metric.reset()
                     cloned_metric.prefix = f"{stage}_"
                     metrics_dict[stage] = cloned_metric
                 else:
-                    metrics_dict[stage] = metric.clone(prefix=f"{stage}_")
+                    cloned_collection = metric.clone(prefix=f"{stage}_")
+                    cloned_collection.reset()
+                    metrics_dict[stage] = cloned_collection
         else:
             raise TypeError(f"Metrics must be a torchmetrics.Metric, torchmetrics.MetricCollection, or a dictionary of Metrics/MetricCollections, got {type(metrics)}")
 
@@ -289,7 +325,7 @@ class SupervisedRoutine(L.LightningModule):
         keys = ['model_state_dict']
         if resume_training:
             keys += ['optimizer_state_dict']
-            if self.lr_scheduler_factory:
+            if self.lr_scheduler_config:
                 keys.append('lr_scheduler_state_dict')
         self._validate_checkpoint_dict(checkpoint, keys)
 
