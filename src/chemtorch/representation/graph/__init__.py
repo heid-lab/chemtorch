@@ -1,2 +1,2 @@
 from .cgr import CGR
-from .xyz_graph import XYZReactionRepresentation
+from .rtsp_3d_graph import RTSP3DGraph
