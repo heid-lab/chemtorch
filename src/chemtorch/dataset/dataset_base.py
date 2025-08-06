@@ -63,6 +63,7 @@ class DatasetBase(Generic[T]):
         cache: bool = True,
         max_cache_size: Optional[int] = None,
         subsample: Optional[int | float] = None,
+        integer_labels: bool = False,
     ):
         """
         Initialize the DatasetBase.
@@ -83,6 +84,9 @@ class DatasetBase(Generic[T]):
             subsample (Optional[int | float]): The subsample size or fraction. If None, no subsampling is done.
                 If an int, it specifies the number of samples to take. If a float, it specifies the fraction of
                 samples to take. Default is None.
+            integer_labels (bool): Whether to use integer labels (for classification) or float labels 
+                (for regression). If True, labels will be torch.int64. If False, labels will be torch.float. 
+                Default is False.
 
         Raises:
             ValueError: If the `dataframe` is not a pandas DataFrame.
@@ -99,9 +103,11 @@ class DatasetBase(Generic[T]):
             raise ValueError(
                 "Transform must be an instance of AbstractTransform, Callable, or None."
             )
+        
         self.dataframe = self._subsample_data(dataframe, subsample)
         self.representation = representation
         self.transform = transform
+        self.integer_labels = integer_labels
         self.has_labels = 'label' in self.dataframe.columns
 
         self.precompute_all = precompute_all
@@ -212,7 +218,9 @@ class DatasetBase(Generic[T]):
         try:
             row = self.dataframe.iloc[idx]
             if self.has_labels:
-                label = torch.tensor(row['label'], dtype=torch.float)
+                # Choose dtype based on integer_labels parameter
+                label_dtype = torch.int64 if self.integer_labels else torch.float
+                label = torch.tensor(row['label'], dtype=label_dtype)
                 sample = row.drop("label")
             else:
                 sample = row
