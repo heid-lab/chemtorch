@@ -1,3 +1,0 @@
-_target_: chemtorch.representation.graph.xyz_graph.XYZReactionRepresentation
-
-root_dir: "data/rdb7/geometries/forward"

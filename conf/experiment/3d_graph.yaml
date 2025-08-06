@@ -1,0 +1,30 @@
+# @package _global_
+defaults:
+  - /trainer: basic_trainer
+  - override /data_pipeline: rdb7_fwd_xyz
+  - override /dataset: graph
+  - override /dataset/representation: rtsp_3d_graph
+  - override /dataloader: pyg_dataloader
+  - override /model: dimenetplusplus
+  - override /routine: regression
+  - _self_
+
+# LOGGING (Weight and Biases)
+log: false
+project_name: chemtorch
+group_name: 3d_graph
+run_name: null
+
+# INITIALIZATION
+seed: 0
+
+tasks:
+  - fit
+  - test
+
+trainer:
+  max_epochs: 200
+
+runtime_args_from_dataset:
+  - mean
+  - std
