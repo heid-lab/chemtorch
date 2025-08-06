@@ -1,6 +1,7 @@
 # @package _global_
 defaults:
-  - override /data_ingestor: uspto_1k
+  - /trainer: basic_trainer
+  - override /data_pipeline: uspto_1k
   - override /dataset: fingerprint
   - override /dataloader: torch_dataloader
   - override /model: mlp
@@ -9,42 +10,35 @@ defaults:
 
 # LOGGING (Weight and Biases)
 log: false
-project_name: fingerprint
-group_name: null
+project_name: chemtorch
+group_name: fingerprint
 run_name: null
 
 # INITIALIZATION
 seed: 0
 
+tasks:
+  - fit
+  - test
+
+trainer:
+  max_epochs: 200
+
+num_classes: 1000
+dataset:
+  integer_labels: true
+
 model:
   in_channels: ${fp_length}
   hidden_size: 256
-  out_channels: 1000
+  out_channels: ${num_classes}
   num_hidden_layers: 2
   dropout: 0.02
   act: relu
 
-routine:
-  epochs: 200
-  patience: 30
-  lr_scheduler:
-    num_warmup_steps: 10
-
-parameter_limit: null
-
 runtime_args_from_dataset:
   - fp_length
 
-# DEVICE (deprecated)
-use_cuda: true
-device: gpu
-
-# MODEL LOADING (deprecated)
+# MODEL LOADING
 load_model: false
 ckpt_path: null
-
-# TODO: What is this used for?
-hydra:
-  output_subdir: null
-  run:
-    dir: .
