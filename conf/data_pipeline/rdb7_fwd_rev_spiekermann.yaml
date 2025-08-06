@@ -1,0 +1,17 @@
+_target_: chemtorch.data_pipeline.SimpleDataPipeline
+
+defaults:
+  - data_source: single_csv_source
+  - column_mapper: column_filter_and_rename
+  - data_splitter: index_splitter
+
+data_source:
+  data_path: "data/rdb7/barriers/forward_reverse_spiekermann_splits/data.csv"
+
+column_mapper:
+  column_mapping:
+    smiles: "rxn_smiles"
+    label: "ea"
+
+data_splitter:
+  split_index_path: "data/rdb7/barriers/forward_reverse_spiekermann_splits/seed0.pkl"
