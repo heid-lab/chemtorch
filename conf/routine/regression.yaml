@@ -1,25 +1,35 @@
-_target_: chemtorch.routine.regression.train
-_recursive_: False
+_target_: chemtorch.routine.RegressionRoutine
+_partial_: true     # Model passed at runtime
+_convert_: object   # Convert DictConfig objects to regular Python objects (otherwise the dicts passed to MetricCollection will not work correctly)
 
 defaults:
   - loss: mse
   - optimizer: adamw
   - lr_scheduler: graphgps_cosine_with_warmup
-  - _self_
 
-epochs: 30
+standardizer:
+  _target_: chemtorch.utils.Standardizer
+  mean: ${mean}   # root config updated with dataset properties at runtime
+  std: ${std}     # root config updated with dataset properties at runtime
 
-# gradient clipping
-clip_grad_norm: true
-clip_grad_norm_value: 1
-
-# early stopping
-patience: 10
-min_delta: 0.01
-
-# model saving
-save_model_parameters: false
-model_path: null
-
-# logging
-use_wandb: ${log}
+metrics:
+  train:
+    _target_: torchmetrics.MetricCollection
+    metrics:
+      rmse:  
+        _target_: torchmetrics.MeanSquaredError
+        squared: false
+  val: 
+    _target_: torchmetrics.MetricCollection
+    metrics:
+      rmse:  
+        _target_: torchmetrics.MeanSquaredError
+        squared: false
+  test: 
+    _target_: torchmetrics.MetricCollection
+    metrics:
+      rmse:  
+        _target_: torchmetrics.MeanSquaredError
+        squared: false
+      mae:
+        _target_: torchmetrics.MeanAbsoluteError
