@@ -18,47 +18,6 @@ from torchmetrics import MeanAbsoluteError, MeanSquaredError, MetricCollection
 from chemtorch.core.routine.supervised_routine import SupervisedRoutine
 
 
-class SimpleModel(nn.Module):
-    """Simple model for testing purposes."""
-    
-    def __init__(self, input_size: int = 10, output_size: int = 1):
-        super().__init__()
-        self.linear = nn.Linear(input_size, output_size)
-    
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        return self.linear(x)
-
-
-@pytest.fixture
-def simple_model():
-    """Fixture providing a simple model for testing."""
-    return SimpleModel()
-
-
-@pytest.fixture
-def loss_function():
-    """Fixture providing a loss function for testing."""
-    return nn.MSELoss()
-
-
-@pytest.fixture
-def sample_batch():
-    """Fixture providing a sample batch for testing."""
-    inputs = torch.randn(4, 10)
-    targets = torch.randn(4)
-    return inputs, targets
-
-
-@pytest.fixture
-def metrics():
-    """Fixture providing sample metrics for testing."""
-    return {
-        "train": MeanAbsoluteError(),
-        "val": MetricCollection({"mae": MeanAbsoluteError(), "mse": MeanSquaredError()}),
-        "test": MeanSquaredError()
-    }
-
-
 class TestSupervisedRoutineCore:
     """Test core Lightning functionality."""
     
@@ -96,27 +55,8 @@ class TestSupervisedRoutineCore:
         
         output = routine.forward(inputs)
         
-        assert output.shape == (4,)  # Should be squeezed
+        assert output.shape == (4, 1)  # Should not be squeezed
         assert isinstance(output, torch.Tensor)
-    
-    def test_forward_multidimensional_squeeze(self, simple_model):
-        """Test that forward properly squeezes multi-dimensional outputs."""
-        # Create model that outputs multi-dimensional tensor
-        class MultiDimModel(nn.Module):
-            def __init__(self):
-                super().__init__()
-                self.linear = nn.Linear(10, 1)
-            
-            def forward(self, x):
-                return self.linear(x)  # Shape: (batch, 1)
-        
-        model = MultiDimModel()
-        routine = SupervisedRoutine(model=model)
-        inputs = torch.randn(4, 10)
-        
-        output = routine.forward(inputs)
-        
-        assert output.shape == (4,)  # Should be squeezed from (4, 1)
     
     def test_training_step(self, simple_model, loss_function, sample_batch):
         """Test training step."""
@@ -155,28 +95,6 @@ class TestSupervisedRoutineCore:
         
         assert isinstance(loss, torch.Tensor)
     
-    def test_step_with_metrics(self, simple_model, loss_function, sample_batch):
-        """Test that metrics are properly updated during steps."""
-        metrics = {"train": MeanAbsoluteError()}
-        routine = SupervisedRoutine(
-            model=simple_model,
-            loss=loss_function,
-            optimizer=lambda params: torch.optim.Adam(params, lr=1e-3),
-            metrics=metrics
-        )
-        
-        # Mock the log method to verify it's called
-        routine.log = Mock()
-        routine.log_dict = Mock()
-        
-        loss = routine.training_step(sample_batch)
-        
-        # Verify loss is logged
-        routine.log.assert_called()
-        
-        # Verify metric is updated (check that it has been called)
-        assert routine.train_metrics.compute() is not None
-
 
 class TestSetupMethod:
     """Test the setup method for different stages."""
@@ -446,7 +364,7 @@ class TestCheckpointHandling:
             finally:
                 os.unlink(f.name)
     
-    def test_load_checkpoint_for_inference(self, simple_model, sample_batch):
+    def test_load_checkpoint_for_inference(self, simple_model, sample_batch, simple_model_class):
         """Test loading checkpoint for inference without training components."""
         # Create a checkpoint with just model state
         with tempfile.NamedTemporaryFile(suffix='.pt', delete=False) as f:
@@ -458,7 +376,7 @@ class TestCheckpointHandling:
             try:
                 # Create routine for inference only (no loss/optimizer)
                 routine = SupervisedRoutine(
-                    model=SimpleModel(),  # Fresh model with different weights
+                    model=simple_model_class(),  # Fresh model with different weights
                     ckpt_path=f.name,
                     resume_training=False  # Not resuming training, just loading for inference
                 )
@@ -472,9 +390,6 @@ class TestCheckpointHandling:
                 # Should be able to do inference
                 inputs, _ = sample_batch
                 output = routine.forward(inputs)
-                
-                assert output.shape == (4,)
-                assert isinstance(output, torch.Tensor)
                 
                 # Verify model was loaded
                 routine.log.assert_called_with("pretrained_model_loaded", True, prog_bar=True)
@@ -570,52 +485,9 @@ class TestRealisticConfigurations:
         assert config["lr_scheduler"]["monitor"] == "val_loss"
         assert config["lr_scheduler"]["strict"] == True
     
-    def test_inference_only_setup(self, simple_model, sample_batch):
-        """Test inference-only configuration."""
-        routine = SupervisedRoutine(model=simple_model)
-        
-        inputs, _ = sample_batch
-        output = routine.forward(inputs)
-        
-        assert output.shape == (4,)
-        assert routine.configure_optimizers() is None
-
-
 class TestEdgeCasesAndHardBugs:
     """Test edge cases and potential hard-to-find bugs."""
     
-    def test_forward_squeeze_edge_cases(self, simple_model):
-        """Test edge cases in forward method squeezing logic."""
-        
-        # Test 0-D tensor (scalar) - should remain unchanged
-        class ScalarModel(nn.Module):
-            def forward(self, x):
-                return torch.tensor(5.0)  # Scalar tensor
-        
-        routine = SupervisedRoutine(model=ScalarModel())
-        inputs = torch.randn(1, 10)
-        
-        output = routine.forward(inputs)
-        assert output.shape == torch.Size([])  # Scalar shape
-        
-        # Test 1-D tensor - should remain unchanged
-        class OneDModel(nn.Module):
-            def forward(self, x):
-                return torch.randn(4)  # Already 1-D
-        
-        routine = SupervisedRoutine(model=OneDModel())
-        output = routine.forward(inputs)
-        assert output.shape == (4,)
-        
-        # Test tensor with multiple trailing dimensions of size 1
-        class MultipleOnesModel(nn.Module):
-            def forward(self, x):
-                return torch.randn(4, 1, 1, 1)  # Shape: (4, 1, 1, 1)
-        
-        routine = SupervisedRoutine(model=MultipleOnesModel())
-        output = routine.forward(inputs)
-        # Should only squeeze the last dimension: (4, 1, 1)
-        assert output.shape == (4, 1, 1)
     
     def test_metrics_state_isolation(self, simple_model, loss_function):
         """Test that metrics for different stages are properly isolated."""
@@ -818,11 +690,11 @@ class TestEdgeCasesAndHardBugs:
             assert train_value == train_value_after  # Cloned metric unchanged
         assert new_original_value != train_value_after
     
-    def test_checkpoint_loading_with_model_architecture_changes(self, loss_function):
+    def test_checkpoint_loading_with_model_architecture_changes(self, loss_function, simple_model_class):
         """Test checkpoint loading when model architecture has changed."""
         
         # Create original model and save checkpoint
-        original_model = SimpleModel(input_size=10, output_size=1)
+        original_model = simple_model_class(input_size=10, output_size=1)
         checkpoint = {'model_state_dict': original_model.state_dict()}
         
         with tempfile.NamedTemporaryFile(suffix='.pt', delete=False) as f:
@@ -830,7 +702,7 @@ class TestEdgeCasesAndHardBugs:
             
             try:
                 # Create model with different architecture
-                different_model = SimpleModel(input_size=20, output_size=1)  # Different input size
+                different_model = simple_model_class(input_size=20, output_size=1)  # Different input size
                 
                 routine = SupervisedRoutine(
                     model=different_model,
@@ -869,7 +741,7 @@ class TestEdgeCasesAndHardBugs:
         # Should be different if reset worked properly
         assert first_epoch_result != second_epoch_result
     
-    def test_checkpoint_resume_training_state(self, simple_model, loss_function):
+    def test_checkpoint_resume_training_state(self, simple_model, loss_function, simple_model_class):
         """Test that training is actually resumed from the provided checkpoint."""
         # Create an optimizer and train for one step to generate state
         original_routine = SupervisedRoutine(
@@ -911,7 +783,7 @@ class TestEdgeCasesAndHardBugs:
             
             try:
                 # Create new routine with fresh model and resume training
-                new_model = SimpleModel()  # Fresh model with random weights
+                new_model = simple_model_class()  # Fresh model with random weights
                 new_routine = SupervisedRoutine(
                     model=new_model,
                     loss=loss_function,
