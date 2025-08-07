@@ -1,11 +1,6 @@
 # main config 
 
 defaults:
-  - data_pipeline: null
-  - dataset: null
-  - dataloader: null
-  - model: null
-  - routine: null
   - override hydra/job_logging: disabled
   - override hydra/hydra_logging: disabled
   - _self_

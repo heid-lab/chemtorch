@@ -1,12 +1,12 @@
 # @package _global_
 defaults:
   - /trainer: basic_trainer
-  - override /data_pipeline: uspto_1k
-  - override /dataset: token
-  - override /dataloader: torch_dataloader
-  - override /model: han
-  - override /routine: classification
-  - override /routine/loss: cross_entropy
+  - /data_pipeline: uspto_1k
+  - /dataset: token
+  - /dataloader: torch_dataloader
+  - /model: han
+  - /routine: classification
+  - /routine/loss: cross_entropy
   - _self_
 
 # LOGGING (Weight and Biases)

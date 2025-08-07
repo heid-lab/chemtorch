@@ -1,11 +1,11 @@
 # @package _global_
 defaults:
   - /trainer: basic_trainer
-  - override /data_pipeline: uspto_1k
-  - override /dataset: fingerprint
-  - override /dataloader: torch_dataloader
-  - override /model: mlp
-  - override /routine: classification
+  - /data_pipeline: uspto_1k
+  - /dataset: fingerprint
+  - /dataloader: torch_dataloader
+  - /model: mlp
+  - /routine: classification
   - _self_
 
 # LOGGING (Weight and Biases)
