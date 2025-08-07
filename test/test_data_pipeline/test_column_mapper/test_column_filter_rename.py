@@ -1,7 +1,7 @@
 import pandas as pd
 import pytest
 
-from chemtorch.data_pipeline.column_mapper import ColumnFilterAndRename
+from chemtorch.components.data_pipeline.column_mapper import ColumnFilterAndRename
 from chemtorch.utils import DataSplit
 
 

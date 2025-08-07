@@ -1,4 +1,4 @@
-_target_: chemtorch.model.han.HAN
+_target_: chemtorch.components.model.han.HAN
 
 embedding_in_channels: ${vocab_size}
 embedding_hidden_channels: 200

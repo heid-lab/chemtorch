@@ -1,4 +1,4 @@
-_target_: chemtorch.data_pipeline.column_mapper.ColumnFilterAndRename
+_target_: chemtorch.components.data_pipeline.column_mapper.ColumnFilterAndRename
 column_mapping: null
 
 # e.g.

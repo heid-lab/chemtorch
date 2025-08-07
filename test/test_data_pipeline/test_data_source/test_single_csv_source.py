@@ -1,7 +1,7 @@
 import pandas as pd
 import pytest
 
-from chemtorch.data_pipeline.data_source.single_csv_source import (
+from chemtorch.components.data_pipeline.data_source.single_csv_source import (
     SingleCSVSource,
 )
 

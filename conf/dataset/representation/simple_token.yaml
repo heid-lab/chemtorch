@@ -1,4 +1,4 @@
-_target_: chemtorch.representation.token.simple_token_representation.SimpleTokenRepresentation
+_target_: chemtorch.components.representation.token.simple_token_representation.SimpleTokenRepresentation
 
 defaults:
   - tokenizer: simple_tokenizer

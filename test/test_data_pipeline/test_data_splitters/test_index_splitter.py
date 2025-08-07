@@ -3,7 +3,7 @@ import pickle
 import pandas as pd
 import pytest
 
-from chemtorch.data_pipeline.data_splitter import IndexSplitter
+from chemtorch.components.data_pipeline.data_splitter import IndexSplitter
 from chemtorch.utils import DataSplit
 
 

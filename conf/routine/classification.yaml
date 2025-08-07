@@ -1,4 +1,4 @@
-_target_: chemtorch.routine.SupervisedRoutine
+_target_: chemtorch.core.routine.SupervisedRoutine
 _partial_: true     # Model passed at runtime
 _convert_: object   # Convert DictConfig objects to regular Python objects (otherwise the dicts passed to MetricCollection will not work correctly)
 

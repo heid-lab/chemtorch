@@ -15,7 +15,7 @@ from functools import partial
 
 from torchmetrics import MeanAbsoluteError, MeanSquaredError, MetricCollection
 
-from chemtorch.routine.lightning_routine.supervised_routine import SupervisedRoutine
+from chemtorch.core.routine.supervised_routine import SupervisedRoutine
 
 
 class SimpleModel(nn.Module):

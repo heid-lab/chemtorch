@@ -1,7 +1,7 @@
 import pandas as pd
 import pytest
 
-from chemtorch.data_pipeline.data_source import PreSplitCSVSource
+from chemtorch.components.data_pipeline.data_source import PreSplitCSVSource
 from chemtorch.utils import DataSplit
 
 

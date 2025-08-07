@@ -1,7 +1,7 @@
 import pandas as pd
 import pytest
 
-from chemtorch.data_pipeline.data_splitter import RatioSplitter
+from chemtorch.components.data_pipeline.data_splitter import RatioSplitter
 from chemtorch.utils import DataSplit
 
 

@@ -1,4 +1,4 @@
-_target_: chemtorch.dataset.token_dataset.TokenDataset
+_target_: chemtorch.components.dataset.token_dataset.TokenDataset
 _partial_: true
 
 defaults:
