@@ -1,12 +1,11 @@
 # @package _global_
 defaults:
   - /trainer: basic_trainer
-  - override /data_pipeline: rdb7_fwd_rev_spiekermann
-  - override /dataset: graph
-  - override /dataloader: pyg_dataloader
-  - override /model: dmpnn
-  - override /routine: regression
-  - override /routine/lr_scheduler: cosine_with_warmup
+  - /data_pipeline: rdb7_fwd_rev_spiekermann
+  - /dataset: graph
+  - /dataloader: pyg_dataloader
+  - /model: dmpnn
+  - /routine: regression
   - _self_
 
 # LOGGING (Weight and Biases)

@@ -1,12 +1,12 @@
 # @package _global_
 defaults:
   - /trainer: basic_trainer
-  - override /data_pipeline: rdb7_fwd_xyz
-  - override /dataset: graph
-  - override /dataset/representation: rtsp_3d_graph
-  - override /dataloader: pyg_dataloader
-  - override /model: dimenetplusplus
-  - override /routine: regression
+  - /data_pipeline: rdb7_fwd_xyz
+  - /dataset: graph
+  - /dataset/representation: rtsp_3d_graph
+  - /dataloader: pyg_dataloader
+  - /model: dimenetplusplus
+  - /routine: regression
   - _self_
 
 # LOGGING (Weight and Biases)

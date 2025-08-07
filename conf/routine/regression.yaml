@@ -5,7 +5,7 @@ _convert_: object   # Convert DictConfig objects to regular Python objects (othe
 defaults:
   - loss: mse
   - optimizer: adamw
-  - lr_scheduler: graphgps_cosine_with_warmup
+  - lr_scheduler: cosine_with_warmup
 
 standardizer:
   _target_: chemtorch.utils.Standardizer
