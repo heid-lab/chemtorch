@@ -1,4 +1,4 @@
-_target_: chemtorch.pool.pma.PMA
+_target_: chemtorch.components.model.gnn.pool.pma.PMA
 channels: ${model.hidden_channels}
 num_seed_points: 1
 heads: 1

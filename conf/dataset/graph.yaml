@@ -1,4 +1,4 @@
-_target_: chemtorch.dataset.GraphDataset
+_target_: chemtorch.components.dataset.GraphDataset
 _partial_: true
 
 defaults:

@@ -1,4 +1,4 @@
-_target_: chemtorch.routine.regression.train
+_target_: chemtorch.core.routine.deprecated.regression.train
 _recursive_: False
 
 defaults:

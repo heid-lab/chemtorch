@@ -1,7 +1,7 @@
 interval: epoch
 frequency: 1
 scheduler:
-  _target_: chemtorch.scheduler.cosine_with_warmup_lr.CosineWithWarmupLR
+  _target_: chemtorch.core.scheduler.cosine_with_warmup_lr.CosineWithWarmupLR
   _partial_: true
 
   num_warmup_steps: 10

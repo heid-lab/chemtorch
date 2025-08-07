@@ -1,4 +1,4 @@
-_target_: chemtorch.data_pipeline.SimpleDataPipeline
+_target_: chemtorch.components.data_pipeline.SimpleDataPipeline
 
 defaults:
   - data_source: pre_split_csv

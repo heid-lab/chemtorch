@@ -7,7 +7,7 @@ import lightning as L
 import wandb
 from omegaconf import DictConfig, OmegaConf
 
-from chemtorch.data_module import DataModule, Stage
+from chemtorch.core.data_module import DataModule, Stage
 from chemtorch.utils.cli import cli_chemtorch_logo
 from chemtorch.utils.hydra import safe_instantiate
 from chemtorch.utils.misc import save_predictions
@@ -38,7 +38,7 @@ def main(cfg: DictConfig):
     ##### UPDATE GLOBAL CONFIG FROM DATASET ATTRIBUTES ##############################
     # TODO: Bad practice, find a proper solution to pass these dataset
     # properties to the model/routine
-    if "train" in cfg.tasks:
+    if "fit" in cfg.tasks:
         key = "train"
     elif "validate" in cfg.tasks:
         key = "val"
@@ -73,7 +73,7 @@ def main(cfg: DictConfig):
             config=resolved_cfg, # type: ignore
         )
         stages: List[Stage] = []
-        if "train" in cfg.tasks:
+        if "fit" in cfg.tasks:
             stages.append("train")
         if "validate" in cfg.tasks:
             stages.append("val")

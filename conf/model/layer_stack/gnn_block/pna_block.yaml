@@ -1,4 +1,4 @@
-_target_: chemtorch.layer.gnn_layer.GNNBlock
+_target_: chemtorch.components.layer.gnn_layer.GNNBlock
 
 defaults:
   - graph_conv: pna_conv

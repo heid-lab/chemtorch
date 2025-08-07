@@ -2,17 +2,17 @@ import pandas as pd
 import pytest
 from torch import nn
 
-from chemtorch.data_pipeline.column_mapper import ColumnFilterAndRename
-from chemtorch.data_pipeline.data_source import (
+from chemtorch.components.data_pipeline.column_mapper import ColumnFilterAndRename
+from chemtorch.components.data_pipeline.data_source import (
     DataSource,
     PreSplitCSVSource,
     SingleCSVSource,
 )
-from chemtorch.data_pipeline.data_splitter import (
+from chemtorch.components.data_pipeline.data_splitter import (
     DataSplitter,
     RatioSplitter,
 )
-from chemtorch.data_pipeline.simple_data_pipeline import SimpleDataPipeline
+from chemtorch.components.data_pipeline.simple_data_pipeline import SimpleDataPipeline
 from chemtorch.utils import CallableCompose, DataSplit
 
 

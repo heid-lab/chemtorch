@@ -1,6 +1,6 @@
-_target_: chemtorch.featurizer.FeaturizerCompose
+_target_: chemtorch.components.preprocessing.featurizer.FeaturizerCompose
 
 featurizers:
-  - _target_: chemtorch.featurizer.BondTypeFeaturizer
-  - _target_: chemtorch.featurizer.BondIsConjugatedFeaturizer
-  - _target_: chemtorch.featurizer.BondInRingFeaturizer
+  - _target_: chemtorch.components.preprocessing.featurizer.BondTypeFeaturizer
+  - _target_: chemtorch.components.preprocessing.featurizer.BondIsConjugatedFeaturizer
+  - _target_: chemtorch.components.preprocessing.featurizer.BondInRingFeaturizer

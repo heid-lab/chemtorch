@@ -8,7 +8,7 @@ scheduler:
   num_training_steps: ${trainer.max_epochs}
   num_cycles: 0.5
   lr_lambda:
-    _target_: chemtorch.scheduler.graphgps_cosine_with_warmup_lr.get_cosine_scheduler_with_warmup
+    _target_: chemtorch.scheduler.core.graphgps_cosine_with_warmup_lr.get_cosine_scheduler_with_warmup
     num_warmup_steps: ${..num_warmup_steps}
     num_training_steps: ${..num_training_steps}
     num_cycles: ${..num_cycles}

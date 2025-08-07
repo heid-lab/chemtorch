@@ -2,7 +2,7 @@ import torch
 import math
 import pytest
 
-from chemtorch.scheduler.cosine_with_warmup_lr import CosineWithWarmupLR
+from chemtorch.core.scheduler.cosine_with_warmup_lr import CosineWithWarmupLR
 
 
 # Previously hard-coded implementation of cosine with warmup
