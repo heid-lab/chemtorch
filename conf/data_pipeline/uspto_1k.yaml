@@ -9,6 +9,5 @@ data_source:
   data_folder: "data/uspto-1k/classes/pre_split"
   
 column_mapper:
-  column_mapping:
-    smiles: "reaction"
-    label: "labels"
+  smiles: "reaction"
+  label: "labels"

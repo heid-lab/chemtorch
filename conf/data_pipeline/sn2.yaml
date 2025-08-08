@@ -9,9 +9,8 @@ data_source:
   data_path: "data/sn2/barriers/data.csv"
   
 column_mapper:
-  column_mapping:
-    smiles: "AAM"
-    label: "ea"
+  smiles: "AAM"
+  label: "ea"
 
 data_splitter:
   train_ratio: 0.9

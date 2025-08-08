@@ -9,9 +9,8 @@ data_source:
   data_path: "data/rdb7/barriers/forward/data.csv"
 
 column_mapper:
-  column_mapping:
-    smiles: "smiles"
-    label: "dE0"
+  smiles: "smiles"
+  label: "dE0"
 
 data_splitter:
   train_ratio: 0.9
