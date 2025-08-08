@@ -9,9 +9,8 @@ data_source:
   data_path: "data/rdb7/barriers/forward_reverse_spiekermann_splits/data.csv"
 
 column_mapper:
-  column_mapping:
-    smiles: "rxn_smiles"
-    label: "ea"
+  smiles: "rxn_smiles"
+  label: "ea"
 
 data_splitter:
   split_index_path: "data/rdb7/barriers/forward_reverse_spiekermann_splits/seed0.pkl"

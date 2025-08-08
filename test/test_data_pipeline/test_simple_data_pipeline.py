@@ -74,7 +74,7 @@ def test_preprocessing_with_single_csv_source_and_column_mapper(
     source = SingleCSVSource(data_path=single_csv_file)
     splitter = RatioSplitter(train_ratio=0.8, val_ratio=0.1, test_ratio=0.1)
     column_mapper = ColumnFilterAndRename(
-        column_mapping={"new_col1": "col1", "new_col2": "col2"}
+        new_col1="col1", new_col2="col2"
     )
 
     # Load data and process through the pipeline
@@ -96,7 +96,7 @@ def test_preprocessing_with_split_csv_source_and_column_mapper(
     """Test the data pipeline with SplitCSVSource and ColumnFilterAndRename."""
     source = PreSplitCSVSource(data_folder=split_csv_folder)
     column_mapper = ColumnFilterAndRename(
-        column_mapping={"new_col1": "col1", "new_col2": "col2"}
+        new_col1="col1", new_col2="col2"
     )
 
     # Load data and process through the pipeline

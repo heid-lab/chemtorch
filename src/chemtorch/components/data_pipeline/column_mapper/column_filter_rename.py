@@ -15,19 +15,32 @@ from chemtorch.utils import DataSplit
 class ColumnFilterAndRename(ColumnMapper):
     """
     A pipeline component that filters and renames columns in a DataFrame
-    based on a provided column mapping.
+    based on provided column mappings.
+    
+    Usage:
+        mapper = ColumnFilterAndRename(smiles="smiles_column", label="target_column")
+        # This will rename "smiles_column" to "smiles" and "target_column" to "label"
     """
 
-    def __init__(self, column_mapping: dict):
+    def __init__(self, **column_mappings):
         """
         Initialize the ColumnFilterAndRename.
 
         Args:
-            column_mapping (dict): A dictionary mapping new column names to
-                                   existing column names in the DataFrame.
+            **column_mappings: Keyword arguments where the key is the new column name
+                              and the value is the existing column name in the DataFrame.
+                              Example: smiles="smiles_column", label="target_column"
         """
         super(ColumnFilterAndRename, self).__init__()
-        self.column_mapping = column_mapping
+        # Filter out None values and empty strings
+        self.column_mapping = {k: v for k, v in column_mappings.items() 
+                             if v is not None and v != ""}
+        
+        if not self.column_mapping:
+            raise ValueError(
+                "At least one column mapping must be provided. "
+                "Example: ColumnFilterAndRename(smiles='smiles_column', label='target_column')"
+            )
 
     @override
     def __call__(

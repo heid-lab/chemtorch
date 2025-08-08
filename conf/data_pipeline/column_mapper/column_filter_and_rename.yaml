@@ -1,7 +1,7 @@
 _target_: chemtorch.components.data_pipeline.column_mapper.ColumnFilterAndRename
-column_mapping: null
 
+# Column mappings using kwargs syntax
+# The key is the new column name, the value is the existing column name
 # e.g.
-# column_mapping:
-#   smiles: "smiles"
-#   label: "Ea"
+# smiles: "smiles_column"
+# label: "target_column"
