@@ -14,7 +14,7 @@ from chemtorch.utils.misc import save_predictions
 
 OmegaConf.register_new_resolver("eval", eval)
 
-ROOT_DIR = Path(__file__).parent.parent
+ROOT_DIR = Path(__file__).parent
 
 @hydra.main(version_base=None, config_path="conf", config_name="base")
 def main(cfg: DictConfig):
@@ -26,6 +26,26 @@ def main(cfg: DictConfig):
     L.seed_everything(seed) # different results when using custom set_seed
 
     ##### DATA MODULE ##############################################################
+    if "predict" in cfg.tasks:
+        # Remove label from column mapper since it should not be specified for inference (error will be 
+        # raised if it is specified) 
+        if cfg.data_pipeline.column_mapper.label is not None:
+            OmegaConf.update(
+                cfg=cfg,
+                key="data_pipeline.column_mapper.label",
+                value=None,
+                merge=True,
+            )
+        # Set the standardizer of regression routine to None since it should be loaded from the checkpoint
+        # and not created anew for inference.
+        if cfg.routine.standardizer is not None:
+            OmegaConf.update(
+                cfg=cfg,
+                key="routine.standardizer",
+                value=None,
+                merge=True,
+            )
+
     data_pipeline = safe_instantiate(cfg.data_pipeline)
     dataset_factory = safe_instantiate(cfg.dataset)
     dataloader_factory = safe_instantiate(cfg.dataloader)
