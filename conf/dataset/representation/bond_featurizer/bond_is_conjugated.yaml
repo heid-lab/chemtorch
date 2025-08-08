@@ -1,2 +1,2 @@
 # bond is conjugated
-_target_: deepration.featurizer.BondIsConjugatedFeaturizer
+_target_: deepration.components.preprocessing.featurizer.BondIsConjugatedFeaturizer

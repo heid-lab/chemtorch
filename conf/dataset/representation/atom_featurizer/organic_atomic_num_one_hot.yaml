@@ -1,1 +1,1 @@
-_target_: chemtorch.featurizer.atom_featurizer.atomic_num.OrganicAtomicNumberOneHotFeaturizer
+_target_: chemtorch.components.preprocessing.featurizer.atom_featurizer.atomic_num.OrganicAtomicNumberOneHotFeaturizer

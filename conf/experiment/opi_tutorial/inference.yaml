@@ -1,0 +1,47 @@
+# @package _global_
+defaults:
+  - /trainer: basic_trainer
+  - /data_pipeline: rgd1
+  - /dataset: graph
+  - /dataloader: pyg_dataloader
+  - /model: dmpnn
+  - /routine: regression
+  - _self_
+
+# Configure logging via Weight and Biases
+log: false  # no need to log for inference
+project_name: chemtorch
+group_name: opi_tutorial
+run_name: inference
+
+# Set random seed
+seed: 0
+
+# Specify `fit` to train and validate the model, and `test` to evaluate it on the holdout test set
+tasks:
+  - predict
+
+# Override the data source from which to create the training, validation and test sets to the filtered RGD1 dataset
+data_pipeline:
+  data_source:
+    data_path: "data/rgd1/barriers/unlabeled_data.csv"
+  data_splitter: null
+
+# Load trained model
+load_model: true
+ckpt_path: "lightning_logs/rgd1/dmpnn/seed_0_2025-08-08_14-34-36/checkpoints/epoch=0-step=3.ckpt"
+
+# Save predictions
+prediction_save_path: "predictions/rgd1/dmpnn/seed_0_2025-08-08_14-34-36/predictions.csv"
+
+
+# Don't create a new standardizer (the standardizer of the training set is loaded from the checkpoint)
+# routine:
+#   standardizer: null
+
+
+# Parameters computed at runtime from the data which are required for interpolation in lower-level configs
+runtime_args_from_dataset:
+  # dimensions of feature vectors are needed for model initialization
+  - num_node_features
+  - num_edge_features

@@ -2,7 +2,7 @@ from .hydra import order_config_by_signature
 from .callable_compose import CallableCompose
 from .decorators.enforce_base_init import enforce_base_init
 from .standardizer import Standardizer
-from .data_split import DataSplit
+from .types import DataSplit
 from .misc import (
     save_model, 
     load_model, 

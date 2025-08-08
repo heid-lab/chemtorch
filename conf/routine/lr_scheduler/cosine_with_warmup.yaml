@@ -1,8 +1,11 @@
-_target_: chemtorch.scheduler.cosine_with_warmup_lr.CosineWithWarmupLR
-_partial_: true
+interval: epoch
+frequency: 1
+scheduler:
+  _target_: chemtorch.core.scheduler.cosine_with_warmup_lr.CosineWithWarmupLR
+  _partial_: true
 
-num_warmup_steps: 10      
-num_training_steps: ${routine.epochs}
-eta_min: 0.0 
-start_factor: 1e-6
-end_factor: 1.0
+  num_warmup_steps: 10
+  num_training_steps: ${trainer.max_epochs}
+  eta_min: 0.0 
+  start_factor: 1e-6
+  end_factor: 1.0

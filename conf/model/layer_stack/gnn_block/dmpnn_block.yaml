@@ -1,4 +1,4 @@
-_target_: chemtorch.layer.gnn_layer.DMPNNBlock
+_target_: chemtorch.components.layer.gnn_layer.DMPNNBlock
 
 defaults:
   - graph_conv: dmpnn_conv

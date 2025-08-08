@@ -1,4 +1,4 @@
-_target_: chemtorch.encoder.linear_enc.LinearEncoder
+_target_: chemtorch.components.model.gnn.encoder.linear_enc.LinearEncoder
 node_encoder_in_channels: ${num_node_features}
 edge_encoder_in_channels: ${num_edge_features}
 out_channels: ${model.hidden_channels}

@@ -1,2 +1,0 @@
-_target_: chemtorch.data_ingestor.data_splitter.IndexSplitter 
-split_index_path: null
