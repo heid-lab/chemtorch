@@ -1,0 +1,41 @@
+# @package _global_
+defaults:
+  - /trainer: basic_trainer
+  - /data_pipeline: rgd1
+  - /dataset: graph
+  - /dataloader: pyg_dataloader
+  - /model: dmpnn
+  - /routine: regression
+  - _self_
+
+# Configure logging via Weight and Biases
+log: true
+project_name: chemtorch
+group_name: opi_tutorial
+run_name: training
+
+# Set random seed
+seed: 0
+
+# Specify `fit` to train and validate the model, and `test` to evaluate it on the holdout test set
+tasks:
+  - fit
+  - test
+
+# Override the data source from which to create the training, validation and test sets to the filtered RGD1 dataset
+data_pipeline:
+  data_source:
+    data_path: "data/rgd1/barriers/filtered.csv"
+
+# Set the maximum number of training iterations
+trainer:
+  max_epochs: 200
+
+# Parameters computed at runtime from the data which are required for interpolation in lower-level configs
+runtime_args_from_dataset:
+  # dimensions of feature vectors are needed for model initialization
+  - num_node_features
+  - num_edge_features
+  # mean and std of the training dataset are needed for standardization of the models predictions for better convergence
+  - mean
+  - std

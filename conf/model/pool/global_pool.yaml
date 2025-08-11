@@ -1,2 +1,2 @@
-_target_: chemtorch.pool.pool.GlobalPool
+_target_: chemtorch.components.model.gnn.pool.pool.GlobalPool
 aggr: add

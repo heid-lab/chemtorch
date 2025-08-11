@@ -1,4 +1,4 @@
-_target_: chemtorch.dataset.token_dataset.TokenDataset
+_target_: chemtorch.components.dataset.token_dataset.TokenDataset
 _partial_: true
 
 defaults:
@@ -7,5 +7,5 @@ defaults:
   
 precompute_all: true
 cache: true
-max_size_cache: null
-subsample: null         
+max_cache_size: null
+subsample: null

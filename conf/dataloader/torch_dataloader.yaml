@@ -1,4 +1,5 @@
 _target_: torch.utils.data.DataLoader
+_partial_: true
 
 batch_size: 50
 num_workers: 0

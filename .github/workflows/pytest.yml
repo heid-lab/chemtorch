@@ -1,0 +1,50 @@
+name: tests
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      TORCH: 2.5.0
+      CUDA: cpu       # or cu118, cu124, etc.
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install uv (and enable caching)
+      uses: astral-sh/setup-uv@v6
+      with:
+        enable-cache: true
+
+    - name: Setup Python
+      run: |           
+        # uv respects requires-python in pyproject.toml
+        uv python install
+
+    - name: Install project deps
+      run: |
+        uv sync --locked --all-extras --dev
+
+    - name: Install PyTorch Geometric
+      run: |
+        uv pip install torch_geometric \
+          pyg_lib torch_scatter torch_sparse torch_cluster torch_spline_conv \
+          -f https://data.pyg.org/whl/torch-${{ env.TORCH }}+${{ env.CUDA }}.html
+    - name: Run pytest with coverage
+      run: |
+        uv run pytest test/ \
+          --cov=./src \
+          --cov-report=xml:coverage.xml \
+          --cov-report=term-missing
+
+    - name: Post coverage comment
+      if: ${{ github.event_name == 'pull_request' }}
+      uses: MishaKav/pytest-coverage-comment@main
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        pytest-coverage-path: './coverage.xml'
+        junitxml-path: './report.xml'	
+
+    - name: Prune uv cache
+      run: uv cache prune --ci

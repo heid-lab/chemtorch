@@ -1,0 +1,2 @@
+_target_: chemtorch.components.data_pipeline.data_source.SingleCSVSource
+data_path: null

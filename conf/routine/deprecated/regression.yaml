@@ -1,0 +1,25 @@
+_target_: chemtorch.core.routine.deprecated.regression.train
+_recursive_: False
+
+defaults:
+  - loss: mse
+  - optimizer: adamw
+  - lr_scheduler: graphgps_cosine_with_warmup
+  - _self_
+
+epochs: 30
+
+# gradient clipping
+clip_grad_norm: true
+clip_grad_norm_value: 1
+
+# early stopping
+patience: 10
+min_delta: 0.01
+
+# model saving
+save_model_parameters: false
+model_path: null
+
+# logging
+use_wandb: ${log}

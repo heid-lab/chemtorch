@@ -1,0 +1,13 @@
+_target_: chemtorch.components.data_pipeline.SimpleDataPipeline
+
+defaults:
+  - data_source: pre_split_csv_source
+  - column_mapper: column_filter_and_rename
+  - data_splitter: null
+
+data_source:
+  data_folder: "data/cycloadd/barriers/pre_split"
+
+column_mapper:
+  smiles: "rxn_smiles"
+  label: "G_act"

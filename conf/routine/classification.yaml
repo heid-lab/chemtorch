@@ -1,25 +1,13 @@
-_target_: chemtorch.routine.classification.train
-_recursive_: False
+_target_: chemtorch.core.routine.SupervisedRoutine
+_partial_: true     # Model passed at runtime
+_convert_: object   # Convert DictConfig objects to regular Python objects (otherwise the dicts passed to MetricCollection will not work correctly)
 
 defaults:
   - loss: cross_entropy
   - optimizer: adamw
   - lr_scheduler: graphgps_cosine_with_warmup
-  - _self_
 
-epochs: 30
-
-# gradient clipping
-clip_grad_norm: true
-clip_grad_norm_value: 1
-
-# early stopping
-patience: 10
-min_delta: 0.01
-
-# model saving
-save_model_parameters: false
-model_path: null
-
-# logging
-use_wandb: ${log}
+metrics:
+  _target_: torchmetrics.Accuracy
+  task: multiclass
+  num_classes: ${num_classes}

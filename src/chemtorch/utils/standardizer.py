@@ -20,27 +20,27 @@ class Standardizer:
         self.mean = mean
         self.std = std
 
-    def standardize(self, x: Union[torch.Tensor, np.ndarray]) -> Union[torch.Tensor, np.ndarray]:
+    def standardize(self, x: torch.Tensor) -> torch.Tensor:
         """
         Standardize the input data by subtracting the mean and dividing by the standard deviation.
 
         Args:
-            x (Union[torch.Tensor, np.ndarray]): Input data to standardize.
+            x (torch.Tensor): Input data to standardize.
 
         Returns:
-            Union[torch.Tensor, np.ndarray]: Standardized data.
+            torch.Tensor: Standardized data.
         """
         return (x - self.mean) / self.std
     
-    def destandardize(self, x: Union[torch.Tensor, np.ndarray]) -> Union[torch.Tensor, np.ndarray]:
+    def destandardize(self, x: torch.Tensor) -> torch.Tensor:
         """
         Reverse the standardization of the input data by multiplying by the standard deviation
 
         Args:
-            x (Union[torch.Tensor, np.ndarray]): Input data to reverse standardize.
+            x (torch.Tensor): Input data to reverse standardize.
 
         Returns:
-            Union[torch.Tensor, np.ndarray]: Reverse standardized data.
+            torch.Tensor: Reverse standardized data.
         """
         return (x * self.std) + self.mean
 

@@ -21,6 +21,12 @@ multirun/
 # Weight & Bias
 wandb/
 
+# Lightning
+lightning_logs/
+
+# predictions
+predictions/
+
 # VS Code
 .vscode
 

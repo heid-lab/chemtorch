@@ -1,0 +1,36 @@
+defaults:
+  - override hydra/job_logging: disabled
+  - override hydra/hydra_logging: disabled
+  - _self_
+
+# LOGGING (Weight and Biases)
+log: false
+project_name: chemtorch
+group_name: null
+run_name: null
+
+# INITIALIZATION
+seed: 0
+
+tasks: null
+
+parameter_limit: null
+
+runtime_args_from_dataset: null
+
+# MODEL LOADING
+load_model: false
+ckpt_path: null
+
+# PREDICTION
+prediction_save_path: null
+
+# Disable Hydra's automatic logging behavior since WandB is used for logging.
+hydra:
+  # Prevent Hydra from creating subdirectories to store config files, logs, etc.
+  output_subdir: null
+  # By default, Hydra creates a timestamped directory for each run.
+  # Here, we set the output directory to the current directory so that all outputs
+  # like logs and checkpoints are redirected to the project root.
+  run:
+    dir: .
