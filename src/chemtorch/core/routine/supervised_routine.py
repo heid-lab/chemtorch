@@ -338,7 +338,7 @@ class SupervisedRoutine(L.LightningModule):
         # it saved on (e.g. 'cuda') by default. This can lead to surged in memory usage
         # if the model is large. To avoid this, we load the checkpoint on CPU and move 
         # the model to the correct device later.
-        # We also use `weights_only=True` to load only the model weights, out of securtiy
+        # We also use `weights_only=True` to load only the model weights, out of security
         # reasons.
 
         # Always validate that model state dict is present
