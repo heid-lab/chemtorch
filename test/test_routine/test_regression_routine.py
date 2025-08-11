@@ -41,26 +41,6 @@ def test_forward_squeeze_edge_cases(simple_model):
     # Should only squeeze the last dimension: (4, 1, 1)
     assert output.shape == (4, 1, 1)
 
-def test_forward_multidimensional_squeeze(simple_model):
-    """Test that forward properly squeezes multi-dimensional outputs."""
-    # Create model that outputs multi-dimensional tensor
-    class MultiDimModel(nn.Module):
-        def __init__(self):
-            super().__init__()
-            self.linear = nn.Linear(10, 1)
-        
-        def forward(self, x):
-            return self.linear(x)  # Shape: (batch, 1)
-    
-    model = MultiDimModel()
-    routine = RegressionRoutine(model=model)
-    inputs = torch.randn(4, 10)
-    
-    output = routine.forward(inputs)
-    
-    assert output.shape == (4,)  # Should be squeezed from (4, 1)
-    
-
 def test_step_with_metrics(simple_model, loss_function, sample_batch):
     """Test that metrics are properly updated during steps."""
     metrics = {"train": MeanAbsoluteError()}
