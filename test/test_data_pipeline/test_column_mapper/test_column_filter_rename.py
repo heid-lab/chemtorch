@@ -88,3 +88,11 @@ def test_column_filter_and_rename_none_values_filtered():
     processed_df = column_mapper(df)
     assert isinstance(processed_df, pd.DataFrame)
     assert list(processed_df.columns) == ["X", "Y"]  # Z should not be present
+
+def test_column_filter_and_rename_empty_string_value_filtered():
+    # Test that empty string values are filtered out
+    df = pd.DataFrame({"A": [1, 2], "B": [3, 4], "C": [5, 6]})
+    column_mapper = ColumnFilterAndRename(X="A", Y="B", Z="")  # Z="" should be filtered out
+    processed_df = column_mapper(df)
+    assert isinstance(processed_df, pd.DataFrame)
+    assert list(processed_df.columns) == ["X", "Y"]  # Z should not be present

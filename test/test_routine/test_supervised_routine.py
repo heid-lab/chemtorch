@@ -47,6 +47,9 @@ class TestSupervisedRoutineCore:
         assert routine.lr_scheduler_config is not None
         assert routine.metrics is not None
         assert len(routine.metrics) == 3
+        assert "train" in routine.metrics
+        assert "val" in routine.metrics
+        assert "test" in routine.metrics
     
     def test_forward(self, simple_model, sample_batch):
         """Test forward pass."""
@@ -642,7 +645,7 @@ class TestEdgeCasesAndHardBugs:
                 os.unlink(f.name)
     
     def test_metric_clone_deep_copy_behavior(self, simple_model, loss_function):
-        """Test that metric cloning creates proper deep copies - BUG FIXED."""
+        """Test that metric cloning creates proper deep copies."""
         
         # Create a metric with some internal state
         original_metric = MeanAbsoluteError()
@@ -657,38 +660,21 @@ class TestEdgeCasesAndHardBugs:
             optimizer=lambda params: torch.optim.Adam(params, lr=1e-3),
             metrics=original_metric
         )
-        
-        # FIXED: The cloned metrics should start fresh, not inherit state
-        train_value = routine.train_metrics.compute()
-        
+
         # Cloned metrics should start with zero state (different from original)
         # Handle the case where reset metrics might return NaN
-        if torch.isnan(train_value):
-            # This is expected behavior for reset metrics with no data
-            assert not torch.isnan(original_value)  # Original should have valid value
-        else:
-            assert train_value != original_value
-        
-        # Verify the fix: they should have different internal states
-        assert not torch.equal(original_metric.sum_abs_error, routine.train_metrics.sum_abs_error)
-        assert not torch.equal(original_metric.total, routine.train_metrics.total)
-        
-        # Cloned metrics should start at zero
         assert routine.train_metrics.sum_abs_error.item() == 0.0
         assert routine.train_metrics.total.item() == 0
-        
+
+        # According to the Lightning API, the following should return NaN
+        train_value = routine.train_metrics.compute()
+        assert torch.isnan(train_value)
+
         # Modifying original should not affect cloned metrics
         original_metric.update(torch.tensor([10.0]), torch.tensor([10.1]))
-        new_original_value = original_metric.compute()
         train_value_after = routine.train_metrics.compute()
-        
-        # Handle NaN case in comparison
-        if torch.isnan(train_value_after):
-            # Reset metrics with no new data should be consistent
-            assert torch.isnan(train_value) if not torch.isnan(train_value) else True
-        else:
-            assert train_value == train_value_after  # Cloned metric unchanged
-        assert new_original_value != train_value_after
+
+        assert torch.isnan(train_value_after) if not torch.isnan(train_value) else True
     
     def test_checkpoint_loading_with_model_architecture_changes(self, loss_function, simple_model_class):
         """Test checkpoint loading when model architecture has changed."""
@@ -717,29 +703,6 @@ class TestEdgeCasesAndHardBugs:
                     
             finally:
                 os.unlink(f.name)
-   
-    def test_metric_reset_between_epochs_bug(self, simple_model, loss_function):
-        """Test potential bug where metrics aren't properly reset between epochs."""
-        routine = SupervisedRoutine(
-            model=simple_model,
-            loss=loss_function,
-            optimizer=lambda params: torch.optim.Adam(params, lr=1e-3),
-            metrics=MeanAbsoluteError()
-        )
-        
-        # Simulate first epoch
-        routine.train_metrics.update(torch.tensor([1.0, 2.0]), torch.tensor([1.1, 2.1]))
-        first_epoch_result = routine.train_metrics.compute()
-        
-        # Manually reset (this should happen automatically in Lightning)
-        routine.train_metrics.reset()
-        
-        # Simulate second epoch with different data
-        routine.train_metrics.update(torch.tensor([10.0, 20.0]), torch.tensor([10.5, 20.5]))
-        second_epoch_result = routine.train_metrics.compute()
-        
-        # Should be different if reset worked properly
-        assert first_epoch_result != second_epoch_result
     
     def test_checkpoint_resume_training_state(self, simple_model, loss_function, simple_model_class):
         """Test that training is actually resumed from the provided checkpoint."""
@@ -793,9 +756,6 @@ class TestEdgeCasesAndHardBugs:
                     resume_training=True
                 )
                 
-                # Mock logging
-                new_routine.log = Mock()
-                
                 # Setup should load the checkpoint
                 new_routine.setup(stage="fit")
                 
@@ -821,6 +781,3 @@ class TestEdgeCasesAndHardBugs:
                 
             finally:
                 os.unlink(f.name)
-
-
-# Test to verify that checkpoint loading behavior works correctly

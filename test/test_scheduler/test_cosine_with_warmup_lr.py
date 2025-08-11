@@ -4,6 +4,10 @@ import pytest
 
 from chemtorch.core.scheduler.cosine_with_warmup_lr import CosineWithWarmupLR
 
+# TODO: Lazy test case. This was jast a quick sanity check to ensure the new
+# CosineWithWarmupLR class behaves similarly to the previous implementation 
+# using the default parameters.
+# I should be replaced with a more comprehensive test suite in the future.
 
 # Previously hard-coded implementation of cosine with warmup
 def reference_cosine_with_warmup_lambda(
