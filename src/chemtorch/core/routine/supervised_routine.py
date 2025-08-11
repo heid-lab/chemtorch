@@ -134,7 +134,20 @@ class SupervisedRoutine(L.LightningModule):
         self.metrics = self._init_metrics(metrics) if metrics and (not isinstance(metrics, dict) or len(metrics) > 0) else None
         self.ckpt_path = ckpt_path
         self.resume_training = resume_training
+        self.metrics = self._init_metrics(metrics) if self._should_init_metrics(metrics) else None
+        self.ckpt_path = ckpt_path
+        self.resume_training = resume_training
 
+    def _should_init_metrics(self, metrics) -> bool:
+        """
+        Helper to determine if metrics should be initialized.
+        Returns True if metrics is not None and either not a dict or a non-empty dict.
+        """
+        if metrics is None:
+            return False
+        if isinstance(metrics, dict):
+            return len(metrics) > 0
+        return True
     ########## LightningModule Methods ##############################################
     def setup(self, stage: Literal['fit', 'validate', 'test', 'predict'] | None = None):
         if stage in ['fit', 'validate', 'test']:
