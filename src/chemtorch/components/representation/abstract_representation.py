@@ -17,7 +17,7 @@ class AbstractRepresentation(ABC, Generic[T]):
 
     Example (correct usage):
         >>> class MyRepresentation(RepresentationBase[int]):
-        ...     def forward(self, a: int, b: int) -> int:
+        ...     def construct(self, a: int, b: int) -> int:
         ...         return a + b
         >>> r = MyRepresentation()
         >>> r(1, 2)
