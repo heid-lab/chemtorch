@@ -1,45 +1,12 @@
 import re
 from typing import List
 
-SMILES_ATOM_WISE_PATTERN = r"(\%\([0-9]{3}\)|\[[^\]]+]|Br?|Cl?|N|O|S|P|F|I|b|c|n|o|s|p|\||\(|\)|\.|=|#|-|\+|\\|\/|:|~|@|\?|>>?|\*|\$|\%[0-9]{2}|[0-9])"
-REACTION_SEPARATOR_TOKEN = ">>"
-MOLECULE_SEPARATOR_TOKEN = "."
-DEFAULT_UNK_TOKEN = "<UNK>"
+from chemtorch.components.preprocessing.tokenizer.abstract_tokenizer import AbstractTokenizer
+from chemtorch.components.preprocessing.tokenizer.molecule_tokenizer import MoleculeRegexTokenizer
+from chemtorch.components.preprocessing.tokenizer.tokenizer_defaults import DEFAULT_UNK_TOKEN, MOLECULE_SEPARATOR_TOKEN, REACTION_SEPARATOR_TOKEN, DEFAULT_MOLECULE_PATTERN
 
 
-class MoleculeRegexTokenizer:
-    """
-    Tokenizes a single molecule SMILES string using a regex pattern.
-    """
-
-    def __init__(self, regex_pattern: str = SMILES_ATOM_WISE_PATTERN):
-        """
-        Args:
-            regex_pattern: The regex pattern to use for tokenization.
-        """
-        self.regex = re.compile(regex_pattern)
-
-    def tokenize(self, molecule_smiles: str) -> List[str]:
-        """
-        Tokenizes a molecule SMILES string.
-
-        Args:
-            molecule_smiles: The molecule SMILES string to tokenize.
-
-        Returns:
-            A list of tokens.
-        """
-        if not molecule_smiles:
-            return []
-
-        tokens = self.regex.findall(molecule_smiles)
-        if not tokens and molecule_smiles:
-            return [DEFAULT_UNK_TOKEN]
-
-        return tokens
-
-
-class SimpleTokenizer:
+class ReactionTokenizer(AbstractTokenizer):
     """
     Tokenizes a reaction SMILES string (e.g., "R1.R2>>P1.P2").
     """
@@ -47,7 +14,7 @@ class SimpleTokenizer:
     def __init__(
         self,
         unk_token: str = DEFAULT_UNK_TOKEN,
-        molecule_tokenizer_pattern: str = SMILES_ATOM_WISE_PATTERN,
+        molecule_tokenizer_pattern: str = DEFAULT_MOLECULE_PATTERN,
     ):
         self.unk_token = unk_token
         self._molecule_tokenizer = MoleculeRegexTokenizer(
