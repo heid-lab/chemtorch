@@ -1,0 +1,5 @@
+_target_: chemtorch.components.data_pipeline.data_splitter.SizeSplitter
+train_ratio: null
+val_ratio: null
+test_ratio: null
+sort_order: null # ascending or descending
