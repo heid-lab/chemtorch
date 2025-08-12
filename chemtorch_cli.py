@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 from typing import List
 
@@ -23,7 +24,9 @@ def main(cfg: DictConfig):
     OmegaConf.set_struct(cfg, False)
 
     seed = getattr(cfg, "seed", 0)
-    L.seed_everything(seed) # different results when using custom set_seed
+    L.seed_everything(seed)
+    torch.use_deterministic_algorithms(True)
+    os.environ["CUBLAS_WORKSPACE_CONFIG"] = (":4096:8")     # https://docs.nvidia.com/cuda/cublas/index.html#results-reproducibility
 
     ##### DATA MODULE ##############################################################
     if "predict" in cfg.tasks:
