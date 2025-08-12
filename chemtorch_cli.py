@@ -17,6 +17,7 @@ OmegaConf.register_new_resolver("eval", eval)
 
 ROOT_DIR = Path(__file__).parent
 
+
 @hydra.main(version_base=None, config_path="conf", config_name="base")
 def main(cfg: DictConfig):
     cli_chemtorch_logo()
@@ -30,8 +31,8 @@ def main(cfg: DictConfig):
 
     ##### DATA MODULE ##############################################################
     if "predict" in cfg.tasks:
-        # Remove label from column mapper since it should not be specified for inference (error will be 
-        # raised if it is specified) 
+        # Remove label from column mapper since it should not be specified for inference (error will be
+        # raised if it is specified)
         if cfg.data_pipeline.column_mapper.label is not None:
             OmegaConf.update(
                 cfg=cfg,
@@ -93,7 +94,7 @@ def main(cfg: DictConfig):
             project=cfg.project_name,
             group=cfg.group_name,
             name=run_name,
-            config=resolved_cfg, # type: ignore
+            config=resolved_cfg,  # type: ignore
         )
         stages: List[Stage] = []
         if "fit" in cfg.tasks:
@@ -119,6 +120,12 @@ def main(cfg: DictConfig):
     # TODO: Consider `SlurmCluster` class for building slurm scripts
     # TODO: Consider `DistributedDataParallel` for distributed training NLP on large datasets
     # TODO: Consider HyperOptArgumentParser for hyperparameter optimization
+
+    # MPS is not fully supported yet and can cause issues with certain operations
+    # https://lightning.ai/docs/pytorch/stable/accelerators/mps_basic.html
+    if torch.backends.mps.is_available() and cfg.trainer.accelerator == "auto":
+        cfg.trainer.accelerator = "cpu"
+
     trainer: L.Trainer = safe_instantiate(cfg.trainer)
     if not cfg.log:
         trainer.logger = None
@@ -145,11 +152,11 @@ def main(cfg: DictConfig):
             )
             wandb.run.summary["status"] = "parameter_threshold_exceeded"  # type: ignore
         return False
-    
+
     ###### ROUTINE ##########################################################
     routine_factory = safe_instantiate(cfg.routine)
     routine: L.LightningModule = routine_factory(model=model)
-    
+
     ckpt_path = None
     if cfg.load_model:
         if cfg.ckpt_path is None:
@@ -175,7 +182,7 @@ def main(cfg: DictConfig):
                 reference_df=predict_df,
                 save_path=cfg.prediction_save_path,
                 log_func=wandb.log if cfg.log else None,
-                root_dir=ROOT_DIR
+                root_dir=ROOT_DIR,
             )
 
     if cfg.log:

@@ -3,10 +3,10 @@ defaults:
   - /trainer: basic_trainer
   - /data_pipeline: rdb7_fwd_xyz
   - /dataset: graph
-  - /dataset/representation: rtsp_3d_graph
   - /dataloader: pyg_dataloader
   - /model: dimenetplusplus
   - /routine: regression
+  - override /dataset/representation: rtsp_3d_graph
   - _self_
 
 # LOGGING (Weight and Biases)
