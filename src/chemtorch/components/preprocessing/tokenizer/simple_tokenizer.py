@@ -70,7 +70,7 @@ class SimpleTokenizer:
                 molecule_tokens = self._molecule_tokenizer.tokenize(mol_smiles)
                 side_tokens.extend(molecule_tokens)
 
-            if i < len(molecule_smiles_list) - 1:
+            if i < len(molecule_smiles_list):
                 side_tokens.append(MOLECULE_SEPARATOR_TOKEN)
 
         return side_tokens
