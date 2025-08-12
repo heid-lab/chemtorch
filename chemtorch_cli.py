@@ -81,6 +81,11 @@ def main(cfg: DictConfig):
                 ),
                 merge=True,
             )
+    
+    if cfg.get("dataset_operations", []): 
+        for dataset_operation_cfg in cfg.dataset_operations:
+            dataset_operation = safe_instantiate(dataset_operation_cfg)
+            data_module.apply_dataset_operation(dataset_operation)
 
     run_name = getattr(cfg, "run_name", None)
     OmegaConf.resolve(cfg)

@@ -6,7 +6,6 @@ defaults:
   - /dataloader: torch_dataloader
   - /model: han
   - /routine: classification
-  - /routine/loss: cross_entropy
   - _self_
 
 # LOGGING (Weight and Biases)
@@ -31,6 +30,10 @@ trainer:
 
 runtime_args_from_dataset:
   - vocab_size
+
+dataset_operations:
+  - _target_: chemtorch.components.dataset.token_dataset_operations.extend_vocab_from_data
+    _partial_: true
 
 # MODEL LOADING
 load_model: false
