@@ -18,7 +18,10 @@ class SizeSplitter(DataSplitter):
         train_ratio: float = 0.8,
         val_ratio: float = 0.1,
         test_ratio: float = 0.1,
-        sort_order: str = "ascending",  # 'ascending' for train_small/test_large, 'descending' for train_large/test_small
+        sort_order: str = "ascending",  # ascending is train small, test large
+        save_split_dir: str | None = None,
+        save_indices: bool = True,
+        save_csv: bool = False,
     ):
         """
         Initializes the SizeSplitter.
@@ -27,10 +30,14 @@ class SizeSplitter(DataSplitter):
             train_ratio (float): The ratio of data for the training set.
             val_ratio (float): The ratio of data for the validation set.
             test_ratio (float): The ratio of data for the test set.
-            sort_order (str): 'ascending' (train on smaller molecules/reactions, test on larger)
-                              or 'descending' (train on larger molecules/reactions, test on smaller).
+            sort_order (str): 'ascending' or 'descending'.
+            save_split_dir (str | None, optional): If provided, enables saving of split files.
+            save_indices (bool): If True and `save_split_dir` is set, saves 'indices.pkl'.
+            save_csv (bool): If True and `save_split_dir` is set, saves split DataFrames as CSVs.
         """
-        super().__init__()
+        super().__init__(
+            save_split_dir=save_split_dir, save_indices=save_indices, save_csv=save_csv
+        )
         self.train_ratio = train_ratio
         self.val_ratio = val_ratio
         self.test_ratio = test_ratio
@@ -49,7 +56,7 @@ class SizeSplitter(DataSplitter):
         """
 
         if pd.isna(smiles) or not isinstance(smiles, str):
-            return -1
+            raise ValueError("Invalid SMILES string.")
 
         smiles_reac, _, smiles_prod = smiles.split(">")
 
@@ -85,17 +92,11 @@ class SizeSplitter(DataSplitter):
             self._get_n_heavy_atoms
         )
 
-        if df_with_size["_mol_size"].eq(-1).any():
-            num_invalid = df_with_size["_mol_size"].eq(-1).sum()
-            print(
-                f"Warning: {num_invalid} molecules could not be parsed or had invalid SMILES. Their size was set to -1."
-            )
-
         is_ascending = self.sort_order == "ascending"
         sorted_indices = (
             df_with_size["_mol_size"].sort_values(ascending=is_ascending).index
         )
-        df_sorted = df_with_size.loc[sorted_indices].reset_index(drop=True)
+        df_sorted = df_with_size.loc[sorted_indices]
 
         n_total = len(df_sorted)
         train_size = round(self.train_ratio * n_total)
@@ -105,18 +106,23 @@ class SizeSplitter(DataSplitter):
         val_df_partition = df_sorted.iloc[train_size : train_size + val_size]
         test_df_partition = df_sorted.iloc[train_size + val_size :]
 
-        train_df = train_df_partition.sample(
-            frac=1, random_state=getattr(self, "seed", None)
-        ).reset_index(drop=True)
-        val_df = val_df_partition.sample(
-            frac=1, random_state=getattr(self, "seed", None)
-        ).reset_index(drop=True)
-        test_df = test_df_partition.sample(
-            frac=1, random_state=getattr(self, "seed", None)
-        ).reset_index(drop=True)
+        data_split = DataSplit(
+            train=train_df_partition.sample(frac=1)
+            .reset_index(drop=True)
+            .drop(columns=["_mol_size"]),
+            val=val_df_partition.sample(frac=1)
+            .reset_index(drop=True)
+            .drop(columns=["_mol_size"]),
+            test=test_df_partition.sample(frac=1)
+            .reset_index(drop=True)
+            .drop(columns=["_mol_size"]),
+        )
 
-        train_df = train_df.drop(columns=["_mol_size"])
-        val_df = val_df.drop(columns=["_mol_size"])
-        test_df = test_df.drop(columns=["_mol_size"])
+        self._save_split(
+            data_split=data_split,
+            train_indices=train_df_partition.index,
+            val_indices=val_df_partition.index,
+            test_indices=test_df_partition.index,
+        )
 
-        return DataSplit(train=train_df, val=val_df, test=test_df)
+        return data_split

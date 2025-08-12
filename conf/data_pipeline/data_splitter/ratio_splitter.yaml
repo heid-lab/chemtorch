@@ -2,3 +2,7 @@ _target_: chemtorch.components.data_pipeline.data_splitter.RatioSplitter
 train_ratio: null
 val_ratio: null
 test_ratio: null
+
+save_split_dir: null 
+save_indices: false
+save_csv: false
