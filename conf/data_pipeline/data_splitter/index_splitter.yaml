@@ -1,2 +1,6 @@
 _target_: chemtorch.components.data_pipeline.data_splitter.IndexSplitter 
 split_index_path: null
+
+save_split_dir: null 
+save_indices: false
+save_csv: false
