@@ -1,7 +1,7 @@
 _target_: chemtorch.components.representation.token.simple_token_representation.SimpleTokenRepresentation
 
 defaults:
-  - tokenizer: simple_tokenizer
+  - tokenizer: reaction_tokenizer
 
 vocab_path: resources/uspto_1k/vocab.txt
 max_sentence_length: 400
