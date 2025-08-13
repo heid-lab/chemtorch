@@ -86,11 +86,15 @@ class TargetSplitter(DataSplitter):
         val_indices = sorted_indices[train_size : train_size + val_size]
         test_indices = sorted_indices[train_size + val_size :]
 
-        train_df = df.loc[train_indices].sample(frac=1).reset_index(drop=True)
-        val_df = df.loc[val_indices].sample(frac=1).reset_index(drop=True)
-        test_df = df.loc[test_indices].sample(frac=1).reset_index(drop=True)
+        train_df = df.loc[train_indices].sample(frac=1)
+        val_df = df.loc[val_indices].sample(frac=1)
+        test_df = df.loc[test_indices].sample(frac=1)
 
-        data_split = DataSplit(train=train_df, val=val_df, test=test_df)
+        data_split = DataSplit(
+            train=train_df.reset_index(drop=True),
+            val=val_df.reset_index(drop=True),
+            test=test_df.reset_index(drop=True),
+        )
 
         self._save_split(
             data_split=data_split,
