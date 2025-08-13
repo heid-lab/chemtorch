@@ -102,20 +102,16 @@ class SizeSplitter(DataSplitter):
         train_size = round(self.train_ratio * n_total)
         val_size = round(self.val_ratio * n_total)
 
-        train_df_partition = df_sorted.iloc[:train_size]
-        val_df_partition = df_sorted.iloc[train_size : train_size + val_size]
-        test_df_partition = df_sorted.iloc[train_size + val_size :]
+        train_df_partition = df_sorted.iloc[:train_size].sample(frac=1)
+        val_df_partition = df_sorted.iloc[train_size : train_size + val_size].sample(
+            frac=1
+        )
+        test_df_partition = df_sorted.iloc[train_size + val_size :].sample(frac=1)
 
         data_split = DataSplit(
-            train=train_df_partition.sample(frac=1)
-            .reset_index(drop=True)
-            .drop(columns=["_mol_size"]),
-            val=val_df_partition.sample(frac=1)
-            .reset_index(drop=True)
-            .drop(columns=["_mol_size"]),
-            test=test_df_partition.sample(frac=1)
-            .reset_index(drop=True)
-            .drop(columns=["_mol_size"]),
+            train=train_df_partition.reset_index(drop=True).drop(columns=["_mol_size"]),
+            val=val_df_partition.reset_index(drop=True).drop(columns=["_mol_size"]),
+            test=test_df_partition.reset_index(drop=True).drop(columns=["_mol_size"]),
         )
 
         self._save_split(
