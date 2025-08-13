@@ -98,7 +98,7 @@ class TargetSplitter(DataSplitter):
 
         self._save_split(
             data_split=data_split,
-            train_indices=train_df.index,  # cannot take train_indices, you'd save the wrong indices
+            train_indices=train_df.index,
             val_indices=val_df.index,
             test_indices=test_df.index,
         )

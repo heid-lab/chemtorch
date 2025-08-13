@@ -25,7 +25,7 @@ class ScaffoldSplitter(DataSplitter):
         test_ratio: float = 0.1,
         split_on: str = "reactant",
         mol_idx: str | int = "first",
-        generic_scaffold: bool = True,
+        include_chirality: bool = False,
         save_split_dir: str | None = None,
         save_indices: bool = True,
         save_csv: bool = False,
@@ -47,11 +47,7 @@ class ScaffoldSplitter(DataSplitter):
             mol_idx (str | int): Specifies which molecule to use if multiple are present
                 (e.g., 'A.B>>C'). Can be 'first', 'last', or a zero-based integer index.
                 Defaults to 'first'.
-            generic_scaffold (bool): Specifies the type of scaffold to generate. If `True`
-                (default), a generic scaffold is created by converting all scaffold atoms
-                to carbons and bonds to single bonds. This means scaffolds with the same
-                topology but different atoms are treated as identical. If `False`, the specific
-                scaffold is generated, preserving original atom and bond types.
+            include_chirality (bool): If `True`, includes chirality in the scaffold generation.
             save_split_dir (str | None, optional): If provided, enables saving of split files.
             save_indices (bool): If True and `save_split_dir` is set, saves 'indices.pkl'.
             save_csv (bool): If True and `save_split_dir` is set, saves split DataFrames as CSVs.
@@ -64,7 +60,7 @@ class ScaffoldSplitter(DataSplitter):
         self.test_ratio = test_ratio
         self.split_on = split_on.lower()
         self.mol_idx = mol_idx
-        self.generic_scaffold = generic_scaffold
+        self.include_chirality = include_chirality
 
         if not (
             1 - 1e-4 < self.train_ratio + self.val_ratio + self.test_ratio < 1 + 1e-4
@@ -120,11 +116,9 @@ class ScaffoldSplitter(DataSplitter):
             return ""
 
         try:
-            if self.generic_scaffold:
-                scaffold_smiles = MurckoScaffold.MurckoScaffoldSmiles(mol=mol)
-            else:
-                scaffold = MurckoScaffold.GetScaffoldForMol(mol)
-                scaffold_smiles = Chem.MolToSmiles(scaffold)
+            scaffold_smiles = MurckoScaffold.MurckoScaffoldSmiles(
+                mol=mol, includeChirality=self.include_chirality
+            )
             return scaffold_smiles
         except Exception as e:
             warnings.warn(
