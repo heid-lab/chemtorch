@@ -241,7 +241,7 @@ class TestExtendVocabFromData:
         # Test with null values
         df = pd.DataFrame({
             'smiles': ['C C O', None, 'N H', np.nan, 'S P'],
-            'custom_smiles': ['H P', 'S Cl'],
+            'custom_smiles': ['H P', 'S Cl', None, 'Br', 'F'],
             'label': [1, 2, 3, 4, 5]
         })
         
@@ -255,7 +255,7 @@ class TestExtendVocabFromData:
         # Test with custom column name
         current_size = dataset.representation.vocab_size
         extend_vocab_from_data(dataset, column_name='custom_smiles')
-        assert dataset.representation.vocab_size == current_size + 1  # Only Cl is new
+        assert dataset.representation.vocab_size == current_size + 3  # Cl, Br, F are new
 
 
 class TestExtendVocabFromDataWithExtractor:
