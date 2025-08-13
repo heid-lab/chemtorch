@@ -24,15 +24,15 @@ tasks:
 # Override the data source from which to create the training, validation and test sets to the filtered RGD1 dataset
 data_pipeline:
   data_source:
-    data_path: "data/rgd1/barriers/unlabeled_data.csv"
+    data_path: "../QM_data.csv"
   data_splitter: null
 
 # Load trained model
 load_model: true
-ckpt_path: "lightning_logs/rgd1/dmpnn/seed_0_2025-08-08_14-34-36/checkpoints/epoch=0-step=3.ckpt"
+ckpt_path: "lightning_logs/rgd1/dmpnn/seed_0_2025-08-13_10-28-40/checkpoints/epoch=58-step=15989.ckpt"
 
 # Save predictions
-prediction_save_path: "predictions/rgd1/dmpnn/seed_0_2025-08-08_14-34-36/predictions.csv"
+prediction_save_path: "../predictions.csv"
 
 
 # Don't create a new standardizer (the standardizer of the training set is loaded from the checkpoint)

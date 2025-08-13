@@ -25,7 +25,7 @@ tasks:
 # Override the data source from which to create the training, validation and test sets to the filtered RGD1 dataset
 data_pipeline:
   data_source:
-    data_path: "data/rgd1/barriers/filtered.csv"
+    data_path: "../QM_data_precomputed.csv"
 
 # Set the maximum number of training iterations
 trainer:
