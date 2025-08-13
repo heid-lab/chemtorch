@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 from rdkit import Chem
 from rdkit.Chem.Scaffolds import MurckoScaffold
+from collections import defaultdict
 
 try:
     # Python ≥ 3.12
@@ -160,7 +161,7 @@ class ScaffoldSplitter(DataSplitter):
 
         has_scaffold_mask = df_with_scaffold["_scaffold"] != ""
         df_has_scaffold = df_with_scaffold[has_scaffold_mask]
-        no_scaffold_indices = df_with_scaffold.index[~has_scaffold_mask]
+        no_scaffold_indices = df_with_scaffold.index[~has_scaffold_mask].tolist()
 
         if len(no_scaffold_indices) > 0:
             warnings.warn(
@@ -168,30 +169,44 @@ class ScaffoldSplitter(DataSplitter):
                 "They will be added to the training set."
             )
 
-        scaffolds = pd.Series(df_has_scaffold["_scaffold"].unique())
+        scaffold_to_indices = defaultdict(list)
+        for index, scaffold in df_has_scaffold["_scaffold"].items():
+            scaffold_to_indices[scaffold].append(index)
 
-        n_scaffolds = len(scaffolds)
-        print(f"Found {n_scaffolds} unique scaffolds.")
-        train_scaffold_size = round(self.train_ratio * n_scaffolds)
-        val_scaffold_size = round(self.val_ratio * n_scaffolds)
+        scaffold_groups = list(scaffold_to_indices.values())
+        print(f"Found {len(scaffold_groups)} unique scaffolds.")
+        scaffold_groups.sort(key=len, reverse=True)
 
-        train_scaffolds = set(scaffolds[:train_scaffold_size])
-        val_scaffolds = set(
-            scaffolds[train_scaffold_size : train_scaffold_size + val_scaffold_size]
+        split_indices = {"train": no_scaffold_indices, "val": [], "test": []}
+        n_total = len(df)
+        target_sizes = {
+            "train": self.train_ratio * n_total,
+            "val": self.val_ratio * n_total,
+            "test": self.test_ratio * n_total,
+        }
+
+        for group in scaffold_groups:
+            # calculate how under-filled each split is (as a fraction of its target)
+            needs = {}
+            for name in split_indices:
+                if target_sizes[name] > 0:
+                    needs[name] = (
+                        target_sizes[name] - len(split_indices[name])
+                    ) / target_sizes[name]
+                else:
+                    needs[
+                        name
+                    ] = -np.inf  # don't assign to a split with a target size of 0
+
+            # assign group to the split with the highest need
+            best_split = max(needs, key=needs.get)
+            split_indices[best_split].extend(group)
+
+        train_indices, val_indices, test_indices = (
+            split_indices["train"],
+            split_indices["val"],
+            split_indices["test"],
         )
-        test_scaffolds = set(scaffolds[train_scaffold_size + val_scaffold_size :])
-
-        train_scaffold_indices = df_has_scaffold.index[
-            df_has_scaffold["_scaffold"].isin(train_scaffolds)
-        ]
-        val_indices = df_has_scaffold.index[
-            df_has_scaffold["_scaffold"].isin(val_scaffolds)
-        ]
-        test_indices = df_has_scaffold.index[
-            df_has_scaffold["_scaffold"].isin(test_scaffolds)
-        ]
-
-        train_indices = train_scaffold_indices.union(no_scaffold_indices)
 
         train_df = df.loc[train_indices].sample(frac=1)
         val_df = df.loc[val_indices].sample(frac=1)
