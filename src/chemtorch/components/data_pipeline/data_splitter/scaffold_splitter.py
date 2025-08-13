@@ -1,5 +1,5 @@
 import warnings
-
+import re
 import numpy as np
 import pandas as pd
 from rdkit import Chem
@@ -24,6 +24,7 @@ class ScaffoldSplitter(DataSplitter):
         test_ratio: float = 0.1,
         split_on: str = "reactant",
         mol_idx: str | int = "first",
+        generic_scaffold: bool = True,
         save_split_dir: str | None = None,
         save_indices: bool = True,
         save_csv: bool = False,
@@ -45,6 +46,11 @@ class ScaffoldSplitter(DataSplitter):
             mol_idx (str | int): Specifies which molecule to use if multiple are present
                 (e.g., 'A.B>>C'). Can be 'first', 'last', or a zero-based integer index.
                 Defaults to 'first'.
+            generic_scaffold (bool): Specifies the type of scaffold to generate. If `True`
+                (default), a generic scaffold is created by converting all scaffold atoms
+                to carbons and bonds to single bonds. This means scaffolds with the same
+                topology but different atoms are treated as identical. If `False`, the specific
+                scaffold is generated, preserving original atom and bond types.
             save_split_dir (str | None, optional): If provided, enables saving of split files.
             save_indices (bool): If True and `save_split_dir` is set, saves 'indices.pkl'.
             save_csv (bool): If True and `save_split_dir` is set, saves split DataFrames as CSVs.
@@ -57,6 +63,7 @@ class ScaffoldSplitter(DataSplitter):
         self.test_ratio = test_ratio
         self.split_on = split_on.lower()
         self.mol_idx = mol_idx
+        self.generic_scaffold = generic_scaffold
 
         if not (
             1 - 1e-4 < self.train_ratio + self.val_ratio + self.test_ratio < 1 + 1e-4
@@ -101,7 +108,10 @@ class ScaffoldSplitter(DataSplitter):
             )
             return ""
 
-        mol = Chem.MolFromSmiles(selected_smiles)
+        non_atom_mapped_selected_smiles = self._remove_atom_map_number_manual(
+            selected_smiles
+        )
+        mol = Chem.MolFromSmiles(non_atom_mapped_selected_smiles)
         if mol is None:
             warnings.warn(
                 f"Could not parse molecule SMILES: '{selected_smiles}'. Assigning no scaffold."
@@ -109,13 +119,21 @@ class ScaffoldSplitter(DataSplitter):
             return ""
 
         try:
-            scaffold = MurckoScaffold.GetScaffoldForMol(mol)
-            return Chem.MolToSmiles(scaffold)
+            if self.generic_scaffold:
+                scaffold_smiles = MurckoScaffold.MurckoScaffoldSmiles(mol=mol)
+            else:
+                scaffold = MurckoScaffold.GetScaffoldForMol(mol)
+                scaffold_smiles = Chem.MolToSmiles(scaffold)
+            return scaffold_smiles
         except Exception as e:
             warnings.warn(
                 f"Failed to generate scaffold for '{selected_smiles}' due to: {e}. Assigning no scaffold."
             )
             return ""
+
+    def _remove_atom_map_number_manual(self, smiles: str) -> str:
+        """Removes atom map numbers (e.g., :1, :23) from a SMILES string."""
+        return re.sub(r":\d+", "", smiles)
 
     @override
     def __call__(self, df: pd.DataFrame) -> DataSplit:
@@ -153,6 +171,7 @@ class ScaffoldSplitter(DataSplitter):
         scaffolds = pd.Series(df_has_scaffold["_scaffold"].unique())
 
         n_scaffolds = len(scaffolds)
+        print(f"Found {n_scaffolds} unique scaffolds.")
         train_scaffold_size = round(self.train_ratio * n_scaffolds)
         val_scaffold_size = round(self.val_ratio * n_scaffolds)
 
