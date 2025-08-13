@@ -9,6 +9,7 @@ from chemtorch.components.data_pipeline.data_splitter import (
     IndexSplitter,
     RatioSplitter,
     SizeSplitter,
+    TargetSplitter,
 )
 
 
@@ -28,6 +29,12 @@ def size_splitter_dataframe():
     # Create SMILES strings with progressively larger molecules
     smiles_data = [f"{'C' * i}>>{'C' * (i + 1)}" for i in range(1, 11)]
     return pd.DataFrame({"smiles": smiles_data, "id": range(10)})
+
+
+@pytest.fixture
+def target_splitter_dataframe():
+    """Fixture to create a sample DataFrame for testing TargetSplitter's saving."""
+    return pd.DataFrame({"label": range(20), "id": range(20)})
 
 
 @pytest.fixture
@@ -184,4 +191,44 @@ def test_size_splitter_saved_indices_reproduce_identical_split(
             "Reloaded data does not match the initial split. This indicates a mismatch "
             "between the returned DataSplit and the saved indices, likely due to "
             f"incorrect handling of shuffling.\n\nDetails: {e}"
+        )
+
+
+def test_target_splitter_saved_indices_reproduce_identical_split(
+    target_splitter_dataframe, tmp_path
+):
+    """
+    Test the round-trip integrity for TargetSplitter: save indices, then reload
+    to ensure the exact same (shuffled) split is recreated.
+    """
+    save_dir = tmp_path / "target_splits"
+    target_splitter = TargetSplitter(
+        save_split_dir=str(save_dir),
+        save_indices=True,
+        save_csv=False,
+    )
+
+    initial_data_split = target_splitter(target_splitter_dataframe)
+
+    indices_file = save_dir / "indices.pkl"
+    assert indices_file.is_file(), "Indices file was not created by TargetSplitter"
+
+    index_splitter = IndexSplitter(split_index_path=str(indices_file))
+    reloaded_data_split = index_splitter(target_splitter_dataframe)
+
+    try:
+        pd.testing.assert_frame_equal(
+            initial_data_split.train, reloaded_data_split.train.reset_index(drop=True)
+        )
+        pd.testing.assert_frame_equal(
+            initial_data_split.val, reloaded_data_split.val.reset_index(drop=True)
+        )
+        pd.testing.assert_frame_equal(
+            initial_data_split.test, reloaded_data_split.test.reset_index(drop=True)
+        )
+    except AssertionError as e:
+        pytest.fail(
+            "Reloaded data does not match the initial split from TargetSplitter. "
+            "This suggests the saved indices do not reflect the shuffled state of the "
+            f"returned DataFrames.\n\nDetails: {e}"
         )
