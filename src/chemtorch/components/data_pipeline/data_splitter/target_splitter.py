@@ -30,7 +30,6 @@ class TargetSplitter(DataSplitter):
             val_ratio (float): The ratio of data for the validation set.
             test_ratio (float): The ratio of data for the test set.
             sort_order (str): 'ascending' or 'descending'.
-            seed (int | None, optional): Random seed for shuffling. Defaults to None.
             save_split_dir (str | None, optional): Directory to save splits.
             save_indices (bool): If True, saves split indices.
             save_csv (bool): If True, saves split DataFrames as CSVs.
