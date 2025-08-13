@@ -1,0 +1,11 @@
+_target_: chemtorch.components.data_pipeline.data_splitter.TargetSplitter
+train_ratio: null
+val_ratio: null
+test_ratio: null
+
+target_column: null
+sort_order: null # ascending or descending
+
+save_split_dir: null 
+save_indices: false
+save_csv: false
