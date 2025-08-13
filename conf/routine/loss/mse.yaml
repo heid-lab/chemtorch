@@ -1,2 +1,1 @@
 _target_: torch.nn.modules.loss.MSELoss
-reduction: sum
