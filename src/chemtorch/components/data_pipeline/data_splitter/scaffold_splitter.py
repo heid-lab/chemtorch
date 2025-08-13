@@ -197,9 +197,9 @@ class ScaffoldSplitter(DataSplitter):
 
         self._save_split(
             data_split=data_split,
-            train_indices=train_indices,
-            val_indices=val_indices,
-            test_indices=test_indices,
+            train_indices=train_df.index,
+            val_indices=val_df.index,
+            test_indices=test_df.index,
         )
 
         return data_split
