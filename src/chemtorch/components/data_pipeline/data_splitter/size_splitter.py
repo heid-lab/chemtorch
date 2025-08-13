@@ -58,7 +58,13 @@ class SizeSplitter(DataSplitter):
         if pd.isna(smiles) or not isinstance(smiles, str):
             raise ValueError("Invalid SMILES string.")
 
-        smiles_reac, _, smiles_prod = smiles.split(">")
+        parts = smiles.split(">>")
+        if len(parts) != 2:
+            raise ValueError(
+                f"Invalid reaction SMILES format: '{smiles}'. "
+                "Expected 'reactant>>product'."
+            )
+        smiles_reac, smiles_prod = parts
 
         mol_reac, _ = make_mol(smiles_reac)
         mol_prod, _ = make_mol(smiles_prod)
