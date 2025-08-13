@@ -5,7 +5,7 @@ test_ratio: null
 
 split_on: null # reactant or product
 mol_idx: null # first, last, or an integer index
-generic_scaffold: false # generic scaffold is created by converting all scaffold atoms to carbons and bonds to single bonds
+include_chirality: false # include chirality in the scaffold smiles
 
 save_split_dir: null 
 save_indices: false
