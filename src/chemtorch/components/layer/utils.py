@@ -1,14 +1,13 @@
 import inspect
 from math import floor
-from typing import Callable, Dict, Optional
-from git import Union
+from typing import Callable, Dict, Optional, Union
 import torch
 from torch import nn
 from torch_geometric.data import Batch
 from torch_geometric.nn import MLP
 from torch_geometric.nn.resolver import normalization_resolver
 
-def init_norm(norm: str, hidden_channels: int, norm_kwargs: Optional[Dict] = None):
+def init_norm(norm: str | nn.Module | Callable, hidden_channels: int, norm_kwargs: Optional[Dict] = None):
     """
     Initialize a normalization layer based on the specified parameters.
 
@@ -22,14 +21,15 @@ def init_norm(norm: str, hidden_channels: int, norm_kwargs: Optional[Dict] = Non
     Returns:
         nn.Module: The initialized normalization layer, or `nn.Identity()` if `norm=None`.
     """
-    if norm is not None:
+    # Handle cases where norm might be the string "None" instead of actual None
+    if norm is None or norm == "None" or norm == "null":
+        norm_layer = nn.Identity()
+    else:
         norm_layer = normalization_resolver(
             norm,
             hidden_channels,
             **(norm_kwargs or {}),
         )
-    else:
-        norm_layer = nn.Identity()
     return norm_layer
 
 def init_dropout(dropout_rate: float):
