@@ -28,5 +28,4 @@ gradient_clip_val: 1.0
 patience: 30
 min_delta: 0.01
 
-enable_checkpointing: false
 enable_progress_bar: false
