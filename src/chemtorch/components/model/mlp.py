@@ -4,6 +4,8 @@ import torch
 from torch import nn
 from torch_geometric.nn.resolver import activation_resolver
 
+from chemtorch.components.layer.utils import init_norm
+
 
 class MLP(nn.Module):
     """
@@ -20,6 +22,8 @@ class MLP(nn.Module):
         dropout: float = 0.0,
         act: Union[str, Callable, None] = "relu",
         act_kwargs: Optional[Dict[str, Any]] = None,
+        norm: Union[str, Callable, None] = None,
+        norm_kwargs: Optional[Dict[str, Any]] = None,
     ):
         """
         Initializes an MLP. The architecture is built to match FFNHead's structure
@@ -27,6 +31,7 @@ class MLP(nn.Module):
 
         - A Dropout layer is placed before every Linear layer.
         - Activation is applied after every hidden Linear layer.
+        - Normalization is applied after every hidden Linear layer (if specified).
 
         Args:
             in_channels (int): Input dimension.
@@ -37,6 +42,8 @@ class MLP(nn.Module):
             dropout (float, optional): Dropout rate. Defaults to 0.
             act (str or Callable, optional): Activation function. Defaults to "relu".
             act_kwargs (Dict[str, Any], optional): Arguments for the activation function.
+            norm (str or Callable, optional): Normalization layer. Defaults to None.
+            norm_kwargs (Dict[str, Any], optional): Arguments for the normalization layer.
         """
         super().__init__()
 
@@ -46,18 +53,24 @@ class MLP(nn.Module):
         )
 
         self.activation = activation_resolver(act, **(act_kwargs or {}))
+        self.norm = norm
+        self.norm_kwargs = norm_kwargs or {}
         self.dropout = dropout
 
         layers = []
         current_dim = in_channels
 
-        # [Dropout, Linear, Activation]
+        # [Dropout, Linear, Activation, Normalization]
         for hidden_dim in hidden_dims:
             if dropout > 0.0:
                 layers.append(nn.Dropout(dropout))
             layers.append(nn.Linear(current_dim, hidden_dim))
             if self.activation is not None:
                 layers.append(self.activation)
+            if self.norm is not None:
+                layers.append(
+                    init_norm(self.norm, hidden_dim, **self.norm_kwargs)
+                )
             current_dim = hidden_dim
 
         # [Dropout, Linear]
@@ -72,7 +85,11 @@ class MLP(nn.Module):
         return self.layers(x)
 
     @staticmethod
-    def _resolve_hidden_dims(hidden_dims, hidden_size, num_hidden_layers):
+    def _resolve_hidden_dims(
+        hidden_dims: Optional[List[int]], 
+        hidden_size: Optional[int], 
+        num_hidden_layers: Optional[int]
+    ) -> List[int]:
         # Predefined error messages
         val_err_misspecified_args = ValueError(
             "Specify either hidden_dims OR hidden_size and num_hidden_layers, not both."
@@ -94,3 +111,5 @@ class MLP(nn.Module):
                 elif hidden_size is None:
                     raise val_err_misspecified_args
                 return [hidden_size] * num_hidden_layers
+            else:
+                raise val_err_misspecified_args
