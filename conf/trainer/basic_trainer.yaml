@@ -8,10 +8,13 @@ logger:
 
 callbacks:
   - _target_: lightning.pytorch.callbacks.EarlyStopping
-    monitor: val_loss_epoch
-    min_delta: 0.01
-    patience: 30
+    monitor: val_rmse
+    min_delta: ${trainer.min_delta}
+    patience: ${trainer.patience}
     mode: min
+  - _target_: chemtorch.components.callbacks.console_summary.ConsoleSummaryCallback
+    print_config: true
+    print_summary: true
   - _target_: lightning.pytorch.callbacks.ModelCheckpoint
     # Checkpoints are saved to lightning_logs/<project_name>/<data_pipeline>/<model>/seed_<seed>_<timestamp>/checkpoints
     dirpath: ${trainer.default_root_dir}/${hydra:runtime.choices.data_pipeline}/${hydra:runtime.choices.model}/seed_${seed}_${now:%Y-%m-%d_%H-%M-%S}/checkpoints
@@ -22,5 +25,8 @@ callbacks:
 accelerator: auto
 max_epochs: -1  # set to -1 for no limit
 gradient_clip_val: 1.0
+patience: 30
+min_delta: 0.01
 
-
+enable_checkpointing: false
+enable_progress_bar: false
