@@ -3,10 +3,12 @@ _target_: chemtorch.components.layer.gnn_layer.dmpnn_stack.DMPNNStack
 defaults:
   - gnn_block/dmpnn_block@dmpnn_blocks.layer
 
+depth: 3
+
 dmpnn_blocks:
   _target_: chemtorch.components.layer.layer_stack.LayerStack
   _recursive_: false
-  depth: 3
+  depth: ${..depth}
 
 edge_to_node_embedding:
   _target_: chemtorch.components.layer.gnn_layer.dmpnn_stack.EdgeToNodeEmbedding

@@ -1,0 +1,62 @@
+program: chemtorch_cli.py
+command:
+  - ${env}
+  - python
+  - ${program}
+  - "+experiment=graph"
+  - "data_pipeline=rdb7_fwd"
+  - ${args_no_hyphens}
+
+project: chemtorch
+name: dmpnn_sweep
+method: bayes
+metric:
+  goal: minimize
+  name: val_loss_epoch
+
+early_terminate:
+    type: hyperband
+    min_iter: 30
+    eta: 1.5
+
+parameters:
+  routine.optimizer.lr:
+    min: 0.0001
+    max: 0.01
+    distribution: log_uniform_values
+  
+  routine.optimizer.weight_decay:
+    min: 0.00001
+    max: 0.01
+    distribution: log_uniform_values
+
+  dataloader.batch_size:
+    values: [32, 64, 128]
+    distribution: categorical
+
+  model.layer_stack.depth:
+    values: [3, 6, 9, 12]
+    distribution: categorical
+
+  model.hidden_channels:
+    values: [64, 128, 256]
+    distribution: categorical
+
+  model.layer_stack.dmpnn_blocks.layer.dropout:
+    min: 0
+    max: 0.2
+    distribution: uniform
+  
+  model.layer_stack.dmpnn_blocks.layer.norm:
+    values: [null, "batch", "layer"]
+    distribution: categorical
+
+  model.head.num_hidden_layers:
+    values: [1, 2, 4]
+    distribution: categorical
+
+  model.head.dropout:
+    max: 0.05
+    min: 0.0
+    distribution: uniform
+
