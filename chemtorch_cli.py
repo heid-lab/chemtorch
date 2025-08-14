@@ -156,6 +156,7 @@ def main(cfg: DictConfig):
     ###### ROUTINE ##########################################################
     routine_factory = safe_instantiate(cfg.routine)
     routine: L.LightningModule = routine_factory(model=model)
+    routine.config = cfg
 
     ckpt_path = None
     if cfg.load_model:
