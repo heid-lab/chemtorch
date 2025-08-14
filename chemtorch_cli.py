@@ -84,7 +84,6 @@ def main(cfg: DictConfig):
     
     run_name = getattr(cfg, "run_name", None)
     OmegaConf.resolve(cfg)
-    resolved_cfg = OmegaConf.to_container(cfg, resolve=True)
 
     # print(f"INFO: Final config:\n{OmegaConf.to_yaml(resolved_cfg)}")
 
@@ -94,7 +93,7 @@ def main(cfg: DictConfig):
             project=cfg.project_name,
             group=cfg.group_name,
             name=run_name,
-            config=resolved_cfg,  # type: ignore
+            config=OmegaConf.to_container(cfg, resolve=True),  # type: ignore
         )
         stages: List[Stage] = []
         if "fit" in cfg.tasks:
