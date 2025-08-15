@@ -35,13 +35,13 @@ def test_ratio_splitter(sample_dataframe):
 
 def test_ratio_splitter_invalid_ratios():
     """Test RatioSplitter with invalid ratios."""
-    with pytest.raises(ValueError, match="Ratios must sum to 1"):
+    with pytest.raises(ValueError, match="Ratios \\(train, val, test\\) must sum to 1.0"):
         RatioSplitter(train_ratio=0.5, val_ratio=0.3, test_ratio=0.3)  # Sum > 1
 
-    with pytest.raises(ValueError, match="Ratios must sum to 1"):
+    with pytest.raises(ValueError, match="Ratios \\(train, val, test\\) must sum to 1.0"):
         RatioSplitter(train_ratio=0.5, val_ratio=0.5, test_ratio=0.2)  # Sum > 1
 
-    with pytest.raises(ValueError, match="Ratios must sum to 1"):
+    with pytest.raises(ValueError, match="Ratios \\(train, val, test\\) must sum to 1.0"):
         RatioSplitter(train_ratio=0.5, val_ratio=0.4, test_ratio=0.0)  # Sum < 1
 
 
