@@ -5,39 +5,8 @@ from chemtorch.components.data_pipeline.data_splitter import SizeSplitter
 from chemtorch.utils import DataSplit
 
 
-@pytest.fixture
-def size_splitter_dataframe():
-    """
-    Fixture to create a sample DataFrame for testing SizeSplitter with reaction SMILES.
-    It includes a 'smiles' column with reaction SMILES of varying molecule sizes.
-    The number of heavy atoms in each reaction is 2*i + 1.
-    """
-    smiles_data = [f"{'C' * i}>>{'C' * (i + 1)}" for i in range(1, 21)]  # 20 samples
-    return pd.DataFrame({"smiles": smiles_data, "id": range(20)})
 
-
-@pytest.fixture
-def single_molecule_dataframe():
-    """
-    Fixture to create a sample DataFrame for testing SizeSplitter with single molecules.
-    It includes a 'smiles' column with single molecule SMILES of varying sizes.
-    """
-    smiles_data = [
-        "C",           # 1 heavy atom (methane)
-        "CC",          # 2 heavy atoms (ethane)
-        "CCC",         # 3 heavy atoms (propane)
-        "CCCC",        # 4 heavy atoms (butane)
-        "CCCCC",       # 5 heavy atoms (pentane)
-        "c1ccccc1",    # 6 heavy atoms (benzene)
-        "CCc1ccccc1",  # 8 heavy atoms (ethylbenzene)
-        "c1ccc2ccccc2c1",  # 10 heavy atoms (naphthalene)
-        "CCN(CC)CC",   # 7 heavy atoms (triethylamine)
-        "C1CCCCC1",    # 6 heavy atoms (cyclohexane)
-    ]
-    return pd.DataFrame({"smiles": smiles_data, "id": range(len(smiles_data))})
-
-
-def test_size_splitter_ascending(size_splitter_dataframe):
+def test_size_splitter_ascending(alkane_dataframe):
     """
     Test SizeSplitter with ascending sort order.
     The smallest molecules should be in the train set, and the largest in the test set.
@@ -48,11 +17,11 @@ def test_size_splitter_ascending(size_splitter_dataframe):
         test_ratio=0.1,
         sort_order="ascending",
     )
-    data_split = splitter(size_splitter_dataframe)
+    data_split = splitter(alkane_dataframe)
 
     assert isinstance(data_split, DataSplit)
     total_rows = len(data_split.train) + len(data_split.val) + len(data_split.test)
-    assert total_rows == len(size_splitter_dataframe)
+    assert total_rows == len(alkane_dataframe)
     assert len(data_split.train) == 16  # 0.8 * 20
     assert len(data_split.val) == 2  # 0.1 * 20
     assert len(data_split.test) == 2  # 0.1 * 20
@@ -67,7 +36,7 @@ def test_size_splitter_ascending(size_splitter_dataframe):
     assert val_sizes.max() <= test_sizes.min()
 
 
-def test_size_splitter_descending(size_splitter_dataframe):
+def test_size_splitter_descending(alkane_dataframe):
     """
     Test SizeSplitter with descending sort order.
     The largest molecules should be in the train set, and the smallest in the test set.
@@ -78,11 +47,11 @@ def test_size_splitter_descending(size_splitter_dataframe):
         test_ratio=0.1,
         sort_order="descending",
     )
-    data_split = splitter(size_splitter_dataframe)
+    data_split = splitter(alkane_dataframe)
 
     assert isinstance(data_split, DataSplit)
     total_rows = len(data_split.train) + len(data_split.val) + len(data_split.test)
-    assert total_rows == len(size_splitter_dataframe)
+    assert total_rows == len(alkane_dataframe)
     assert "_mol_size" not in data_split.train.columns
 
     get_size = splitter._get_n_heavy_atoms
@@ -94,7 +63,7 @@ def test_size_splitter_descending(size_splitter_dataframe):
     assert val_sizes.min() >= test_sizes.max()
 
 
-def test_size_splitter_single_molecules_ascending(single_molecule_dataframe):
+def test_size_splitter_single_molecules_ascending(varying_size_dataframe):
     """
     Test SizeSplitter with single molecules in ascending order.
     Smaller molecules should be in train, larger in test.
@@ -105,11 +74,11 @@ def test_size_splitter_single_molecules_ascending(single_molecule_dataframe):
         test_ratio=0.2,
         sort_order="ascending",
     )
-    data_split = splitter(single_molecule_dataframe)
+    data_split = splitter(varying_size_dataframe)
 
     assert isinstance(data_split, DataSplit)
     total_rows = len(data_split.train) + len(data_split.val) + len(data_split.test)
-    assert total_rows == len(single_molecule_dataframe)
+    assert total_rows == len(varying_size_dataframe)
     assert "_mol_size" not in data_split.train.columns
 
     get_size = splitter._get_n_heavy_atoms
@@ -122,7 +91,7 @@ def test_size_splitter_single_molecules_ascending(single_molecule_dataframe):
     assert val_sizes.max() <= test_sizes.min()
 
 
-def test_size_splitter_single_molecules_descending(single_molecule_dataframe):
+def test_size_splitter_single_molecules_descending(varying_size_dataframe):
     """
     Test SizeSplitter with single molecules in descending order.
     Larger molecules should be in train, smaller in test.
@@ -133,11 +102,11 @@ def test_size_splitter_single_molecules_descending(single_molecule_dataframe):
         test_ratio=0.2,
         sort_order="descending",
     )
-    data_split = splitter(single_molecule_dataframe)
+    data_split = splitter(varying_size_dataframe)
 
     assert isinstance(data_split, DataSplit)
     total_rows = len(data_split.train) + len(data_split.val) + len(data_split.test)
-    assert total_rows == len(single_molecule_dataframe)
+    assert total_rows == len(varying_size_dataframe)
     assert "_mol_size" not in data_split.train.columns
 
     get_size = splitter._get_n_heavy_atoms
