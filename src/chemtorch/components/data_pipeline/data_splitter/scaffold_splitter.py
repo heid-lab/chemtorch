@@ -1,4 +1,5 @@
 import math
+from typing import List
 import warnings
 import re
 import numpy as np
@@ -14,11 +15,11 @@ except ImportError:
     # Python < 3.12
     from typing_extensions import override  # type: ignore
 
-from chemtorch.components.data_pipeline.data_splitter import DataSplitter
+from chemtorch.components.data_pipeline.data_splitter import DataSplitterBase
 from chemtorch.utils import DataSplit
 
 
-class ScaffoldSplitter(DataSplitter):
+class ScaffoldSplitter(DataSplitterBase):
     def __init__(
         self,
         train_ratio: float = 0.8,
@@ -54,7 +55,7 @@ class ScaffoldSplitter(DataSplitter):
             save_csv (bool): If True and `save_split_dir` is set, saves split DataFrames as CSVs.
         """
         super().__init__(
-            save_split_dir=save_split_dir, save_indices=save_indices, save_csv=save_csv
+            save_path=save_split_dir, save_indices=save_indices, save_csv=save_csv
         )
         self.train_ratio = train_ratio
         self.val_ratio = val_ratio
@@ -71,67 +72,8 @@ class ScaffoldSplitter(DataSplitter):
         if not (isinstance(self.mol_idx, int) or self.mol_idx in ["first", "last"]):
             raise ValueError("`mol_idx` must be an integer, 'first', or 'last'.")
 
-    def _get_scaffold_smiles(self, smiles: str) -> str:
-        """
-        Generates the Murcko scaffold SMILES for a specified molecule in a reaction.
-
-        Args:
-            smiles (str): The reaction SMILES string (e.g., 'reactant>>product').
-
-        Returns:
-            str: The SMILES string of the Murcko scaffold. Returns an empty string if
-                 the molecule is invalid, has no scaffold (is acyclic), or cannot be found.
-        """
-        if pd.isna(smiles) or not isinstance(smiles, str) or ">>" not in smiles:
-            warnings.warn(
-                f"Invalid reaction SMILES format: '{smiles}'. Assigning no scaffold."
-            )
-            return ""
-
-        parts = smiles.split(">>")
-        target_smiles_group = parts[0] if self.split_on == "reactant" else parts[1]
-        mols_smiles = target_smiles_group.split(".")
-
-        try:
-            if self.mol_idx == "first":
-                selected_smiles = mols_smiles[0]
-            elif self.mol_idx == "last":
-                selected_smiles = mols_smiles[-1]
-            else:
-                selected_smiles = mols_smiles[self.mol_idx]
-        except IndexError:
-            warnings.warn(
-                f"Molecule index {self.mol_idx} out of bounds for SMILES '{smiles}'. Assigning no scaffold."
-            )
-            return ""
-
-        non_atom_mapped_selected_smiles = self._remove_atom_map_number_manual(
-            selected_smiles
-        )
-        mol = Chem.MolFromSmiles(non_atom_mapped_selected_smiles)
-        if mol is None:
-            warnings.warn(
-                f"Could not parse molecule SMILES: '{selected_smiles}'. Assigning no scaffold."
-            )
-            return ""
-
-        try:
-            scaffold_smiles = MurckoScaffold.MurckoScaffoldSmiles(
-                mol=mol, includeChirality=self.include_chirality
-            )
-            return scaffold_smiles
-        except Exception as e:
-            warnings.warn(
-                f"Failed to generate scaffold for '{selected_smiles}' due to: {e}. Assigning no scaffold."
-            )
-            return ""
-
-    def _remove_atom_map_number_manual(self, smiles: str) -> str:
-        """Removes atom map numbers (e.g., :1, :23) from a SMILES string."""
-        return re.sub(r":\d+", "", smiles)
-
     @override
-    def __call__(self, df: pd.DataFrame) -> DataSplit:
+    def _split(self, df: pd.DataFrame) -> DataSplit[List[int]]:
         """
         Splits the DataFrame based on molecular scaffolds.
 
@@ -139,7 +81,7 @@ class ScaffoldSplitter(DataSplitter):
             df (pd.DataFrame): The input DataFrame to be split. Must contain a 'smiles' column.
 
         Returns:
-            DataSplit: A named tuple containing the train, val, and test DataFrames.
+            DataSplit[List[int]]: A named tuple containing the train, val, and test indices.
         """
         if df.empty:
             raise ValueError("Input DataFrame is empty.")
@@ -217,17 +159,69 @@ class ScaffoldSplitter(DataSplitter):
             )
         print("-" * 29)
 
-        data_split = DataSplit(
-            train=train_df.reset_index(drop=True),
-            val=val_df.reset_index(drop=True),
-            test=test_df.reset_index(drop=True),
+        indices = DataSplit(
+            train=train_df.index.to_list(),
+            val=val_df.index.to_list(),
+            test=test_df.index.to_list(),
         )
+        return indices
 
-        self._save_split(
-            data_split=data_split,
-            train_indices=train_df.index,
-            val_indices=val_df.index,
-            test_indices=test_df.index,
+    def _get_scaffold_smiles(self, smiles: str) -> str:
+        """
+        Generates the Murcko scaffold SMILES for a specified molecule in a reaction.
+
+        Args:
+            smiles (str): The reaction SMILES string (e.g., 'reactant>>product').
+
+        Returns:
+            str: The SMILES string of the Murcko scaffold. Returns an empty string if
+                 the molecule is invalid, has no scaffold (is acyclic), or cannot be found.
+        """
+        if pd.isna(smiles) or not isinstance(smiles, str) or ">>" not in smiles:
+            warnings.warn(
+                f"Invalid reaction SMILES format: '{smiles}'. Assigning no scaffold."
+            )
+            return ""
+
+        parts = smiles.split(">>")
+        target_smiles_group = parts[0] if self.split_on == "reactant" else parts[1]
+        mols_smiles = target_smiles_group.split(".")
+
+        try:
+            if self.mol_idx == "first":
+                selected_smiles = mols_smiles[0]
+            elif self.mol_idx == "last":
+                selected_smiles = mols_smiles[-1]
+            else:
+                selected_smiles = mols_smiles[self.mol_idx]
+        except IndexError:
+            warnings.warn(
+                f"Molecule index {self.mol_idx} out of bounds for SMILES '{smiles}'. Assigning no scaffold."
+            )
+            return ""
+
+        non_atom_mapped_selected_smiles = self._remove_atom_map_number_manual(
+            selected_smiles
         )
+        mol = Chem.MolFromSmiles(non_atom_mapped_selected_smiles)
+        if mol is None:
+            warnings.warn(
+                f"Could not parse molecule SMILES: '{selected_smiles}'. Assigning no scaffold."
+            )
+            return ""
 
-        return data_split
+        try:
+            scaffold_smiles = MurckoScaffold.MurckoScaffoldSmiles(
+                mol=mol, includeChirality=self.include_chirality
+            )
+            return scaffold_smiles
+        except Exception as e:
+            warnings.warn(
+                f"Failed to generate scaffold for '{selected_smiles}' due to: {e}. Assigning no scaffold."
+            )
+            return ""
+
+    def _remove_atom_map_number_manual(self, smiles: str) -> str:
+        """Removes atom map numbers (e.g., :1, :23) from a SMILES string."""
+        return re.sub(r":\d+", "", smiles)
+

@@ -1,6 +1,7 @@
 import pickle
 
 import pandas as pd
+from typing import List, Dict
 
 try:
     # Python ≥ 3.12
@@ -9,17 +10,15 @@ except ImportError:
     # Python < 3.12
     from typing_extensions import override  # type: ignore
 
-from chemtorch.components.data_pipeline.data_splitter import DataSplitter
+from chemtorch.components.data_pipeline.data_splitter import DataSplitterBase
 from chemtorch.utils import DataSplit
 
 
-class IndexSplitter(DataSplitter):
+class IndexSplitter(DataSplitterBase):
     def __init__(
         self,
         split_index_path: str,
-        save_split_dir: str | None = None,
-        save_indices: bool = True,
-        save_csv: bool = False,
+        save_path: str | None = None,
     ):
         """
         Initializes the IndexSplitter with the specified index path.
@@ -30,9 +29,10 @@ class IndexSplitter(DataSplitter):
             save_indices (bool): If True and `save_split_dir` is set, re-saves 'indices.pkl'.
             save_csv (bool): If True and `save_split_dir` is set, saves split DataFrames as CSVs.
         """
-        super().__init__(
-            save_split_dir=save_split_dir, save_indices=save_indices, save_csv=save_csv
-        )
+        super().__init__(save_path=save_path)
+        self.split_map = self._init_split_map(split_index_path)
+
+    def _init_split_map(self, split_index_path: str) -> Dict[str, List[int]]:
         with open(split_index_path, "rb") as f:
             split_indices = pickle.load(f)[0]
 
@@ -41,37 +41,55 @@ class IndexSplitter(DataSplitter):
                 "Pickle file must contain exactly 3 arrays for train/val/test splits"
             )
 
-        self.split_map = {
-            "train": split_indices[0],
-            "val": split_indices[1],
-            "test": split_indices[2],
-        }
+        if isinstance(split_indices, list):
+            split_map = {
+                "train": split_indices[0],
+                "val": split_indices[1],
+                "test": split_indices[2],
+            }
+        elif isinstance(split_indices, dict):
+            # check that the dict has keys train, val, test
+            if not all(key in split_indices for key in ["train", "val", "test"]):
+                raise ValueError(
+                    "Dict must contain keys 'train', 'val', and 'test', but got keys: "
+                    f"{list(split_indices.keys())}"
+                )
+            split_map = {
+                "train": split_indices["train"],
+                "val": split_indices["val"],
+                "test": split_indices["test"],
+            }
+        else:
+            raise ValueError("Invalid format for split indices")
+
+        if not all(
+            isinstance(indices, list) for indices in split_map.values()
+        ):
+            raise ValueError("All split indices must be lists")
+
+        if not all(
+            all(isinstance(idx, int) for idx in indices) for indices in split_map.values()
+        ):
+            raise ValueError("All split index lists must contain integers only")
+
+        return split_map
 
     @override
-    def __call__(self, df: pd.DataFrame) -> DataSplit:
+    def _split(self, df: pd.DataFrame) -> DataSplit[List[int]]:
         """
-        Splits the raw data into training, validation, and test partitions based on the specified indices.
+        Splits the DataFrame into train, validation, and test sets based on pre-defined indices.
 
         Args:
             df (pd.DataFrame): The input DataFrame to be split.
 
         Returns:
-            DataSplit: A named tuple containing the train, val, and test dataframes.
+            DataSplit[List[int]]: A named tuple containing the train, val, and test indices.
         """
-        if df.empty:
-            raise ValueError("Input DataFrame is empty")
+        if len(df) != sum(len(indices) for indices in self.split_map.values()):
+            raise ValueError("DataFrame length does not match the sum of split index lists")
 
-        data_split = DataSplit(
-            train=df.iloc[self.split_map["train"]],
-            val=df.iloc[self.split_map["val"]],
-            test=df.iloc[self.split_map["test"]],
+        return DataSplit(
+            train=self.split_map["train"],
+            val=self.split_map["val"],
+            test=self.split_map["test"],
         )
-
-        self._save_split(
-            data_split=data_split,
-            train_indices=self.split_map["train"],
-            val_indices=self.split_map["val"],
-            test_indices=self.split_map["test"],
-        )
-
-        return data_split

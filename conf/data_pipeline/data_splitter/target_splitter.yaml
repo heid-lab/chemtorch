@@ -5,6 +5,4 @@ test_ratio: null
 
 sort_order: null # ascending or descending
 
-save_split_dir: null 
-save_indices: false
-save_csv: false
+save_path: null
