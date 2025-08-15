@@ -19,8 +19,6 @@ class DataSplitterBase(ABC):
     def __init__(
         self,
         save_path: str | None = None,
-        save_indices: bool = True,
-        save_csv: bool = False,
     ) -> None:
         """
         Initializes the DataSplitter.
@@ -53,9 +51,9 @@ class DataSplitterBase(ABC):
         indices = self._split(df)
         self._save_split(indices)
         return DataSplit(
-            train=df.iloc[indices.train].reset_index(drop=True),
-            val=df.iloc[indices.val].reset_index(drop=True),
-            test=df.iloc[indices.test].reset_index(drop=True),
+            train=df.iloc[indices.train],
+            val=df.iloc[indices.val],
+            test=df.iloc[indices.test],
         )
 
     @abstractmethod
