@@ -50,12 +50,16 @@ class SizeSplitter(DataSplitterBase):
         """
         Splits the DataFrame based on molecular size (number of heavy atoms).
 
+        For single molecules: sorts by the number of heavy atoms in each molecule.
+        For reactions: sorts by the sum of heavy atoms in reactants and products.
+        
         The DataFrame is first augmented with a molecule size column, then sorted by this size.
         It's subsequently split into train, validation, and test sets.
         Finally, each set is shuffled randomly.
 
         Args:
-            df (pd.DataFrame): The input DataFrame to be split. Must contain the 'smiles' column.
+            df (pd.DataFrame): The input DataFrame to be split. Must contain the 'smiles' column
+                              with either single molecule SMILES or reaction SMILES.
 
         Returns:
             DataSplit[List[int]]: A named tuple containing the train, val, and test indices.
@@ -107,21 +111,30 @@ class SizeSplitter(DataSplitterBase):
 
     def _get_n_heavy_atoms(self, smiles: str | None) -> int:
         """
-        Calculates the number of heavy atoms in a molecule from its SMILES string.
+        Calculates the number of heavy atoms in a molecule or reaction from its SMILES string.
+        
+        For single molecules: returns the number of heavy atoms in the molecule.
+        For reactions (containing '>>'): returns the sum of heavy atoms in reactants and products.
         """
 
-        if pd.isna(smiles) or not isinstance(smiles, str):
+        if pd.isna(smiles) or not isinstance(smiles, str) or smiles.strip() == "":
             raise ValueError("Invalid SMILES string.")
 
-        parts = smiles.split(">>")
-        if len(parts) != 2:
-            raise ValueError(
-                f"Invalid reaction SMILES format: '{smiles}'. "
-                "Expected 'reactant>>product'."
-            )
-        smiles_reac, smiles_prod = parts
+        # Check if it's a reaction SMILES (contains '>>')
+        if ">>" in smiles:
+            parts = smiles.split(">>")
+            if len(parts) != 2:
+                raise ValueError(
+                    f"Invalid reaction SMILES format: '{smiles}'. "
+                    "Expected 'reactant>>product'."
+                )
+            smiles_reac, smiles_prod = parts
 
-        mol_reac, _ = make_mol(smiles_reac)
-        mol_prod, _ = make_mol(smiles_prod)
+            mol_reac, _ = make_mol(smiles_reac)
+            mol_prod, _ = make_mol(smiles_prod)
 
-        return mol_reac.GetNumHeavyAtoms() + mol_prod.GetNumHeavyAtoms()
+            return mol_reac.GetNumHeavyAtoms() + mol_prod.GetNumHeavyAtoms()
+        else:
+            # Single molecule SMILES
+            mol, _ = make_mol(smiles)
+            return mol.GetNumHeavyAtoms()
