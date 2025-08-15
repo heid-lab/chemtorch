@@ -1,3 +1,4 @@
+import math
 import warnings
 import re
 import numpy as np
@@ -62,10 +63,9 @@ class ScaffoldSplitter(DataSplitter):
         self.mol_idx = mol_idx
         self.include_chirality = include_chirality
 
-        if not (
-            1 - 1e-4 < self.train_ratio + self.val_ratio + self.test_ratio < 1 + 1e-4
-        ):
-            raise ValueError("Ratios (train, val, test) must sum to approximately 1.")
+        ratio_sum = self.train_ratio + self.val_ratio + self.test_ratio
+        if not math.isclose(ratio_sum, 1.0, rel_tol=1e-9, abs_tol=1e-9):
+            raise ValueError(f"Ratios (train, val, test) must sum to 1.0, got {ratio_sum}")
         if self.split_on not in ["reactant", "product"]:
             raise ValueError("`split_on` must be either 'reactant' or 'product'.")
         if not (isinstance(self.mol_idx, int) or self.mol_idx in ["first", "last"]):
