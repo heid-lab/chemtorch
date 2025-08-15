@@ -78,9 +78,9 @@ def test_target_splitter_missing_column():
 
 def test_target_splitter_invalid_ratios():
     """Test TargetSplitter initialization with invalid ratios."""
-    with pytest.raises(ValueError, match="Ratios .* must sum to approximately 1"):
+    with pytest.raises(ValueError, match="Ratios \\(train, val, test\\) must sum to 1.0"):
         TargetSplitter(train_ratio=0.6, val_ratio=0.3, test_ratio=0.2)
-    with pytest.raises(ValueError, match="Ratios .* must sum to approximately 1"):
+    with pytest.raises(ValueError, match="Ratios \\(train, val, test\\) must sum to 1.0"):
         TargetSplitter(train_ratio=0.5, val_ratio=0.2, test_ratio=0.2)
 
 
