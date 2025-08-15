@@ -7,11 +7,11 @@ except ImportError:
     # Python < 3.12
     from typing_extensions import override  # type: ignore
 
-from chemtorch.components.data_pipeline.data_splitter import DataSplitter
+from chemtorch.components.data_pipeline.data_splitter import DataSplitterBase
 from chemtorch.utils import DataSplit
 
 
-class TargetSplitter(DataSplitter):
+class TargetSplitter(DataSplitterBase):
     def __init__(
         self,
         train_ratio: float = 0.8,
@@ -35,7 +35,7 @@ class TargetSplitter(DataSplitter):
             save_csv (bool): If True, saves split DataFrames as CSVs.
         """
         super().__init__(
-            save_split_dir=save_split_dir,
+            save_path=save_split_dir,
             save_indices=save_indices,
             save_csv=save_csv,
         )
