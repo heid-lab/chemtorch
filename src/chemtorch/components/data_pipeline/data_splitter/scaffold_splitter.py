@@ -28,9 +28,7 @@ class ScaffoldSplitter(DataSplitterBase):
         split_on: str = "reactant",
         mol_idx: str | int = "first",
         include_chirality: bool = False,
-        save_split_dir: str | None = None,
-        save_indices: bool = True,
-        save_csv: bool = False,
+        save_path: str | None = None,
     ):
         """
         Initializes the ScaffoldSplitter.
@@ -50,13 +48,9 @@ class ScaffoldSplitter(DataSplitterBase):
                 (e.g., 'A.B>>C'). Can be 'first', 'last', or a zero-based integer index.
                 Defaults to 'first'.
             include_chirality (bool): If `True`, includes chirality in the scaffold generation.
-            save_split_dir (str | None, optional): If provided, enables saving of split files.
-            save_indices (bool): If True and `save_split_dir` is set, saves 'indices.pkl'.
-            save_csv (bool): If True and `save_split_dir` is set, saves split DataFrames as CSVs.
+            save_path (str | None, optional): If provided, saves split indices as pickle file.
         """
-        super().__init__(
-            save_path=save_split_dir, save_indices=save_indices, save_csv=save_csv
-        )
+        super().__init__(save_path=save_path)
         self.train_ratio = train_ratio
         self.val_ratio = val_ratio
         self.test_ratio = test_ratio
