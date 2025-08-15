@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 import os
+from pathlib import Path
 import pickle
 from typing import Collection, List
 import numpy as np
@@ -33,7 +34,7 @@ class DataSplitterBase(ABC):
         if save_path is not None and not save_path.endswith(".pkl"):
             raise ValueError("save_path must end with '.pkl' if provided.")
 
-        self.save_path = save_path
+        self.save_path = Path(save_path) if save_path else None
 
     def __call__(self, df: pd.DataFrame) -> DataSplit[pd.DataFrame]:
         """
@@ -87,8 +88,7 @@ class DataSplitterBase(ABC):
         if not self.save_path:
             return
 
-        os.makedirs(os.path.dirname(self.save_path), exist_ok=True)
+        self.save_path.parent.mkdir(parents=True, exist_ok=True)
 
-        indices_path = os.path.join(self.save_path)
-        with open(indices_path, "wb") as f:
+        with open(self.save_path, "wb") as f:
             pickle.dump([indices.to_dict()], f)
