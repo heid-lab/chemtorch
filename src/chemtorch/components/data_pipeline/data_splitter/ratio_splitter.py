@@ -1,3 +1,4 @@
+import math
 import pandas as pd
 
 try:
@@ -39,10 +40,9 @@ class RatioSplitter(DataSplitter):
         self.val_ratio = val_ratio
         self.test_ratio = test_ratio
 
-        if not (
-            1 - 1e-4 < self.train_ratio + self.val_ratio + self.test_ratio < 1 + 1e-4
-        ):
-            raise ValueError("Ratios must sum to 1.")
+        ratio_sum = self.train_ratio + self.val_ratio + self.test_ratio
+        if not math.isclose(ratio_sum, 1.0, rel_tol=1e-9, abs_tol=1e-9):
+            raise ValueError(f"Ratios (train, val, test) must sum to 1.0, got {ratio_sum}")
 
     @override
     def __call__(self, df: pd.DataFrame) -> DataSplit:
