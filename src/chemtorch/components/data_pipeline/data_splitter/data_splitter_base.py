@@ -49,7 +49,13 @@ class DataSplitterBase(ABC):
         if df.empty:
             raise ValueError("Input DataFrame is empty")
 
+        # NOTE: The random state has to be restored so subsequent operations like data shuffling 
+        # in the data loader get the same RNG sequence as if no splitting had occurred. This is 
+        # needed for reproducibility when using IndexSplitter on the saved indices.
+        np_state = np.random.get_state()
         indices = self._split(df)
+        np.random.set_state(np_state)
+        
         self._save_split(indices)
         return DataSplit(
             train=df.iloc[indices.train],

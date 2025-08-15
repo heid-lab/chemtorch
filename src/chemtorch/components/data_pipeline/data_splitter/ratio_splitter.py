@@ -44,9 +44,6 @@ class RatioSplitter(DataSplitterBase):
 
     @override
     def _split(self, df: pd.DataFrame) -> DataSplit[List[int]]:
-        # Save the current random state
-        np_state = np.random.get_state()
-        
         random_df = df.sample(frac=1)
 
         train_size = int(len(random_df) * self.train_ratio)
@@ -55,11 +52,6 @@ class RatioSplitter(DataSplitterBase):
         train_df = random_df[:train_size]
         val_df = random_df[train_size : train_size + val_size]
         test_df = random_df[train_size + val_size :]
-        
-        # NOTE: Restore the random state so subsequent operations get the same RNG sequence
-        # as if no splitting had occurred. This is needed for reproducibility when using
-        # IndexSplitter on the saved indices.
-        np.random.set_state(np_state)
         
         return DataSplit(
             train=train_df.index.tolist(),
