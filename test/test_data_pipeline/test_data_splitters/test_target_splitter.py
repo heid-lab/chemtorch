@@ -5,15 +5,6 @@ from chemtorch.components.data_pipeline.data_splitter import TargetSplitter
 from chemtorch.utils import DataSplit
 
 
-@pytest.fixture
-def target_splitter_dataframe():
-    """
-    Fixture to create a sample DataFrame for testing TargetSplitter.
-    It includes a 'label' column with a clear numeric progression.
-    """
-    return pd.DataFrame({"label": range(20), "id": range(20)})
-
-
 def test_target_splitter_ascending(target_splitter_dataframe):
     """
     Test TargetSplitter with ascending sort order.

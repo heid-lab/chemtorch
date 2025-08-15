@@ -47,14 +47,14 @@ def assert_frames_are_identical(
         ),
         (
             ScaffoldSplitter,
-            {"train_ratio": 0.8, "val_ratio": 0.1, "test_ratio": 0.1},
+            {"train_ratio": 0.8, "val_ratio": 0.1, "test_ratio": 0.1, "split_on": "reactant", "mol_idx": 0},
             "scaffold_dataframe",
             None,
         ),
         (
             SizeSplitter,
             {"train_ratio": 0.8, "val_ratio": 0.1, "test_ratio": 0.1},
-            "size_splitter_dataframe",
+            "varying_size_dataframe",
             None,
         ),
         (
@@ -253,9 +253,9 @@ def test_save_path_overwrite_existing_file(sample_dataframe, tmp_path):
 
 @pytest.mark.parametrize("splitter_class,splitter_args,fixture_name", [
     (RatioSplitter, {"train_ratio": 0.7, "val_ratio": 0.2, "test_ratio": 0.1}, "sample_dataframe"),
-    (SizeSplitter, {"train_ratio": 0.8, "val_ratio": 0.1, "test_ratio": 0.1}, "size_splitter_dataframe"),
+    (SizeSplitter, {"train_ratio": 0.8, "val_ratio": 0.1, "test_ratio": 0.1}, "varying_size_dataframe"),
     (TargetSplitter, {"train_ratio": 0.8, "val_ratio": 0.1, "test_ratio": 0.1}, "target_splitter_dataframe"),
-    (ScaffoldSplitter, {"train_ratio": 0.8, "val_ratio": 0.1, "test_ratio": 0.1}, "scaffold_dataframe"),
+    (ScaffoldSplitter, {"train_ratio": 0.8, "val_ratio": 0.1, "test_ratio": 0.1, "split_on": "reactant", "mol_idx": 0}, "scaffold_dataframe"),
 ])
 def test_all_splitters_save_indices_correctly(splitter_class, splitter_args, fixture_name, request, tmp_path):
     """Test that all splitter types save indices correctly."""
