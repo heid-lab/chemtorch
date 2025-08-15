@@ -14,6 +14,6 @@ column_mapper:
   label: "dE0"
 
 data_splitter:
-  train_ratio: 0.9
-  val_ratio: 0.05
-  test_ratio: 0.05
+  train_ratio: 0.8
+  val_ratio: 0.1
+  test_ratio: 0.1
