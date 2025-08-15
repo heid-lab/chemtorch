@@ -25,9 +25,9 @@ class ScaffoldSplitter(DataSplitterBase):
         train_ratio: float = 0.8,
         val_ratio: float = 0.1,
         test_ratio: float = 0.1,
-        split_on: str = "reactant",
-        mol_idx: str | int = "first",
         include_chirality: bool = False,
+        split_on: str | None = None,
+        mol_idx: int | None = None,
         save_path: str | None = None,
     ):
         """
@@ -42,29 +42,30 @@ class ScaffoldSplitter(DataSplitterBase):
             train_ratio (float): The desired ratio of data for the training set.
             val_ratio (float): The desired ratio of data for the validation set.
             test_ratio (float): The desired ratio of data for the test set.
-            split_on (str): Specifies whether to use the 'reactant' or 'product' for
-                scaffold generation. Defaults to 'reactant'.
-            mol_idx (str | int): Specifies which molecule to use if multiple are present
-                (e.g., 'A.B>>C'). Can be 'first', 'last', or a zero-based integer index.
-                Defaults to 'first'.
             include_chirality (bool): If `True`, includes chirality in the scaffold generation.
+            split_on (str | None): Specifies whether to use the 'reactant' or 'product' for
+                scaffold generation when processing reaction SMILES. Required for reaction SMILES,
+                ignored for single molecules. Defaults to None.
+            mol_idx (int | None): Zero-based index specifying which molecule to use if multiple 
+                are present (e.g., 'A.B>>C' or 'A.B'). Required when multiple molecules are present
+                in the selected part of the reaction. Defaults to None.
             save_path (str | None, optional): If provided, saves split indices as pickle file.
         """
         super().__init__(save_path=save_path)
         self.train_ratio = train_ratio
         self.val_ratio = val_ratio
         self.test_ratio = test_ratio
-        self.split_on = split_on.lower()
+        self.split_on = split_on.lower() if split_on is not None else None
         self.mol_idx = mol_idx
         self.include_chirality = include_chirality
 
         ratio_sum = self.train_ratio + self.val_ratio + self.test_ratio
         if not math.isclose(ratio_sum, 1.0, rel_tol=1e-9, abs_tol=1e-9):
             raise ValueError(f"Ratios (train, val, test) must sum to 1.0, got {ratio_sum}")
-        if self.split_on not in ["reactant", "product"]:
-            raise ValueError("`split_on` must be either 'reactant' or 'product'.")
-        if not (isinstance(self.mol_idx, int) or self.mol_idx in ["first", "last"]):
-            raise ValueError("`mol_idx` must be an integer, 'first', or 'last'.")
+        if split_on is not None and split_on.lower() not in ["reactant", "product"]:
+            raise ValueError("`split_on` must be either 'reactant' or 'product' when provided.")
+        if mol_idx is not None and (not isinstance(mol_idx, int) or mol_idx < 0):
+            raise ValueError("`mol_idx` must be a non-negative integer when provided.")
 
     @override
     def _split(self, df: pd.DataFrame) -> DataSplit[List[int]]:
@@ -72,7 +73,8 @@ class ScaffoldSplitter(DataSplitterBase):
         Splits the DataFrame based on molecular scaffolds.
 
         Args:
-            df (pd.DataFrame): The input DataFrame to be split. Must contain a 'smiles' column.
+            df (pd.DataFrame): The input DataFrame to be split. Must contain a 'smiles' column
+                              with either single molecule SMILES or reaction SMILES.
 
         Returns:
             DataSplit[List[int]]: A named tuple containing the train, val, and test indices.
@@ -90,7 +92,7 @@ class ScaffoldSplitter(DataSplitterBase):
         )
 
         has_scaffold_mask = df_with_scaffold["_scaffold"] != ""
-        df_has_scaffold = df_with_scaffold[has_scaffold_mask]
+        df_scaffolds = df_with_scaffold[has_scaffold_mask]
         no_scaffold_indices = df_with_scaffold.index[~has_scaffold_mask].tolist()
 
         if len(no_scaffold_indices) > 0:
@@ -100,11 +102,11 @@ class ScaffoldSplitter(DataSplitterBase):
             )
 
         scaffold_to_indices = defaultdict(list)
-        for index, scaffold in df_has_scaffold["_scaffold"].items():
+        for index, scaffold in df_scaffolds["_scaffold"].items():
             scaffold_to_indices[scaffold].append(index)
 
         scaffold_groups = list(scaffold_to_indices.values())
-        print(f"Found {len(scaffold_groups)} unique scaffolds.")
+        # print(f"Found {len(scaffold_groups)} unique scaffolds.")
         scaffold_groups.sort(key=len, reverse=True)
 
         split_indices = {"train": no_scaffold_indices, "val": [], "test": []}
@@ -132,26 +134,19 @@ class ScaffoldSplitter(DataSplitterBase):
             best_split = max(needs, key=needs.get)
             split_indices[best_split].extend(group)
 
-        train_indices, val_indices, test_indices = (
-            split_indices["train"],
-            split_indices["val"],
-            split_indices["test"],
-        )
+        train_df = df.loc[split_indices["train"]].sample(frac=1)
+        val_df = df.loc[split_indices["val"]].sample(frac=1)
+        test_df = df.loc[split_indices["test"]].sample(frac=1)
 
-        train_df = df.loc[train_indices].sample(frac=1)
-        val_df = df.loc[val_indices].sample(frac=1)
-        test_df = df.loc[test_indices].sample(frac=1)
-
-        n_total = len(df)
-        print("--- Scaffold Split Ratios ---")
-        print(
-            f"Guidance: train={self.train_ratio:.3f}, val={self.val_ratio:.3f}, test={self.test_ratio:.3f}"
-        )
-        if n_total > 0:
-            print(
-                f"Actual:   train={len(train_df) / n_total:.3f}, val={len(val_df) / n_total:.3f}, test={len(test_df) / n_total:.3f}"
-            )
-        print("-" * 29)
+        # print("--- Scaffold Split Ratios ---")
+        # print(
+        #     f"Guidance: train={self.train_ratio:.3f}, val={self.val_ratio:.3f}, test={self.test_ratio:.3f}"
+        # )
+        # if n_total > 0:
+        #     print(
+        #         f"Actual:   train={len(train_df) / n_total:.3f}, val={len(val_df) / n_total:.3f}, test={len(test_df) / n_total:.3f}"
+        #     )
+        # print("-" * 29)
 
         indices = DataSplit(
             train=train_df.index.to_list(),
@@ -162,60 +157,76 @@ class ScaffoldSplitter(DataSplitterBase):
 
     def _get_scaffold_smiles(self, smiles: str) -> str:
         """
-        Generates the Murcko scaffold SMILES for a specified molecule in a reaction.
+        Generates the Murcko scaffold SMILES for a specified molecule in a reaction or single molecule.
 
         Args:
-            smiles (str): The reaction SMILES string (e.g., 'reactant>>product').
+            smiles (str): The reaction SMILES string (e.g., 'reactant>>product') or 
+                         single molecule SMILES string.
 
         Returns:
             str: The SMILES string of the Murcko scaffold. Returns an empty string if
                  the molecule is invalid, has no scaffold (is acyclic), or cannot be found.
         """
-        if pd.isna(smiles) or not isinstance(smiles, str) or ">>" not in smiles:
-            warnings.warn(
-                f"Invalid reaction SMILES format: '{smiles}'. Assigning no scaffold."
+        if pd.isna(smiles) or not isinstance(smiles, str) or smiles.strip() == "":
+            raise ValueError(
+                f"Invalid SMILES format: '{smiles}'."
             )
-            return ""
 
-        parts = smiles.split(">>")
-        target_smiles_group = parts[0] if self.split_on == "reactant" else parts[1]
+        # Check if it's a reaction SMILES (contains '>>')
+        if ">>" in smiles:
+            parts = smiles.split(">>")
+            if len(parts) != 2:
+                raise ValueError(
+                    f"Invalid reaction SMILES format: '{smiles}'. Expected 'reactant>>product'."
+                )
+            
+            # For reaction SMILES, split_on is required
+            if self.split_on is None:
+                raise ValueError(
+                    f"split_on parameter is required for reaction SMILES. "
+                    "Please specify 'reactant' or 'product'."
+                )
+            
+            target_smiles_group = parts[0] if self.split_on == "reactant" else parts[1]
+        else:
+            # Single molecule SMILES - split_on is ignored
+            target_smiles_group = smiles
+
         mols_smiles = target_smiles_group.split(".")
 
-        try:
-            if self.mol_idx == "first":
-                selected_smiles = mols_smiles[0]
-            elif self.mol_idx == "last":
-                selected_smiles = mols_smiles[-1]
-            else:
-                selected_smiles = mols_smiles[self.mol_idx]
-        except IndexError:
-            warnings.warn(
-                f"Molecule index {self.mol_idx} out of bounds for SMILES '{smiles}'. Assigning no scaffold."
+        # If there are multiple molecules, mol_idx is required
+        if len(mols_smiles) > 1 and self.mol_idx is None:
+            raise ValueError(
+                f"mol_idx parameter is required for multi-component SMILES: '{smiles}'. "
+                f"Found {len(mols_smiles)} molecules, please specify which one to use (0-based index)."
             )
-            return ""
+        
+        # Use mol_idx if provided, otherwise default to 0 for single molecules
+        mol_idx = self.mol_idx if self.mol_idx is not None else 0
 
-        non_atom_mapped_selected_smiles = self._remove_atom_map_number_manual(
-            selected_smiles
-        )
-        mol = Chem.MolFromSmiles(non_atom_mapped_selected_smiles)
-        if mol is None:
-            warnings.warn(
-                f"Could not parse molecule SMILES: '{selected_smiles}'. Assigning no scaffold."
+        try:
+            target_smiles = mols_smiles[mol_idx]
+        except IndexError:
+            raise IndexError(
+                f"Molecule index {mol_idx} out of bounds for SMILES '{smiles}' "
+                f"(has {len(mols_smiles)} molecules)."
             )
-            return ""
+
+        mol = Chem.MolFromSmiles(target_smiles)
+        if mol is None:
+            raise ValueError(
+                f"Could not parse molecule SMILES: '{target_smiles}'."
+            )
 
         try:
             scaffold_smiles = MurckoScaffold.MurckoScaffoldSmiles(
                 mol=mol, includeChirality=self.include_chirality
             )
             return scaffold_smiles
-        except Exception as e:
-            warnings.warn(
-                f"Failed to generate scaffold for '{selected_smiles}' due to: {e}. Assigning no scaffold."
-            )
+        except Exception:
             return ""
 
-    def _remove_atom_map_number_manual(self, smiles: str) -> str:
+    def _remove_atom_mapping(self, smiles: str) -> str:
         """Removes atom map numbers (e.g., :1, :23) from a SMILES string."""
         return re.sub(r":\d+", "", smiles)
 
