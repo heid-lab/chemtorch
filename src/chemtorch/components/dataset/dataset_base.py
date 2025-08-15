@@ -6,6 +6,7 @@ import torch
 
 from chemtorch.components.representation import AbstractRepresentation
 from chemtorch.components.transform import AbstractTransform
+from chemtorch.components.dataset.abstact_dataset import AbstractDataset
 from chemtorch.utils import enforce_base_init
 
 
@@ -15,12 +16,12 @@ from chemtorch.utils import enforce_base_init
 # Note: Update precompute_time property to return 0 or time taken
 # to load from disk.
 T = TypeVar("T")
-class DatasetBase(Generic[T]):
+
+class DatasetBase(Generic[T], AbstractDataset[T, AbstractRepresentation[T]]):
     """
     Base class for DeepReaction datasets.
 
-    This class defines the standard interface for datasets in the DeepReaction framework.
-    All datasets should subclass :class:`DatasetBase[T]` and implement the `_get_sample_by_idx` method.    
+    This class implements the AbstractDataset with AbstractRepresentation[T] as the representation type.
 
     The dataset can handle both labeled and unlabeled data. If the input DataFrame contains a 'label' 
     column, the dataset will return tuples of (data_object, label). Otherwise, it will return only 
@@ -31,33 +32,13 @@ class DatasetBase(Generic[T]):
 
     Raises:
         RuntimeError: If the subclass does not call `super().__init__()` in its `__init__()` method.
-
-    Example:
-        >>> import pandas as pd
-        >>> class MyRepresentation(RepresentationBase[int]):
-        ...     def __call__(self, a: int, b: int) -> int:
-        ...         return a + b
-        ...
-        >>> class MyTransform(TransformBase[int]):
-        ...     def __call__(self, data: int) -> int:
-        ...         return data * 2
-        ...
-        >>> # Example with labels
-        >>> df_labeled = pd.DataFrame([{"a": 1, "b": 2, "label": 10}, {"a": 3, "b": 4, "label": 20}])
-        >>> dataset_labeled = DatasetBase(df_labeled, MyRepresentation, MyTransform)
-        >>> result = dataset_labeled[0]  # Returns (data_object, label)
-        >>> 
-        >>> # Example without labels
-        >>> df_unlabeled = pd.DataFrame([{"a": 1, "b": 2}, {"a": 3, "b": 4}])
-        >>> dataset_unlabeled = DatasetBase(df_unlabeled, MyRepresentation, MyTransform)
-        >>> result = dataset_unlabeled[0]  # Returns only data_object
     """
     
 
     def __init__(
         self,
         dataframe: pd.DataFrame,
-        representation: AbstractRepresentation[T] | Callable[..., T],
+        representation: AbstractRepresentation[T],
         transform: Optional[AbstractTransform[T] | Callable[[T], T]] = None,
         precompute_all: bool = True,
         cache: bool = True,
@@ -72,10 +53,10 @@ class DatasetBase(Generic[T]):
             dataframe (pd.DataFrame): The input data as a pandas DataFrame. Each row represents a single sample. If the dataset 
                 contains a `label` column, it will be returned alongside the computed representation. Otherwise, only the 
                 representation will be returned.
-            representation (RepresentationBase[T] | Callable[..., T]): A stateless class or callable that 
-                constructs the data object consumed by the model. Must take in the fields of a single sample 
-                from the :attr:`dataframe` (row) as keyword arguments and return an object of type T.
-            transform (Optional[TransformBase[T] | Callable[[T], T]]): An optional transformation function or a composition thereof 
+            representation (AbstractRepresentation[T]): A representation instance that constructs the data object consumed by 
+                the model. Must take in the fields of a single sample from the :attr:`dataframe` (row) as keyword arguments 
+                and return an object of type T.
+            transform (Optional[AbstractTransform[T] | Callable[[T], T]]): An optional transformation function or a composition thereof 
                 (:class:`Compose`) that takes in an object of type T and returns a (possibly modified) object of 
                 the same type.
             precompute_all (bool): If True, precompute all samples in the dataset. Default is True.
@@ -90,14 +71,14 @@ class DatasetBase(Generic[T]):
 
         Raises:
             ValueError: If the `dataframe` is not a pandas DataFrame.
-            ValueError: If the `representation` is not a RepresentationBase or a callable.
+            ValueError: If the `representation` is not an AbstractRepresentation instance.
             ValueError: If the `transform` is not a TransformBase, a callable, or None.
         """
         if not isinstance(dataframe, pd.DataFrame):
             raise ValueError("Dataframe must be a pandas DataFrame.")
-        if not isinstance(representation, (AbstractRepresentation, Callable)):
+        if not isinstance(representation, AbstractRepresentation):
             raise ValueError(
-                "Representation must be an instance of AbstractRepresentation or Callable."
+                "Representation must be an instance of AbstractRepresentation."
             )
         if not isinstance(transform, (AbstractTransform, Callable, type(None))):
             raise ValueError(
@@ -267,7 +248,7 @@ class DatasetBase(Generic[T]):
         """
         if not self.has_labels:
             raise RuntimeError("Dataset does not contain labels.")
-        return self.dataframe['label'].mean().item()
+        return float(self.dataframe['label'].mean())
     
     @property
     def std(self) -> float:
@@ -282,4 +263,4 @@ class DatasetBase(Generic[T]):
         """
         if not self.has_labels:
             raise RuntimeError("Dataset does not contain labels.")
-        return self.dataframe['label'].std().item()
+        return float(self.dataframe['label'].std())
