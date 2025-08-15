@@ -10,7 +10,7 @@ callbacks:
   - _target_: lightning.pytorch.callbacks.EarlyStopping
     monitor: val_loss_epoch
     min_delta: 0.01
-    patience: 10
+    patience: 30
     mode: min
   - _target_: lightning.pytorch.callbacks.ModelCheckpoint
     # Checkpoints are saved to lightning_logs/<project_name>/<data_pipeline>/<model>/seed_<seed>_<timestamp>/checkpoints

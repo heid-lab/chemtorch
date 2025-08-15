@@ -9,7 +9,7 @@ defaults:
   - _self_
 
 # LOGGING (Weight and Biases)
-log: false
+log: true
 project_name: chemtorch
 group_name: fingerprint
 run_name: null
@@ -22,7 +22,7 @@ tasks:
   - test
 
 trainer:
-  max_epochs: 200
+  max_epochs: 100
 
 num_classes: 1000
 dataset:

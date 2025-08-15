@@ -10,7 +10,7 @@ defaults:
   - _self_
 
 # LOGGING (Weight and Biases)
-log: false
+log: true
 project_name: chemtorch
 group_name: 3d_graph
 run_name: null
@@ -23,7 +23,7 @@ tasks:
   - test
 
 trainer:
-  max_epochs: 200
+  max_epochs: 100
 
 runtime_args_from_dataset:
   - mean

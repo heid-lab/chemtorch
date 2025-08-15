@@ -9,7 +9,7 @@ defaults:
   - _self_
 
 # LOGGING (Weight and Biases)
-log: false
+log: true
 project_name: chemtorch
 group_name: token
 run_name: null
@@ -26,7 +26,7 @@ dataset:
   integer_labels: true
   
 trainer:
-  max_epochs: 200
+  max_epochs: 100
 
 runtime_args_from_dataset:
   - vocab_size
