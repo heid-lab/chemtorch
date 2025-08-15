@@ -1,7 +1,9 @@
 import pickle
+import warnings
 
 import pandas as pd
 from typing import List, Dict
+import warnings
 
 try:
     # Python ≥ 3.12
@@ -85,8 +87,30 @@ class IndexSplitter(DataSplitterBase):
         Returns:
             DataSplit[List[int]]: A named tuple containing the train, val, and test indices.
         """
-        if len(df) != sum(len(indices) for indices in self.split_map.values()):
-            raise ValueError("DataFrame length does not match the sum of split index lists")
+        # Check for out-of-bounds indices
+        all_indices = []
+        for split_name, indices in self.split_map.items():
+            all_indices.extend(indices)
+            # Check if any index is out of bounds
+            max_idx = max(indices) if indices else -1
+            if max_idx >= len(df):
+                raise ValueError(
+                    f"Index {max_idx} in {split_name} split is out of bounds for DataFrame with {len(df)} rows"
+                )
+        
+        # Check for duplicate indices across splits
+        if len(all_indices) != len(set(all_indices)):
+            raise ValueError("Duplicate indices found across different splits")
+        
+        # Warn if total number of indices doesn't match DataFrame length
+        if len(df) != len(all_indices):
+            train_ratio = len(self.split_map["train"]) / len(df)
+            val_ratio = len(self.split_map["val"]) / len(df)
+            test_ratio = len(self.split_map["test"]) / len(df)
+            warnings.warn(
+                f"Dataset is implicitly subsampled by the given split index: "
+                f"train={train_ratio:.4f}, val={val_ratio:.4f}, test={test_ratio:.4f}"
+            )
 
         return DataSplit(
             train=self.split_map["train"],
