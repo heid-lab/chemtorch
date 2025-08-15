@@ -135,7 +135,7 @@ def test_scaffold_splitter_invalid_inputs():
 
 def test_scaffold_splitter_init_errors():
     """Test initialization errors for ScaffoldSplitter."""
-    with pytest.raises(ValueError, match="Ratios .* must sum to approximately 1"):
+    with pytest.raises(ValueError, match="Ratios \\(train, val, test\\) must sum to 1.0"):
         ScaffoldSplitter(train_ratio=0.7, val_ratio=0.2, test_ratio=0.2)
 
     with pytest.raises(
