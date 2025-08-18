@@ -27,5 +27,12 @@ html_theme = "sphinx_book_theme"
 html_theme_options = {
     "repository_url": "https://github.com/heid-lab/chemtorch",
     "use_repository_button": True,
+    "logo": {
+        "alt_text": "ChemTorch documentation - Home",
+        "image_light": "_static/chemtorch.png",
+        "image_dark": "_static/chemtorch.png",
+    },
 }
+html_title = "ChemTorch"
 html_static_path = ["_static"]
+html_favicon = "_static/chemtorch_favicon.png"
