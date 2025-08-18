@@ -4,7 +4,7 @@ val_ratio: null
 test_ratio: null
 
 split_on: null # reactant or product
-mol_idx: null # first, last, or an integer index
+mol_idx: null # integer index
 include_chirality: false # include chirality in the scaffold smiles
 
 save_path: null 
