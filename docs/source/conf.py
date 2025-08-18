@@ -7,10 +7,8 @@
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 project = "ChemTorch"
-copyright = (
-    "2025, Jasper De Landsheere, Anton Zamyatin, Johannes Karwounopoulos, Esther Heid"
-)
-author = "Jasper De Landsheere, Anton Zamyatin, Johannes Karwounopoulos, Esther Heid"
+copyright = "2025, Esther Heid"
+author = "Jasper De Landsheere, Anton Zamyatin, Esther Heid"
 release = "0.1.1"
 
 # -- General configuration ---------------------------------------------------
@@ -25,5 +23,9 @@ exclude_patterns = []
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
-html_theme = "alabaster"
+html_theme = "sphinx_book_theme"
+html_theme_options = {
+    "repository_url": "https://github.com/heid-lab/chemtorch",
+    "use_repository_button": True,
+}
 html_static_path = ["_static"]
