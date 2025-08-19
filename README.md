@@ -1,6 +1,6 @@
 <div align="center">
 
-![ChemTorch](images/chemtorch.png)
+![ChemTorch](docs/source/_static/chemtorch.png)
 
 [![tests](https://github.com/heid-lab/chemtorch/actions/workflows/pytest.yml/badge.svg)](https://github.com/heid-lab/chemtorch/actions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
