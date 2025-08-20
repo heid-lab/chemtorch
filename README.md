@@ -1,7 +1,7 @@
 <div align="center">
 
 ![ChemTorch](docs/source/_static/chemtorch_logo_light.png#gh-light-mode-only)
-![ChemTorch](docs/source/_static/chemtorch_logo_dark.png#gh-dark-mode-only)
+![ChemTorch](docs/source/_static/chemtorch_logo_dark_lightbackground.png#gh-dark-mode-only)
 
 [![tests](https://github.com/heid-lab/chemtorch/actions/workflows/pytest.yml/badge.svg)](https://github.com/heid-lab/chemtorch/actions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
