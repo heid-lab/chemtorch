@@ -6,7 +6,7 @@ Installation
 
 First clone this repo and navigate to it:
 
-.. parsed-literal::
+.. code-block:: bash
 
     git clone https://github.com/heid-lab/chemtorch.git
     cd chemtorch   
@@ -14,9 +14,7 @@ First clone this repo and navigate to it:
 Via conda
 ---------
 
-See
-
-.. parsed-literal::
+.. code-block:: bash
 
     conda create -n chemtorch python=3.10 && \
     conda activate chemtorch && \
@@ -31,16 +29,16 @@ See
 
 For GPU usage:
 
-.. parsed-literal::
+.. code-block:: bash
 
     pip install torch-scatter torch-sparse -f https://data.pyg.org/whl/torch-${TORCH}+${CUDA}.html
 
 Via uv
 -----------
 
-For installing with `uv`, first install `torch` and `uv`, for example via
+For installing with `uv`, first install `torch` and `uv`.
 
-.. parsed-literal::
+.. code-block:: bash
 
     pip install torch uv
     uv sync -n
