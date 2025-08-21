@@ -3,16 +3,42 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-ChemTorch documentation
+Welcome to ChemTorch!
 =======================
 
-Add your content using ``reStructuredText`` syntax. See the
-`reStructuredText <https://www.sphinx-doc.org/en/master/usage/restructuredtext/index.html>`_
-documentation for details.
+ChemTorch is a deep learning framework for benchmarking and developing chemical reaction property prediction models. 
+It builds on top of `Hydra <https://hydra.cc/>`_ and `PyTorch Lightning <https://lightning.ai/docs/pytorch/stable/>`_, 
+providing a flexible and modular framework for reaction modeling using machine learning.
 
+Getting started
+---------
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
 
-   installation
+   getting-started
+
+Concepts
+---------
+
+.. toctree::
+   :maxdepth: 2
+   :glob:
+   
+   concepts/*
+
+The ChemTorch CLI
+---------
+
+.. toctree::
+   chemtorch_cli
+
+API
+---------
+
+
+.. toctree::
+   :maxdepth: 1
+   :glob:
+
+   api/*
