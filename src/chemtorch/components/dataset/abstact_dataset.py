@@ -5,15 +5,17 @@ import torch
 if TYPE_CHECKING:
     import pandas as pd
 
-T_co = TypeVar("T_co", covariant=True)
+T = TypeVar("T", covariant=True)
 R = TypeVar("R")  # Invariant since it's used in both input/output positions
 
-class AbstractDataset(ABC, Generic[T_co, R]):
+class AbstractDataset(ABC, Generic[T, R]):
     """
     Protocol defining the interface for datasets with typed representations.
-    
-    This allows operations to specify exactly what type of representation
-    they expect while maintaining type safety.
+    All datasets in ChemTorch must subclass this protocol and implement the
+    required methods. This class can also be used for type hinting where
+    `AbstractDataset[T, R]` means that the dataset will produce items of type
+    `T` or `Tuple[T, torch.Tensor]` and use a representation of type `R`.
+
     """
     
     representation: R
@@ -25,7 +27,7 @@ class AbstractDataset(ABC, Generic[T_co, R]):
     def __len__(self) -> int: ...
     
     @abstractmethod
-    def __getitem__(self, idx: int) -> T_co | Tuple[T_co, torch.Tensor]: ...
+    def __getitem__(self, idx: int) -> T | Tuple[T, torch.Tensor]: ...
 
     @abstractmethod   
     def get_labels(self) -> 'torch.Tensor': ...

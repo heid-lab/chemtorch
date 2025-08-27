@@ -2,15 +2,17 @@ from abc import ABC, abstractmethod
 from typing import TypeVar, Generic, Union
 
 
-T_co = TypeVar("T_co", covariant=True)
+T = TypeVar("T", covariant=True)
 
 
-class AbstractRepresentation(ABC, Generic[T_co]):
+class AbstractRepresentation(ABC, Generic[T]):
     """
     Abstract base class for all chemistry representation creators.
 
-    All representations in ChemTorch work with chemical data and must implement
-    the `construct` method that takes a SMILES string and returns an object of type T.
+    All representations in ChemTorch must subclass this class and implement the
+    `construct` method. This class can also be used for type hinting where
+    `AbstractRepresentation[T]` means that the `__call__` and `construct` methods
+    will return an object of type `T`.
 
     The representation should be stateless - it should not hold any mutable state
     and the same input should always produce the same output.
@@ -37,7 +39,7 @@ class AbstractRepresentation(ABC, Generic[T_co]):
     """
     
     @abstractmethod
-    def construct(self, smiles: str) -> T_co:
+    def construct(self, smiles: str) -> T:
         """
         Construct a representation from a SMILES string.
         
@@ -48,7 +50,7 @@ class AbstractRepresentation(ABC, Generic[T_co]):
                 For molecules, a standard SMILES string (e.g., "CCO").
         
         Returns:
-            T_co: The constructed representation of the specified type.
+            T: The constructed representation of the specified type.
                 Common types include torch.Tensor for token representations,
                 torch_geometric.data.Data for graph representations, etc.
         
@@ -58,7 +60,7 @@ class AbstractRepresentation(ABC, Generic[T_co]):
         """
         pass
 
-    def __call__(self, smiles: str) -> T_co:
+    def __call__(self, smiles: str) -> T:
         """
         Callable interface for construct method.
         
@@ -66,6 +68,6 @@ class AbstractRepresentation(ABC, Generic[T_co]):
             smiles (str): A SMILES string representing a molecule or reaction.
         
         Returns:
-            T_co: The constructed representation.
+            T: The constructed representation.
         """
         return self.construct(smiles)
