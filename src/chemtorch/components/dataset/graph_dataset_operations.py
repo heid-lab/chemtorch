@@ -5,15 +5,10 @@ from torch_geometric.utils import degree
 
 if TYPE_CHECKING:
     from chemtorch.components.dataset.abstact_dataset import AbstractDataset
+    from chemtorch.components.representation.abstract_representation import AbstractRepresentation
 
-class GraphRepresentationProtocol(Protocol):
-    """Protocol for representations that produce PyTorch Geometric Data objects."""
-    
-    def construct(self, **kwargs) -> Data: ...
-    
-    def __call__(self, **kwargs) -> Data: ...
 
-def compute_degree_statistics(dataset: AbstractDataset[Data, GraphRepresentationProtocol]) -> Dict[str, Union[int, List[int]]]:
+def compute_degree_statistics(dataset: AbstractDataset[Data, AbstractRepresentation[Data]]) -> Dict[str, Union[int, List[int]]]:
     """
     Compute degree statistics for a graph dataset.
     
@@ -72,7 +67,7 @@ def compute_degree_statistics(dataset: AbstractDataset[Data, GraphRepresentation
         "degree_histogram": degree_histogram.tolist() if degree_histogram is not None else [],
     }
 
-def get_num_node_features(dataset: AbstractDataset[Data, GraphRepresentationProtocol]) -> int:
+def get_num_node_features(dataset: AbstractDataset[Data, AbstractRepresentation[Data]]) -> int:
     """Get number of node features from a graph dataset."""
     if len(dataset) == 0:
         raise ValueError("Cannot determine node features from empty dataset")
@@ -88,7 +83,7 @@ def get_num_node_features(dataset: AbstractDataset[Data, GraphRepresentationProt
     
     return data.num_node_features
 
-def get_num_edge_features(dataset: AbstractDataset[Data, GraphRepresentationProtocol]) -> int:
+def get_num_edge_features(dataset: AbstractDataset[Data, AbstractRepresentation[Data]]) -> int:
     """Get number of edge features from a graph dataset."""
     if len(dataset) == 0:
         raise ValueError("Cannot determine edge features from empty dataset")
