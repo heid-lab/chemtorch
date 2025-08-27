@@ -2,7 +2,7 @@
 Integration tests for token dataset operations with real ChemTorch components.
 
 This module tests the token dataset operations with actual DatasetBase,
-SimpleTokenRepresentation, and DataModule components to ensure they work
+TokenRepresentationBase, and DataModule components to ensure they work
 correctly in the real framework context.
 """
 
@@ -21,7 +21,7 @@ from chemtorch.components.dataset.token_dataset_operations import (
     get_vocab_size,
     save_vocab,
 )
-from chemtorch.components.representation.token.simple_token_representation import SimpleTokenRepresentation
+from chemtorch.components.representation.token.token_representation_base import TokenRepresentationBase
 from chemtorch.core.data_module import DataModule
 from chemtorch.utils.types import DataSplit
 
@@ -71,8 +71,8 @@ def mock_tokenizer():
 
 @pytest.fixture
 def token_representation(sample_vocab_file, mock_tokenizer):
-    """Create a SimpleTokenRepresentation for testing."""
-    return SimpleTokenRepresentation(
+    """Create a TokenRepresentationBase for testing."""
+    return TokenRepresentationBase(
         vocab_path=sample_vocab_file,
         tokenizer=mock_tokenizer,
         max_sentence_length=50,
@@ -295,7 +295,7 @@ class TestDataModuleIntegration:
         
         def dataset_factory(df):
             """Factory function to create datasets."""
-            representation = SimpleTokenRepresentation(
+            representation = TokenRepresentationBase(
                 vocab_path=sample_vocab_file,
                 tokenizer=mock_tokenizer,
                 max_sentence_length=50,
@@ -364,7 +364,7 @@ class TestErrorHandling:
                     raise ValueError("Tokenization failed")
                 return smiles.split()
         
-        representation = SimpleTokenRepresentation(
+        representation = TokenRepresentationBase(
             vocab_path=sample_vocab_file,
             tokenizer=ErrorTokenizer(),
             max_sentence_length=50,
