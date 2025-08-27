@@ -3,13 +3,12 @@ command:
   - ${env}
   - python
   - ${program}
-  - "+experiment=fingerprint"
+  - "+experiment=token"
   - "data_pipeline=rdb7_fwd"
-  - "routine=regression"
   - ${args_no_hyphens}
 
 project: chemtorch
-name: drfp_sweep
+name: token_sweep
 method: bayes
 metric:
   goal: minimize
@@ -27,7 +26,7 @@ parameters:
     distribution: log_uniform_values
   
   routine.optimizer.weight_decay:
-    min: 0.00001
+    min: 0.0001
     max: 0.01
     distribution: log_uniform_values
 
@@ -35,19 +34,15 @@ parameters:
     values: [32, 64, 128]
     distribution: categorical
 
-  model.hidden_size:
+  model.embedding_hidden_channels:
     values: [64, 128, 256]
     distribution: categorical
 
-  model.num_hidden_layers:
-    values: [2, 3, 6, 9, 12]
+  model.gru_hidden_channels:
+    values: [64, 128, 256]
     distribution: categorical
 
   model.dropout:
     min: 0
     max: 0.2
     distribution: uniform
-
-  model.norm:
-    values: [null, "layer", "batch"]
-    distribution: categorical
