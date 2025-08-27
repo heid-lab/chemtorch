@@ -69,7 +69,7 @@ def symbols_to_atomic_numbers(symbols: List[str]) -> torch.Tensor:
         raise ValueError(f"Error converting symbols to atomic numbers: {e}")
 
 
-class RTSP3DGraph(AbstractRepresentation[Data]):
+class TS3DGraph(AbstractRepresentation[Data]):
     """
     Constructs a 3D representation of a reaction from XYZ files.
 

@@ -4,9 +4,9 @@ defaults:
   - /data_pipeline: rdb7_fwd_xyz
   - /dataset: graph
   - /dataloader: pyg_dataloader
-  - /model: dimenetplusplus
+  - /model: dimenet++
   - /routine: regression
-  - override /dataset/representation: rtsp_3d_graph
+  - override /dataset/representation: ts_3d_graph
   - _self_
 
 # LOGGING (Weight and Biases)

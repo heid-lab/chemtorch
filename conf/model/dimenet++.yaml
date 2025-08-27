@@ -19,3 +19,7 @@ num_after_skip: 2
 num_output_layers: 3
 act: "swish"
 output_initializer: "zeros"
+
+head:
+  in_channels: ${model.out_channels}
+  hidden_sizey: ${model.out_channels}
