@@ -1,11 +1,11 @@
 # @package _global_
 defaults:
   - /trainer: basic_trainer
-  - /data_pipeline: uspto_1k
+  - /data_pipeline: rdb7_fwd
   - /dataset: fingerprint
   - /dataloader: torch_dataloader
   - /model: mlp
-  - /routine: classification
+  - /routine: regression
   - _self_
 
 # LOGGING (Weight and Biases)
@@ -24,20 +24,19 @@ tasks:
 trainer:
   max_epochs: 100
 
-num_classes: 1000
-dataset:
-  integer_labels: true
-
 model:
   in_channels: ${fp_length}
   hidden_size: 256
-  out_channels: ${num_classes}
+  out_channels: 1
   num_hidden_layers: 2
   dropout: 0.02
   act: relu
+  norm: null
 
 runtime_args_from_dataset:
   - fp_length
+  - mean
+  - std
 
 # MODEL LOADING
 load_model: false
