@@ -5,33 +5,33 @@ from chemtorch.components.preprocessing.tokenizer.abstract_tokenizer import Abst
 from chemtorch.components.preprocessing.tokenizer.tokenizer_defaults import DEFAULT_UNK_TOKEN, DEFAULT_MOLECULE_PATTERN
 
 
-class MoleculeRegexTokenizer(AbstractTokenizer):
+class RegexTokenizer(AbstractTokenizer):
     """
-    Tokenizes a single molecule SMILES string using a regex pattern.
+    Tokenizes a SMILES string using a regex pattern.
     """
 
-    def __init__(self, regex_pattern: str = DEFAULT_MOLECULE_PATTERN):
+    def __init__(self, regex_pattern: str):
         """
         Args:
             regex_pattern: The regex pattern to use for tokenization.
         """
         self.regex = re.compile(regex_pattern)
 
-    def tokenize(self, molecule_smiles: str) -> List[str]:
+    def tokenize(self, smiles: str) -> List[str]:
         """
-        Tokenizes a molecule SMILES string.
+        Tokenizes a SMILES string.
 
         Args:
-            molecule_smiles: The molecule SMILES string to tokenize.
+            smiles: The SMILES string to tokenize.
 
         Returns:
             A list of tokens.
         """
-        if not molecule_smiles:
+        if not smiles:
             return []
 
-        tokens = self.regex.findall(molecule_smiles)
-        if not tokens and molecule_smiles:
+        tokens = self.regex.findall(smiles)
+        if not tokens and smiles:
             return [DEFAULT_UNK_TOKEN]
 
         return tokens
