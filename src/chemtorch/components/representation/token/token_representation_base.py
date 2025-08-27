@@ -4,17 +4,18 @@ from typing import Dict, List
 import torch
 
 from chemtorch.components.preprocessing.tokenizer.abstract_tokenizer import AbstractTokenizer
+from chemtorch.components.preprocessing.tokenizer.tokenizer_defaults import DEFAULT_PAD_TOKEN, DEFAULT_UNK_TOKEN
 from chemtorch.components.representation.token.abstract_token_representation import AbstractTokenRepresentation
 
 
-class SimpleTokenRepresentation(AbstractTokenRepresentation):
+class TokenRepresentationBase(AbstractTokenRepresentation):
     def __init__(
         self,
         vocab_path: str,
         tokenizer: AbstractTokenizer,
         max_sentence_length: int,
-        pad_token: str,
-        unk_token: str,
+        pad_token: str = DEFAULT_PAD_TOKEN,
+        unk_token: str = DEFAULT_UNK_TOKEN,
         *args,
         **kwargs,
     ):

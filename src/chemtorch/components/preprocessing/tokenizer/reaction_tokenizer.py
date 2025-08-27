@@ -17,9 +17,7 @@ class ReactionTokenizer(AbstractTokenizer):
         molecule_tokenizer_pattern: str = DEFAULT_MOLECULE_PATTERN,
     ):
         self.unk_token = unk_token
-        self._molecule_tokenizer = MoleculeRegexTokenizer(
-            regex_pattern=molecule_tokenizer_pattern
-        )
+        self._molecule_tokenizer = MoleculeRegexTokenizer(regex_pattern=molecule_tokenizer_pattern)
 
     def _tokenize_side(self, side_smiles: str) -> List[str]:
         """
