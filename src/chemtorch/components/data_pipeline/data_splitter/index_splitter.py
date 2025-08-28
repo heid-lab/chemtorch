@@ -12,12 +12,12 @@ except ImportError:
     # Python < 3.12
     from typing_extensions import override  # type: ignore
 
-from chemtorch.components.data_pipeline.data_splitter.abstract_data_splitter import AbstractDataSplitter
+from chemtorch.components.data_pipeline.data_splitter.data_splitter_base import DataSplitterBase
 from chemtorch.utils import DataSplit
 
 
-class IndexSplitter(AbstractDataSplitter):
-    def __init__(self, split_index_path: str):
+class IndexSplitter(DataSplitterBase):
+    def __init__(
         self,
         split_index_path: str,
         save_path: str | None = None,

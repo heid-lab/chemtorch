@@ -10,11 +10,11 @@ except ImportError:
     # Python < 3.12
     from typing_extensions import override  # type: ignore
 
-from chemtorch.components.data_pipeline.data_splitter.abstract_data_splitter import AbstractDataSplitter
+from chemtorch.components.data_pipeline.data_splitter.data_splitter_base import DataSplitterBase
 from chemtorch.utils import DataSplit
 
 
-class RatioSplitter(AbstractDataSplitter):
+class RatioSplitter(DataSplitterBase):
     def __init__(
         self,
         train_ratio: float = 0.8,
