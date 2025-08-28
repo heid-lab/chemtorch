@@ -1,2 +1,2 @@
 from .column_filter_rename import ColumnFilterAndRename
-from .column_mapper import ColumnMapper
+from .abstract_column_mapper import AbstractColumnMapper

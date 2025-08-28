@@ -2,7 +2,7 @@ from typing import Optional
 
 import pandas as pd
 
-from chemtorch.components.data_pipeline.column_mapper.column_mapper import ColumnMapper
+from chemtorch.components.data_pipeline.column_mapper.abstract_column_mapper import AbstractColumnMapper
 from chemtorch.components.data_pipeline.data_source.data_source import DataSource
 from chemtorch.components.data_pipeline.data_splitter.data_splitter_base import DataSplitterBase
 from chemtorch.utils import DataSplit
@@ -25,7 +25,7 @@ class SimpleDataPipeline:
     def __init__(
         self,
         data_source: DataSource,
-        column_mapper: ColumnMapper,
+        column_mapper: AbstractColumnMapper,
         data_splitter: Optional[DataSplitterBase] = None,
     ):
         """
