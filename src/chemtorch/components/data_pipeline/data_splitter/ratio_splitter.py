@@ -10,7 +10,7 @@ except ImportError:
     # Python < 3.12
     from typing_extensions import override  # type: ignore
 
-from chemtorch.components.data_pipeline.data_splitter import AbstractDataSplitter
+from chemtorch.components.data_pipeline.data_splitter.abstract_data_splitter import AbstractDataSplitter
 from chemtorch.utils import DataSplit
 
 

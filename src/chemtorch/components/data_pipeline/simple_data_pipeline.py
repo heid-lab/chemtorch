@@ -36,7 +36,7 @@ class SimpleDataPipeline:
             data_source (DataSource): The component responsible for loading the initial data.
             column_mapper (ColumnMapper): The component for transforming columns.
                                               It should handle both pd.DataFrame and DataSplit inputs.
-            data_splitter (Optional[DataSplitter]): The component for splitting a single DataFrame
+            data_splitter (Optional[AbstractDataSplitter]): The component for splitting a single DataFrame
                                                     into train, validation, and test sets.
                                                     This is not used if data_source already provides split data.
         """
