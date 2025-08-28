@@ -1,0 +1,31 @@
+defaults:
+  - data_pipeline: uspto_1k  # Reuse existing data pipeline configs
+  - /dataset/representation/tokenizer@tokenizer: reaction_tokenizer  # Use local tokenizer config
+  - _self_
+
+# Analysis configuration
+max_samples: null  # null means process all samples
+report_top_k: 100  # top K most frequent tokens to report
+min_frequency: 1   # minimum frequency to include in analysis
+
+detect_artifacts: true
+display_bad_tokens: false  # Display problematic tokens (OOV, artifacts, etc.)
+unicode_analysis: true
+whitespace_analysis: true
+length_analysis: true
+
+# Optional existing vocabulary for OOV analysis
+vocab_path: resources/vocab.txt  # path to existing vocabulary file (one token per line)
+
+# Random seed for reproducibility
+seed: 0
+
+# Disable Hydra's automatic logging behavior
+hydra:
+  # Prevent Hydra from creating subdirectories to store config files, logs, etc.
+  output_subdir: null
+  # By default, Hydra creates a timestamped directory for each run.
+  # Here, we set the output directory to the current directory so that all outputs
+  # like logs and checkpoints are redirected to the project root.
+  run:
+    dir: .
