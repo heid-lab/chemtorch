@@ -4,7 +4,7 @@ import pandas as pd
 
 from chemtorch.components.data_pipeline.column_mapper.abstract_column_mapper import AbstractColumnMapper
 from chemtorch.components.data_pipeline.data_source.data_source import DataSource
-from chemtorch.components.data_pipeline.data_splitter.data_splitter_base import DataSplitterBase
+from chemtorch.components.data_pipeline.data_splitter.abstract_data_splitter import AbstractDataSplitter
 from chemtorch.utils import DataSplit
 
 
@@ -26,7 +26,7 @@ class SimpleDataPipeline:
         self,
         data_source: DataSource,
         column_mapper: AbstractColumnMapper,
-        data_splitter: Optional[DataSplitterBase] = None,
+        data_splitter: Optional[AbstractDataSplitter] = None,
     ):
         """
         Initializes the SimpleDataPipeline.
