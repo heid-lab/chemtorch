@@ -67,8 +67,6 @@ class TokenRepresentationBase(AbstractTokenRepresentation):
 
         tokens: List[str] = self.tokenizer.tokenize(smiles)
 
-        # NOTE: Unreachable code: get() will never return self.unk_token_id since __init__ 
-        # ensure that unk_token is in word2id, but included for robustness.
         token_ids: List[int] = [
             self._word2id.get(token, self.unk_token_id) for token in tokens
         ]
@@ -100,35 +98,3 @@ class TokenRepresentationBase(AbstractTokenRepresentation):
     def id2word(self) -> Dict[int, str]:
         """Returns the ID to word mapping."""
         return self._id2word
-
-    def tokenize(self, input: str) -> List[str]:
-        return self.tokenizer.tokenize(input)
-    
-    def extend_vocab(self, new_tokens: List[str]) -> None:
-        """
-        Extend the vocabulary with new tokens.
-        
-        Args:
-            new_tokens: List of new tokens to add to vocabulary
-        """
-        if not new_tokens:
-            return
-            
-        current_max_id = max(self._word2id.values()) if self._word2id else -1
-        
-        for token in new_tokens:
-            if token not in self._word2id:
-                current_max_id += 1
-                self._word2id[token] = current_max_id
-                self._id2word[current_max_id] = token
-    
-    def save_vocab(self, vocab_path: str) -> None:
-        """
-        Save the current vocabulary to a file.
-        
-        Args:
-            vocab_path: Path where to save the vocabulary file
-        """
-        with open(vocab_path, "w", encoding="utf-8") as writer:
-            for token, token_id in sorted(self._word2id.items(), key=lambda x: x[1]):
-                writer.write(f"{token}\n")

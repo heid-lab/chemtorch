@@ -31,10 +31,6 @@ trainer:
 runtime_args_from_dataset:
   - vocab_size
 
-dataset_operations:
-  - _target_: chemtorch.components.dataset.token_dataset_operations.extend_vocab_from_data
-    _partial_: true
-
 # MODEL LOADING
 load_model: false
 ckpt_path: null

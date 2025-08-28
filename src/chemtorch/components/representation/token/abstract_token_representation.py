@@ -30,27 +30,3 @@ class AbstractTokenRepresentation(AbstractRepresentation[torch.Tensor], ABC):
         """Returns the size of the vocabulary."""
         pass
     
-    @abstractmethod
-    def tokenize(self, input: str) -> List[str]:
-        """Tokenize the input text into a list of tokens."""
-        pass
-    
-    @abstractmethod
-    def extend_vocab(self, new_tokens: List[str]) -> None:
-        """
-        Extend the vocabulary with new tokens.
-        
-        Args:
-            new_tokens: List of new tokens to add to vocabulary
-        """
-        pass
-    
-    @abstractmethod
-    def save_vocab(self, vocab_path: str) -> None:
-        """
-        Save the current vocabulary to a file.
-        
-        Args:
-            vocab_path: Path where to save the vocabulary file
-        """
-        pass

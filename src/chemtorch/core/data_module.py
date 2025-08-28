@@ -48,16 +48,6 @@ class DataModule(L.LightningDataModule):
         self.datasets = self._init_datasets(data_pipeline, dataset_factory)
         self.dataloader_factory = dataloader_factory
 
-    def apply_dataset_operation(self, dataset_op: DatasetOperationProtocol) -> None:
-        """
-        Apply an inplace dataset operation to all initialized datasets in the DataModule.
-
-        Args:
-            dataset_op: The dataset operation to apply.
-        """
-        for dataset in self.datasets.values():
-            dataset_op(dataset)
-
     def get_dataset_property(self, key: Stage, property: str) -> Any:
         """
         Retrieve a property from the dataset of the specified stage.
