@@ -1,0 +1,1 @@
+- Branches must start with `feature/*`, `bugfix/*` or `refactor/*`

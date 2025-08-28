@@ -1,4 +1,8 @@
+import math
+import numpy as np
+from typing import Collection, List
 import pandas as pd
+
 try:
     # Python ≥ 3.12
     from typing import override  # type: ignore
@@ -16,40 +20,31 @@ class RatioSplitter(AbstractDataSplitter):
         train_ratio: float = 0.8,
         val_ratio: float = 0.1,
         test_ratio: float = 0.1,
+        save_path: str | None = None,
     ):
         """
-        Initializes the RatioSplitter with the specified ratios for training, validation, and testing.
+        Initializes the RatioSplitter.
 
         Args:
-            train_ratio (float): The ratio of data to be used for training.
-            val_ratio (float): The ratio of data to be used for validation.
-            test_ratio (float): The ratio of data to be used for testing.
+            train_ratio (float): The ratio of data for training.
+            val_ratio (float): The ratio of data for validation.
+            test_ratio (float): The ratio of data for testing.
+            save_split_dir (str | None, optional): If provided, enables saving of split files.
+            save_indices (bool): If True and `save_split_dir` is set, saves 'indices.pkl'.
+            save_csv (bool): If True and `save_split_dir` is set, saves split DataFrames as CSVs.
         """
-        super(RatioSplitter, self).__init__()
+        super().__init__(save_path=save_path)
         self.train_ratio = train_ratio
         self.val_ratio = val_ratio
         self.test_ratio = test_ratio
 
-        if not (
-            1 - 1e-4 < self.train_ratio + self.val_ratio + self.test_ratio < 1 + 1e-4
-        ):
-            raise ValueError("Ratios must sum to 1.")
+        ratio_sum = self.train_ratio + self.val_ratio + self.test_ratio
+        if not math.isclose(ratio_sum, 1.0, rel_tol=1e-9, abs_tol=1e-9):
+            raise ValueError(f"Ratios (train, val, test) must sum to 1.0, got {ratio_sum}")
 
     @override
-    def __call__(self, df: pd.DataFrame) -> DataSplit:
-        """
-        Splits the raw data into training, validation, and test partitions based on the specified ratios.
-
-        Args:
-            df (pd.DataFrame): The input DataFrame to be split.
-
-        Returns:
-            DataSplit: A named tuple containing the train, val, and test dataframes.
-        """
-        if df.empty:
-            raise ValueError("Input DataFrame is empty")
-
-        random_df = df.sample(frac=1).reset_index(drop=True)
+    def _split(self, df: pd.DataFrame) -> DataSplit[List[int]]:
+        random_df = df.sample(frac=1)
 
         train_size = int(len(random_df) * self.train_ratio)
         val_size = int(len(random_df) * self.val_ratio)
@@ -57,5 +52,11 @@ class RatioSplitter(AbstractDataSplitter):
         train_df = random_df[:train_size]
         val_df = random_df[train_size : train_size + val_size]
         test_df = random_df[train_size + val_size :]
+        
+        return DataSplit(
+            train=train_df.index.tolist(),
+            val=val_df.index.tolist(),
+            test=test_df.index.tolist(),
+        )
 
-        return DataSplit(train=train_df, val=val_df, test=test_df)
+        
