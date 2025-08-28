@@ -53,16 +53,27 @@ class ReactionTokenizer(AbstractTokenizer):
         if not smiles:
             return []
 
+        # remove atom map numbers
+        smiles = re.sub(r':\d+(?=\])', '', smiles)
+        
+        # convert reactant>agent>product format to reactant.agent>>product format
+        if smiles.count('>') == 2 and '>>' not in smiles:
+            parts = smiles.split('>')
+            if len(parts) == 3:
+                reactant, agent, product = parts
+                smiles = f"{reactant}.{agent}>>{product}"
+
         all_tokens: List[str] = []
 
         parts = smiles.split(REACTION_SEPARATOR_TOKEN, 1)
 
+        if len(parts) < 2:
+            raise ValueError(f"Invalid reaction SMILES: '{smiles}'. Must contain '>>' separator.")
+
         reactants_smiles = parts[0]
         all_tokens.extend(self._tokenize_side(reactants_smiles))
-
-        if len(parts) > 1:
-            all_tokens.append(REACTION_SEPARATOR_TOKEN)
-            products_smiles = parts[1]
-            all_tokens.extend(self._tokenize_side(products_smiles))
+        all_tokens.append(REACTION_SEPARATOR_TOKEN)
+        products_smiles = parts[1]
+        all_tokens.extend(self._tokenize_side(products_smiles))
 
         return all_tokens

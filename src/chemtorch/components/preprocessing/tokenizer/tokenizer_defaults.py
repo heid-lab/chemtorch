@@ -1,3 +1,4 @@
+# regex taken from https://github.com/rxn4chemistry/rxnfp/blob/master/rxnfp/tokenization.py
 DEFAULT_MOLECULE_PATTERN = (
     r"("
     r"\[[^\]]+]|"           # Bracketed expressions: [CH3], [OH], [N+]
@@ -10,7 +11,9 @@ DEFAULT_MOLECULE_PATTERN = (
     r">>?|"                 # Reaction arrows: > or >>
     r"~|\*|"                # Wildcards: any bond (~), any atom (*)
     r"[0-9]"                # Single digits for ring closure
-    r"\%[0-9]{2}|"          # Percent with 2 digits for ring closure with more than 9 rings open at once (extremely rare)
+    r"\%[0-9]{2}|"          # Ring closure with more than 9 rings open at once (extremely rare)
+    r"\%\([0-9]{3}\)|"      # Ring closure with more than 99 rings open at once (even rarer, kept for reproducability)
+    r"\?|\$|\|"             # don't know, kept for reproducability
     r")"
 )
 DEFAULT_UNK_TOKEN = "[UNK]"
