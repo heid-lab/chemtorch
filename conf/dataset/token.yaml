@@ -2,7 +2,7 @@ _target_: chemtorch.components.dataset.token_dataset.TokenDataset
 _partial_: true
 
 defaults:
-  - representation: simple_token
+  - representation: token
   - transform: null
   
 precompute_all: true
