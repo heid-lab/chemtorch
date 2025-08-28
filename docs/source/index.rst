@@ -10,16 +10,10 @@ ChemTorch is a deep learning framework for benchmarking and developing chemical 
 It builds on top of `Hydra <https://hydra.cc/>`_ and `PyTorch Lightning <https://lightning.ai/docs/pytorch/stable/>`_, 
 providing a flexible and modular framework for reaction modeling using machine learning.
 
-Installation
-------------
-
-.. toctree::
-   :maxdepth: 2
-
-   installation
-
 Getting started
 ---------------
+
+The main philosophy & API calls are outlined in the getting-started section:
 
 .. toctree::
    :maxdepth: 2
@@ -28,6 +22,8 @@ Getting started
 
 Concepts
 --------
+
+Dig deeper into specific concepts and features of ChemTorch:
 
 .. toctree::
    :maxdepth: 2
@@ -38,15 +34,7 @@ Concepts
 The ChemTorch CLI
 -----------------
 
+More details on the ChemTorch CLI, how to use it, and some examples can be found here:
+
 .. toctree::
    chemtorch_cli
-
-API
----
-
-
-.. toctree::
-   :maxdepth: 1
-   :glob:
-
-   api/*

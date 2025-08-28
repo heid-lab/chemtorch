@@ -3,18 +3,26 @@
 # For the full list of built-in configuration values, see the documentation:
 # https://www.sphinx-doc.org/en/master/usage/configuration.html
 
+import os
+import sys
+from datetime import datetime
+
+conf_dir = os.path.dirname(os.path.abspath(__file__))
+project_root = os.path.join(conf_dir, "..")
+sys.path.insert(0, os.path.join(project_root, "src"))
+
+
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 project = "ChemTorch"
-copyright = "2025, Esther Heid"
+copyright = f"{datetime.now().year} Esther Heid"
 author = "Jasper De Landsheere, Anton Zamyatin, Esther Heid"
 release = "0.1.1"
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
-extensions = []
 
 templates_path = ["_templates"]
 exclude_patterns = []
