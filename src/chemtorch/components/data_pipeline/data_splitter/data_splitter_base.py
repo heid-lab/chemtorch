@@ -8,9 +8,10 @@ import numpy as np
 import pandas as pd
 
 from chemtorch.utils import DataSplit
+from chemtorch.components.data_pipeline.data_splitter.abstract_data_splitter import AbstractDataSplitter
 
 
-class DataSplitterBase(ABC):
+class DataSplitterBase(AbstractDataSplitter):
     """
     Base class for data splitting strategies.
     Callable that takes a DataFrame, executes splitting logic, and returns a DataSplit object.
