@@ -8,11 +8,11 @@ except ImportError:
     # Python < 3.12
     from typing_extensions import override  # type: ignore
 
-from chemtorch.components.data_pipeline.data_splitter import DataSplitter
+from chemtorch.components.data_pipeline.data_splitter import AbstractDataSplitter
 from chemtorch.utils import DataSplit
 
 
-class IndexSplitter(DataSplitter):
+class IndexSplitter(AbstractDataSplitter):
     def __init__(self, split_index_path: str):
         """
         Initializes the IndexSplitter with the specified index path.

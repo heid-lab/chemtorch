@@ -4,7 +4,7 @@ import pandas as pd
 from chemtorch.utils import DataSplit
 
 
-class DataSplitter(ABC):
+class AbstractDataSplitter(ABC):
     """
     Abstract base class for data splitting strategies.
 

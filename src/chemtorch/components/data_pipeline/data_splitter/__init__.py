@@ -1,3 +1,3 @@
-from .data_splitter import DataSplitter
+from .abstract_data_splitter import AbstractDataSplitter
 from .index_splitter import IndexSplitter
 from .ratio_splitter import RatioSplitter
