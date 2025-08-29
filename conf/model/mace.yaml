@@ -1,0 +1,18 @@
+# MACE model configuration for chemtorch
+# This replaces DimeNet++ with MACE descriptors
+
+_target_: chemtorch.components.model.mace_model.MACEModel
+
+defaults:
+  - head: mlp
+
+# MACE model settings
+mace_model_path: "/path/to/your/MACE_model.model"  # Update this path
+device: "cpu"  # Auto-detects and falls back to CPU if CUDA unavailable
+
+# Compatibility with MLP head config
+hidden_channels: 256  # MACE descriptors are 256-dimensional
+
+# Additional parameters can be added here
+aggregation_method: "sum"  # How to aggregate atom-level descriptors to molecular level
+# Other options: "mean", "max", "attention"
