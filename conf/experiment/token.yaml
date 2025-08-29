@@ -1,7 +1,7 @@
 # @package _global_
 defaults:
   - /trainer: basic_trainer
-  - /data_pipeline: uspto_1k
+  - /data_pipeline: rdb7_fwd
   - /dataset: token
   - /dataloader: torch_dataloader
   - /model: han
