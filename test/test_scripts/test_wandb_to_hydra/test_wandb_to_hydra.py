@@ -6,8 +6,8 @@ from pathlib import Path
 from unittest.mock import patch
 import sys
 
-# Add the scripts directory to the path so we can import the module
-sys.path.insert(0, str(Path(__file__).parent.parent / "scripts"))
+# Add the project root directory to the path so we can import the module
+sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
 from scripts.wandb_to_hydra import preprocess_wandb_config
 
 

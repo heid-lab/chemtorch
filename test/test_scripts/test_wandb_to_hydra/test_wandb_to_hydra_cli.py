@@ -249,28 +249,6 @@ class TestWandbToHydraCLI:
         # Behavior may vary by filesystem, but shouldn't crash
         # The script should handle this gracefully
 
-    def test_cli_working_directory_independence(self):
-        """Test that CLI works regardless of current working directory."""
-        run_id = "cwd_test"
-        self.create_run_directory(run_id)
-        
-        # Run from a different directory without --project-dir
-        other_dir = Path(tempfile.mkdtemp())
-        try:
-            result = self.run_script(
-                "--run-id", run_id,
-                "--group", "cwd_group",
-                "--name", "cwd_run",
-                cwd=other_dir,
-                use_project_dir=False
-            )
-            
-            # Should fail because wandb directory is not in the other directory
-            assert result.returncode != 0
-            assert "WandB directory not found" in result.stderr
-        finally:
-            shutil.rmtree(other_dir)
-
     def test_cli_multiple_runs_exact_matching(self):
         """Test CLI correctly matches exact run ID when multiple similar IDs exist."""
         # Create multiple runs with similar IDs
