@@ -4,68 +4,57 @@ data_pipeline:
   column_mapper:
     _target_: chemtorch.components.data_pipeline.column_mapper.ColumnFilterAndRename
     label: dE0
-    reaction_dir: rxn
     smiles: smiles
   data_source:
     _target_: chemtorch.components.data_pipeline.data_source.SingleCSVSource
     data_path: data/rdb7/barriers/forward/data.csv
   data_splitter:
     _target_: chemtorch.components.data_pipeline.data_splitter.RatioSplitter
-    test_ratio: 0.05
-    train_ratio: 0.9
-    val_ratio: 0.05
+    test_ratio: 0.1
+    train_ratio: 0.8
+    val_ratio: 0.1
 dataloader:
   _partial_: true
-  _target_: torch_geometric.loader.DataLoader
+  _target_: torch.utils.data.DataLoader
   batch_size: 64
   num_workers: 3
   pin_memory: true
 dataloader.batch_size: 64
 dataset:
   _partial_: true
-  _target_: chemtorch.components.dataset.GraphDataset
+  _target_: chemtorch.components.dataset.FingerprintDataset
   cache: true
   max_cache_size: null
   precompute_all: true
   representation:
-    _target_: chemtorch.components.representation.graph.rtsp_3d_graph.RTSP3DGraph
-    root_dir: data/rdb7/geometries/forward
+    _recursive_: false
+    _target_: chemtorch.components.representation.fingerprint.drfp.DRFP
+    include_hydrogens: false
+    min_radius: 0
+    n_folded_length: 2048
+    radius: 3
+    rings: true
+    root_central_atom: true
   subsample: null
-group_name: pipeline_sweep_best_runs_2
+fp_length: 2048
+group_name: chemtorch_benchmark
 load_model: false
 log: true
-mean: 80.0197840370819
+mean: 80.0102253144654
 model:
-  _target_: chemtorch.components.model.dimenetplusplus.DimeNetPlusPlus
-  act: swish
-  basis_emb_size: 8
-  cutoff: 5.853352853669115
-  envelope_exponent: 5
-  head:
-    _target_: chemtorch.components.model.mlp.MLP
-    act: relu
-    dropout: 0.02
-    hidden_size: 256
-    hidden_sizey: 128
-    in_channels: 128
-    num_hidden_layers: 1
-    out_channels: 1
-  hidden_channels: 256
-  int_emb_size: 64
-  max_num_neighbors: 32
-  num_after_skip: 2
-  num_before_skip: 1
-  num_blocks: 6
-  num_output_layers: 3
-  num_radial: 6
-  num_spherical: 7
-  out_channels: 128
-  out_emb_channels: 256
-  output_initializer: zeros
-model.cutoff: 5.853352853669115
-model.hidden_channels: 256
-model.num_blocks: 6
-name: 3d_graph
+  _target_: chemtorch.components.model.mlp.MLP
+  act: relu
+  dropout: 0.015217512179126504
+  hidden_size: 256
+  in_channels: 2048
+  norm: None
+  num_hidden_layers: 2
+  out_channels: 1
+model.dropout: 0.015217512179126504
+model.hidden_size: 256
+model.norm: null
+model.num_hidden_layers: 2
+name: drfp_mlp
 parameter_limit: null
 prediction_save_path: null
 project_name: chemtorch
@@ -117,21 +106,22 @@ routine:
     capturable: false
     eps: 1.0e-08
     foreach: null
-    lr: 0.00011734829942519112
+    lr: 0.006404259921038013
     maximize: false
-    weight_decay: 4.364038561700306e-06
+    weight_decay: 2.04461442479684e-05
   standardizer:
     _target_: chemtorch.utils.Standardizer
-    mean: 80.0197840370819
-    std: 21.768124690338663
-routine.optimizer.lr: 0.00011734829942519112
-routine.optimizer.weight_decay: 4.364038561700306e-06
-run_name: null
+    mean: 80.0102253144654
+    std: 21.684054853890036
+routine.optimizer.lr: 0.006404259921038013
+routine.optimizer.weight_decay: 2.04461442479684e-05
+run_name: drfp_mlp
 runtime_args_from_dataset:
+- fp_length
 - mean
 - std
 seed: 0
-std: 21.768124690338663
+std: 21.684054853890036
 tasks:
 - fit
 - test

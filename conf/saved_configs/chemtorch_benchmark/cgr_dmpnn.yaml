@@ -47,7 +47,7 @@ dataset:
       - _target_: chemtorch.components.preprocessing.featurizer.BondInRingFeaturizer
     in_channel_multiplier: 2
   subsample: null
-group_name: pipeline_sweep_best_runs_3
+group_name: chemtorch_benchmark
 load_model: false
 log: true
 mean: 80.0102253144654
@@ -99,7 +99,7 @@ model.hidden_channels: 256
 model.layer_stack.depth: 12
 model.layer_stack.dmpnn_blocks.layer.dropout: 0.16713747610272822
 model.layer_stack.dmpnn_blocks.layer.norm: null
-name: dmpnn
+name: cgr_dmpnn
 num_edge_features: 22
 num_node_features: 88
 parameter_limit: null
@@ -162,7 +162,7 @@ routine:
     std: 21.684054853890036
 routine.optimizer.lr: 0.0005682742759208353
 routine.optimizer.weight_decay: 0.0006307405281515754
-run_name: null
+run_name: cgr_dmpnn
 runtime_args_from_dataset:
 - num_node_features
 - num_edge_features
