@@ -4,6 +4,7 @@ from typing import List
 from chemtorch.components.preprocessing.tokenizer.abstract_tokenizer import AbstractTokenizer
 from chemtorch.components.preprocessing.tokenizer.regex_tokenizer import RegexTokenizer
 from chemtorch.components.preprocessing.tokenizer.tokenizer_defaults import DEFAULT_UNK_TOKEN, MOLECULE_SEPARATOR_TOKEN, REACTION_SEPARATOR_TOKEN, DEFAULT_MOLECULE_PATTERN
+from chemtorch.utils.atom_mapping import remove_atom_mapping
 
 
 class ReactionTokenizer(AbstractTokenizer):
@@ -54,7 +55,7 @@ class ReactionTokenizer(AbstractTokenizer):
             return []
 
         # remove atom map numbers
-        smiles = re.sub(r':\d+(?=\])', '', smiles)
+        smiles = remove_atom_mapping(smiles)
         
         # convert reactant>agent>product format to reactant.agent>>product format
         if smiles.count('>') == 2 and '>>' not in smiles:
