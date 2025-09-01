@@ -7,3 +7,4 @@ from .target_splitter import TargetSplitter
 from .group_splitter_base import GroupSplitterBase
 from .smiles_group_splitter_base import SMILESGroupSplitterBase
 from .scaffold_splitter import ScaffoldSplitter
+from .reaction_core_splitter import ReactionCoreSplitter
