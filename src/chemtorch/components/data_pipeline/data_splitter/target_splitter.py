@@ -2,6 +2,8 @@ import math
 from typing import List
 import pandas as pd
 
+from chemtorch.components.data_pipeline.data_splitter.ratio_splitter import RatioSplitter
+
 try:
     # Python ≥ 3.12
     from typing import override  # type: ignore
@@ -9,11 +11,10 @@ except ImportError:
     # Python < 3.12
     from typing_extensions import override  # type: ignore
 
-from chemtorch.components.data_pipeline.data_splitter.data_splitter_base import DataSplitterBase
 from chemtorch.utils import DataSplit
 
 
-class TargetSplitter(DataSplitterBase):
+class TargetSplitter(RatioSplitter):
     def __init__(
         self,
         train_ratio: float = 0.8,
@@ -32,16 +33,9 @@ class TargetSplitter(DataSplitterBase):
             sort_order (str): 'ascending' or 'descending'.
             save_path (str | None, optional): Path to save split indices.
         """
-        super().__init__(save_path=save_path)
-        self.train_ratio = train_ratio
-        self.val_ratio = val_ratio
-        self.test_ratio = test_ratio
+        super().__init__(train_ratio=train_ratio, val_ratio=val_ratio, test_ratio=test_ratio, save_path=save_path)
         self.sort_order = sort_order.lower()
 
-        ratio_sum = self.train_ratio + self.val_ratio + self.test_ratio
-        if not math.isclose(ratio_sum, 1.0, rel_tol=1e-9, abs_tol=1e-9):
-            raise ValueError(f"Ratios (train, val, test) must sum to 1.0, got {ratio_sum}")
-        
         if self.sort_order not in ["ascending", "descending"]:
             raise ValueError("sort_order must be 'ascending' or 'descending'.")
 

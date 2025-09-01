@@ -15,6 +15,13 @@ from chemtorch.utils import DataSplit
 
 
 class RatioSplitter(DataSplitterBase):
+    """
+    Splits data into training, validation, and test sets based on specified ratios.
+
+    Subclasses should override the `_split` method to implement custom splitting
+    logic. By default the `RatioSplitter` randomly shuffles the data and splits it
+    according to the specified ratios.
+    """
     def __init__(
         self,
         train_ratio: float = 0.8,
@@ -23,15 +30,13 @@ class RatioSplitter(DataSplitterBase):
         save_path: str | None = None,
     ):
         """
-        Initializes the RatioSplitter.
+        Initializes a RatioSplitter.
 
         Args:
             train_ratio (float): The ratio of data for training.
             val_ratio (float): The ratio of data for validation.
             test_ratio (float): The ratio of data for testing.
-            save_split_dir (str | None, optional): If provided, enables saving of split files.
-            save_indices (bool): If True and `save_split_dir` is set, saves 'indices.pkl'.
-            save_csv (bool): If True and `save_split_dir` is set, saves split DataFrames as CSVs.
+            save_path (str | None, optional): If provided, saves split indices as pickle file.
         """
         super().__init__(save_path=save_path)
         self.train_ratio = train_ratio
@@ -44,19 +49,18 @@ class RatioSplitter(DataSplitterBase):
 
     @override
     def _split(self, df: pd.DataFrame) -> DataSplit[List[int]]:
-        random_df = df.sample(frac=1)
 
-        train_size = int(len(random_df) * self.train_ratio)
-        val_size = int(len(random_df) * self.val_ratio)
+        n_total = len(df)
+        train_size = int(n_total * self.train_ratio)
+        val_size = int(n_total * self.val_ratio)
 
-        train_df = random_df[:train_size]
-        val_df = random_df[train_size : train_size + val_size]
-        test_df = random_df[train_size + val_size :]
-        
+        index = df.sample(frac=1).index.tolist()
+        train_idx = index[:train_size]
+        val_idx = index[train_size : train_size + val_size]
+        test_idx = index[train_size + val_size :]
+
         return DataSplit(
-            train=train_df.index.tolist(),
-            val=val_df.index.tolist(),
-            test=test_df.index.tolist(),
+            train=train_idx,
+            val=val_idx,
+            test=test_idx,
         )
-
-        

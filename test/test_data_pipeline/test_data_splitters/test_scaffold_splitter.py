@@ -10,7 +10,7 @@ def get_scaffolds(df: pd.DataFrame, splitter: ScaffoldSplitter) -> set:
     """Helper to extract non-empty scaffolds from a DataFrame."""
     if df.empty:
         return set()
-    scaffolds = df["smiles"].apply(splitter._get_scaffold_smiles)
+    scaffolds = df["smiles"].apply(splitter._make_group_id_from_smiles)
     return set(s for s in scaffolds if s)
 
 
@@ -152,8 +152,8 @@ def test_include_chirality_flag():
 
     # CASE 1: include_chirality = True (should preserve stereo info)
     splitter_chiral = ScaffoldSplitter(include_chirality=True, split_on="reactant", mol_idx=0)
-    scaffold_with_stereo = splitter_chiral._get_scaffold_smiles(chiral_smiles)
-    scaffold_from_non_stereo = splitter_chiral._get_scaffold_smiles(non_chiral_smiles)
+    scaffold_with_stereo = splitter_chiral._make_group_id_from_smiles(chiral_smiles)
+    scaffold_from_non_stereo = splitter_chiral._make_group_id_from_smiles(non_chiral_smiles)
 
     # The scaffold from the chiral SMILES should contain the chiral tags
     assert scaffold_with_stereo == "C1C[C@H]2C[C@@H]1C2"
@@ -164,7 +164,7 @@ def test_include_chirality_flag():
 
     # CASE 2: include_chirality = False (should strip stereo info)
     splitter_no_chiral = ScaffoldSplitter(include_chirality=False, split_on="reactant", mol_idx=0)
-    scaffold_stripped = splitter_no_chiral._get_scaffold_smiles(chiral_smiles)
+    scaffold_stripped = splitter_no_chiral._make_group_id_from_smiles(chiral_smiles)
 
     # The scaffold from the chiral SMILES should now be identical to the non-chiral version
     assert scaffold_stripped == "C1CC2CC1C2"
@@ -174,7 +174,7 @@ def test_include_chirality_flag():
 def test_scaffold_splitter_split_on_product():
     """Test the `split_on='product'` functionality."""
     splitter = ScaffoldSplitter(split_on="product", mol_idx=0)
-    scaffold = splitter._get_scaffold_smiles("c1ccccc1>>C1CCCCC1")
+    scaffold = splitter._make_group_id_from_smiles("c1ccccc1>>C1CCCCC1")
     assert scaffold == "C1CCCCC1"
 
 
@@ -184,19 +184,19 @@ def test_scaffold_splitter_mol_idx():
     smiles = "C1CC1.c1ccccc1>>C1CC1c1ccccc1"
 
     splitter_first = ScaffoldSplitter(split_on="reactant", mol_idx=0)  # First molecule
-    assert splitter_first._get_scaffold_smiles(smiles) == "C1CC1"
+    assert splitter_first._make_group_id_from_smiles(smiles) == "C1CC1"
 
     splitter_second = ScaffoldSplitter(split_on="reactant", mol_idx=1)  # Second molecule
-    assert splitter_second._get_scaffold_smiles(smiles) == "c1ccccc1"
+    assert splitter_second._make_group_id_from_smiles(smiles) == "c1ccccc1"
 
     # Test with single molecule SMILES containing multiple components
     single_multi = "C1CC1.c1ccccc1"
     
     splitter_0 = ScaffoldSplitter(mol_idx=0)
-    assert splitter_0._get_scaffold_smiles(single_multi) == "C1CC1"
+    assert splitter_0._make_group_id_from_smiles(single_multi) == "C1CC1"
     
     splitter_1 = ScaffoldSplitter(mol_idx=1)
-    assert splitter_1._get_scaffold_smiles(single_multi) == "c1ccccc1"
+    assert splitter_1._make_group_id_from_smiles(single_multi) == "c1ccccc1"
 
 
 def test_scaffold_splitter_mol_idx_edge_cases():
@@ -204,7 +204,7 @@ def test_scaffold_splitter_mol_idx_edge_cases():
     splitter = ScaffoldSplitter(split_on="reactant", mol_idx=5)  # Index out of bounds
     
     with pytest.raises(IndexError, match="out of bounds"):
-        splitter._get_scaffold_smiles("C1CC1.c1ccccc1>>product")
+        splitter._make_group_id_from_smiles("C1CC1.c1ccccc1>>product")
 
 
 def test_scaffold_splitter_init_errors():
@@ -235,11 +235,11 @@ def test_scaffold_splitter_invalid_inputs():
 
     # Test invalid single molecule SMILES - should raise ValueError
     with pytest.raises(ValueError, match="Could not parse molecule SMILES"):
-        splitter._get_scaffold_smiles("invalid_smiles")
+        splitter._make_group_id_from_smiles("invalid_smiles")
         
     # Test empty string - should raise ValueError
     with pytest.raises(ValueError, match="Invalid SMILES format"):
-        splitter._get_scaffold_smiles("")
+        splitter._make_group_id_from_smiles("")
 
 
 def test_scaffold_splitter_invalid_smiles_in_dataframe():
