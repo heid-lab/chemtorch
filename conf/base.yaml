@@ -22,8 +22,10 @@ runtime_args_from_dataset: null
 load_model: false
 ckpt_path: null
 
-# PREDICTION
-prediction_save_path: null
+# PREDICTION SAVING
+prediction_save_path: null  # For single task scenarios (predict, validate, or test only)
+predictions_save_dir: null  # For multi-task scenarios - directory where separate files will be saved
+save_predictions_for: null  # List of datasets: ["train", "val", "test", "predict"] or ["all"] for all datasets
 
 # Disable Hydra's automatic logging behavior since WandB is used for logging.
 hydra:

@@ -35,7 +35,7 @@ def get_generator(seed: int) -> torch.Generator:
 def save_predictions(
     preds: List[Any],
     reference_df: pd.DataFrame,
-    save_path: Optional[Union[str, Path]] = None,
+    save_path: Optional[Union[str, Path]],
     log_func: Optional[Callable[..., Any]] = None,
     root_dir: Optional[Path] = None
 ) -> Optional[pd.DataFrame]:
@@ -56,6 +56,9 @@ def save_predictions(
     if preds is None or reference_df is None:
         return
     
+    if save_path is None:
+        return
+
     # Convert tensor predictions to numpy values
     # preds is a list of batches, need to flatten all predictions
     pred_values = []
@@ -92,23 +95,21 @@ def save_predictions(
     result_df = reference_df.copy()
     result_df['prediction'] = pred_values
     
-    # Save to file if path provided
-    if save_path:
-        if root_dir:
-            output_path = root_dir / save_path
-        else:
-            output_path = Path(save_path)
-        
-        output_path.parent.mkdir(parents=True, exist_ok=True)
-        result_df.to_csv(output_path, index=False)
-        print(f"Predictions saved to: {output_path}")
-        
-        # Log results if logging function provided
-        if log_func:
-            log_func({
-                "predictions_file": str(output_path),
-                "num_predictions": len(pred_values)
-            }, commit=False)
+    if root_dir:
+        output_path = root_dir / save_path
+    else:
+        output_path = Path(save_path)
+    
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    result_df.to_csv(output_path, index=False)
+    print(f"Predictions saved to: {output_path}")
+    
+    # Log results if logging function provided
+    if log_func:
+        log_func({
+            "predictions_file": str(output_path),
+            "num_predictions": len(pred_values)
+        }, commit=False)
 
 def set_seed(seed):
     """DEPRECATED"""
