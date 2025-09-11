@@ -8,4 +8,4 @@ The original vocabulary was extended by the following tokens which occur in `usp
 [O+2]
 ```
 
-The `substruc_vocab.txt` was created by extending `base_vocab.txt` with the tokens obtained from parsing all reactions in the `cycloadd`, `rdb7`, `rgd1`, `sn2`, and `uspto-1` datasets using the `SubstructureTokenizer` (see `src/chemtorch/components/preprocessing/tokenizer/molecule_tokenizer/substructure_tokenizer.py`).
+The `substruc_vocab.txt` was created by extending `base_vocab.txt` with the tokens obtained from parsing all reactions in the `cycloadd`, `rdb7`, `rgd1`, `sn2`, `e2`, and `uspto-1` datasets using the `SubstructureTokenizer` (see `src/chemtorch/components/preprocessing/tokenizer/molecule_tokenizer/substructure_tokenizer.py`).
