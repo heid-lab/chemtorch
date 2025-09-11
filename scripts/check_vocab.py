@@ -51,6 +51,42 @@ def load_existing_vocab(vocab_path: str) -> Set[str]:
     return vocab
 
 
+def analyze_problematic_smiles(smiles: str, tokenizer: AbstractTokenizer) -> Dict[str, Union[str, int, bool, List]]:
+    """Analyze a SMILES string that might cause issues."""
+    from rdkit import Chem
+    
+    analysis = {
+        'smiles': smiles,
+        'length': len(smiles),
+        'has_explicit_hydrogens': '[H]' in smiles,
+        'has_aromatic_lowercase': any(c.islower() and c.isalpha() for c in smiles),
+        'unusual_chars': [c for c in smiles if c not in 'CNOSPFClBrI()[]=#-+123456789@/%\\.:'],
+        'rdkit_parseable': False,
+        'tokenizer_success': False
+    }
+    
+    # Test RDKit parsing
+    try:
+        mol = Chem.MolFromSmiles(smiles)
+        if mol is not None:
+            analysis['rdkit_parseable'] = True
+            analysis['num_atoms'] = mol.GetNumAtoms()
+            analysis['num_heavy_atoms'] = mol.GetNumHeavyAtoms()
+    except Exception as e:
+        analysis['rdkit_error'] = str(e)
+    
+    # Test tokenizer
+    try:
+        tokens = tokenizer.tokenize(smiles)
+        if tokens:
+            analysis['tokenizer_success'] = True
+            analysis['num_tokens'] = len(tokens)
+    except Exception as e:
+        analysis['tokenizer_error'] = str(e)
+    
+    return analysis
+
+
 def extract_smiles_from_data(data: Union[pd.DataFrame, DataSplit]) -> List[str]:
     """Extract SMILES strings from processed data using standard 'smiles' column."""
     smiles_list = []
@@ -129,6 +165,7 @@ def tokenize_and_analyze(smiles_list: List[str],
                         existing_vocab: Optional[Set[str]] = None) -> VocabAnalysis:
     """Tokenize SMILES and perform comprehensive analysis."""
     log.info("Starting tokenization and analysis...")
+    log.info("Press Ctrl+C at any time to stop and see analysis of processed data")
     
     token_counts = Counter()
     token_examples = defaultdict(list)
@@ -138,56 +175,108 @@ def tokenize_and_analyze(smiles_list: List[str],
     
     total_tokens = 0
     failed_tokenizations = 0
+    rdkit_warnings_count = 0
+    processed_smiles = 0
     
     # Debug: track tokens that contain parentheses
     tokens_with_parens = []
+    problematic_smiles_details = []
+    warning_patterns = [
+        "not removing hydrogen atom without neighbors",
+        "WARNING",
+        "ERROR"
+    ]
     
-    for smiles_idx, smiles in enumerate(tqdm(smiles_list, desc="Tokenizing SMILES", unit="smiles")):
-        
-        try:
-            tokens = tokenizer.tokenize(smiles)
-            if not tokens:
+    try:
+        for smiles_idx, smiles in enumerate(tqdm(smiles_list, desc="Tokenizing SMILES", unit="smiles")):
+            processed_smiles = smiles_idx + 1
+            
+            try:
+                # Simple tokenization without trying to capture warnings
+                # We'll rely on the user seeing warnings in the terminal output
+                tokens = tokenizer.tokenize(smiles)
+                
+                # For debugging purposes, let's test individual SMILES that might cause issues
+                # by checking for patterns that typically cause RDKit warnings
+                likely_problematic = (
+                    '[H]' in smiles or  # Explicit hydrogens
+                    smiles.count('[') != smiles.count(']') or  # Unmatched brackets
+                    '..' in smiles or  # Double dots
+                    any(c in smiles for c in ['@', '%'])  # Complex stereochemistry
+                )
+                
+                if likely_problematic and len(problematic_smiles_details) < 20:
+                    # Collect details for potential problem cases
+                    detailed_analysis = analyze_problematic_smiles(smiles, tokenizer)
+                    if detailed_analysis.get('warning_details'):
+                        rdkit_warnings_count += 1
+                        problematic_smiles_details.append(detailed_analysis)
+                
+                if not tokens:
+                    failed_tokenizations += 1
+                    continue
+                    
+                for token in tokens:
+                    token_counts[token] += 1
+                    total_tokens += 1
+                    
+                    # Debug: collect tokens with unmatched parentheses
+                    if len(tokens_with_parens) < 20:
+                        has_unmatched_parens = (
+                            ('(' in token and ')' in token) and 
+                            (token.count('(') != token.count(')'))
+                        ) or (
+                            ('(' in token and ')' not in token and token != '(') or
+                            (')' in token and '(' not in token and token != ')')
+                        )
+                        if has_unmatched_parens:
+                            tokens_with_parens.append(f"Token: '{token}' from SMILES: '{smiles}'")
+                    
+                    # Store example (limit to avoid memory issues)
+                    if len(token_examples[token]) < 5:
+                        token_examples[token].append(smiles)
+                    
+                    # Analyze artifacts
+                    artifacts = analyze_token_artifacts(token)
+                    for artifact_type, has_artifact in artifacts.items():
+                        if artifact_type != "is_empty" and has_artifact:
+                            all_artifacts[artifact_type].append(token)
+
+                    # Length distribution
+                    length_distribution[len(token)] += 1
+                    
+                    # Unicode categories
+                    categories = get_unicode_categories(token)
+                    for category in categories:
+                        unicode_categories[category] += 1
+                        
+            except Exception as e:
+                log.warning(f"Failed to tokenize SMILES {smiles_idx}: {smiles[:50]}... Error: {e}")
                 failed_tokenizations += 1
                 continue
                 
-            for token in tokens:
-                token_counts[token] += 1
-                total_tokens += 1
-                
-                # Debug: collect tokens containing parentheses (but aren't just single parens)
-                if ('(' in token or ')' in token) and token not in ['(', ')'] and len(tokens_with_parens) < 20:
-                    tokens_with_parens.append(f"Token: '{token}' from SMILES: '{smiles}'")
-                
-                # Store example (limit to avoid memory issues)
-                if len(token_examples[token]) < 5:
-                    token_examples[token].append(smiles)
-                
-                # Analyze artifacts
-                artifacts = analyze_token_artifacts(token)
-                for artifact_type, has_artifact in artifacts.items():
-                    if artifact_type != "is_empty" and has_artifact:
-                        all_artifacts[artifact_type].append(token)
-
-                # Length distribution
-                length_distribution[len(token)] += 1
-                
-                # Unicode categories
-                categories = get_unicode_categories(token)
-                for category in categories:
-                    unicode_categories[category] += 1
-                    
-        except Exception as e:
-            log.warning(f"Failed to tokenize SMILES {smiles_idx}: {smiles[:50]}... Error: {e}")
-            failed_tokenizations += 1
-            continue
+    except KeyboardInterrupt:
+        log.info(f"\nKeyboard interrupt received. Processed {processed_smiles}/{len(smiles_list)} SMILES so far.")
+        log.info("Analyzing results from processed data...")
     
     # Debug output
     if tokens_with_parens:
-        log.info("Found tokens containing parentheses (other than standalone '(' or ')'):")
+        log.info("Found tokens with unmatched parentheses:")
         for example in tokens_with_parens:
             log.info(f"  {example}")
     
-    log.info(f"Tokenization complete. Failed: {failed_tokenizations}/{len(smiles_list)}")
+    # Report problematic SMILES
+    if problematic_smiles_details:
+        log.info(f"Analyzed {len(problematic_smiles_details)} potentially problematic SMILES:")
+        for i, analysis in enumerate(problematic_smiles_details[:5], 1):  # Show first 5
+            log.info(f"  Example {i}:")
+            log.info(f"    SMILES: {analysis['smiles'][:100]}{'...' if len(analysis['smiles']) > 100 else ''}")
+            log.info(f"    Length: {analysis['length']}")
+            log.info(f"    RDKit parseable: {analysis['rdkit_parseable']}")
+            log.info(f"    Has explicit H: {analysis['has_explicit_hydrogens']}")
+            log.info(f"    Unusual chars: {analysis['unusual_chars']}")
+    
+    log.info(f"Tokenization complete. Processed: {processed_smiles}/{len(smiles_list)}, Failed: {failed_tokenizations}")
     
     # Build token statistics
     token_stats = {}
@@ -221,11 +310,89 @@ def tokenize_and_analyze(smiles_list: List[str],
     )
 
 
+def save_vocabulary(vocab: Set[str], path: str, sort_by_frequency: bool = False, 
+                   token_stats: Optional[Dict[str, TokenStats]] = None) -> None:
+    """Save vocabulary to file, optionally sorted by frequency."""
+    log.info(f"Saving vocabulary with {len(vocab)} tokens to {path}")
+    
+    if sort_by_frequency and token_stats:
+        # Sort by frequency (descending), then alphabetically
+        sorted_tokens = sorted(vocab, 
+                             key=lambda x: (-token_stats.get(x, TokenStats(0, 0, False, False, set(), [])).frequency, x))
+    else:
+        # Sort alphabetically
+        sorted_tokens = sorted(vocab)
+    
+    with open(path, 'w', encoding='utf-8') as f:
+        for token in sorted_tokens:
+            f.write(f"{token}\n")
+    
+    log.info(f"Vocabulary saved to {path}")
+
+
+def extend_vocabulary(existing_vocab: Set[str], new_tokens: Set[str], 
+                     save_path: Optional[str] = None, 
+                     original_vocab_path: Optional[str] = None,
+                     token_stats: Optional[Dict[str, TokenStats]] = None) -> Set[str]:
+    """
+    Extend existing vocabulary with new tokens.
+    
+    Args:
+        existing_vocab: Set of existing vocabulary tokens
+        new_tokens: Set of new tokens to add
+        save_path: Path to save extended vocab (if None, saves in-place)
+        original_vocab_path: Original vocabulary file path (for in-place extension)
+        token_stats: Token statistics for frequency-based sorting
+    
+    Returns:
+        Extended vocabulary set
+    """
+    original_size = len(existing_vocab)
+    extended_vocab = existing_vocab.union(new_tokens)
+    new_size = len(extended_vocab)
+    added_tokens = new_size - original_size
+    
+    log.info(f"Extended vocabulary: {original_size} → {new_size} tokens (+{added_tokens} new tokens)")
+    
+    if added_tokens > 0:
+        # Determine save path
+        if save_path is None:
+            if original_vocab_path is None:
+                log.warning("No save path specified and no original vocab path available. Cannot save extended vocabulary.")
+                return extended_vocab
+            save_path = original_vocab_path
+            log.info(f"Extending vocabulary in-place: {save_path}")
+        else:
+            log.info(f"Saving extended vocabulary to new path: {save_path}")
+        
+        # Save extended vocabulary
+        save_vocabulary(extended_vocab, save_path, sort_by_frequency=True, token_stats=token_stats)
+    else:
+        log.info("No new tokens found. Vocabulary unchanged.")
+    
+    return extended_vocab
+
+
 def print_summary(analysis: VocabAnalysis, cfg: DictConfig):
     """Print analysis summary to console."""
     print("\n" + "="*60)
     print("VOCABULARY ANALYSIS SUMMARY")
     print("="*60)
+    
+    # Show vocabulary operation mode
+    extend_vocab = cfg.get('extend_vocab', False)
+    vocab_path = cfg.get('vocab_path')
+    save_vocab_path = cfg.get('save_vocab_path')
+    
+    if extend_vocab:
+        if vocab_path:
+            print("Mode: Extending existing vocabulary")
+        else:
+            print("Mode: Creating new vocabulary from data")
+    elif vocab_path:
+        print("Mode: Analyzing with existing vocabulary")
+    else:
+        print("Mode: Analysis only (no vocabulary operations)")
     
     print(f"Total tokens: {analysis.total_tokens:,}")
     print(f"Unique tokens: {analysis.unique_tokens:,}")
@@ -242,6 +409,13 @@ def print_summary(analysis: VocabAnalysis, cfg: DictConfig):
             oov_list = sorted(list(analysis.oov_tokens))
             oov_string = ', '.join(f"'{token}'" if token else "''" for token in oov_list)
             print(f"OOV tokens: {oov_string}")
+    
+    # Show vocabulary save information
+    if extend_vocab:
+        if save_vocab_path:
+            print(f"Vocabulary saved to: {save_vocab_path}")
+        elif vocab_path:
+            print(f"Vocabulary saved to: {vocab_path} (in-place)")
     
     # Artifact summary
     bad_tokens_summary = {}
@@ -305,67 +479,118 @@ def main(cfg: DictConfig) -> None:
     """
     Analyze vocabulary and compute tokenization statistics for chemical data.
     """
-    log.info("Starting vocabulary analysis...")
-    log.info(f"Configuration:\n{OmegaConf.to_yaml(cfg)}")
-    
-    # Set random seed
-    seed = cfg.get('seed')
-    np.random.seed(seed)
-    
-    # Load existing vocabulary if provided
-    existing_vocab = None
-    vocab_path = cfg.get('vocab_path')
-    if vocab_path:
-        existing_vocab = load_existing_vocab(vocab_path)
-    
-    # Initialize components
-    log.info("Initializing components...")
-    data_pipeline: SimpleDataPipeline = hydra.utils.instantiate(cfg.data_pipeline)
-    tokenizer: AbstractTokenizer = hydra.utils.instantiate(cfg.tokenizer)
-    
-    # Load and process data through the pipeline
-    log.info("Loading and processing data through pipeline...")
-    data = data_pipeline()
-    
-    # Limit samples if specified
-    max_samples = cfg.get('max_samples')
-    if max_samples:
-        if isinstance(data, DataSplit):
-            # Limit each split by creating a new DataSplit object
-            limited_splits = {}
-            for split_name in ['train', 'val', 'test']:
-                split_data = getattr(data, split_name, None)
-                if split_data is not None and isinstance(split_data, pd.DataFrame):
-                    limited_splits[split_name] = split_data.head(max_samples)
-                else:
-                    limited_splits[split_name] = split_data
-            
-            # Create new DataSplit with limited data
-            data = DataSplit(
-                train=limited_splits.get('train'),
-                val=limited_splits.get('val'), 
-                test=limited_splits.get('test')
-            )
+    try:
+        log.info("Starting vocabulary analysis...")
+        log.info(f"Configuration:\n{OmegaConf.to_yaml(cfg)}")
+        
+        # Handle RDKit warning suppression
+        if cfg.get('suppress_rdkit_warnings', False):
+            log.info("Suppressing RDKit warnings globally")
+            from rdkit import RDLogger
+            RDLogger.DisableLog('rdApp.*')  # type: ignore
+        
+        # Set random seed
+        seed = cfg.get('seed')
+        np.random.seed(seed)
+        
+        # Handle vocabulary loading
+        existing_vocab = None
+        vocab_path = cfg.get('vocab_path')
+        
+        if vocab_path:
+            existing_vocab = load_existing_vocab(vocab_path)
         else:
-            data = data.head(max_samples)
-        log.info(f"Limited to {max_samples} samples per split")
-    
-    # Extract SMILES strings
-    smiles_list = extract_smiles_from_data(data)
-    
-    if not smiles_list:
-        log.error("No SMILES strings found in the data!")
-        return
-    
-    log.info(f"Extracted {len(smiles_list)} SMILES strings")
-    
-    # Tokenize and analyze
-    analysis = tokenize_and_analyze(smiles_list, tokenizer, existing_vocab)
-    
-    # Print summary
-    print_summary(analysis, cfg)
-    
-    log.info("Analysis complete.")
+            log.info("No vocabulary path specified. Will perform analysis without existing vocabulary.")
+            existing_vocab = set()
+        
+        # Initialize components
+        log.info("Initializing components...")
+        data_pipeline: SimpleDataPipeline = hydra.utils.instantiate(cfg.data_pipeline)
+        tokenizer: AbstractTokenizer = hydra.utils.instantiate(cfg.tokenizer)
+        
+        # Load and process data through the pipeline
+        log.info("Loading and processing data through pipeline...")
+        data = data_pipeline()
+        
+        # Limit samples if specified
+        max_samples = cfg.get('max_samples')
+        if max_samples:
+            if isinstance(data, DataSplit):
+                # Limit each split by creating a new DataSplit object
+                limited_splits = {}
+                for split_name in ['train', 'val', 'test']:
+                    split_data = getattr(data, split_name, None)
+                    if split_data is not None and isinstance(split_data, pd.DataFrame):
+                        limited_splits[split_name] = split_data.head(max_samples)
+                    else:
+                        limited_splits[split_name] = split_data
+                
+                # Create new DataSplit with limited data
+                data = DataSplit(
+                    train=limited_splits.get('train'),
+                    val=limited_splits.get('val'), 
+                    test=limited_splits.get('test')
+                )
+            else:
+                data = data.head(max_samples)
+            log.info(f"Limited to {max_samples} samples per split")
+        
+        # Extract SMILES strings
+        smiles_list = extract_smiles_from_data(data)
+        
+        if not smiles_list:
+            log.error("No SMILES strings found in the data!")
+            return
+        
+        log.info(f"Extracted {len(smiles_list)} SMILES strings")
+        
+        # Tokenize and analyze
+        analysis = tokenize_and_analyze(smiles_list, tokenizer, existing_vocab)
+        
+        # Handle vocabulary extension
+        extend_vocab = cfg.get('extend_vocab', False)
+        save_vocab_path = cfg.get('save_vocab_path')
+        
+        if extend_vocab:
+            # Get all tokens found in the data
+            found_tokens = set(analysis.token_stats.keys())
+            
+            if existing_vocab is not None:
+                # Extend existing vocabulary
+                final_vocab = extend_vocabulary(
+                    existing_vocab=existing_vocab,
+                    new_tokens=found_tokens,
+                    save_path=save_vocab_path,
+                    original_vocab_path=vocab_path,
+                    token_stats=analysis.token_stats
+                )
+            else:
+                # No existing vocab, so create new vocabulary from found tokens
+                log.info(f"Creating new vocabulary from scratch with {len(found_tokens)} tokens")
+                final_vocab = found_tokens
+                
+                # Save the new vocabulary if path is specified
+                if save_vocab_path:
+                    save_vocabulary(final_vocab, save_vocab_path, 
+                                  sort_by_frequency=True, token_stats=analysis.token_stats)
+                else:
+                    log.warning("No save path specified for new vocabulary. Vocabulary not saved.")
+        
+        # Print summary
+        print_summary(analysis, cfg)
+        
+        log.info("Analysis complete.")
+        
+    except KeyboardInterrupt:
+        log.info("\n" + "="*60)
+        log.info("ANALYSIS INTERRUPTED BY USER")
+        log.info("="*60)
+        log.info("The analysis was stopped early, but you can see the results from processed data above.")
+        log.info("To see the full summary, let the analysis complete or use max_samples to limit the dataset size.")
+        
+    except Exception as e:
+        log.error(f"Unexpected error during analysis: {e}")
+        raise
 
 
 if __name__ == "__main__":

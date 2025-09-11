@@ -1,6 +1,6 @@
 defaults:
   - data_pipeline: uspto_1k  # Reuse existing data pipeline configs
-  - /dataset/representation/tokenizer@tokenizer: reaction_tokenizer  # Use local tokenizer config
+  - /dataset/representation/tokenizer@tokenizer: substructure_rxn_tokenizer  # Use local tokenizer config
   - _self_
 
 # Analysis configuration
@@ -14,8 +14,17 @@ unicode_analysis: true
 whitespace_analysis: true
 length_analysis: true
 
-# Optional existing vocabulary for OOV analysis
-vocab_path: resources/vocab.txt  # path to existing vocabulary file (one token per line)
+# RDKit configuration
+suppress_rdkit_warnings: true  # Suppress RDKit warnings globally (e.g., hydrogen removal warnings)
+
+# optional path to existing vocabulary file for OOV analysis and extension (one token per line)
+vocab_path: resources/substruc_vocab.txt
+
+# extend the existing vocabulary with new tokens
+extend_vocab: true               
+
+# path to save final vocab (if null, extends in-place when extending)
+save_vocab_path: null
 
 # Random seed for reproducibility
 seed: 0
