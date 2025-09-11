@@ -2,21 +2,25 @@ import re
 from typing import List
 
 from chemtorch.components.preprocessing.tokenizer.abstract_tokenizer import AbstractTokenizer
-from chemtorch.components.preprocessing.tokenizer.regex_tokenizer import RegexTokenizer
-from chemtorch.components.preprocessing.tokenizer.tokenizer_defaults import DEFAULT_UNK_TOKEN, MOLECULE_SEPARATOR_TOKEN, REACTION_SEPARATOR_TOKEN, DEFAULT_MOLECULE_PATTERN
+from chemtorch.components.preprocessing.tokenizer.tokenizer_defaults import DEFAULT_UNK_TOKEN, MOLECULE_SEPARATOR_TOKEN, REACTION_SEPARATOR_TOKEN
 from chemtorch.utils.atom_mapping import remove_atom_mapping
 
 
 class ReactionTokenizer(AbstractTokenizer):
     """
-    Tokenizes a reaction SMILES string (e.g., "R1.R2>>P1.P2").
+    Tokenizes a reaction SMILES string (e.g., "R1.R2>>P1.P2") using a specified molecule tokenizer for individual molecules.
     """
 
     def __init__(
         self,
+        molecule_tokenizer: AbstractTokenizer,
         unk_token: str = DEFAULT_UNK_TOKEN,
-        molecule_tokenizer = RegexTokenizer(regex_pattern=DEFAULT_MOLECULE_PATTERN),
     ):
+        """
+        Args:
+            molecule_tokenizer (AbstractTokenizer): Tokenizer for individual molecules.
+            unk_token (str): Token to use for unknown tokens.
+        """
         self.unk_token = unk_token
         self.molecule_tokenizer = molecule_tokenizer
 

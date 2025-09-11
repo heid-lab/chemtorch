@@ -1,0 +1,1 @@
+_target_: chemtorch.components.preprocessing.tokenizer.molecule_tokenizer.smiles_symbol_tokenizer.SmilesSymbolTokenizer

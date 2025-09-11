@@ -2,7 +2,7 @@
 import re
 from typing import List
 from chemtorch.components.preprocessing.tokenizer.abstract_tokenizer import AbstractTokenizer
-from chemtorch.components.preprocessing.tokenizer.tokenizer_defaults import DEFAULT_UNK_TOKEN, DEFAULT_MOLECULE_PATTERN
+from chemtorch.components.preprocessing.tokenizer.tokenizer_defaults import DEFAULT_UNK_TOKEN
 
 
 class RegexTokenizer(AbstractTokenizer):

@@ -1,0 +1,2 @@
+_target_: chemtorch.components.preprocessing.tokenizer.molecule_tokenizer.substructure_tokenizer.SubstructureTokenizer
+radii: [0, 1, 2]
