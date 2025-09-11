@@ -1,21 +1,26 @@
 
 import re
 from typing import List
-from chemtorch.components.preprocessing.tokenizer.abstract_tokenizer import AbstractTokenizer
-from chemtorch.components.preprocessing.tokenizer.tokenizer_defaults import DEFAULT_UNK_TOKEN
+from chemtorch.components.preprocessing.tokenizer.molecule_tokenizer.molecule_tokenizer_base import MoleculeTokenizerBase
 
 
-class RegexTokenizer(AbstractTokenizer):
+class RegexTokenizer(MoleculeTokenizerBase):
     """
     Tokenizes a SMILES string using a regex pattern.
     """
 
-    def __init__(self, regex_pattern: str):
+    def __init__(self, regex_pattern: str, vocab_path: str, unk_token: str, pad_token: str):
         """
         Args:
             regex_pattern: The regex pattern to use for tokenization.
         """
+        super().__init__(vocab_path=vocab_path, unk_token=unk_token, pad_token=pad_token)
         self.regex = re.compile(regex_pattern)
+
+    @property
+    def vocab_path(self) -> str:
+        """Path to the vocabulary file."""
+        return self._vocab_path
 
     def tokenize(self, smiles: str) -> List[str]:
         """
@@ -27,11 +32,5 @@ class RegexTokenizer(AbstractTokenizer):
         Returns:
             A list of tokens.
         """
-        if not smiles:
-            return []
-
-        tokens = self.regex.findall(smiles)
-        if not tokens and smiles:
-            return [DEFAULT_UNK_TOKEN]
-
-        return tokens
+        return self.regex.findall(smiles)
+    

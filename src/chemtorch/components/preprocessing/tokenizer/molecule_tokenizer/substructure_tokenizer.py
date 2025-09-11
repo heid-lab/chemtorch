@@ -4,10 +4,10 @@ from rdkit import Chem
 from rdkit.Chem.rdmolops import GetDistanceMatrix
 from rdkit.Chem.rdmolfiles import MolFragmentToSmiles
 
-from chemtorch.components.preprocessing.tokenizer.abstract_tokenizer import AbstractTokenizer
+from chemtorch.components.preprocessing.tokenizer.molecule_tokenizer.molecule_tokenizer_base import MoleculeTokenizerBase
 
 
-class SubstructureTokenizer(AbstractTokenizer):
+class SubstructureTokenizer(MoleculeTokenizerBase):
     """
     Tokenizes a SMILES string into substructure tokens based on atom environments of specified radii.
 
@@ -16,13 +16,14 @@ class SubstructureTokenizer(AbstractTokenizer):
     Paper: https://pubs.acs.org/doi/full/10.1021/acs.jcim.4c01787
     """
 
-    def __init__(self, radii: List[int]):
+    def __init__(self, radii: List[int], vocab_path: str, unk_token: str, pad_token: str):
         """
         Initialize SubstructureTokenizer.
         
         Args:
             radii: List of radii for atom environments
         """
+        super().__init__(vocab_path=vocab_path, unk_token=unk_token, pad_token=pad_token)
         self.radii = radii
 
     def tokenize(self, smiles: str) -> List[str]:

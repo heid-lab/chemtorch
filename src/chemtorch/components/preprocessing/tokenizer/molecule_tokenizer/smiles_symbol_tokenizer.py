@@ -27,5 +27,5 @@ class SmilesSymbolTokenizer(RegexTokenizer):
     Paper: https://www.nature.com/articles/s42256-020-00284-w
     """
 
-    def __init__(self):
-        super().__init__(regex_pattern=RXNFP_REGEX_PATTERN)
+    def __init__(self, vocab_path: str, unk_token: str, pad_token: str):
+        super().__init__(regex_pattern=RXNFP_REGEX_PATTERN, vocab_path=vocab_path, unk_token=unk_token, pad_token=pad_token)
