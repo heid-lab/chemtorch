@@ -1,10 +1,10 @@
-
+import logging
 from typing import List
 from rdkit import Chem
-from rdkit.Chem.rdmolops import GetDistanceMatrix
-from rdkit.Chem.rdmolfiles import MolFragmentToSmiles
 
 from chemtorch.components.preprocessing.tokenizer.molecule_tokenizer.molecule_tokenizer_base import MoleculeTokenizerBase
+
+log = logging.getLogger(__name__)
 
 
 class SubstructureTokenizer(MoleculeTokenizerBase):
@@ -31,7 +31,8 @@ class SubstructureTokenizer(MoleculeTokenizerBase):
 
         mol = Chem.MolFromSmiles(smiles)
         if mol is None:
-            raise ValueError(f"Invalid SMILES string: {smiles}")
+            log.warning(f"Invalid SMILES string: {smiles}")
+            return []
         
         Chem.SanitizeMol(mol)
         Chem.RemoveHs(mol)  # this might cause warnings for some molecules

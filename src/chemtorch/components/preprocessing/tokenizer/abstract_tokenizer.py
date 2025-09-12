@@ -7,7 +7,17 @@ class AbstractTokenizer(ABC):
 
     @abstractmethod
     def tokenize(self, smiles: str) -> List[str]:
-        """Tokenize the input SMILES string into a list of tokens. If the input does not yield any tokens, return an empty list."""
+        """
+        Tokenize the input SMILES string into a list of tokens.
+
+        Args:
+            smiles: The SMILES string to tokenize.
+
+        Returns:
+            A list of tokens extracted from the SMILES string.
+            If the input does not yield any tokens or fails to tokenize, 
+            optionally log a warning and return an empty list.
+        """
         pass
 
     @property
