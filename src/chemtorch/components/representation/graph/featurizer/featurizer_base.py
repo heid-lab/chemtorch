@@ -1,7 +1,7 @@
 from typing import Any, Callable, Generic, List, Optional, Tuple, TypeVar
 
-from chemtorch.components.preprocessing.featurizer.abstract_featurizer import AbstractFeaturizer
-from chemtorch.components.preprocessing.featurizer.utils import featurize
+from chemtorch.components.representation.graph.featurizer.abstract_featurizer import AbstractFeaturizer
+from chemtorch.components.representation.graph.featurizer.utils import featurize
 from chemtorch.utils import enforce_base_init
 
 T = TypeVar("T")

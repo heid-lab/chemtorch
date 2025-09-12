@@ -1,6 +1,6 @@
 from rdkit.Chem import Atom
 
-from chemtorch.components.preprocessing.featurizer.featurizer_base import FeaturizerBase
+from chemtorch.components.representation.graph.featurizer.featurizer_base import FeaturizerBase
 
 
 class AtomFormalChargeFeaturizer(FeaturizerBase[Atom]):

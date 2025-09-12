@@ -29,22 +29,22 @@ dataset:
   representation:
     _target_: chemtorch.components.representation.graph.cgr.CGR
     atom_featurizer:
-      _target_: chemtorch.components.preprocessing.featurizer.FeaturizerCompose
+      _target_: chemtorch.components.representation.graph.featurizer.FeaturizerCompose
       featurizers:
-      - _target_: chemtorch.components.preprocessing.featurizer.OrganicAtomicNumberOneHotFeaturizer
-      - _target_: chemtorch.components.preprocessing.featurizer.AtomDegreeFeaturizer
-      - _target_: chemtorch.components.preprocessing.featurizer.AtomFormalChargeFeaturizer
-      - _target_: chemtorch.components.preprocessing.featurizer.AtomHCountFeaturizer
-      - _target_: chemtorch.components.preprocessing.featurizer.AtomHybridizationFeaturizer
-      - _target_: chemtorch.components.preprocessing.featurizer.AtomIsAromaticFeaturizer
-      - _target_: chemtorch.components.preprocessing.featurizer.CentiAtomMassFeaturizer
-      - _target_: chemtorch.components.preprocessing.featurizer.AtomIsInRingFeaturizer
+      - _target_: chemtorch.components.representation.graph.featurizer.OrganicAtomicNumberOneHotFeaturizer
+      - _target_: chemtorch.components.representation.graph.featurizer.AtomDegreeFeaturizer
+      - _target_: chemtorch.components.representation.graph.featurizer.AtomFormalChargeFeaturizer
+      - _target_: chemtorch.components.representation.graph.featurizer.AtomHCountFeaturizer
+      - _target_: chemtorch.components.representation.graph.featurizer.AtomHybridizationFeaturizer
+      - _target_: chemtorch.components.representation.graph.featurizer.AtomIsAromaticFeaturizer
+      - _target_: chemtorch.components.representation.graph.featurizer.CentiAtomMassFeaturizer
+      - _target_: chemtorch.components.representation.graph.featurizer.AtomIsInRingFeaturizer
     bond_featurizer:
-      _target_: chemtorch.components.preprocessing.featurizer.FeaturizerCompose
+      _target_: chemtorch.components.representation.graph.featurizer.FeaturizerCompose
       featurizers:
-      - _target_: chemtorch.components.preprocessing.featurizer.BondTypeFeaturizer
-      - _target_: chemtorch.components.preprocessing.featurizer.BondIsConjugatedFeaturizer
-      - _target_: chemtorch.components.preprocessing.featurizer.BondInRingFeaturizer
+      - _target_: chemtorch.components.representation.graph.featurizer.BondTypeFeaturizer
+      - _target_: chemtorch.components.representation.graph.featurizer.BondIsConjugatedFeaturizer
+      - _target_: chemtorch.components.representation.graph.featurizer.BondInRingFeaturizer
     in_channel_multiplier: 2
   subsample: null
 group_name: chemtorch_benchmark

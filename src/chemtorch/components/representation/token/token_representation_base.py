@@ -10,7 +10,7 @@ except ImportError:
 
 import torch
 
-from chemtorch.components.preprocessing.tokenizer.abstract_tokenizer import AbstractTokenizer
+from chemtorch.components.representation.token.tokenizer.abstract_tokenizer import AbstractTokenizer
 from chemtorch.components.representation.token.abstract_token_representation import AbstractTokenRepresentation
 
 

@@ -1,11 +1,11 @@
-_target_: chemtorch.components.preprocessing.featurizer.FeaturizerCompose
+_target_: chemtorch.components.representation.graph.featurizer.FeaturizerCompose
 
 featurizers:
-  - _target_: chemtorch.components.preprocessing.featurizer.OrganicAtomicNumberOneHotFeaturizer
-  - _target_: chemtorch.components.preprocessing.featurizer.AtomDegreeFeaturizer
-  - _target_: chemtorch.components.preprocessing.featurizer.AtomFormalChargeFeaturizer
-  - _target_: chemtorch.components.preprocessing.featurizer.AtomHCountFeaturizer
-  - _target_: chemtorch.components.preprocessing.featurizer.AtomHybridizationFeaturizer
-  - _target_: chemtorch.components.preprocessing.featurizer.AtomIsAromaticFeaturizer
-  - _target_: chemtorch.components.preprocessing.featurizer.CentiAtomMassFeaturizer
-  - _target_: chemtorch.components.preprocessing.featurizer.AtomIsInRingFeaturizer
+  - _target_: chemtorch.components.representation.graph.featurizer.OrganicAtomicNumberOneHotFeaturizer
+  - _target_: chemtorch.components.representation.graph.featurizer.AtomDegreeFeaturizer
+  - _target_: chemtorch.components.representation.graph.featurizer.AtomFormalChargeFeaturizer
+  - _target_: chemtorch.components.representation.graph.featurizer.AtomHCountFeaturizer
+  - _target_: chemtorch.components.representation.graph.featurizer.AtomHybridizationFeaturizer
+  - _target_: chemtorch.components.representation.graph.featurizer.AtomIsAromaticFeaturizer
+  - _target_: chemtorch.components.representation.graph.featurizer.CentiAtomMassFeaturizer
+  - _target_: chemtorch.components.representation.graph.featurizer.AtomIsInRingFeaturizer

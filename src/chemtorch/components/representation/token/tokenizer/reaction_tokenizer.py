@@ -7,7 +7,7 @@ except ImportError:
     # Python < 3.12
     from typing_extensions import override  # type: ignore
 
-from chemtorch.components.preprocessing.tokenizer.abstract_tokenizer import AbstractTokenizer
+from chemtorch.components.representation.token.tokenizer.abstract_tokenizer import AbstractTokenizer
 from chemtorch.utils.atom_mapping import remove_atom_mapping
 
 

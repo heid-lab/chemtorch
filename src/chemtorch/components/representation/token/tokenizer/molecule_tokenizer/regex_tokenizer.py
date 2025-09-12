@@ -1,7 +1,7 @@
 
 import re
 from typing import List
-from chemtorch.components.preprocessing.tokenizer.molecule_tokenizer.molecule_tokenizer_base import MoleculeTokenizerBase
+from chemtorch.components.representation.token.tokenizer.molecule_tokenizer.molecule_tokenizer_base import MoleculeTokenizerBase
 
 
 class RegexTokenizer(MoleculeTokenizerBase):

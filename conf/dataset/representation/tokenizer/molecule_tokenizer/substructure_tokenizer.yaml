@@ -1,4 +1,4 @@
-_target_: chemtorch.components.preprocessing.tokenizer.molecule_tokenizer.substructure_tokenizer.SubstructureTokenizer
+_target_: chemtorch.components.representation.token.tokenizer.molecule_tokenizer.substructure_tokenizer.SubstructureTokenizer
 radii: [0, 1, 2]
 vocab_path: resources/substruc_vocab.txt
 pad_token: "[PAD]"

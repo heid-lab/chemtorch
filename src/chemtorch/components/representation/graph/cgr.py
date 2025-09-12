@@ -11,8 +11,8 @@ import torch
 from torch_geometric.data import Data
 from rdkit.Chem import Atom, Bond
 
-from chemtorch.components.preprocessing.featurizer.featurizer_base import FeaturizerBase
-from chemtorch.components.preprocessing.featurizer.featurizer_compose import FeaturizerCompose
+from chemtorch.components.representation.graph.featurizer.featurizer_base import FeaturizerBase
+from chemtorch.components.representation.graph.featurizer.featurizer_compose import FeaturizerCompose
 from chemtorch.components.representation.abstract_representation import AbstractRepresentation
 from chemtorch.utils.atom_mapping import (
     AtomOriginType,

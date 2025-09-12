@@ -11,7 +11,7 @@ from dataclasses import dataclass
 
 # Import ChemTorch components
 from chemtorch.components.data_pipeline.simple_data_pipeline import SimpleDataPipeline
-from chemtorch.components.preprocessing.tokenizer.abstract_tokenizer import AbstractTokenizer
+from chemtorch.components.representation.token.tokenizer.abstract_tokenizer import AbstractTokenizer
 from chemtorch.utils import DataSplit
 
 log = logging.getLogger(__name__)

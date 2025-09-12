@@ -1,4 +1,4 @@
-from chemtorch.components.preprocessing.tokenizer.abstract_tokenizer import AbstractTokenizer
+from chemtorch.components.representation.token.tokenizer.abstract_tokenizer import AbstractTokenizer
 
 try:
     # Python ≥ 3.12

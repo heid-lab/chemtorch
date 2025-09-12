@@ -1,4 +1,4 @@
-from chemtorch.components.preprocessing.tokenizer.molecule_tokenizer.regex_tokenizer import RegexTokenizer
+from chemtorch.components.representation.token.tokenizer.molecule_tokenizer.regex_tokenizer import RegexTokenizer
 
 
 # adapted from https://github.com/rxn4chemistry/rxnfp/blob/master/rxnfp/tokenization.py

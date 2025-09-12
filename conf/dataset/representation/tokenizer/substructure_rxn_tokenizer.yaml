@@ -1,4 +1,4 @@
-_target_: chemtorch.components.preprocessing.tokenizer.reaction_tokenizer.ReactionTokenizer
+_target_: chemtorch.components.representation.token.tokenizer.reaction_tokenizer.ReactionTokenizer
 
 defaults:
   - molecule_tokenizer: substructure_tokenizer

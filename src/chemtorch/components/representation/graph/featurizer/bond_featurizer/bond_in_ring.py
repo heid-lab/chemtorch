@@ -1,6 +1,6 @@
 from rdkit.Chem.rdchem import Bond
 
-from chemtorch.components.preprocessing.featurizer.featurizer_base import FeaturizerBase
+from chemtorch.components.representation.graph.featurizer.featurizer_base import FeaturizerBase
 
 
 class BondInRingFeaturizer(FeaturizerBase):

@@ -1,7 +1,7 @@
 # @package _global_
 defaults:
   - /trainer: basic_trainer
-  - /data_pipeline: rdb7_fwd_rev_spiekermann
+  - /data_pipeline: rdb7_fwd
   - /dataset: graph
   - /dataloader: pyg_dataloader
   - /model: dmpnn

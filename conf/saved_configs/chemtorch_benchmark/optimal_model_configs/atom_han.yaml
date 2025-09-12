@@ -33,7 +33,7 @@ dataset:
     max_sentence_length: 400
     pad_token: '[PAD]'
     tokenizer:
-      _target_: chemtorch.components.preprocessing.tokenizer.reaction_tokenizer.ReactionTokenizer
+      _target_: chemtorch.components.representation.token.tokenizer.reaction_tokenizer.ReactionTokenizer
     unk_token: '[UNK]'
     vocab_path: resources/vocab.txt
   subsample: null

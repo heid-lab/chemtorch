@@ -2,7 +2,7 @@ import logging
 from typing import List
 from rdkit import Chem
 
-from chemtorch.components.preprocessing.tokenizer.molecule_tokenizer.molecule_tokenizer_base import MoleculeTokenizerBase
+from chemtorch.components.representation.token.tokenizer.molecule_tokenizer.molecule_tokenizer_base import MoleculeTokenizerBase
 
 log = logging.getLogger(__name__)
 

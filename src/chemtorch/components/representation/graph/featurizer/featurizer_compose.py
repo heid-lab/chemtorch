@@ -1,6 +1,6 @@
 from typing import List, Sequence
 
-from chemtorch.components.preprocessing.featurizer.abstract_featurizer import AbstractFeaturizer
+from chemtorch.components.representation.graph.featurizer.abstract_featurizer import AbstractFeaturizer
 
 
 

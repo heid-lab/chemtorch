@@ -1,4 +1,4 @@
-_target_: chemtorch.components.preprocessing.tokenizer.molecule_tokenizer.smiles_symbol_tokenizer.SmilesSymbolTokenizer
+_target_: chemtorch.components.representation.token.tokenizer.molecule_tokenizer.smiles_symbol_tokenizer.SmilesSymbolTokenizer
 vocab_path: resources/base_vocab.txt
 pad_token: "[PAD]"
 unk_token: "[UNK]"
