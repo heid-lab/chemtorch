@@ -125,6 +125,10 @@ def main(cfg: DictConfig):
     if torch.backends.mps.is_available() and cfg.trainer.accelerator == "auto":
         cfg.trainer.accelerator = "cpu"
 
+    # Handle conditional checkpointing
+    if cfg.trainer.enable_checkpointing and "checkpoint_callback" in cfg.trainer:
+        cfg.trainer.callbacks.append(cfg.trainer.checkpoint_callback)
+
     trainer: L.Trainer = safe_instantiate(cfg.trainer)
     if not cfg.log:
         trainer.logger = None
