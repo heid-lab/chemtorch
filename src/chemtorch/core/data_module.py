@@ -93,7 +93,7 @@ class DataModule(L.LightningDataModule):
     def _init_datasets(
         self,
         data_pipeline: Callable[..., DataSplit | pd.DataFrame],
-        dataset_factory: Callable[[pd.DataFrame], DatasetBase],
+        dataset_factory: Callable[[pd.DataFrame, Literal["train", "val", "test", "predict"]], DatasetBase],
     ):
         """
         Initialize datasets from the data pipeline. If the data pipeline returns a DataSplit,
@@ -112,12 +112,12 @@ class DataModule(L.LightningDataModule):
         data = data_pipeline()
         if isinstance(data, DataSplit):
             datasets = {
-                "train": dataset_factory(data.train),
-                "val": dataset_factory(data.val),
-                "test": dataset_factory(data.test),
+                "train": dataset_factory(data.train, "train"),
+                "val": dataset_factory(data.val, "val"),
+                "test": dataset_factory(data.test, "test"),
             }
         elif isinstance(data, pd.DataFrame):
-            datasets = {"predict": dataset_factory(data)}
+            datasets = {"predict": dataset_factory(data, "predict")}
         else:
             raise TypeError(
                 "Data pipeline must output either a DataSplit or a pandas DataFrame"
@@ -150,7 +150,7 @@ class DataModule(L.LightningDataModule):
             key (str): The key for which to create the dataloader ('train', 'val', 'test', 'predict').
 
         Returns:
-            DataLoader: The created dataloader.
+            DataLoader: The created dataloader. If the key is 'train', the dataloader will shuffle the data.
 
         Raises:
             ValueError: If the dataset for the specified key is not initialized.
