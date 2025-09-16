@@ -34,8 +34,12 @@ dataset:
     pad_token: '[PAD]'
     tokenizer:
       _target_: chemtorch.components.representation.token.tokenizer.reaction_tokenizer.ReactionTokenizer
+      molecule_tokenizer:
+        _target_: chemtorch.components.representation.token.tokenizer.molecule_tokenizer.smiles_symbol_tokenizer.SmilesSymbolTokenizer
+        vocab_path: resources/base_vocab.txt
+        pad_token: "[PAD]"
+        unk_token: "[UNK]"
     unk_token: '[UNK]'
-    vocab_path: resources/vocab.txt
   subsample: null
 group_name: chemtorch_benchmark
 load_model: false

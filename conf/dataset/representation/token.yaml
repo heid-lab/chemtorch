@@ -1,6 +1,6 @@
 _target_: chemtorch.components.representation.token.token_representation_base.TokenRepresentationBase
 
 defaults:
-  - tokenizer: substructure_rxn_tokenizer
+  - tokenizer: smiles_symbol_rxn_tokenizer
 
 max_sentence_length: 400
