@@ -28,7 +28,7 @@ dataset:
   max_cache_size: null
   precompute_all: true
   representation:
-    _target_: chemtorch.components.representation.graph.rtsp_3d_graph.RTSP3DGraph
+    _target_: chemtorch.components.representation.graph.ts_3d_graph.TS3DGraph
     root_dir: data/rdb7/geometries/forward
   subsample: null
 group_name: chemtorch_benchmark

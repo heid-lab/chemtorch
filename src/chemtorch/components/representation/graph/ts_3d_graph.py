@@ -98,16 +98,16 @@ class TS3DGraph(AbstractRepresentation[Data]):
 
     # TODO: ORDER MATTERS!!!!!!!!!!!!!!!!!!!!!!!!!!!
     @override
-    def construct(self, reaction_dir: str, smiles: str, **kwargs) -> Data:
+    def construct(self, smiles: str, reaction_dir: str) -> Data:
         """
         Constructs a single reaction graph from its corresponding XYZ files.
 
         This method is called by `DatasetBase` for each row in the DataFrame.
 
         Args:
+            smiles (str): The reaction SMILES string.
             reaction_dir (str): The name of the subdirectory within `root_dir`
                                 containing the XYZ files for this reaction.
-            smiles (str): The reaction SMILES string.
             **kwargs: Additional keyword arguments from the DataFrame row are ignored.
 
         Returns:
