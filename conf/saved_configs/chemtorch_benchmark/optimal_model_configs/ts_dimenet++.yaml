@@ -149,3 +149,10 @@ trainer:
   logger:
     _target_: lightning.pytorch.loggers.WandbLogger
   max_epochs: 100
+  enable_checkpointing: true
+  checkpoint_callback:
+    _target_: lightning.pytorch.callbacks.ModelCheckpoint
+    dirpath: ${trainer.default_root_dir}/${hydra:runtime.choices.data_pipeline}/${hydra:runtime.choices.model}/seed_${seed}_${now:%Y-%m-%d_%H-%M-%S}/checkpoints
+    monitor: val_loss
+    save_top_k: 1
+    save_last: true

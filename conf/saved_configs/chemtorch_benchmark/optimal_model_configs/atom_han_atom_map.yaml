@@ -10,7 +10,6 @@ data_pipeline:
     data_path: data/rdb7/barriers/forward/data.csv
   data_splitter:
     _target_: chemtorch.components.data_pipeline.data_splitter.RatioSplitter
-    save_path: null
     test_ratio: 0.1
     train_ratio: 0.8
     val_ratio: 0.1
@@ -29,29 +28,29 @@ dataset:
   max_cache_size: null
   precompute_all: true
   representation:
-    _target_: chemtorch.components.representation.token.token_representation_base.TokenRepresentationBase
+    _target_: chemtorch.components.representation.token.simple_token_representation.SimpleTokenRepresentation
     max_sentence_length: 400
     pad_token: '[PAD]'
     tokenizer:
-      _target_: chemtorch.components.representation.token.tokenizer.reaction_tokenizer.ReactionTokenizer
+      _target_: chemtorch.components.representation.token.tokenizer.simple_tokenizer.SimpleTokenizer
     unk_token: '[UNK]'
-    vocab_path: resources/vocab.txt
+    vocab_path: resources/uspto_1k/vocab.txt
   subsample: null
-group_name: chemtorch_benchmark
+group_name: pipeline_sweep_best_runs_3
 load_model: false
 log: true
 mean: 80.0102253144654
 model:
   _target_: chemtorch.components.model.han.HAN
   class_num: 1
-  dropout: 0.1361373846961515
+  dropout: 0.17264165021957378
   embedding_hidden_channels: 256
-  embedding_in_channels: 604
+  embedding_in_channels: 599
   gru_hidden_channels: 256
-model.dropout: 0.1361373846961515
+model.dropout: 0.17264165021957378
 model.embedding_hidden_channels: 256
 model.gru_hidden_channels: 256
-name: atom_han
+name: token
 num_classes: 1
 parameter_limit: null
 prediction_save_path: null
@@ -104,16 +103,16 @@ routine:
     capturable: false
     eps: 1.0e-08
     foreach: null
-    lr: 0.0006884302350655184
+    lr: 0.0015873290589761375
     maximize: false
-    weight_decay: 0.0023109641884162787
+    weight_decay: 0.00010960233488499154
   standardizer:
     _target_: chemtorch.utils.Standardizer
     mean: 80.0102253144654
     std: 21.684054853890036
-routine.optimizer.lr: 0.0006884302350655184
-routine.optimizer.weight_decay: 0.0023109641884162787
-run_name: atom_han
+routine.optimizer.lr: 0.0015873290589761375
+routine.optimizer.weight_decay: 0.00010960233488499154
+run_name: null
 runtime_args_from_dataset:
 - vocab_size
 - mean
@@ -144,4 +143,4 @@ trainer:
     monitor: val_loss
     save_top_k: 1
     save_last: true
-vocab_size: 604
+vocab_size: 599
