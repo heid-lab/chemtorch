@@ -32,17 +32,17 @@ def _get_prediction_save_path(dataset_key: str, cfg: DictConfig) -> str:
     
     Logic:
         - If predictions_save_dir is set: use {predictions_save_dir}/{dataset_key}_preds.csv
-        - If prediction_save_path is set (single task scenario): use prediction_save_path directly
+        - If predictions_save_path is set (single task scenario): use predictions_save_path directly
         - Otherwise: raise error (user must specify one of the two)
     """
     if cfg.predictions_save_dir:
         return f"{cfg.predictions_save_dir}/{dataset_key}_preds.csv"
-    elif cfg.prediction_save_path:
-        return cfg.prediction_save_path
+    elif cfg.predictions_save_path:
+        return cfg.predictions_save_path
     else:
         raise ValueError(
             f"Cannot determine save path for {dataset_key} predictions. "
-            f"For single tasks, specify 'prediction_save_path'. "
+            f"For single tasks, specify 'predictions_save_path'. "
             f"For multiple tasks, specify 'predictions_save_dir' and 'save_predictions_for'."
         )
 
@@ -186,6 +186,7 @@ def main(cfg: DictConfig):
     routine: L.LightningModule = routine_factory(model=model)
 
     # load model checkpoint if specified
+    ckpt_path = None
     if cfg.load_model:
         if cfg.ckpt_path is None:
             raise ValueError("ckpt_path must be provided when load_model is True.")
@@ -207,8 +208,8 @@ def main(cfg: DictConfig):
     if "test" in cfg.tasks:
         trainer.test(routine, datamodule=data_module, ckpt_path=ckpt_for_inference)
 
-    if "predict" in cfg.tasks and not cfg.prediction_save_path:
-        raise ValueError("Set `prediction_save_path` in the config if you want to save the predictions for predict task.")
+    if "predict" in cfg.tasks and not cfg.predictions_save_path:
+        raise ValueError("Set `predictions_save_path` in the config to save the predictions.")
 
     ###### INFERENCE AND PREDICTION SAVING #####################################
     # Normalize save_predictions_for to always be a list if provided
@@ -224,26 +225,26 @@ def main(cfg: DictConfig):
     has_fit_or_multiple_tasks = "fit" in cfg.tasks or len(cfg.tasks) > 1
     
     # Handle gracefully: if save_predictions_for specified but no paths, just warn and skip
-    skip_prediction_saving = cfg.save_predictions_for and not cfg.predictions_save_dir and not cfg.prediction_save_path
+    skip_prediction_saving = cfg.save_predictions_for and not cfg.predictions_save_dir and not cfg.predictions_save_path
     if skip_prediction_saving:
-        logging.warning("'save_predictions_for' specified but no 'predictions_save_dir' or 'prediction_save_path' given. Skipping prediction saving.")
+        logging.warning("'save_predictions_for' specified but no 'predictions_save_dir' or 'predictions_save_path' given. Skipping prediction saving.")
     
-    elif has_fit_or_multiple_tasks and cfg.prediction_save_path and not cfg.save_predictions_for:
+    elif has_fit_or_multiple_tasks and cfg.predictions_save_path and not cfg.save_predictions_for:
         raise ValueError(
             "For fit tasks or multiple tasks, you must specify 'save_predictions_for' to indicate "
-            "which datasets to save predictions for, and use 'predictions_save_dir' instead of 'prediction_save_path'."
+            "which datasets to save predictions for, and use 'predictions_save_dir' instead of 'predictions_save_path'."
         )
     
-    elif cfg.save_predictions_for and len(cfg.save_predictions_for) > 1 and cfg.prediction_save_path:
+    elif cfg.save_predictions_for and len(cfg.save_predictions_for) > 1 and cfg.predictions_save_path:
         raise ValueError(
-            "Cannot use 'prediction_save_path' when saving predictions for multiple datasets. "
+            "Cannot use 'predictions_save_path' when saving predictions for multiple datasets. "
             "Use 'predictions_save_dir' instead."
         )
     
     # Determine save_predictions_for list (only if we're not skipping)
     if not skip_prediction_saving:
-        # For single task scenarios (predict, validate, test), use prediction_save_path
-        if len(single_tasks) == 1 and len(cfg.tasks) == 1 and not cfg.save_predictions_for and cfg.prediction_save_path:
+        # For single task scenarios (predict, validate, test), use predictions_save_path
+        if len(single_tasks) == 1 and len(cfg.tasks) == 1 and not cfg.save_predictions_for and cfg.predictions_save_path:
             single_dataset_key = single_tasks[0] if single_tasks[0] != "validate" else "val"
             save_predictions_for = [single_dataset_key]
 
@@ -259,15 +260,15 @@ def main(cfg: DictConfig):
     # Save predictions if requested
     if save_predictions_for:
         # Final validation before saving
-        if len(save_predictions_for) > 1 and cfg.prediction_save_path:
+        if len(save_predictions_for) > 1 and cfg.predictions_save_path:
             raise ValueError(
                 f"Cannot save predictions for multiple datasets ({save_predictions_for}) "
-                f"to a single file ({cfg.prediction_save_path}). Use 'predictions_save_dir' instead."
+                f"to a single file ({cfg.predictions_save_path}). Use 'predictions_save_dir' instead."
             )
         
-        if not cfg.predictions_save_dir and not cfg.prediction_save_path:
+        if not cfg.predictions_save_dir and not cfg.predictions_save_path:
             raise ValueError(
-                "Must specify either 'predictions_save_dir' or 'prediction_save_path' to save predictions."
+                "Must specify either 'predictions_save_dir' or 'predictions_save_path' to save predictions."
             )
         
         for single_dataset_key in ["train", "val", "test", "predict"]:

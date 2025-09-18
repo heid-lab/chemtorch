@@ -35,4 +35,4 @@ load_model: false
 ckpt_path: null
 
 # PREDICTION
-prediction_save_path: prediction/${project_name}/.../predictions.csv
+predictions_save_path: prediction/${project_name}/.../predictions.csv

@@ -26,7 +26,7 @@ ckpt_path: null
 # Specify a single save path if only a single partition is instantiated, 
 # i.e. the single task it either 'predict', 'validate', or 'test'). If null, no
 # predictions will be saved.
-prediction_save_path: null
+predictions_save_path: null
 # Specify a directory path to which the predictions will be saved and for 
 # which partitions to save predictions if multiple partitions are instantiated, 
 # during the run i.e. the task is 'fit' or tasks contain multiple tasks. If 
