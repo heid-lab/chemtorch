@@ -1,4 +1,5 @@
 import os
+import logging
 from pathlib import Path
 from typing import List
 
@@ -21,6 +22,13 @@ ROOT_DIR = Path(__file__).parent
 @hydra.main(version_base=None, config_path="conf", config_name="base")
 def main(cfg: DictConfig):
     cli_chemtorch_logo()
+    
+    # Configure logging
+    logging.basicConfig(
+        level=logging.INFO,
+        format='%(levelname)s: %(message)s'
+    )
+    
     # config mutable
     OmegaConf.set_struct(cfg, False)
 

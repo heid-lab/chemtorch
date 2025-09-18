@@ -193,6 +193,7 @@ class DatasetBase(Generic[T], AbstractDataset[T, AbstractRepresentation[T]]):
             return data.sample(n=min(subsample, len(data)))
         elif isinstance(subsample, float):
             n_samples = round(subsample * len(data))
+            logging.info(f"Subsampling {split} set: fraction={subsample}, original size={len(data)}, subsampled size={n_samples}.")
             
             # Ensure at least 1 sample if the original data is not empty and subsample > 0
             if n_samples == 0 and len(data) > 0 and subsample > 0:
