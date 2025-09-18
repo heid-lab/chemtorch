@@ -1,3 +1,4 @@
+import logging
 import os
 from pathlib import Path
 from typing import List, cast
@@ -210,6 +211,11 @@ def main(cfg: DictConfig):
         raise ValueError("Set `prediction_save_path` in the config if you want to save the predictions for predict task.")
 
     ###### INFERENCE AND PREDICTION SAVING #####################################
+    # Normalize save_predictions_for to always be a list if provided
+    if cfg.save_predictions_for is not None:
+        if isinstance(cfg.save_predictions_for, str):
+            cfg.save_predictions_for = [cfg.save_predictions_for]
+    
     # Determine which predictions to save
     save_predictions_for = []
     
@@ -220,7 +226,7 @@ def main(cfg: DictConfig):
     # Handle gracefully: if save_predictions_for specified but no paths, just warn and skip
     skip_prediction_saving = cfg.save_predictions_for and not cfg.predictions_save_dir and not cfg.prediction_save_path
     if skip_prediction_saving:
-        print("WARNING: 'save_predictions_for' specified but no 'predictions_save_dir' or 'prediction_save_path' given. Skipping prediction saving.")
+        logging.warning("'save_predictions_for' specified but no 'predictions_save_dir' or 'prediction_save_path' given. Skipping prediction saving.")
     
     elif has_fit_or_multiple_tasks and cfg.prediction_save_path and not cfg.save_predictions_for:
         raise ValueError(
