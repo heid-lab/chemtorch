@@ -1,35 +1,10 @@
-import os
-import random
+import logging
 from pathlib import Path
 from typing import Optional, List, Union, Callable, Any
 
-import numpy as np
+from omegaconf import ListConfig
 import pandas as pd
 import torch
-
-
-
-def save_standardizer(mean, std, model_dir):
-    """DEPRECATED: Save standardizer parameters to the model directory."""
-    os.makedirs(model_dir, exist_ok=True)
-    standardizer_path = os.path.join(model_dir, "standardizer.pt")
-    torch.save({"mean": mean, "std": std}, standardizer_path)
-
-
-def load_standardizer(model_dir):
-    """DEPRECATED. Load standardizer parameters from the model directory."""
-    standardizer_path = os.path.join(model_dir, "standardizer.pt")
-    if os.path.exists(standardizer_path):
-        params = torch.load(standardizer_path)
-        return params["mean"], params["std"]
-    return None, None
-
-
-def get_generator(seed: int) -> torch.Generator:
-    """DEPRECATED. Get a random generator with a specific seed."""
-    generator = torch.Generator()
-    generator.manual_seed(seed)
-    return generator
 
 
 def save_predictions(
@@ -102,7 +77,7 @@ def save_predictions(
     
     output_path.parent.mkdir(parents=True, exist_ok=True)
     result_df.to_csv(output_path, index=False)
-    print(f"Predictions saved to: {output_path}")
+    logging.info(f"Predictions saved to: {output_path}")
     
     # Log results if logging function provided
     if log_func:
@@ -111,63 +86,117 @@ def save_predictions(
             "num_predictions": len(pred_values)
         }, commit=False)
 
-def set_seed(seed):
-    """DEPRECATED"""
-    random.seed(seed)
-    np.random.seed(seed)
-    torch.manual_seed(seed)
-    torch.set_num_threads(1)
-    if torch.cuda.is_available():
-        torch.cuda.manual_seed_all(seed)
-        torch.backends.cudnn.deterministic = True
-        torch.backends.cudnn.benchmark = False
-        torch.use_deterministic_algorithms(True)
-        os.environ["CUBLAS_WORKSPACE_CONFIG"] = (
-            ":4096:8"  # https://docs.nvidia.com/cuda/cublas/index.html#results-reproducibility
-        )
+def handle_prediction_saving(
+    get_preds_func: Callable[[str], List[Any]],
+    get_reference_df_func: Callable[[str], pd.DataFrame],
+    predictions_save_dir: Optional[str] = None,
+    predictions_save_path: Optional[str] = None,
+    save_predictions_for: Optional[Union[str, List[str], ListConfig]] = None,
+    tasks: Optional[Union[List[str], ListConfig]] = None,
+    log_func: Optional[Callable] = None,
+    root_dir: Optional[Path] = None
+) -> None:
+    """
+    Handle prediction saving logic with configurable prediction and reference data retrieval.
 
-def check_early_stopping(
-    current_loss, best_loss, counter, patience, min_delta
-):
-    """DEPRECATED"""
-    if current_loss < best_loss - min_delta:
-        return 0, False
-    else:
-        counter += 1
-        if counter >= patience:
-            return counter, True
-        return counter, False
+    Args:
+        get_preds_func: Function that takes a dataset_key and returns predictions
+        get_reference_df_func: Function that takes a dataset_key and returns reference dataframe
+        predictions_save_dir: Directory to save predictions (for multiple partitions)
+        predictions_save_path: Specific path to save predictions (for single partition)
+        save_predictions_for: String or list of dataset keys to save predictions for
+        tasks: List of tasks being executed (used for determining available partitions)
+        log_func: Optional logging function (e.g., wandb.log)
+        root_dir: Root directory for relative path resolution
+    """
+    # Prediction saving logic with closures
+    _save_predictions = predictions_save_dir or predictions_save_path
 
+    if not _save_predictions and save_predictions_for:
+        logging.warning("'save_predictions_for' specified but no 'predictions_save_dir' or 'predictions_save_path' given. Skipping prediction saving.")
+    
+    if _save_predictions:
+        # 1. Determine save_predictions_for list 
+        save_predictions_for_list = []
 
-def save_model(model, optimizer, epoch, best_val_loss, model_dir):
-    """DEPRECATED. Save model and optimizer state to the model directory."""
-    os.makedirs(model_dir, exist_ok=True)
-    model_path = os.path.join(model_dir, "model.pt")
+        if save_predictions_for:
+            # Normalize save_predictions_for to always be a list if provided
+            if isinstance(save_predictions_for, str):
+                # Handle special case where Hydra passes a list-like string (e.g., "[test]" -> ["test"])
+                if save_predictions_for.startswith('[') and save_predictions_for.endswith(']'):
+                    # Remove brackets and split by comma, then strip whitespace
+                    inner_content = save_predictions_for[1:-1].strip()
+                    if inner_content:
+                        normalized_save_predictions_for = [item.strip() for item in inner_content.split(',')]
+                    else:
+                        normalized_save_predictions_for = []
+                else:
+                    normalized_save_predictions_for = [save_predictions_for]
+            elif isinstance(save_predictions_for, (list, ListConfig)):
+                normalized_save_predictions_for = list(save_predictions_for)
+            else:
+                raise ValueError("'save_predictions_for' must be a string or list of strings if provided.")
 
-    torch.save(
-        {
-            "epoch": epoch,
-            "model_state_dict": model.state_dict(),
-            "optimizer_state_dict": optimizer.state_dict(),
-            "best_val_loss": best_val_loss,
-        },
-        model_path,
-    )
+            # Validate save_predictions_for contents
+            if not all(key in {"train", "val", "test", "predict", "all"} for key in normalized_save_predictions_for):
+                raise ValueError("Invalid entries in 'save_predictions_for'. Must be one of 'train', 'val', 'test', 'predict', or 'all'.")
 
+            if "all" in normalized_save_predictions_for:
+                if len(normalized_save_predictions_for) > 1:
+                    logging.warning("Found 'all' in save_predictions_for list, saving predictions for all partitions.")
+                
+                # only add those that are available for the given tasks list
+                available_partitions = set()
+                if tasks and "fit" in tasks:
+                    available_partitions.update(["train", "val"])
+                if tasks and "validate" in tasks:
+                    available_partitions.add("val")
+                if tasks and "test" in tasks:
+                    available_partitions.add("test")
+                if tasks and "predict" in tasks:
+                    available_partitions.add("predict")
 
-def load_model(model, optimizer, model_dir):
-    """DEPRECATED. Load model and optimizer state from the model directory."""
+                normalized_save_predictions_for = list(available_partitions)
 
-    if os.path.exists(model_dir):
-        model_path = os.path.join(model_dir, "model.pt")
-        checkpoint = torch.load(model_path)
-        model.load_state_dict(checkpoint["model_state_dict"])
-        epoch = checkpoint["epoch"]
-        best_val_loss = checkpoint["best_val_loss"]
+        # For single partition scenarios (predict, validate, test), use predictions_save_path
+        if (tasks and not "fit" in tasks and len(tasks) == 1) or (save_predictions_for and len(normalized_save_predictions_for) == 1 and "all" not in (save_predictions_for if isinstance(save_predictions_for, list) else [save_predictions_for])):
+            if save_predictions_for:
+                dataset_key = normalized_save_predictions_for[0] if normalized_save_predictions_for[0] != "validate" else "val"
+                save_predictions_for_list = [dataset_key]
+            else:
+                task = tasks[0] if tasks else "predict"
+                dataset_key = task if task != "validate" else "val"    # map to 'validate' task to 'val' dataset key
+                save_predictions_for_list = [dataset_key]
 
-        if optimizer is not None:
-            optimizer.load_state_dict(checkpoint["optimizer_state_dict"])
+        # For multi-partition scenarios (fit or multiple tasks or 'all')
+        else:
+            if not predictions_save_dir or not save_predictions_for:
+                raise ValueError(
+                    "To save predictions for multiple partitions, you must specify 'predictions_save_dir' and 'save_predictions_for' to indicate "
+                    "which partitions to save predictions for."
+                )
 
-        return model, optimizer, epoch, best_val_loss
-    else:
-        return model, optimizer, 0, float("inf")
+            save_predictions_for_list = normalized_save_predictions_for
+        
+        # 2. Generate and save predictions for each specified partition
+        for dataset_key in ["train", "val", "test", "predict"]:
+            if dataset_key in save_predictions_for_list:
+
+                # Use the closures to get predictions and reference dataframe
+                preds = get_preds_func(dataset_key)
+                pred_df = get_reference_df_func(dataset_key)
+
+                if preds:
+                    if len(save_predictions_for_list) == 1 and predictions_save_path:
+                        # Use user-specified path directly for single partition scenarios
+                        save_path = predictions_save_path
+                    else:
+                        save_path = f"{predictions_save_dir}/{dataset_key}_preds.csv"
+
+                    save_predictions(
+                        preds=preds,
+                        reference_df=pred_df,
+                        save_path=save_path,
+                        log_func=log_func,
+                        root_dir=root_dir,
+                    )
