@@ -186,8 +186,8 @@ def main(cfg: DictConfig):
     if "test" in cfg.tasks:
         trainer.test(routine, datamodule=data_module, ckpt_path=ckpt_for_inference)
 
-    if "predict" in cfg.tasks and not cfg.predictions_save_path:
-        raise ValueError("Set `predictions_save_path` in the config to save the predictions.")
+    if "predict" in cfg.tasks and not (cfg.predictions_save_path or cfg.predictions_save_dir):
+        raise ValueError("Set either `predictions_save_path` or `predictions_save_dir` in the config to save the predictions.")
 
     ###### INFERENCE AND PREDICTION SAVING #####################################
     # Create closures to encapsulate the prediction generation logic
