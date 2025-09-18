@@ -23,9 +23,20 @@ load_model: false
 ckpt_path: null
 
 # PREDICTION SAVING
-prediction_save_path: null  # For single task scenarios (predict, validate, or test only)
-predictions_save_dir: null  # For multi-task scenarios - directory where separate files will be saved
-save_predictions_for: null  # List of datasets: ["train", "val", "test", "predict"] or ["all"] for all datasets
+# Specify a single save path if only a single partition is instantiated, 
+# i.e. the single task it either 'predict', 'validate', or 'test'). If null, no
+# predictions will be saved.
+prediction_save_path: null
+# Specify a directory path to which the predictions will be saved and for 
+# which partitions to save predictions if multiple partitions are instantiated, 
+# during the run i.e. the task is 'fit' or tasks contain multiple tasks. If 
+# null, no predictions will be saved.
+predictions_save_dir: null  
+# One of "train", "val", "test", "predict" or "all" for all datasets, or a list
+# of any of these to specify for which datasets to save predictions. Can be 
+# specified as a single string (e.g., "train") or as a list (e.g., ["train", "val"]).
+# If null, no predictions will be saved.
+save_predictions_for: null
 
 # Disable Hydra's automatic logging behavior since WandB is used for logging.
 hydra:
