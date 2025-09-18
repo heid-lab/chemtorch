@@ -138,8 +138,13 @@ def handle_prediction_saving(
                 raise ValueError("'save_predictions_for' must be a string or list of strings if provided.")
 
             # Validate save_predictions_for contents
-            if not all(key in {"train", "val", "test", "predict", "all"} for key in normalized_save_predictions_for):
-                raise ValueError("Invalid entries in 'save_predictions_for'. Must be one of 'train', 'val', 'test', 'predict', or 'all'.")
+            allowed_keys = {"train", "val", "test", "predict", "all"}
+            invalid_keys = [key for key in normalized_save_predictions_for if key not in allowed_keys]
+            if invalid_keys:
+                raise ValueError(
+                    f"Invalid entries in 'save_predictions_for': {invalid_keys}. "
+                    f"Must be one of {sorted(allowed_keys)}."
+                )
 
             if "all" in normalized_save_predictions_for:
                 if len(normalized_save_predictions_for) > 1:
