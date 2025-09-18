@@ -63,7 +63,7 @@ class DataModule(L.LightningDataModule):
         Raises:
             AttributeError: If the property does not exist in the train dataset or is not a @property.
         """
-        dataset = self._get_dataset(key)
+        dataset = self.get_dataset(key)
         # Check if the attribute is a property of the dataset's class
         if hasattr(type(dataset), property) and isinstance(
             getattr(type(dataset), property), builtins.property
@@ -73,21 +73,57 @@ class DataModule(L.LightningDataModule):
             raise AttributeError(
                 f"Dataset does not have a property '{property}' (must be a @property)."
             )
+        
+    def get_dataset(self, key: Stage) -> DatasetBase:
+        """
+        Retrieve the dataset for the specified key.
+
+        Args:
+            key (str): The key for which to retrieve the dataset ('train', 'val', 'test', 'predict').
+
+        Returns:
+            Any: The dataset corresponding to the specified key.
+
+        Raises:
+            ValueError: If the dataset for the specified key is not initialized.
+        """
+        dataset = getattr(self, f"{key}_dataset", None)
+        if dataset is None:
+            raise ValueError(f"{key.capitalize()} dataset is not initialized.")
+        return dataset
+
+    def make_dataloader(self, key: Stage) -> DataLoader:
+        """
+        Create a dataloader for the specified key.
+
+        Args:
+            key (str): The key for which to create the dataloader ('train', 'val', 'test', 'predict').
+
+        Returns:
+            DataLoader: The created dataloader.
+
+        Raises:
+            ValueError: If the dataset for the specified key is not initialized.
+        """
+        return self.dataloader_factory(
+            dataset=self.get_dataset(key), 
+            shuffle=(key == "train")
+        )
 
     ########## Lightning DataModule Methods ##############################################
     # TODO: Optionally, add `prepare_data()` to preprocess datasets and save preprocesssed data to disc.
     # TODO: Optionally, move dataset initialization to `setup()` method to allow for lazy loading.
     def train_dataloader(self):
-        return self._make_dataloader_or_raise("train")
+        return self.make_dataloader("train")
 
     def val_dataloader(self):
-        return self._make_dataloader_or_raise("val")
+        return self.make_dataloader("val")
 
     def test_dataloader(self):
-        return self._make_dataloader_or_raise("test")
+        return self.make_dataloader("test")
 
     def predict_dataloader(self):
-        return self._make_dataloader_or_raise("predict")
+        return self.make_dataloader("predict")
 
     ########### Private Methods ##########################################################
     def _init_datasets(
@@ -122,40 +158,3 @@ class DataModule(L.LightningDataModule):
             raise TypeError(
                 "Data pipeline must output either a DataSplit or a pandas DataFrame"
             )
-        return datasets
-
-    def _get_dataset(self, key: Stage) -> DatasetBase:
-        """
-        Retrieve the dataset for the specified key.
-
-        Args:
-            key (str): The key for which to retrieve the dataset ('train', 'val', 'test', 'predict').
-
-        Returns:
-            Any: The dataset corresponding to the specified key.
-
-        Raises:
-            ValueError: If the dataset for the specified key is not initialized.
-        """
-        dataset = self.datasets.get(key)
-        if dataset is None:
-            raise ValueError(f"{key.capitalize()} dataset is not initialized.")
-        return dataset
-
-    def _make_dataloader_or_raise(self, key: Stage) -> DataLoader:
-        """
-        Create a dataloader for the specified key or raise an error if the dataset is not initialized.
-
-        Args:
-            key (str): The key for which to create the dataloader ('train', 'val', 'test', 'predict').
-
-        Returns:
-            DataLoader: The created dataloader. If the key is 'train', the dataloader will shuffle the data.
-
-        Raises:
-            ValueError: If the dataset for the specified key is not initialized.
-        """
-        return self.dataloader_factory(
-            dataset=self._get_dataset(key), 
-            shuffle=(key == "train")
-        )

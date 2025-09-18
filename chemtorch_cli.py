@@ -1,9 +1,11 @@
+import logging
 import os
 import logging
 from pathlib import Path
-from typing import List
+from typing import Any, List, cast, Callable, Optional
 
 import hydra
+import pandas as pd
 import torch
 import lightning as L
 import wandb
@@ -12,18 +14,16 @@ from omegaconf import DictConfig, OmegaConf
 from chemtorch.core.data_module import DataModule, Stage
 from chemtorch.utils.cli import cli_chemtorch_logo
 from chemtorch.utils.hydra import safe_instantiate
-from chemtorch.utils.misc import save_predictions
-
-OmegaConf.register_new_resolver("eval", eval)
+from chemtorch.utils.misc import handle_prediction_saving
 
 ROOT_DIR = Path(__file__).parent
 
+OmegaConf.register_new_resolver("eval", eval)
 
 @hydra.main(version_base=None, config_path="conf", config_name="base")
 def main(cfg: DictConfig):
     cli_chemtorch_logo()
-    
-    # Configure logging
+
     logging.basicConfig(
         level=logging.INFO,
         format='%(levelname)s: %(message)s'
@@ -112,10 +112,10 @@ def main(cfg: DictConfig):
             stages.append("test")
         if "predict" in cfg.tasks:
             stages.append("predict")
-        for stage in stages:
-            precompute_time = data_module.get_dataset_property(stage, "precompute_time")
+        for dataset_key in stages:
+            precompute_time = data_module.get_dataset_property(dataset_key, "precompute_time")
             wandb.log(
-                {f"{stage}_precompute_time": precompute_time},
+                {f"{dataset_key}_precompute_time": precompute_time},
                 commit=False,
             )
 
@@ -168,33 +168,55 @@ def main(cfg: DictConfig):
     routine_factory = safe_instantiate(cfg.routine)
     routine: L.LightningModule = routine_factory(model=model)
 
+    # load model checkpoint if specified
     ckpt_path = None
     if cfg.load_model:
         if cfg.ckpt_path is None:
             raise ValueError("ckpt_path must be provided when load_model is True.")
         ckpt_path = cfg.ckpt_path
 
+    ckpt_for_inference = ckpt_path
+
     ###### EXECUTION ##########################################################
     if "fit" in cfg.tasks:
         trainer.fit(routine, datamodule=data_module, ckpt_path=ckpt_path)
-    if "validate" in cfg.tasks:
-        trainer.validate(routine, datamodule=data_module, ckpt_path=ckpt_path)
-    if "test" in cfg.tasks:
-        trainer.test(routine, datamodule=data_module, ckpt_path=ckpt_path)
-    if "predict" in cfg.tasks:
-        preds = trainer.predict(routine, datamodule=data_module, ckpt_path=ckpt_path)
+        # If the model is continued to be trained from the given checkpoint then use the latest
+        # model after trainer.fit() for validate, test, predict by passing ckpt_path=None
+        ckpt_for_inference = None
 
-        if preds:
-            # Save predictions to a copy of the original dataframe
-            predict_dataset = data_module._get_dataset("predict")
-            predict_df = predict_dataset.dataframe.copy()
-            save_predictions(
-                preds=preds,
-                reference_df=predict_df,
-                save_path=cfg.prediction_save_path,
-                log_func=wandb.log if cfg.log else None,
-                root_dir=ROOT_DIR,
-            )
+    if "validate" in cfg.tasks:
+        trainer.validate(routine, datamodule=data_module, ckpt_path=ckpt_for_inference)
+
+    if "test" in cfg.tasks:
+        trainer.test(routine, datamodule=data_module, ckpt_path=ckpt_for_inference)
+
+    if "predict" in cfg.tasks and not (cfg.predictions_save_path or cfg.predictions_save_dir):
+        raise ValueError("Set either `predictions_save_path` or `predictions_save_dir` in the config to save the predictions.")
+
+    ###### INFERENCE AND PREDICTION SAVING #####################################
+    # Create closures to encapsulate the prediction generation logic
+    def get_preds_func(dataset_key: str) -> List[Any]:
+        stage_key = cast(Stage, dataset_key)
+        dataloader = data_module.make_dataloader(stage_key)
+        preds = trainer.predict(routine, ckpt_path=ckpt_for_inference, dataloaders=dataloader)
+        return preds if preds else []
+    
+    def get_reference_df_func(dataset_key: str) -> pd.DataFrame:
+        stage_key = cast(Stage, dataset_key)
+        dataset = data_module.get_dataset(stage_key)
+        return dataset.dataframe.copy()
+
+    handle_prediction_saving(
+        get_preds_func=get_preds_func,
+        get_reference_df_func=get_reference_df_func,
+        predictions_save_dir=cfg.predictions_save_dir,
+        predictions_save_path=cfg.predictions_save_path,
+        save_predictions_for=cfg.save_predictions_for,
+        tasks=cfg.tasks,
+        log_func=wandb.log if cfg.log else None,
+        root_dir=ROOT_DIR,
+    )
+
 
     if cfg.log:
         wandb.finish()
