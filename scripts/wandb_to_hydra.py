@@ -58,6 +58,14 @@ def preprocess_wandb_config(run_id, run_name, group_name, project_dir):
     hydra_config["name"] = run_name
     hydra_config["group_name"] = group_name
 
+    # Add Hydra configuration to prevent creating additional output directories
+    hydra_config["hydra"] = {
+        "output_subdir": None,
+        "run": {
+            "dir": "."
+        }
+    }
+
     # Save the modified config to the saved_configs directory
     output_dir = Path(project_dir) / "conf" / "saved_configs" / group_name
     output_dir.mkdir(parents=True, exist_ok=True)
