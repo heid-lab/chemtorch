@@ -159,7 +159,17 @@ def handle_prediction_saving(
                 normalized_save_predictions_for = list(available_partitions)
 
         # For single partition scenarios (predict, validate, test), use predictions_save_path
-        if (tasks and not "fit" in tasks and len(tasks) == 1) or (save_predictions_for and len(normalized_save_predictions_for) == 1 and "all" not in (save_predictions_for if isinstance(save_predictions_for, list) else [save_predictions_for])):
+        is_single_task = tasks and "fit" not in tasks and len(tasks) == 1
+        is_single_partition = (
+            save_predictions_for
+            and len(normalized_save_predictions_for) == 1
+            and "all" not in (
+                save_predictions_for
+                if isinstance(save_predictions_for, list)
+                else [save_predictions_for]
+            )
+        )
+        if is_single_task or is_single_partition:
             if save_predictions_for:
                 dataset_key = normalized_save_predictions_for[0] if normalized_save_predictions_for[0] != "validate" else "val"
                 save_predictions_for_list = [dataset_key]
