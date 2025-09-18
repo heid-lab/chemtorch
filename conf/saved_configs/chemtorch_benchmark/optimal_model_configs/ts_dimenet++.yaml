@@ -11,16 +11,17 @@ data_pipeline:
     data_path: data/rdb7/barriers/forward/data.csv
   data_splitter:
     _target_: chemtorch.components.data_pipeline.data_splitter.RatioSplitter
-    test_ratio: 0.05
-    train_ratio: 0.9
-    val_ratio: 0.05
+    save_path: null
+    test_ratio: 0.1
+    train_ratio: 0.8
+    val_ratio: 0.1
 dataloader:
   _partial_: true
   _target_: torch_geometric.loader.DataLoader
-  batch_size: 64
+  batch_size: 32
   num_workers: 3
   pin_memory: true
-dataloader.batch_size: 64
+dataloader.batch_size: 32
 dataset:
   _partial_: true
   _target_: chemtorch.components.dataset.GraphDataset
@@ -31,15 +32,15 @@ dataset:
     _target_: chemtorch.components.representation.graph.ts_3d_graph.TS3DGraph
     root_dir: data/rdb7/geometries/forward
   subsample: null
-group_name: chemtorch_benchmark
+group_name: chemtorch_benchmark/optimal_model_configs
 load_model: false
 log: true
-mean: 80.0197840370819
+mean: 80.0102253144654
 model:
   _target_: chemtorch.components.model.dimenetplusplus.DimeNetPlusPlus
   act: swish
   basis_emb_size: 8
-  cutoff: 5.853352853669115
+  cutoff: 5.635654239463599
   envelope_exponent: 5
   head:
     _target_: chemtorch.components.model.mlp.MLP
@@ -62,7 +63,7 @@ model:
   out_channels: 128
   out_emb_channels: 256
   output_initializer: zeros
-model.cutoff: 5.853352853669115
+model.cutoff: 5.635654239463599
 model.hidden_channels: 256
 model.num_blocks: 6
 name: ts_dimenet++
@@ -117,21 +118,21 @@ routine:
     capturable: false
     eps: 1.0e-08
     foreach: null
-    lr: 0.00011734829942519112
+    lr: 0.0001210446176830952
     maximize: false
-    weight_decay: 4.364038561700306e-06
+    weight_decay: 4.540637426271681e-06
   standardizer:
     _target_: chemtorch.utils.Standardizer
-    mean: 80.0197840370819
-    std: 21.768124690338663
-routine.optimizer.lr: 0.00011734829942519112
-routine.optimizer.weight_decay: 4.364038561700306e-06
-run_name: ts_dimenet++
+    mean: 80.0102253144654
+    std: 21.684054853890036
+routine.optimizer.lr: 0.0001210446176830952
+routine.optimizer.weight_decay: 4.540637426271681e-06
+run_name: null
 runtime_args_from_dataset:
 - mean
 - std
 seed: 0
-std: 21.768124690338663
+std: 21.684054853890036
 tasks:
 - fit
 - test
@@ -144,15 +145,15 @@ trainer:
     mode: min
     monitor: val_loss_epoch
     patience: 30
+  checkpoint_callback:
+    _target_: lightning.pytorch.callbacks.ModelCheckpoint
+    dirpath: ./lightning_logs/rdb7_fwd_xyz/dimenet++/seed_0_2025-09-17_16-33-37/checkpoints
+    monitor: val_loss
+    save_last: true
+    save_top_k: 1
   default_root_dir: ./lightning_logs
+  enable_checkpointing: false
   gradient_clip_val: 1.0
   logger:
     _target_: lightning.pytorch.loggers.WandbLogger
   max_epochs: 100
-  enable_checkpointing: true
-  checkpoint_callback:
-    _target_: lightning.pytorch.callbacks.ModelCheckpoint
-    dirpath: ${trainer.default_root_dir}/${hydra:runtime.choices.data_pipeline}/${hydra:runtime.choices.model}/seed_${seed}_${now:%Y-%m-%d_%H-%M-%S}/checkpoints
-    monitor: val_loss
-    save_top_k: 1
-    save_last: true
