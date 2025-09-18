@@ -209,10 +209,10 @@ def main(cfg: DictConfig):
     handle_prediction_saving(
         get_preds_func=get_preds_func,
         get_reference_df_func=get_reference_df_func,
-        predictions_save_dir=cfg.predictions_save_dir,
-        predictions_save_path=cfg.predictions_save_path,
-        save_predictions_for=cfg.save_predictions_for,
-        tasks=cfg.tasks,
+        predictions_save_dir=cfg.get("predictions_save_dir", None),
+        predictions_save_path=cfg.get("predictions_save_path", None),
+        save_predictions_for=cfg.get("save_predictions_for", None),
+        tasks=cfg.get("tasks", None),
         log_func=wandb.log if cfg.log else None,
         root_dir=ROOT_DIR,
     )

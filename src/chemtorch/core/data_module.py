@@ -29,7 +29,7 @@ class DataModule(L.LightningDataModule):
     def __init__(
         self,
         data_pipeline: Callable[..., DataSplit | pd.DataFrame],
-        dataset_factory: Callable[[pd.DataFrame], DatasetBase],
+        dataset_factory: Callable[[pd.DataFrame, Literal["train", "val", "test", "predict"]], DatasetBase],
         dataloader_factory: Callable[[DatasetBase, bool], DataLoader],  # updated signature
     ):
         """
@@ -38,6 +38,8 @@ class DataModule(L.LightningDataModule):
         Args:
             data_pipeline (Callable): A callable that returns a DataSplit or a pandas DataFrame.
             dataset_factory (Callable): A callable that creates datasets from pandas DataFrames.
+                It should accept a pandas DataFrame and a string indicating the stage
+                ('train', 'val', 'test', 'predict') and return a DatasetBase instance.
             dataloader_factory (Callable): A callable that creates DataLoader instances from datasets.
                 It should accept a dataset and a boolean indicating whether to shuffle the data.
 
@@ -45,7 +47,7 @@ class DataModule(L.LightningDataModule):
             TypeError: If the output of the data pipeline is not a DataSplit or a pandas DataFrame.
         """
         super().__init__()
-        self.datasets = self._init_datasets(data_pipeline, dataset_factory)
+        self._init_datasets(data_pipeline, dataset_factory)
         self.dataloader_factory = dataloader_factory
 
     def get_dataset_property(self, key: Stage, property: str) -> Any:
@@ -147,13 +149,13 @@ class DataModule(L.LightningDataModule):
         # being named 'train_dataset', 'val_dataset', 'test_dataset', and 'predict_dataset'.
         data = data_pipeline()
         if isinstance(data, DataSplit):
-            datasets = {
-                "train": dataset_factory(data.train, "train"),
-                "val": dataset_factory(data.val, "val"),
-                "test": dataset_factory(data.test, "test"),
-            }
+            # Create and assign datasets to instance attributes
+            self.train_dataset = dataset_factory(data.train, "train")
+            self.val_dataset = dataset_factory(data.val, "val")
+            self.test_dataset = dataset_factory(data.test, "test")
         elif isinstance(data, pd.DataFrame):
-            datasets = {"predict": dataset_factory(data, "predict")}
+            # Create and assign predict dataset to instance attribute
+            self.predict_dataset = dataset_factory(data, "predict")
         else:
             raise TypeError(
                 "Data pipeline must output either a DataSplit or a pandas DataFrame"
