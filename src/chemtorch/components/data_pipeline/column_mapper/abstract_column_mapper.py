@@ -6,7 +6,7 @@ import pandas as pd
 from chemtorch.utils import DataSplit
 
 
-class ColumnMapper(ABC):
+class AbstractColumnMapper(ABC):
     @abstractmethod
     def __call__(
         self, data: Union[pd.DataFrame, DataSplit]

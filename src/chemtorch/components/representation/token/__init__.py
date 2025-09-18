@@ -1,1 +1,1 @@
-from .simple_token_representation import SimpleTokenRepresentation
+from .token_representation_base import TokenRepresentationBase

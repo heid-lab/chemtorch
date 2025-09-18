@@ -9,7 +9,7 @@ from chemtorch.components.data_pipeline.data_source import (
     SingleCSVSource,
 )
 from chemtorch.components.data_pipeline.data_splitter import (
-    DataSplitter,
+    AbstractDataSplitter,
     RatioSplitter,
 )
 from chemtorch.components.data_pipeline.simple_data_pipeline import SimpleDataPipeline
@@ -21,7 +21,7 @@ class NoOpMockSource(DataSource):
         return None  # Return invalid data
 
 
-class NoOpMockSplitter(DataSplitter):
+class NoOpMockSplitter(AbstractDataSplitter):
     def forward(self, raw):
         return None  # Return invalid data
 

@@ -6,7 +6,6 @@ defaults:
   - /dataloader: torch_dataloader
   - /model: han
   - /routine: classification
-  - /routine/loss: cross_entropy
   - _self_
 
 # LOGGING (Weight and Biases)

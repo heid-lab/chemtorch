@@ -88,7 +88,7 @@ def main(cfg: DictConfig):
                 ),
                 merge=True,
             )
-
+    
     run_name = getattr(cfg, "run_name", None)
     OmegaConf.resolve(cfg)
     resolved_cfg = OmegaConf.to_container(cfg, resolve=True)

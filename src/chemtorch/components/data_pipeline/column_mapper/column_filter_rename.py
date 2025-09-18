@@ -8,11 +8,11 @@ except ImportError:
     # Python < 3.12
     from typing_extensions import override  # type: ignore
 
-from chemtorch.components.data_pipeline.column_mapper.column_mapper import ColumnMapper
+from chemtorch.components.data_pipeline.column_mapper.abstract_column_mapper import AbstractColumnMapper
 from chemtorch.utils import DataSplit
 
 
-class ColumnFilterAndRename(ColumnMapper):
+class ColumnFilterAndRename(AbstractColumnMapper):
     """
     A pipeline component that filters and renames columns in a DataFrame
     based on provided column mappings.

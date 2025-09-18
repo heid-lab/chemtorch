@@ -24,9 +24,16 @@ The code is provided under MIT license, making it freely available for both acad
 
 ## Installation
 
+First clone this repo and navigate to it:
+```bash
+git clone https://github.com/heid-lab/chemtorch.git
+cd chemtorch
+```
+Then follow the instructions below to install ChemTorch's dependencies using you package manager of choice.
+
 ### Via conda
 
-```
+```bash
 conda create -n chemtorch python=3.10 && \
 conda activate chemtorch && \
 pip install rdkit numpy==1.26.4 scikit-learn pandas && \
@@ -40,19 +47,19 @@ pip install -e .
 ```
 
 For GPU usage
-```
+```bash
 pip install torch-scatter torch-sparse -f https://data.pyg.org/whl/torch-${TORCH}+${CUDA}.html
 ```
 
 ### Via uv
 
 For installing with `uv`, first install `torch` and `uv`, for example via
-```
+```bash
 pip install torch uv
 ```
 
 Then run
-```
+```bash
 uv sync -n
 uv add torch_scatter torch_sparse torch_cluster torch_spline_conv torch_geometric  --no-build-isolation -n
 ```
@@ -75,29 +82,29 @@ For a short demo, see `scripts/demo.ipynb`.
 To run the experiments, you can use the following commands:
 
 Graph-based: GNN + CGR
-```
+```bash
 python chemtorch_cli.py +experiment=graph dataset.subsample=0.05
 ```
 Token-based: HAN + Tokenized SMILES
-```
+```bash
 python chemtorch_cli.py +experiment=token dataset.subsample=0.05
 ```
 Fingerprint-based: MLP + DRFP
-```
+```bash
 python chemtorch_cli.py +experiment=fingerprint dataset.subsample=0.001
 ```
 3D-based: DimeNetplusplus + XYZ coordinates
-```
+```bash
 python chemtorch_cli.py +experiment=xyz dataset.subsample=0.05
 ```
 
 Using the terminal, you can easily change hyperparameters. For example, to change the dataset:
-``` 
+``` bash
 python chemtorch_cli.py +experiment=graph dataset.subsample=0.05 data_pipeline=sn2
 ```
 
 For simple sweeps, you can:
-```
+```bash
 python chemtorch_cli.py --multirun +experiment=graph dataset.subsample=0.05 data_pipeline=sn2,e2,cycloadd
 ```
 

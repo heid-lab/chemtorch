@@ -1,0 +1,9 @@
+_target_: chemtorch.components.representation.token.token_representation_base.TokenRepresentationBase
+
+defaults:
+  - tokenizer: reaction_tokenizer
+
+vocab_path: resources/vocab.txt
+max_sentence_length: 400
+pad_token: "[PAD]"
+unk_token: "[UNK]"

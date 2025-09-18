@@ -2,9 +2,9 @@ from typing import Optional
 
 import pandas as pd
 
-from chemtorch.components.data_pipeline.column_mapper.column_mapper import ColumnMapper
+from chemtorch.components.data_pipeline.column_mapper.abstract_column_mapper import AbstractColumnMapper
 from chemtorch.components.data_pipeline.data_source.data_source import DataSource
-from chemtorch.components.data_pipeline.data_splitter.data_splitter import DataSplitter
+from chemtorch.components.data_pipeline.data_splitter.abstract_data_splitter import AbstractDataSplitter
 from chemtorch.utils import DataSplit
 
 
@@ -25,8 +25,8 @@ class SimpleDataPipeline:
     def __init__(
         self,
         data_source: DataSource,
-        column_mapper: ColumnMapper,
-        data_splitter: Optional[DataSplitter] = None,
+        column_mapper: AbstractColumnMapper,
+        data_splitter: Optional[AbstractDataSplitter] = None,
     ):
         """
         Initializes the SimpleDataPipeline.
@@ -35,7 +35,7 @@ class SimpleDataPipeline:
             data_source (DataSource): The component responsible for loading the initial data.
             column_mapper (ColumnMapper): The component for transforming columns.
                                               It should handle both pd.DataFrame and DataSplit inputs.
-            data_splitter (Optional[DataSplitter]): The component for splitting a single DataFrame
+            data_splitter (Optional[AbstractDataSplitter]): The component for splitting a single DataFrame
                                                     into train, validation, and test sets.
                                                     This is not used if data_source already provides split data.
         """

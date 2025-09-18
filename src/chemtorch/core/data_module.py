@@ -1,13 +1,29 @@
+from asyncio import Protocol
 import builtins
 from typing import Any, Callable, Literal
 import lightning as L
 import pandas as pd
 from torch.utils.data import Dataset, DataLoader
 
+from chemtorch.components.dataset.abstact_dataset import AbstractDataset
 from chemtorch.components.dataset.dataset_base import DatasetBase
 from chemtorch.utils.types import DataSplit
 
 Stage = Literal["train", "val", "test", "predict"]
+
+
+class DatasetOperationProtocol(Protocol):
+    def __call__(self, dataset: AbstractDataset) -> None:
+        """
+        Apply an operation to the dataset and return a new dataset.
+        
+        Args:
+            dataset: The dataset to apply the operation on.
+        
+        Returns:
+            A new dataset after applying the operation.
+        """
+        pass
 
 class DataModule(L.LightningDataModule):
     def __init__(
@@ -29,7 +45,7 @@ class DataModule(L.LightningDataModule):
             TypeError: If the output of the data pipeline is not a DataSplit or a pandas DataFrame.
         """
         super().__init__()
-        self._init_datasets(data_pipeline, dataset_factory)
+        self.datasets = self._init_datasets(data_pipeline, dataset_factory)
         self.dataloader_factory = dataloader_factory
 
     def get_dataset_property(self, key: Stage, property: str) -> Any:
@@ -131,13 +147,14 @@ class DataModule(L.LightningDataModule):
         # being named 'train_dataset', 'val_dataset', 'test_dataset', and 'predict_dataset'.
         data = data_pipeline()
         if isinstance(data, DataSplit):
-            self.train_dataset = dataset_factory(data.train)
-            self.val_dataset = dataset_factory(data.val)
-            self.test_dataset = dataset_factory(data.test)
+            datasets = {
+                "train": dataset_factory(data.train),
+                "val": dataset_factory(data.val),
+                "test": dataset_factory(data.test),
+            }
         elif isinstance(data, pd.DataFrame):
-            self.predict_dataset = dataset_factory(data)
+            datasets = {"predict": dataset_factory(data)}
         else:
             raise TypeError(
                 "Data pipeline must output either a DataSplit or a pandas DataFrame"
             )
-            
