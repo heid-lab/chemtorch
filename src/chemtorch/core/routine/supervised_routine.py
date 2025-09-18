@@ -222,6 +222,37 @@ class SupervisedRoutine(L.LightningModule):
     def test_step(self, batch: Tuple[torch.Tensor, torch.Tensor]) -> torch.Tensor:
         return self._step(batch, split="test")
 
+    def predict_step(self, batch: Union[torch.Tensor, Tuple[torch.Tensor, torch.Tensor]], batch_idx: int, dataloader_idx: int = 0) -> torch.Tensor:
+        """
+        Perform a prediction step.
+        
+        This method handles batch unpacking for prediction, supporting both:
+        1. Batches with targets: (inputs, targets) - extracts only inputs for prediction
+        2. Batches without targets: inputs only - uses directly
+
+        This allows calling `trainer.predict()` with both training, validation, testing
+        dataloaders which contain targets, as well as prediction dataloaders which contain
+        just the inputs.
+        Otherwise, an error would be raised if the dataloader yields batches with targets.
+        
+        Args:
+            batch: Either a tuple (inputs, targets) or just inputs
+            batch_idx: Index of the current batch
+            dataloader_idx: Index of the current dataloader
+            
+        Returns:
+            torch.Tensor: Model predictions
+        """
+        # Handle both cases: batch with targets and batch without targets
+        if isinstance(batch, (tuple, list)) and len(batch) == 2:
+            # Batch format: (inputs, targets) - extract only inputs for prediction
+            inputs, _ = batch
+        else:
+            # Batch format: inputs only - use directly
+            inputs = batch
+            
+        return self.forward(inputs)
+
     ########### Private Methods ##########################################################
     def _step(
         self,

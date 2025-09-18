@@ -32,7 +32,8 @@ load_model: true
 ckpt_path: "lightning_logs/rgd1/dmpnn/seed_0_2025-08-13_10-28-40/checkpoints/epoch=58-step=15989.ckpt"
 
 # Save predictions
-prediction_save_path: "../predictions.csv"
+predictions_save_path: "../predictions.csv"
+
 
 
 # Don't create a new standardizer (the standardizer of the training set is loaded from the checkpoint)
