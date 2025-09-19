@@ -154,7 +154,7 @@ trainer:
     save_last: true
     save_top_k: 1
   default_root_dir: ./lightning_logs
-  enable_checkpointing: false
+  enable_checkpointing: true
   gradient_clip_val: 1.0
   logger:
     _target_: lightning.pytorch.loggers.WandbLogger

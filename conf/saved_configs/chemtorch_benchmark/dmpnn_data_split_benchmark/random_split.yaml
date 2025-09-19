@@ -187,7 +187,7 @@ trainer:
   logger:
     _target_: lightning.pytorch.loggers.WandbLogger
   max_epochs: 100
-  enable_checkpointing: false
+  enable_checkpointing: true
   checkpoint_callback:
     _target_: lightning.pytorch.callbacks.ModelCheckpoint
     dirpath: ${trainer.default_root_dir}/chemtorch_paper/rdb7_splits_dmpnn/random/seed_${seed}_${now:%Y-%m-%d_%H-%M-%S}/checkpoints
