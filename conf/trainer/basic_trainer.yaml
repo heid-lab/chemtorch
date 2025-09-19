@@ -23,7 +23,8 @@ callbacks:
 # If enable_checkpointing is true, this callback will be added to the callbacks list at runtime
 checkpoint_callback:
   _target_: lightning.pytorch.callbacks.ModelCheckpoint
-  # Checkpoints are saved to lightning_logs/<data_pipeline>/<model>/seed_<seed>_<timestamp>/checkpoints
+  # Checkpoints are saved to lightning_logs/<data_pipeline>/<model>/seed_<seed>_<timestamp>/checkpoints by default
+  # Users should override this with a more meaningful path for their use case
   dirpath: ${trainer.default_root_dir}/${hydra:runtime.choices.data_pipeline}/${hydra:runtime.choices.model}/seed_${seed}_${now:%Y-%m-%d_%H-%M-%S}/checkpoints
   monitor: val_loss
   save_top_k: 1

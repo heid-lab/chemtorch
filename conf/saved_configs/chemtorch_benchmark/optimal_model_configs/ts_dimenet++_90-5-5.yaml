@@ -4,63 +4,70 @@ data_pipeline:
   column_mapper:
     _target_: chemtorch.components.data_pipeline.column_mapper.ColumnFilterAndRename
     label: dE0
+    reaction_dir: rxn
     smiles: smiles
   data_source:
     _target_: chemtorch.components.data_pipeline.data_source.SingleCSVSource
     data_path: data/rdb7/barriers/forward/data.csv
   data_splitter:
     _target_: chemtorch.components.data_pipeline.data_splitter.RatioSplitter
-    save_path: null
-    test_ratio: 0.1
-    train_ratio: 0.8
-    val_ratio: 0.1
+    test_ratio: 0.05
+    train_ratio: 0.9
+    val_ratio: 0.05
 dataloader:
   _partial_: true
-  _target_: torch.utils.data.DataLoader
+  _target_: torch_geometric.loader.DataLoader
   batch_size: 64
   num_workers: 3
   pin_memory: true
 dataloader.batch_size: 64
 dataset:
   _partial_: true
-  _target_: chemtorch.components.dataset.token_dataset.TokenDataset
+  _target_: chemtorch.components.dataset.GraphDataset
   cache: true
-  integer_labels: false
   max_cache_size: null
   precompute_all: true
   representation:
-    _target_: chemtorch.components.representation.token.token_representation_base.TokenRepresentationBase
-    max_sentence_length: 400
-    pad_token: '[PAD]'
-    tokenizer:
-      _target_: chemtorch.components.representation.token.tokenizer.reaction_tokenizer.ReactionTokenizer
-      molecule_tokenizer:
-        _target_: chemtorch.components.representation.token.tokenizer.molecule_tokenizer.smiles_symbol_tokenizer.SmilesSymbolTokenizer
-        vocab_path: resources/base_vocab.txt
-        pad_token: "[PAD]"
-        unk_token: "[UNK]"
-    unk_token: '[UNK]'
+    _target_: chemtorch.components.representation.graph.ts_3d_graph.TS3DGraph
+    root_dir: data/rdb7/geometries/forward
   subsample: null
 group_name: chemtorch_benchmark
 load_model: false
 log: true
-mean: 80.0102253144654
+mean: 80.0197840370819
 model:
-  _target_: chemtorch.components.model.han.HAN
-  class_num: 1
-  dropout: 0.1361373846961515
-  embedding_hidden_channels: 256
-  embedding_in_channels: 604
-  gru_hidden_channels: 256
-model.dropout: 0.1361373846961515
-model.embedding_hidden_channels: 256
-model.gru_hidden_channels: 256
-name: atom_han
-num_classes: 1
+  _target_: chemtorch.components.model.dimenetplusplus.DimeNetPlusPlus
+  act: swish
+  basis_emb_size: 8
+  cutoff: 5.853352853669115
+  envelope_exponent: 5
+  head:
+    _target_: chemtorch.components.model.mlp.MLP
+    act: relu
+    dropout: 0.02
+    hidden_size: 256
+    hidden_sizey: 128
+    in_channels: 128
+    num_hidden_layers: 1
+    out_channels: 1
+  hidden_channels: 256
+  int_emb_size: 64
+  max_num_neighbors: 32
+  num_after_skip: 2
+  num_before_skip: 1
+  num_blocks: 6
+  num_output_layers: 3
+  num_radial: 6
+  num_spherical: 7
+  out_channels: 128
+  out_emb_channels: 256
+  output_initializer: zeros
+model.cutoff: 5.853352853669115
+model.hidden_channels: 256
+model.num_blocks: 6
+name: ts_dimenet++
 parameter_limit: null
 prediction_save_path: null
-predictions_save_dir: predictions/chemtorch_paper/rdb7_model_benchmark/atom_han/seed_${seed}_${now:%Y-%m-%d_%H-%M-%S}
-save_predictions_for: [train, test]
 project_name: chemtorch
 routine:
   _convert_: object
@@ -110,22 +117,21 @@ routine:
     capturable: false
     eps: 1.0e-08
     foreach: null
-    lr: 0.0006884302350655184
+    lr: 0.00011734829942519112
     maximize: false
-    weight_decay: 0.0023109641884162787
+    weight_decay: 4.364038561700306e-06
   standardizer:
     _target_: chemtorch.utils.Standardizer
-    mean: 80.0102253144654
-    std: 21.684054853890036
-routine.optimizer.lr: 0.0006884302350655184
-routine.optimizer.weight_decay: 0.0023109641884162787
-run_name: atom_han
+    mean: 80.0197840370819
+    std: 21.768124690338663
+routine.optimizer.lr: 0.00011734829942519112
+routine.optimizer.weight_decay: 4.364038561700306e-06
+run_name: ts_dimenet++
 runtime_args_from_dataset:
-- vocab_size
 - mean
 - std
 seed: 0
-std: 21.684054853890036
+std: 21.768124690338663
 tasks:
 - fit
 - test
@@ -146,8 +152,7 @@ trainer:
   enable_checkpointing: false
   checkpoint_callback:
     _target_: lightning.pytorch.callbacks.ModelCheckpoint
-    dirpath: ${trainer.default_root_dir}/chemtorch_paper/rdb7_model_benchmark/atom_han/seed_${seed}_${now:%Y-%m-%d_%H-%M-%S}/checkpoints
+    dirpath: ${trainer.default_root_dir}/chemtorch_paper/rdb7_model_benchmark/ts_dimenet++_90-5-5/seed_${seed}_${now:%Y-%m-%d_%H-%M-%S}/checkpoints
     monitor: val_loss
     save_top_k: 1
     save_last: true
-vocab_size: 604

@@ -69,6 +69,8 @@ model.num_blocks: 6
 name: ts_dimenet++
 parameter_limit: null
 prediction_save_path: null
+predictions_save_dir: predictions/chemtorch_paper/rdb7_model_benchmark/ts_dimenet++/seed_${seed}_${now:%Y-%m-%d_%H-%M-%S}
+save_predictions_for: [train, test]
 project_name: chemtorch
 routine:
   _convert_: object
@@ -147,7 +149,7 @@ trainer:
     patience: 30
   checkpoint_callback:
     _target_: lightning.pytorch.callbacks.ModelCheckpoint
-    dirpath: ./lightning_logs/rdb7_fwd_xyz/dimenet++/seed_0_2025-09-17_16-33-37/checkpoints
+    dirpath: ${trainer.default_root_dir}/chemtorch_paper/rdb7_model_benchmark/ts_dimenet++/seed_${seed}_${now:%Y-%m-%d_%H-%M-%S}/checkpoints
     monitor: val_loss
     save_last: true
     save_top_k: 1
