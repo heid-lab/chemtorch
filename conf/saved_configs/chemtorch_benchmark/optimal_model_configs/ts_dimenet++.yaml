@@ -129,7 +129,7 @@ routine:
     std: 21.684054853890036
 routine.optimizer.lr: 0.0001210446176830952
 routine.optimizer.weight_decay: 4.540637426271681e-06
-run_name: null
+run_name: ts_dimenet++
 runtime_args_from_dataset:
 - mean
 - std
