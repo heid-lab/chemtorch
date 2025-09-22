@@ -57,7 +57,13 @@ class TestPreprocessWandbConfig:
             "batch_size": 64,
             "epochs": 100,
             "name": "test_run",
-            "group_name": "test_group"
+            "group_name": "test_group",
+            "hydra": {
+                "output_subdir": None,
+                "run": {
+                    "dir": "."
+                }
+            }
         }
 
     def teardown_method(self):
@@ -232,7 +238,13 @@ class TestPreprocessWandbConfig:
             },
             "batch_size": 64,
             "name": "simple_run",
-            "group_name": "test_group"
+            "group_name": "test_group",
+            "hydra": {
+                "output_subdir": None,
+                "run": {
+                    "dir": "."
+                }
+            }
         }
         assert result == expected
 
@@ -269,7 +281,13 @@ class TestPreprocessWandbConfig:
             "batch_size": 64,
             "optimizer": {"lr": 0.001},
             "name": "mixed_run",
-            "group_name": "test_group"
+            "group_name": "test_group",
+            "hydra": {
+                "output_subdir": None,
+                "run": {
+                    "dir": "."
+                }
+            }
         }
         assert result == expected
 
@@ -296,7 +314,13 @@ class TestPreprocessWandbConfig:
         # Should just have name and group_name
         expected = {
             "name": "empty_config",
-            "group_name": "test_group"
+            "group_name": "test_group",
+            "hydra": {
+                "output_subdir": None,
+                "run": {
+                    "dir": "."
+                }
+            }
         }
         assert result == expected
 
@@ -354,7 +378,13 @@ class TestPreprocessWandbConfig:
                 }
             },
             "name": "deep_run",
-            "group_name": "test_group"
+            "group_name": "test_group",
+            "hydra": {
+                "output_subdir": None,
+                "run": {
+                    "dir": "."
+                }
+            }
         }
         assert result == expected
 
