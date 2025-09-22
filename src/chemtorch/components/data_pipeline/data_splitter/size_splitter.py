@@ -2,6 +2,8 @@ import math
 import pandas as pd
 from typing import List
 
+from chemtorch.components.data_pipeline.data_splitter.ratio_splitter import RatioSplitter
+
 try:
     # Python ≥ 3.12
     from typing import override  # type: ignore
@@ -9,12 +11,16 @@ except ImportError:
     # Python < 3.12
     from typing_extensions import override  # type: ignore
 
-from chemtorch.components.data_pipeline.data_splitter.data_splitter_base import DataSplitterBase
 from chemtorch.utils import DataSplit
 from chemtorch.utils.atom_mapping import make_mol
 
 
-class SizeSplitter(DataSplitterBase):
+class SizeSplitter(RatioSplitter):
+    """
+    Splits data into training, validation, and test sets based on molecular size (number
+    of heavy atoms). For single molecules, sorts by the number of heavy atoms in each molecule.
+    For reactions, sorts by the sum of heavy atoms in reactants and products.
+    """
     def __init__(
         self,
         train_ratio: float = 0.8,
@@ -33,15 +39,8 @@ class SizeSplitter(DataSplitterBase):
             sort_order (str): 'ascending' or 'descending'.
             save_path (str | None, optional): If provided, saves split indices as pickle file.
         """
-        super().__init__(save_path=save_path)
-        self.train_ratio = train_ratio
-        self.val_ratio = val_ratio
-        self.test_ratio = test_ratio
+        super().__init__(train_ratio=train_ratio, val_ratio=val_ratio, test_ratio=test_ratio, save_path=save_path)
         self.sort_order = sort_order.lower()
-
-        ratio_sum = self.train_ratio + self.val_ratio + self.test_ratio
-        if not math.isclose(ratio_sum, 1.0, rel_tol=1e-9, abs_tol=1e-9):
-            raise ValueError(f"Ratios (train, val, test) must sum to 1.0, got {ratio_sum}")
         if self.sort_order not in ["ascending", "descending"]:
             raise ValueError("sort_order must be 'ascending' or 'descending'.")
 
@@ -64,8 +63,6 @@ class SizeSplitter(DataSplitterBase):
         Returns:
             DataSplit[List[int]]: A named tuple containing the train, val, and test indices.
         """
-        if df.empty:
-            raise ValueError("Input DataFrame is empty.")
         if "smiles" not in df.columns:
             raise ValueError(
                 f"SMILES column 'smiles' not found in DataFrame columns: {df.columns.tolist()}"
@@ -92,8 +89,8 @@ class SizeSplitter(DataSplitterBase):
         df_sorted = df_with_size.loc[sorted_indices]
 
         n_total = len(df_sorted)
-        train_size = round(self.train_ratio * n_total)
-        val_size = round(self.val_ratio * n_total)
+        train_size = int(self.train_ratio * n_total)
+        val_size = int(self.val_ratio * n_total)
 
         train_df = df_sorted.iloc[:train_size].sample(frac=1)
         val_df = df_sorted.iloc[train_size : train_size + val_size].sample(

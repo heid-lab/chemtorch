@@ -1,46 +1,43 @@
 import collections
 from typing import Dict, List
 
+try:
+    # Python ≥ 3.12
+    from typing import override  # type: ignore
+except ImportError:
+    # Python < 3.12
+    from typing_extensions import override  # type: ignore
+
 import torch
 
-from chemtorch.components.preprocessing.tokenizer.abstract_tokenizer import AbstractTokenizer
-from chemtorch.components.preprocessing.tokenizer.tokenizer_defaults import DEFAULT_PAD_TOKEN, DEFAULT_UNK_TOKEN
+from chemtorch.components.representation.token.tokenizer.abstract_tokenizer import AbstractTokenizer
 from chemtorch.components.representation.token.abstract_token_representation import AbstractTokenRepresentation
 
 
 class TokenRepresentationBase(AbstractTokenRepresentation):
     def __init__(
         self,
-        vocab_path: str,
         tokenizer: AbstractTokenizer,
         max_sentence_length: int,
-        pad_token: str = DEFAULT_PAD_TOKEN,
-        unk_token: str = DEFAULT_UNK_TOKEN,
-        *args,
-        **kwargs,
     ):
         self.max_sentence_length = max_sentence_length
-        self.pad_token = pad_token
-        self.unk_token = unk_token
         self.tokenizer = tokenizer
 
-        self._word2id: Dict[str, int] = self._load_vocab(vocab_path)
-        self._id2word: Dict[int, str] = {
-            idx: token for token, idx in self._word2id.items()
-        }
+        self.token_to_id: Dict[str, int] = self._load_vocab(self.tokenizer.vocab_path)
+        self.id_to_token: Dict[int, str] = {idx: token for token, idx in self.token_to_id.items()}
 
-        if self.pad_token not in self._word2id:
+        if self.tokenizer.pad_token not in self.token_to_id:
             raise ValueError(
-                f"Pad token '{self.pad_token}' not found in vocabulary file: {vocab_path}"
+                f"Pad token '{self.tokenizer.pad_token}' not found in vocabulary file: {self.tokenizer.vocab_path}"
             )
-        self.pad_token_id: int = self._word2id[self.pad_token]
+        self.pad_token_id: int = self.token_to_id[self.tokenizer.pad_token]
 
-        if self.unk_token not in self._word2id:
+        if self.tokenizer.unk_token not in self.token_to_id:
             raise ValueError(
-                f"UNK token '{self.unk_token}' not found in vocabulary file: {vocab_path}. "
+                f"UNK token '{self.tokenizer.unk_token}' not found in vocabulary file: {self.tokenizer.vocab_path}. "
                 f"Ensure your vocab contains the UNK token used/defined by your tokenizer."
             )
-        self.unk_token_id: int = self._word2id[self.unk_token]
+        self.unk_token_id: int = self.token_to_id[self.tokenizer.unk_token]
 
     def _load_vocab(self, vocab_file_path: str) -> Dict[str, int]:
         """Loads a vocabulary file into an ordered dictionary."""
@@ -65,11 +62,12 @@ class TokenRepresentationBase(AbstractTokenRepresentation):
         if not isinstance(smiles, str):
             raise TypeError(f"Input 'smiles' must be a string, got {type(smiles)}")
 
-        tokens: List[str] = self.tokenizer.tokenize(smiles)
+        tokens = self.tokenizer.tokenize(smiles)
 
-        token_ids: List[int] = [
-            self._word2id.get(token, self.unk_token_id) for token in tokens
-        ]
+        if smiles and not tokens:
+            tokens = [self.tokenizer.unk_token]
+
+        token_ids = [self.token_to_id.get(token, self.unk_token_id) for token in tokens]
 
         # pad or truncate
         if len(token_ids) < self.max_sentence_length:
@@ -82,19 +80,10 @@ class TokenRepresentationBase(AbstractTokenRepresentation):
 
     def __len__(self) -> int:
         """Returns the size of the vocabulary."""
-        return len(self._word2id)
+        return len(self.token_to_id)
     
     @property 
+    @override
     def vocab_size(self) -> int:
         """Returns the size of the vocabulary."""
-        return len(self._word2id)
-
-    @property
-    def word2id(self) -> Dict[str, int]:
-        """Returns the word to ID mapping."""
-        return self._word2id
-    
-    @property
-    def id2word(self) -> Dict[int, str]:
-        """Returns the ID to word mapping."""
-        return self._id2word
+        return len(self.token_to_id)

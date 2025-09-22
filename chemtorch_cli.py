@@ -1,5 +1,6 @@
 import logging
 import os
+import logging
 from pathlib import Path
 from typing import Any, List, cast, Callable, Optional
 
@@ -91,7 +92,6 @@ def main(cfg: DictConfig):
     
     run_name = getattr(cfg, "run_name", None)
     OmegaConf.resolve(cfg)
-    resolved_cfg = OmegaConf.to_container(cfg, resolve=True)
 
     # print(f"INFO: Final config:\n{OmegaConf.to_yaml(resolved_cfg)}")
 
@@ -101,7 +101,7 @@ def main(cfg: DictConfig):
             project=cfg.project_name,
             group=cfg.group_name,
             name=run_name,
-            config=resolved_cfg,  # type: ignore
+            config=OmegaConf.to_container(cfg, resolve=True),  # type: ignore
         )
         stages: List[Stage] = []
         if "fit" in cfg.tasks:
@@ -132,6 +132,10 @@ def main(cfg: DictConfig):
     # https://lightning.ai/docs/pytorch/stable/accelerators/mps_basic.html
     if torch.backends.mps.is_available() and cfg.trainer.accelerator == "auto":
         cfg.trainer.accelerator = "cpu"
+
+    # Handle conditional checkpointing
+    if cfg.trainer.enable_checkpointing and "checkpoint_callback" in cfg.trainer:
+        cfg.trainer.callbacks.append(cfg.trainer.checkpoint_callback)
 
     trainer: L.Trainer = safe_instantiate(cfg.trainer)
     if not cfg.log:
@@ -205,10 +209,10 @@ def main(cfg: DictConfig):
     handle_prediction_saving(
         get_preds_func=get_preds_func,
         get_reference_df_func=get_reference_df_func,
-        predictions_save_dir=cfg.predictions_save_dir,
-        predictions_save_path=cfg.predictions_save_path,
-        save_predictions_for=cfg.save_predictions_for,
-        tasks=cfg.tasks,
+        predictions_save_dir=cfg.get("predictions_save_dir", None),
+        predictions_save_path=cfg.get("predictions_save_path", None),
+        save_predictions_for=cfg.get("save_predictions_for", None),
+        tasks=cfg.get("tasks", None),
         log_func=wandb.log if cfg.log else None,
         root_dir=ROOT_DIR,
     )

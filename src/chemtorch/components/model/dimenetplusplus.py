@@ -600,13 +600,16 @@ class DimeNet(torch.nn.Module):
         r"""Forward pass.
 
         Args:
-            z (torch.Tensor): Atomic number of each atom with shape
-                :obj:`[num_atoms]`.
-            pos (torch.Tensor): Coordinates of each atom with shape
-                :obj:`[num_atoms, 3]`.
-            batch (torch.Tensor, optional): Batch indices assigning each atom
-                to a separate molecule with shape :obj:`[num_atoms]`.
-                (default: :obj:`None`)
+            batch (Data): A batch of :obj:`torch_geometric.data.Data` objects
+                holding multiple molecular graphs. Must contain the following
+                attributes:
+                    z (torch.Tensor): Atomic number of each atom with shape
+                        :obj:`[num_atoms]`.
+                    pos (torch.Tensor): Coordinates of each atom with shape
+                        :obj:`[num_atoms, 3]`.
+                    batch (torch.Tensor, optional): Batch indices assigning each atom
+                        to a separate molecule with shape :obj:`[num_atoms]`.
+                        (default: :obj:`None`)
         """
         z = batch.z
         pos = batch.pos

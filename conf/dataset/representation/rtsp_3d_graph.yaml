@@ -1,3 +1,0 @@
-_target_: chemtorch.components.representation.graph.rtsp_3d_graph.RTSP3DGraph
-
-root_dir: "data/rdb7/geometries/forward"

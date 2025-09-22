@@ -4,4 +4,7 @@ from .index_splitter import IndexSplitter
 from .ratio_splitter import RatioSplitter
 from .size_splitter import SizeSplitter
 from .target_splitter import TargetSplitter
+from .group_splitter_base import GroupSplitterBase
+from .smiles_group_splitter_base import SMILESGroupSplitterBase
 from .scaffold_splitter import ScaffoldSplitter
+from .reaction_core_splitter import ReactionCoreSplitter

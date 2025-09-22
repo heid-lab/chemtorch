@@ -12,17 +12,6 @@ class AbstractTokenRepresentation(AbstractRepresentation[torch.Tensor], ABC):
     All token representations must implement vocabulary management methods.
     """
     # Abstract properties - subclasses must implement these
-    @property
-    @abstractmethod
-    def word2id(self) -> Dict[str, int]:
-        """Dictionary mapping tokens to IDs."""
-        pass
-    
-    @property
-    @abstractmethod 
-    def id2word(self) -> Dict[int, str]:
-        """Dictionary mapping IDs to tokens."""
-        pass
 
     @property
     @abstractmethod

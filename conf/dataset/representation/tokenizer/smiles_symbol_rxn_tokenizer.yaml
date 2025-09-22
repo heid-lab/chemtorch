@@ -1,0 +1,4 @@
+_target_: chemtorch.components.representation.token.tokenizer.reaction_tokenizer.ReactionTokenizer
+
+defaults:
+  - molecule_tokenizer: smiles_symbol_tokenizer

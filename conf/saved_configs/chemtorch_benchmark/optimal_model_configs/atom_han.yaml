@@ -1,0 +1,153 @@
+ckpt_path: null
+data_pipeline:
+  _target_: chemtorch.components.data_pipeline.SimpleDataPipeline
+  column_mapper:
+    _target_: chemtorch.components.data_pipeline.column_mapper.ColumnFilterAndRename
+    label: dE0
+    smiles: smiles
+  data_source:
+    _target_: chemtorch.components.data_pipeline.data_source.SingleCSVSource
+    data_path: data/rdb7/barriers/forward/data.csv
+  data_splitter:
+    _target_: chemtorch.components.data_pipeline.data_splitter.RatioSplitter
+    save_path: null
+    test_ratio: 0.1
+    train_ratio: 0.8
+    val_ratio: 0.1
+dataloader:
+  _partial_: true
+  _target_: torch.utils.data.DataLoader
+  batch_size: 64
+  num_workers: 3
+  pin_memory: true
+dataloader.batch_size: 64
+dataset:
+  _partial_: true
+  _target_: chemtorch.components.dataset.token_dataset.TokenDataset
+  cache: true
+  integer_labels: false
+  max_cache_size: null
+  precompute_all: true
+  representation:
+    _target_: chemtorch.components.representation.token.token_representation_base.TokenRepresentationBase
+    max_sentence_length: 400
+    pad_token: '[PAD]'
+    tokenizer:
+      _target_: chemtorch.components.representation.token.tokenizer.reaction_tokenizer.ReactionTokenizer
+      molecule_tokenizer:
+        _target_: chemtorch.components.representation.token.tokenizer.molecule_tokenizer.smiles_symbol_tokenizer.SmilesSymbolTokenizer
+        vocab_path: resources/base_vocab.txt
+        pad_token: "[PAD]"
+        unk_token: "[UNK]"
+    unk_token: '[UNK]'
+  subsample: null
+group_name: chemtorch_benchmark
+load_model: false
+log: true
+mean: 80.0102253144654
+model:
+  _target_: chemtorch.components.model.han.HAN
+  class_num: 1
+  dropout: 0.1361373846961515
+  embedding_hidden_channels: 256
+  embedding_in_channels: 604
+  gru_hidden_channels: 256
+model.dropout: 0.1361373846961515
+model.embedding_hidden_channels: 256
+model.gru_hidden_channels: 256
+name: atom_han
+num_classes: 1
+parameter_limit: null
+prediction_save_path: null
+predictions_save_dir: predictions/chemtorch_paper/rdb7_model_benchmark/atom_han/seed_${seed}_${now:%Y-%m-%d_%H-%M-%S}
+save_predictions_for: [train, test]
+project_name: chemtorch
+routine:
+  _convert_: object
+  _partial_: true
+  _target_: chemtorch.core.routine.RegressionRoutine
+  loss:
+    _target_: torch.nn.modules.loss.MSELoss
+  lr_scheduler:
+    frequency: 1
+    interval: epoch
+    scheduler:
+      _partial_: true
+      _target_: chemtorch.core.scheduler.cosine_with_warmup_lr.CosineWithWarmupLR
+      end_factor: 1.0
+      eta_min: 0.0
+      num_training_steps: 100
+      num_warmup_steps: 10
+      start_factor: 1.0e-06
+  metrics:
+    test:
+      _target_: torchmetrics.MetricCollection
+      metrics:
+        mae:
+          _target_: torchmetrics.MeanAbsoluteError
+        rmse:
+          _target_: torchmetrics.MeanSquaredError
+          squared: false
+    train:
+      _target_: torchmetrics.MetricCollection
+      metrics:
+        rmse:
+          _target_: torchmetrics.MeanSquaredError
+          squared: false
+    val:
+      _target_: torchmetrics.MetricCollection
+      metrics:
+        rmse:
+          _target_: torchmetrics.MeanSquaredError
+          squared: false
+  optimizer:
+    _partial_: true
+    _target_: torch.optim.AdamW
+    amsgrad: false
+    betas:
+    - 0.9
+    - 0.999
+    capturable: false
+    eps: 1.0e-08
+    foreach: null
+    lr: 0.0006884302350655184
+    maximize: false
+    weight_decay: 0.0023109641884162787
+  standardizer:
+    _target_: chemtorch.utils.Standardizer
+    mean: 80.0102253144654
+    std: 21.684054853890036
+routine.optimizer.lr: 0.0006884302350655184
+routine.optimizer.weight_decay: 0.0023109641884162787
+run_name: atom_han
+runtime_args_from_dataset:
+- vocab_size
+- mean
+- std
+seed: 0
+std: 21.684054853890036
+tasks:
+- fit
+- test
+trainer:
+  _target_: lightning.Trainer
+  accelerator: auto
+  callbacks:
+  - _target_: lightning.pytorch.callbacks.EarlyStopping
+    min_delta: 0.01
+    mode: min
+    monitor: val_loss_epoch
+    patience: 30
+  default_root_dir: ./lightning_logs
+  gradient_clip_val: 1.0
+  logger:
+    _target_: lightning.pytorch.loggers.WandbLogger
+  max_epochs: 100
+  enable_checkpointing: true
+  checkpoint_callback:
+    _target_: lightning.pytorch.callbacks.ModelCheckpoint
+    dirpath: ${trainer.default_root_dir}/chemtorch_paper/rdb7_model_benchmark/atom_han/seed_${seed}_${now:%Y-%m-%d_%H-%M-%S}/checkpoints
+    monitor: val_loss
+    save_top_k: 1
+    save_last: true
+vocab_size: 604

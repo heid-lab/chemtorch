@@ -1,2 +1,2 @@
 from .cgr import CGR
-from .rtsp_3d_graph import RTSP3DGraph
+from .ts_3d_graph import TS3DGraph

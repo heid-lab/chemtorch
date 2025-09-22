@@ -13,4 +13,4 @@ class TokenDataset(DatasetBase[torch.Tensor], Dataset):
     
     @property
     def vocab_size(self) -> int:
-        return len(self.representation.word2id)
+        return self.representation.vocab_size

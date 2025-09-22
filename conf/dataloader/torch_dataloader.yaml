@@ -2,6 +2,6 @@ _target_: torch.utils.data.DataLoader
 _partial_: true
 
 batch_size: 50
-num_workers: 0
+# cap to avoid oversubscription and leave 1 core for the main process
+num_workers: ${eval:"max(0, min(int(os.getenv('SLURM_CPUS_PER_TASK', 4)), (os.cpu_count() or 1)) - 1)"}
 pin_memory: true
-

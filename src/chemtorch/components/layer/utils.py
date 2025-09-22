@@ -1,14 +1,13 @@
 import inspect
 from math import floor
-from typing import Callable, Dict, Optional
-from git import Union
+from typing import Callable, Dict, Optional, Union
 import torch
 from torch import nn
 from torch_geometric.data import Batch
 from torch_geometric.nn import MLP
 from torch_geometric.nn.resolver import normalization_resolver
 
-def init_norm(norm: str, hidden_channels: int, norm_kwargs: Optional[Dict] = None):
+def init_norm(norm: str | nn.Module | Callable, hidden_channels: int, norm_kwargs: Optional[Dict] = None):
     """
     Initialize a normalization layer based on the specified parameters.
 
@@ -22,14 +21,15 @@ def init_norm(norm: str, hidden_channels: int, norm_kwargs: Optional[Dict] = Non
     Returns:
         nn.Module: The initialized normalization layer, or `nn.Identity()` if `norm=None`.
     """
-    if norm is not None:
+    # Handle cases where norm might be the string "None" instead of actual None
+    if norm is None or norm == "None" or norm == "null":
+        norm_layer = nn.Identity()
+    else:
         norm_layer = normalization_resolver(
             norm,
             hidden_channels,
             **(norm_kwargs or {}),
         )
-    else:
-        norm_layer = nn.Identity()
     return norm_layer
 
 def init_dropout(dropout_rate: float):
@@ -86,8 +86,8 @@ def normalize(x: torch.Tensor, batch: Batch, norm: nn.Module) -> torch.Tensor:
     If the normalization layer supports `torch_geometric.Batch` information, `batch`
     will be used as well.
 
-    The code is copied from `torch_geometric.nn.mlp.MLP`, lines 167-170 and 223-226, 
-    version 2.6.1.
+    The code is adapted from `torch_geometric.nn.mlp.MLP`, lines 167-170 and 223-226, 
+    version 2.6.1, with support for both node and edge feature normalization.
     
     Args:
         x (torch.Tensor): The input tensor to be normalized.
@@ -97,16 +97,28 @@ def normalize(x: torch.Tensor, batch: Batch, norm: nn.Module) -> torch.Tensor:
     Returns:
         torch.Tensor: The normalized tensor.
     """
-    # Copied from `torch_geometric.nn.mlp.MLP`, lines 167-170, version 2.6.1
+    # Check if normalization supports batch information by inspecting the forward signature
     supports_norm_batch = False
     if hasattr(norm, 'forward'):
         norm_params = inspect.signature(norm.forward).parameters
         supports_norm_batch = 'batch' in norm_params
     
-    # Copied from `torch_geometric.nn.mlp.MLP`, lines 223-226, version 2.6.1
     if supports_norm_batch:
-        x = norm(x, batch, batch.batch_size)
+        # Determine if we're normalizing edge features or node features
+        # by comparing the first dimension of x with the number of edges/nodes
+        if hasattr(batch, 'edge_index') and x.size(0) == batch.edge_index.size(1):
+            # Edge features: derive edge batch indices from source nodes
+            edge_batch = batch.batch[batch.edge_index[0]]
+            x = norm(x, edge_batch, batch.batch_size)
+        elif hasattr(batch, 'num_nodes') and x.size(0) == batch.num_nodes:
+            # Node features: use node batch indices
+            x = norm(x, batch.batch, batch.batch_size)
+        else:
+            # Dimension doesn't match nodes or edges, apply normalization without batch info
+            # This handles cases where batch structure is not applicable
+            x = norm(x)
     else:
+        # Normalization doesn't support batch information (e.g., standard PyTorch norms)
         x = norm(x)
 
     return x

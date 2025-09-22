@@ -27,6 +27,9 @@ lightning_logs/
 # predictions
 predictions/
 
+# plotting
+plotting/
+
 # VS Code
 .vscode
 

@@ -39,7 +39,7 @@ class AbstractRepresentation(ABC, Generic[T]):
     """
     
     @abstractmethod
-    def construct(self, smiles: str) -> T:
+    def construct(self, smiles: str, **kwargs) -> T:
         """
         Construct a representation from a SMILES string.
         
@@ -48,6 +48,8 @@ class AbstractRepresentation(ABC, Generic[T]):
                 For reactions, typically in the format "reactants>reagents>products"
                 or "reactants>>products" (e.g., "CCO>>CC=O").
                 For molecules, a standard SMILES string (e.g., "CCO").
+            **kwargs: Additional keyword arguments that may be required by specific
+                representation implementations (e.g., reaction_dir for TS3DGraph).
         
         Returns:
             T: The constructed representation of the specified type.
@@ -60,14 +62,15 @@ class AbstractRepresentation(ABC, Generic[T]):
         """
         pass
 
-    def __call__(self, smiles: str) -> T:
+    def __call__(self, smiles: str, **kwargs) -> T:
         """
         Callable interface for construct method.
         
         Args:
             smiles (str): A SMILES string representing a molecule or reaction.
+            **kwargs: Additional keyword arguments to pass to the construct method.
         
         Returns:
             T: The constructed representation.
         """
-        return self.construct(smiles)
+        return self.construct(smiles, **kwargs)

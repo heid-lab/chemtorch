@@ -1,4 +1,5 @@
 from enum import IntEnum
+import re
 from typing import Dict, List, Tuple
 
 from rdkit import Chem
@@ -64,3 +65,6 @@ def map_reac_to_prod(mol_reac: Chem.Mol, mol_prod: Chem.Mol) -> Dict[int, int]:
         ]
     )
     return reac_id_to_prod_id
+
+def remove_atom_mapping(smiles: str):
+    return re.sub(r':\d+(?=\])', '', smiles)

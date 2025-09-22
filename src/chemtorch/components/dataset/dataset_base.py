@@ -1,6 +1,8 @@
 from functools import lru_cache
+import logging
+import math
 import time
-from typing import Callable, Optional, Tuple, TypeVar, Generic
+from typing import Callable, Collection, Literal, Optional, Tuple, TypeVar, Generic
 import pandas as pd
 import torch
 
@@ -38,12 +40,14 @@ class DatasetBase(Generic[T], AbstractDataset[T, AbstractRepresentation[T]]):
     def __init__(
         self,
         dataframe: pd.DataFrame,
+        split: Literal["train", "val", "test", "predict"],
         representation: AbstractRepresentation[T],
         transform: Optional[AbstractTransform[T] | Callable[[T], T]] = None,
         precompute_all: bool = True,
         cache: bool = True,
         max_cache_size: Optional[int] = None,
         subsample: Optional[int | float] = None,
+        subsample_splits: Optional[Collection[str]] = None,
         integer_labels: bool = False,
     ):
         """
@@ -53,6 +57,7 @@ class DatasetBase(Generic[T], AbstractDataset[T, AbstractRepresentation[T]]):
             dataframe (pd.DataFrame): The input data as a pandas DataFrame. Each row represents a single sample. If the dataset 
                 contains a `label` column, it will be returned alongside the computed representation. Otherwise, only the 
                 representation will be returned.
+            split (Literal["train", "val", "test", "predict"]): The dataset split type.
             representation (AbstractRepresentation[T]): A representation instance that constructs the data object consumed by 
                 the model. Must take in the fields of a single sample from the :attr:`dataframe` (row) as keyword arguments 
                 and return an object of type T.
@@ -65,6 +70,8 @@ class DatasetBase(Generic[T], AbstractDataset[T, AbstractRepresentation[T]]):
             subsample (Optional[int | float]): The subsample size or fraction. If None, no subsampling is done.
                 If an int, it specifies the number of samples to take. If a float, it specifies the fraction of
                 samples to take. Default is None.
+            subsample_splits (Optional[Collection[str]]): The dataset splits to apply subsampling to. If None, subsampling is applied to all splits.
+                Default is None.
             integer_labels (bool): Whether to use integer labels (for classification) or float labels 
                 (for regression). If True, labels will be torch.int64. If False, labels will be torch.float. 
                 Default is False.
@@ -76,6 +83,11 @@ class DatasetBase(Generic[T], AbstractDataset[T, AbstractRepresentation[T]]):
         """
         if not isinstance(dataframe, pd.DataFrame):
             raise ValueError("Dataframe must be a pandas DataFrame.")
+        if split not in ["train", "val", "test", "predict"]:
+            raise ValueError("split must be one of 'train', 'val', 'test', or 'predict'.")
+        if subsample is not None:
+            if not isinstance(subsample, (int, float)) or subsample <= 0:
+                raise ValueError("subsample must be a positive int or float.")
         if not isinstance(representation, AbstractRepresentation):
             raise ValueError(
                 "Representation must be an instance of AbstractRepresentation."
@@ -85,7 +97,7 @@ class DatasetBase(Generic[T], AbstractDataset[T, AbstractRepresentation[T]]):
                 "Transform must be an instance of AbstractTransform, Callable, or None."
             )
         
-        self.dataframe = self._subsample_data(dataframe, subsample)
+        self.dataframe = self._subsample_data(dataframe, split, subsample, subsample_splits)
         self.representation = representation
         self.transform = transform
         self.integer_labels = integer_labels
@@ -158,23 +170,37 @@ class DatasetBase(Generic[T], AbstractDataset[T, AbstractRepresentation[T]]):
         return self.dataframe["label"].values
 
     def _subsample_data(
-        self, data: pd.DataFrame, subsample: Optional[int | float]
+        self, data: pd.DataFrame, 
+        split: Literal["train", "val", "test", "predict"], 
+        subsample: Optional[int | float], 
+        subsample_splits: Optional[Collection[str]]
     ) -> pd.DataFrame:
         """
         Subsample the data.
 
         Args:
             data (pd.DataFrame): The original data.
+            split (Literal["train", "val", "test", "predict"]): The dataset split type.
             subsample (Optional[int | float]): The subsample size or fraction.
+            subsample_splits (Optional[Collection[str]]): The dataset splits to apply subsampling to. If None, subsampling is applied to all splits.
         Returns:
             pd.DataFrame: The subsampled data.
         """
-        if subsample is None or subsample == 1.0:
+        if subsample is None or subsample == 1.0 or (subsample_splits is not None and split not in subsample_splits):
             return data
-        elif isinstance(subsample, int):
-            return data.sample(n=subsample)
+
+        if isinstance(subsample, int):
+            return data.sample(n=min(subsample, len(data)))
         elif isinstance(subsample, float):
-            return data.sample(frac=subsample)
+            n_samples = round(subsample * len(data))
+            logging.info(f"Subsampling {split} set: fraction={subsample}, original size={len(data)}, subsampled size={n_samples}.")
+            
+            # Ensure at least 1 sample if the original data is not empty and subsample > 0
+            if n_samples == 0 and len(data) > 0 and subsample > 0:
+                logging.warning(f"Subsample fraction {subsample} too small for dataset size {len(data)}, rounding up to 1 sample.")
+                n_samples = 1
+            
+            return data.sample(n=min(n_samples, len(data)))
         else:
             raise ValueError("Subsample must be an int or a float.")
 

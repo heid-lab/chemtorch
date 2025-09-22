@@ -1,15 +1,15 @@
 # @package _global_
 defaults:
   - /trainer: basic_trainer
-  - /data_pipeline: uspto_1k
+  - /data_pipeline: rdb7_fwd
   - /dataset: token
   - /dataloader: torch_dataloader
   - /model: han
-  - /routine: classification
+  - /routine: regression
   - _self_
 
 # LOGGING (Weight and Biases)
-log: false
+log: true
 project_name: chemtorch
 group_name: token
 run_name: null
@@ -21,15 +21,17 @@ tasks:
   - fit
   - test
 
-num_classes: 1000
+num_classes: 1
 dataset:
-  integer_labels: true
+  integer_labels: false
   
 trainer:
-  max_epochs: 200
+  max_epochs: 100
 
 runtime_args_from_dataset:
   - vocab_size
+  - mean
+  - std
 
 # MODEL LOADING
 load_model: false
