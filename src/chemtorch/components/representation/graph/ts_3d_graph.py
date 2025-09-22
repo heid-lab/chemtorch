@@ -108,7 +108,6 @@ class TS3DGraph(AbstractRepresentation[Data]):
             smiles (str): The reaction SMILES string.
             reaction_dir (str): The name of the subdirectory within `root_dir`
                                 containing the XYZ files for this reaction.
-            **kwargs: Additional keyword arguments from the DataFrame row are ignored.
 
         Returns:
             A PyG `Data` object containing the 3D structures.
