@@ -45,7 +45,7 @@ def preprocess_wandb_config(run_id, run_name, group_name, project_dir):
                 if key in d:
                     d.pop(key)
 
-            # Unwrpa value
+            # Unwrap value
             if "value" in d and len(d) == 1:
                 return unwrap_values(d["value"])
             return {k: unwrap_values(v) for k, v in d.items()}
