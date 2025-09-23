@@ -54,3 +54,10 @@ markers = [
 ]
 testpaths = ["test"]
 addopts = "-v"
+docs = [
+    "myst-parser>=4.0.1",
+    "sphinx>=8.1.3",
+    "sphinx-autodoc-typehints>=3.0.1",
+    "sphinx-book-theme>=1.1.4",
+    "sphinx-rtd-theme>=3.0.2",
+]
