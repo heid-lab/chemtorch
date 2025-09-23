@@ -1,10 +1,8 @@
-program: chemtorch_cli.py
+program: chemtorch
 command:
   - ${env}
-  - python
   - ${program}
   - "+experiment=fingerprint"
-  - "data_pipeline=rdb7_fwd"
   - ${args_no_hyphens}
 
 project: chemtorch

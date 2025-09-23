@@ -18,11 +18,12 @@ from chemtorch.utils.hydra import safe_instantiate
 from chemtorch.utils.misc import handle_prediction_saving
 from chemtorch.utils.types import DatasetKey, PropertySource, RoutineFactoryProtocol
 
-ROOT_DIR = Path(__file__).parent
+ROOT_DIR = Path(__file__).parent.parent.parent
+CONF_DIR = ROOT_DIR / "conf"
 
 OmegaConf.register_new_resolver("eval", eval)
 
-@hydra.main(version_base=None, config_path="conf", config_name="base")
+@hydra.main(version_base=None, config_path=str(CONF_DIR), config_name="base")
 def main(cfg: DictConfig):
     cli_chemtorch_logo()
 
