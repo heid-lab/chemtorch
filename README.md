@@ -40,11 +40,10 @@ conda activate chemtorch && \
 pip install rdkit numpy==1.26.4 scikit-learn pandas && \
 pip install torch && \
 pip install hydra-core && \
-pip install torch_geometric && \
-pip install torch_scatter torch_sparse torch_cluster torch_spline_conv -f https://data.pyg.org/whl/torch-2.5.0+cpu.html && \
 pip install wandb && \
 pip install ipykernel && \
-pip install -e .
+pip install torch_geometric torch_scatter torch_sparse torch_cluster torch_spline_conv -f https://data.pyg.org/whl/torch-2.5.0+cpu.html && \
+pip install -e . && \
 ```
 
 For GPU usage
@@ -53,16 +52,11 @@ pip install torch-scatter torch-sparse -f https://data.pyg.org/whl/torch-${TORCH
 ```
 
 ### Via uv
-
-For installing with `uv`, first install `torch` and `uv`, for example via
+First install `uv` following the [official installation instructions](https://docs.astral.sh/uv/).
+Then run:
 ```bash
-pip install torch uv
-```
-
-Then run
-```bash
-uv sync -n
-uv add torch_scatter torch_sparse torch_cluster torch_spline_conv torch_geometric  --no-build-isolation -n
+uv sync
+uv pip install torch_scatter torch_sparse torch_cluster torch_spline_conv torch_geometric  --no-build-isolation
 ```
 
 ## Data
@@ -75,39 +69,6 @@ Get the data from https://github.com/heid-lab/reaction_database and add it to th
 ## 💬 Support
 ## 🚀 Roadmap
 
-<!-- TODO: move this to web documentation -->
-## Usage
-
-For a short demo, see `scripts/demo.ipynb`.
-
-To run the experiments, you can use the following commands:
-
-Graph-based: GNN + CGR
-```bash
-python chemtorch_cli.py +experiment=graph dataset.subsample=0.05
-```
-Token-based: HAN + Tokenized SMILES
-```bash
-python chemtorch_cli.py +experiment=token dataset.subsample=0.05
-```
-Fingerprint-based: MLP + DRFP
-```bash
-python chemtorch_cli.py +experiment=fingerprint dataset.subsample=0.001
-```
-3D-based: DimeNetplusplus + XYZ coordinates
-```bash
-python chemtorch_cli.py +experiment=xyz dataset.subsample=0.05
-```
-
-Using the terminal, you can easily change hyperparameters. For example, to change the dataset:
-``` bash
-python chemtorch_cli.py +experiment=graph dataset.subsample=0.05 data_pipeline=sn2
-```
-
-For simple sweeps, you can:
-```bash
-python chemtorch_cli.py --multirun +experiment=graph dataset.subsample=0.05 data_pipeline=sn2,e2,cycloadd
-```
 
 ## Citation
 If you use this code in your research, please cite the following paper:
