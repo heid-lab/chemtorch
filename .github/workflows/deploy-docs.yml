@@ -1,0 +1,45 @@
+name: docs
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+      - 'docs/**'
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install uv (and enable caching)
+      uses: astral-sh/setup-uv@v6
+      with:
+        enable-cache: true
+
+    - name: Setup Python
+      run: |           
+        # uv respects requires-python in pyproject.toml
+        uv python install
+
+    - name: Install project deps
+      run: |
+        # default deps + docs group
+        uv sync --locked --group docs
+
+    - name: Build docs 
+      run: |
+        source .venv/bin/activate
+        cd docs
+        make html
+        
+    - name: Deploy to GitHub Pages
+      if: github.event_name != 'pull_request'  # avoid fork PRs
+      uses: peaceiris/actions-gh-pages@v4
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./docs/build/html
