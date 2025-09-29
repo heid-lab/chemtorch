@@ -11,6 +11,7 @@ from torch_geometric.nn.inits import glorot_orthogonal
 from torch_geometric.nn.resolver import activation_resolver
 from torch_geometric.typing import SparseTensor
 from torch_geometric.utils import scatter
+from torch_geometric.data import Batch
 
 
 class Envelope(torch.nn.Module):
@@ -596,29 +597,24 @@ class DimeNet(torch.nn.Module):
         for interaction in self.interaction_blocks:
             interaction.reset_parameters()
 
-    def forward(self, batch) -> Tensor:
-        r"""Forward pass.
-
-        Args:
-            batch (Data): A batch of :obj:`torch_geometric.data.Data` objects
-                holding multiple molecular graphs. Must contain the following
-                attributes:
-                    z (torch.Tensor): Atomic number of each atom with shape
-                        :obj:`[num_atoms]`.
-                    pos (torch.Tensor): Coordinates of each atom with shape
-                        :obj:`[num_atoms, 3]`.
-                    batch (torch.Tensor, optional): Batch indices assigning each atom
-                        to a separate molecule with shape :obj:`[num_atoms]`.
-                        (default: :obj:`None`)
+    def embed(self, z: Tensor, pos: Tensor, batch_indices: Tensor) -> Tensor:
         """
-        z = batch.z
-        pos = batch.pos
-        batch = batch.batch
+        Embed node features and perform multiple interaction and output blocks.
+        
+        Args:
+            z (Tensor): Atomic numbers of shape :obj:`[num_atoms]`.
+            pos (Tensor): Atom positions of shape :obj:`[num_atoms, 3]`.
+            batch_indices (Tensor): Batch indices assigning each atom to a
+                separate molecule of shape :obj:`[num_atoms]`.
+        
+        Returns:
+            Tensor: The output node features of shape :obj:`[num_molecules, out_channels]`.
+        """
 
         edge_index = radius_graph(
             pos,
             r=self.cutoff,
-            batch=batch,
+            batch=batch_indices,
             max_num_neighbors=self.max_num_neighbors,
         )
 
@@ -654,13 +650,29 @@ class DimeNet(torch.nn.Module):
             x = interaction_block(x, rbf, sbf, idx_kj, idx_ji)
             P = P + output_block(x, rbf, i, num_nodes=pos.size(0))
 
-        # if batch is None:
-        #     return P.sum(dim=0)
-        # else:
-        #     return scatter(P, batch, dim=0, reduce="sum")
+        x = scatter(P, batch_indices, dim=0, reduce="sum")
+        return x
 
-        x = scatter(P, batch, dim=0, reduce="sum")
 
+    def forward(self, batch) -> Tensor:
+        r"""Forward pass.
+
+        Args:
+            batch (Data): A batch of :obj:`torch_geometric.data.Data` objects
+                holding multiple molecular graphs. Must contain the following
+                attributes:
+                    z (torch.Tensor): Atomic number of each atom with shape
+                        :obj:`[num_atoms]`.
+                    pos (torch.Tensor): Coordinates of each atom with shape
+                        :obj:`[num_atoms, 3]`.
+                    batch (torch.Tensor, optional): Batch indices assigning each atom
+                        to a separate molecule with shape :obj:`[num_atoms]`.
+                        (default: :obj:`None`)
+        """
+        z = batch.z
+        pos = batch.pos
+        batch_indices = batch.batch
+        x = self.embed(z, pos, batch_indices)
         return self.head(x)
 
 
@@ -783,3 +795,33 @@ class DimeNetPlusPlus(DimeNet):
         )
 
         self.reset_parameters()
+
+
+class DimeReaction(DimeNetPlusPlus):
+    """
+    DimeReaction model used by Spiekerman et al. in https://pubs.acs.org/doi/10.1021/acs.jpca.2c02614.
+    """
+    def forward(self, batch: Batch) -> Tensor:
+        r"""Forward pass.
+
+        Args:
+            batch (Batch): A batch of :obj:`torch_geometric.data.Data` objects
+                holding multiple molecular graphs. Must contain the following
+                attributes:
+                    z_r (torch.Tensor): Atomic number of each atom in the reactant with shape
+                        :obj:`[num_atoms]`.
+                    pos_r (torch.Tensor): Coordinates of each atom in the reactant with shape
+                        :obj:`[num_atoms, 3]`.
+                    z_ts (torch.Tensor): Atomic number of each atom in the transition state with shape
+                        :obj:`[num_atoms]`.
+                    pos_ts (torch.Tensor): Coordinates of each atom in the transition state with shape
+                        :obj:`[num_atoms, 3]`.
+                    batch (torch.Tensor, optional): Batch indices assigning each atom
+                        to a separate molecule with shape :obj:`[num_atoms]`.
+                        (default: :obj:`None`)
+        """
+        x_r = self.embed(batch.z_r, batch.pos_r, batch.batch)
+        x_ts = self.embed(batch.z_ts, batch.pos_ts, batch.batch)
+        x = x_ts - x_r
+        return self.head(x)
+

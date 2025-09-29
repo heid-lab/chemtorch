@@ -1,2 +1,2 @@
 from .cgr import CGR
-from .ts_3d_graph import TS3DGraph
+from .reaction_3d_graph import Reaction3DGraph

@@ -3,11 +3,12 @@ command:
   - ${env}
   - python
   - ${program}
-  - "+experiment=ts_3d_graph"
+  - "+experiment=3d_graph"
+  - "run_name=dimereaction"
   - ${args_no_hyphens}
 
 project: chemtorch
-name: 3d_sweep
+name: dimereaction_sweep
 method: bayes
 metric:
   goal: minimize

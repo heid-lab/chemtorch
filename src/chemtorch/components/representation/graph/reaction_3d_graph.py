@@ -69,18 +69,18 @@ def symbols_to_atomic_numbers(symbols: List[str]) -> torch.Tensor:
         raise ValueError(f"Error converting symbols to atomic numbers: {e}")
 
 
-class TS3DGraph(AbstractRepresentation[Data]):
+class Reaction3DGraph(AbstractRepresentation[Data]):
     """
     Constructs a 3D representation of a reaction from XYZ files.
 
-    This representation reads the 3D structures for a reactant, transition state (ts),
-    and product from their respective .xyz files and packages them into a single
-    PyTorch Geometric `Data` object. It is designed to be used with `DatasetBase`.
+    This representation reads the 3D structures for a reactant (r), transition state (ts),
+    and product (p) from their respective .xyz files and packages them into a single
+    PyTorch Geometric `Data` object. 
 
     The resulting `Data` object for each sample will contain:
-    - `z_reactant`, `pos_reactant`: Atomic numbers and coordinates for the reactant.
+    - `z_r`, `pos_r`: Atomic numbers and coordinates for the reactant.
     - `z_ts`, `pos_ts`: Atomic numbers and coordinates for the transition state.
-    - `z_product`, `pos_product`: Atomic numbers and coordinates for the product.
+    - `z_p`, `pos_p`: Atomic numbers and coordinates for the product.
     - `smiles`: The reaction SMILES string, for reference.
     """
 
@@ -96,7 +96,6 @@ class TS3DGraph(AbstractRepresentation[Data]):
             )
         self.root_dir = root_dir
 
-    # TODO: ORDER MATTERS!!!!!!!!!!!!!!!!!!!!!!!!!!!
     @override
     def construct(self, smiles: str, reaction_dir: str) -> Data:
         """
@@ -122,7 +121,7 @@ class TS3DGraph(AbstractRepresentation[Data]):
             raise FileNotFoundError(f"Reaction directory not found: {folder_path}")
 
         structures = {}
-        for state in ["ts"]:
+        for state in ["r", "ts"]:
             file_path = osp.join(folder_path, f"{state}{reaction_dir}.xyz")
             symbols, pos = read_xyz(file_path)
             z = symbols_to_atomic_numbers(symbols)
@@ -135,8 +134,10 @@ class TS3DGraph(AbstractRepresentation[Data]):
             )
 
         data = Data(
-            z=structures["ts"]["z"],
-            pos=structures["ts"]["pos"],
+            z_r=structures["r"]["z"],
+            pos_r=structures["r"]["pos"],
+            z_ts=structures["ts"]["z"],
+            pos_ts=structures["ts"]["pos"],
             smiles=smiles,
             num_nodes=num_atoms,
         )
