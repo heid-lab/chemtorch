@@ -1,4 +1,4 @@
-_target_: chemtorch.components.model.dimenetplusplus.DimeNetPlusPlus
+_target_: chemtorch.components.model.dimenet.DimeReaction
 
 defaults:
   - head: mlp

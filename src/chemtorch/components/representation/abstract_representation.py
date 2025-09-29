@@ -49,7 +49,7 @@ class AbstractRepresentation(ABC, Generic[T]):
                 or "reactants>>products" (e.g., "CCO>>CC=O").
                 For molecules, a standard SMILES string (e.g., "CCO").
             **kwargs: Additional keyword arguments that may be required by specific
-                representation implementations (e.g., reaction_dir for TS3DGraph).
+                representation implementations (e.g., reaction_dir for Reaction3DGraph).
         
         Returns:
             T: The constructed representation of the specified type.

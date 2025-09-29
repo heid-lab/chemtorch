@@ -4,15 +4,15 @@ defaults:
   - /data_pipeline: rdb7_fwd_xyz
   - /dataset: graph
   - /dataloader: pyg_dataloader
-  - /model: dimenet++
+  - /model: dimereaction
   - /routine: regression
-  - override /dataset/representation: ts_3d_graph
+  - override /dataset/representation: reaction_3d_graph
   - _self_
 
 # LOGGING (Weight and Biases)
 log: true
 project_name: chemtorch
-group_name: 3d_graph
+group_name: reaction_3d_graph
 run_name: null
 
 # INITIALIZATION

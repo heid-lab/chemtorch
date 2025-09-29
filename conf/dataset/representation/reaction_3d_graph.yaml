@@ -1,0 +1,3 @@
+_target_: chemtorch.components.representation.graph.reaction_3d_graph.Reaction3DGraph
+
+root_dir: "data/rdb7/geometries/forward"
