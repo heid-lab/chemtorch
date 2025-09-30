@@ -2,12 +2,13 @@ from functools import lru_cache
 import logging
 import math
 import time
-from typing import Callable, Collection, Literal, Optional, Tuple, TypeVar, Generic
+from typing import Callable, Collection, List, Literal, Optional, Tuple, TypeVar, Generic
 import pandas as pd
 import torch
 
 from chemtorch.components.representation import AbstractRepresentation
 from chemtorch.components.transform import AbstractTransform
+from chemtorch.components.augmentation import AbstractAugmentation
 from chemtorch.components.dataset.abstact_dataset import AbstractDataset
 from chemtorch.utils import enforce_base_init
 
@@ -43,6 +44,7 @@ class DatasetBase(Generic[T], AbstractDataset[T, AbstractRepresentation[T]]):
         split: Literal["train", "val", "test", "predict"],
         representation: AbstractRepresentation[T],
         transform: Optional[AbstractTransform[T] | Callable[[T], T]] = None,
+        augmentation_list: List[Optional[AbstractAugmentation[T] | Callable[[T, torch.Tensor], List[Tuple[T, torch.Tensor]]]]] = None,
         precompute_all: bool = True,
         cache: bool = True,
         max_cache_size: Optional[int] = None,
@@ -64,6 +66,9 @@ class DatasetBase(Generic[T], AbstractDataset[T, AbstractRepresentation[T]]):
             transform (Optional[AbstractTransform[T] | Callable[[T], T]]): An optional transformation function or a composition thereof 
                 (:class:`Compose`) that takes in an object of type T and returns a (possibly modified) object of 
                 the same type.
+            augmentation_list (Optional[List[AbstractAugmentation[T] | Callable[[T, torch.Tensor], List[Tuple[T, torch.Tensor]]]]]): An optional 
+                list of data augmentation functions that take in an object of type T and return a (possibly modified) object of the same type.
+                Note: Augmentations are only applied to the training partition, and only if `precompute_all` is True.
             precompute_all (bool): If True, precompute all samples in the dataset. Default is True.
             cache (bool): If True, cache the processed samples. Default is True.
             max_cache_size (Optional[int]): Maximum size of the cache. Default is None.
@@ -100,6 +105,7 @@ class DatasetBase(Generic[T], AbstractDataset[T, AbstractRepresentation[T]]):
         self.dataframe = self._subsample_data(dataframe, split, subsample, subsample_splits)
         self.representation = representation
         self.transform = transform
+        self.augmentation_list = augmentation_list if split == "train" else None
         self.integer_labels = integer_labels
         self.has_labels = 'label' in self.dataframe.columns
 
@@ -111,18 +117,18 @@ class DatasetBase(Generic[T], AbstractDataset[T, AbstractRepresentation[T]]):
             # print(f"INFO: Precomputing {len(self.dataframe)} items...")
             start_time = time.time()
             self.precomputed_items = [
-                self._process_sample(idx) for idx in range(len(self.dataframe))
+                self._apply_transform(item) for idx in range(len(self.dataframe)) 
+                for item in self._make_augmentations(self._make_data_obj(idx), idx)
             ]
             self._precompute_time = time.time() - start_time
             # print(f"INFO: Precomputation finished in {self._precompute_time:.2f}s.")
         else:
+            process_sample = lambda idx: self._apply_transform(self._make_data_obj(idx))
             if cache:
-                if max_cache_size is None:
-                    self.process_sample = lru_cache(maxsize=None)(self._process_sample)
-                else:
-                    self.process_sample = lru_cache(maxsize=max_cache_size)(self._process_sample)
+
+                self.process_sample = lru_cache(maxsize=max_cache_size)(process_sample)
             else:
-                self.process_sample = self._process_sample
+                self.process_sample = process_sample
 
         self._initialized_by_base = True  # mark successful call
 
@@ -204,7 +210,7 @@ class DatasetBase(Generic[T], AbstractDataset[T, AbstractRepresentation[T]]):
         else:
             raise ValueError("Subsample must be an int or a float.")
 
-    def _process_sample(self, idx: int) -> T | Tuple[T, torch.Tensor]:
+    def _make_data_obj(self, idx: int) -> T | Tuple[T, torch.Tensor]:
         """
         Process a sample by its index.
         
@@ -232,17 +238,67 @@ class DatasetBase(Generic[T], AbstractDataset[T, AbstractRepresentation[T]]):
             else:
                 sample = row
             data_obj = self.representation(**sample)
-            if self.transform:
-                data_obj = self.transform(data_obj)
-            
+
             if self.has_labels:
                 return data_obj, label
             else:
                 return data_obj
         except Exception as e:
             raise RuntimeError(f"Error processing sample at index {idx}: {e}")
-    
-    
+
+    def _apply_transform(self, sample: T | Tuple[T, torch.Tensor]) -> T | Tuple[T, torch.Tensor]:
+        """
+        Apply the transform to the sample if a transform is provided.
+
+        Args:
+            sample (T | Tuple[T, torch.Tensor]): The sample to transform.
+        
+        Returns:
+            T | Tuple[T, torch.Tensor]: The transformed sample.
+        """
+        if self.transform is None:
+            return sample
+
+        if isinstance(sample, tuple):
+            data_obj, label = sample
+            transformed_data = self.transform(data_obj)
+            return transformed_data, label
+        else:
+            return self.transform(sample)
+
+    def _make_augmentations(self, sample: T | Tuple[T, torch.Tensor], idx: int) -> List[T | Tuple[T, torch.Tensor]]:
+        """
+        Apply augmentation to the sample if augmentation is provided.
+        
+        Args:
+            sample (T | Tuple[T, torch.Tensor]): The sample to augment.
+                
+        Returns:
+            List[T | Tuple[T, torch.Tensor]]: A list of samples containing at least the original sample,
+                and possibly augmented samples if any augmentations are applied.
+                If the dataset has labels, each item in the list is a tuple of (data_object, label).
+                Otherwise, each item in the list is only the data object of type T.
+
+        Raises:
+            RuntimeError: If there is an error processing the sample at the given index.
+        """
+        augmented_objs = [sample]
+
+        if self.augmentation_list and len(self.augmentation_list) > 0:
+            try:
+                label = None
+                if isinstance(sample, tuple):
+                    data_obj, label = sample
+                else:
+                    data_obj = sample
+                for augmentation in self.augmentation_list:
+                    if augmentation is None:
+                        continue
+                    augmented_sample = augmentation(data_obj, label)
+                    augmented_objs.append(augmented_sample)
+            except Exception as e:
+                raise RuntimeError(f"Error applying augmentation to sample at index {idx}: {e}")
+        return augmented_objs
 
     def __init_subclass__(cls):
         enforce_base_init(DatasetBase)(cls)
