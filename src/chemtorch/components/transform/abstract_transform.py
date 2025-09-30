@@ -8,7 +8,7 @@ T = TypeVar("T")
 class AbstractTransform(ABC, Generic[T]):
     """
     Abstract base class for transforms in the chemtorch framework.
-    This class serves as a base for creating transforms that operate single objects.
+    This class serves as a base for creating transforms that operate on single data objects.
 
     Raises:
         TypeError: If the subclass does not implement the :attr:`__call__` method.
