@@ -1,0 +1,5 @@
+_target_: chemtorch.core.property_system.NumNodeFeatures
+name: num_node_features
+source: any
+log: false
+add_to_cfg: true

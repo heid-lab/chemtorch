@@ -1,0 +1,7 @@
+# Example configuration for DegreeStatistics property
+# This property only works with graph-based representations
+_target_: chemtorch.core.property_system.DegreeStatistics
+name: degree_statistics
+source: train
+log: false
+add_to_cfg: true

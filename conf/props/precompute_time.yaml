@@ -1,0 +1,5 @@
+_target_: chemtorch.core.property_system.PrecomputeTime
+name: precompute_time
+source: all
+log: true
+add_to_cfg: false

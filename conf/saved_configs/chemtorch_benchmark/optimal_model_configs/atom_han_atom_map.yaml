@@ -1,32 +1,29 @@
 ckpt_path: null
-data_pipeline:
-  _target_: chemtorch.components.data_pipeline.SimpleDataPipeline
-  column_mapper:
-    _target_: chemtorch.components.data_pipeline.column_mapper.ColumnFilterAndRename
-    label: dE0
-    smiles: smiles
-  data_source:
-    _target_: chemtorch.components.data_pipeline.data_source.SingleCSVSource
-    data_path: data/rdb7/barriers/forward/data.csv
-  data_splitter:
-    _target_: chemtorch.components.data_pipeline.data_splitter.RatioSplitter
-    test_ratio: 0.1
-    train_ratio: 0.8
-    val_ratio: 0.1
-dataloader:
-  _partial_: true
-  _target_: torch.utils.data.DataLoader
-  batch_size: 64
-  num_workers: 3
-  pin_memory: true
-dataloader.batch_size: 64
-dataset:
-  _partial_: true
-  _target_: chemtorch.components.dataset.token_dataset.TokenDataset
-  cache: true
-  integer_labels: false
+data_module:
+  _target_: chemtorch.core.data_module.DataModule  
+  _convert_: object
+  cache: false
   max_cache_size: null
-  precompute_all: true
+  data_pipeline:
+    _target_: chemtorch.components.data_pipeline.SimpleDataPipeline
+    column_mapper:
+      _target_: chemtorch.components.data_pipeline.column_mapper.ColumnFilterAndRename
+      label: dE0
+      smiles: smiles
+    data_source:
+      _target_: chemtorch.components.data_pipeline.data_source.SingleCSVSource
+      data_path: data/rdb7/barriers/forward/data.csv
+    data_splitter:
+      _target_: chemtorch.components.data_pipeline.data_splitter.RatioSplitter
+      test_ratio: 0.1
+      train_ratio: 0.8
+      val_ratio: 0.1
+  dataloader_factory:
+    _partial_: true
+    _target_: torch.utils.data.DataLoader
+    batch_size: 64
+    num_workers: 3
+    pin_memory: true
   representation:
     _target_: chemtorch.components.representation.token.simple_token_representation.SimpleTokenRepresentation
     max_sentence_length: 400
@@ -39,11 +36,11 @@ dataset:
         pad_token: "[PAD]"
         unk_token: "[UNK]"
     unk_token: '[UNK]'
+  precompute_all: true
   subsample: null
 group_name: pipeline_sweep_best_runs_3
 load_model: false
 log: true
-mean: 80.0102253144654
 model:
   _target_: chemtorch.components.model.han.HAN
   class_num: 1
@@ -59,7 +56,6 @@ num_classes: 1
 parameter_limit: null
 prediction_save_path: null
 predictions_save_dir: predictions/chemtorch_paper/rdb7_model_benchmark/atom_han_atom_map/seed_${seed}_${now:%Y-%m-%d_%H-%M-%S}
-save_predictions_for: [train, test]
 project_name: chemtorch
 routine:
   _convert_: object
@@ -119,15 +115,13 @@ routine:
 routine.optimizer.lr: 0.0015873290589761375
 routine.optimizer.weight_decay: 0.00010960233488499154
 run_name: null
-runtime_args_from_dataset:
-- vocab_size
-- mean
-- std
+save_predictions_for: [train, test]
 seed: 0
-std: 21.684054853890036
 tasks:
 - fit
 - test
+train_label_mean: 80.0102253144654
+train_label_std: 21.684054853890036
 trainer:
   _target_: lightning.Trainer
   accelerator: auto
@@ -150,3 +144,12 @@ trainer:
     save_top_k: 1
     save_last: true
 vocab_size: 599
+# Disable Hydra's automatic logging behavior since WandB is used for logging.
+hydra:
+  # Prevent Hydra from creating subdirectories to store config files, logs, etc.
+  output_subdir: null
+  # By default, Hydra creates a timestamped directory for each run.
+  # Here, we set the output directory to the current directory so that all outputs
+  # like logs and checkpoints are redirected to the project root.
+  run:
+    dir: .

@@ -1,0 +1,7 @@
+# Example configuration for FingerprintLength property  
+# This property only works with fingerprint-based representations
+_target_: chemtorch.core.property_system.FingerprintLength
+name: fp_length
+source: any
+log: false
+add_to_cfg: true

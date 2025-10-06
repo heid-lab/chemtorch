@@ -9,53 +9,67 @@ data_module:
     column_mapper:
       _target_: chemtorch.components.data_pipeline.column_mapper.ColumnFilterAndRename
       label: dE0
+      reaction_dir: rxn
       smiles: smiles
     data_source:
       _target_: chemtorch.components.data_pipeline.data_source.SingleCSVSource
       data_path: data/rdb7/barriers/forward/data.csv
     data_splitter:
       _target_: chemtorch.components.data_pipeline.data_splitter.RatioSplitter
+      save_path: null
       test_ratio: 0.1
       train_ratio: 0.8
       val_ratio: 0.1
   dataloader_factory:
     _partial_: true
-    _target_: torch.utils.data.DataLoader
-    batch_size: 64
+    _target_: torch_geometric.loader.DataLoader
+    batch_size: 32
     num_workers: 3
     pin_memory: true
   precompute_all: true
   representation:
-    _recursive_: false
-    _target_: chemtorch.components.representation.fingerprint.drfp.DRFP
-    include_hydrogens: false
-    min_radius: 0
-    n_folded_length: 2048
-    radius: 3
-    rings: true
-    root_central_atom: true
+    _target_: chemtorch.components.representation.graph.reaction_3d_graph.Reaction3DGraph
+    root_dir: data/rdb7/geometries/forward
   subsample: null
-fp_length: 2048
 group_name: chemtorch_benchmark
+hydra:
+  output_subdir: null
+  run:
+    dir: .
 load_model: false
 log: true
 model:
-  _target_: chemtorch.components.model.mlp.MLP
-  act: relu
-  dropout: 0.015217512179126504
-  hidden_size: 256
-  in_channels: 2048
-  norm: None
-  num_hidden_layers: 2
-  out_channels: 1
-model.dropout: 0.015217512179126504
-model.hidden_size: 256
-model.norm: null
-model.num_hidden_layers: 2
-name: drfp_mlp
+  _target_: chemtorch.components.model.dimenet.DimeReaction
+  act: swish
+  basis_emb_size: 8
+  cutoff: 5.528600558772409
+  envelope_exponent: 5
+  head:
+    _target_: chemtorch.components.model.mlp.MLP
+    act: relu
+    dropout: 0.02
+    hidden_size: 128
+    in_channels: 128
+    num_hidden_layers: 1
+    out_channels: 1
+  hidden_channels: 128
+  int_emb_size: 64
+  max_num_neighbors: 32
+  num_after_skip: 2
+  num_before_skip: 1
+  num_blocks: 4
+  num_output_layers: 3
+  num_radial: 6
+  num_spherical: 7
+  out_channels: 128
+  out_emb_channels: 256
+  output_initializer: zeros
+model.cutoff: 5.528600558772409
+model.hidden_channels: 128
+model.num_blocks: 4
+name: dimereaction
 parameter_limit: null
-prediction_save_path: null
-predictions_save_dir: predictions/chemtorch_paper/rdb7_model_benchmark/drfp_mlp/seed_${seed}_${now:%Y-%m-%d_%H-%M-%S}
+predictions_save_dir: predictions/chemtorch_paper/rdb7_model_benchmark/dimereaction/seed_${seed}_${now:%Y-%m-%d_%H-%M-%S}
 project_name: chemtorch
 routine:
   _convert_: object
@@ -105,16 +119,19 @@ routine:
     capturable: false
     eps: 1.0e-08
     foreach: null
-    lr: 0.006404259921038013
+    lr: 0.0020537287319414765
     maximize: false
-    weight_decay: 2.04461442479684e-05
+    weight_decay: 2.5493166021321106e-05
   standardizer:
     _target_: chemtorch.utils.Standardizer
     mean: 80.0102253144654
     std: 21.684054853890036
-routine.optimizer.lr: 0.006404259921038013
-routine.optimizer.weight_decay: 2.04461442479684e-05
-run_name: drfp_mlp
+routine.optimizer.lr: 0.0020537287319414765
+routine.optimizer.weight_decay: 2.5493166021321106e-05
+run_name: dimereaction
+runtime_args_from_dataset:
+- mean
+- std
 save_predictions_for: [train, test]
 seed: 0
 tasks:
@@ -131,24 +148,15 @@ trainer:
     mode: min
     monitor: val_loss_epoch
     patience: 30
+  checkpoint_callback:
+    _target_: lightning.pytorch.callbacks.ModelCheckpoint
+    dirpath: ./lightning_logs/rdb7_fwd_xyz/dimereaction/seed_0_2025-10-02_20-01-27/checkpoints
+    monitor: val_loss
+    save_last: true
+    save_top_k: 1
   default_root_dir: ./lightning_logs
+  enable_checkpointing: false
   gradient_clip_val: 1.0
   logger:
     _target_: lightning.pytorch.loggers.WandbLogger
   max_epochs: 100
-  enable_checkpointing: true
-  checkpoint_callback:
-    _target_: lightning.pytorch.callbacks.ModelCheckpoint
-    dirpath: ${trainer.default_root_dir}/chemtorch_paper/rdb7_model_benchmark/drfp_mlp/seed_${seed}_${now:%Y-%m-%d_%H-%M-%S}/checkpoints
-    monitor: val_loss
-    save_top_k: 1
-    save_last: true
-# Disable Hydra's automatic logging behavior since WandB is used for logging.
-hydra:
-  # Prevent Hydra from creating subdirectories to store config files, logs, etc.
-  output_subdir: null
-  # By default, Hydra creates a timestamped directory for each run.
-  # Here, we set the output directory to the current directory so that all outputs
-  # like logs and checkpoints are redirected to the project root.
-  run:
-    dir: .

@@ -1,9 +1,9 @@
 # @package _global_
 defaults:
-  - /trainer: basic_trainer
+  - /trainer: trainer
   - /data_pipeline: rdb7_fwd
   - /dataset: token
-  - /dataloader: torch_dataloader
+  - /dataloader_factory: torch_dataloader
   - /model: han
   - /routine: regression
   - _self_
