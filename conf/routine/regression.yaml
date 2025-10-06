@@ -9,8 +9,8 @@ defaults:
 
 standardizer:
   _target_: chemtorch.utils.Standardizer
-  mean: ${mean}   # root config updated with dataset properties at runtime
-  std: ${std}     # root config updated with dataset properties at runtime
+  mean: ${train_label_mean}   # root config updated with dataset properties at runtime
+  std: ${train_label_std}     # root config updated with dataset properties at runtime
 
 metrics:
   train:

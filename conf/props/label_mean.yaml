@@ -1,0 +1,5 @@
+_target_: chemtorch.core.property_system.LabelMean
+name: label_mean
+source: train
+log: false
+add_to_cfg: true

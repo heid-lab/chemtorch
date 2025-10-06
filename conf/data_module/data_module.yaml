@@ -1,0 +1,16 @@
+# Data module configuration
+_target_: chemtorch.core.data_module.DataModule
+_convert_: object
+
+###### Required arguments #######
+data_pipeline: null
+representation: null
+dataloader_factory: null
+###### Optional arguments #######
+transform: null
+augmentation_list: null
+subsample: null
+precompute_all: true
+cache: false
+max_cache_size: null
+integer_labels: false
