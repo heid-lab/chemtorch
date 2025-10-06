@@ -1,4 +1,4 @@
-from typing import Dict, Tuple, Callable, Iterator, Literal, Union, Mapping, Any
+from typing import Dict, Optional, Tuple, Callable, Iterator, Literal, Union, List, Any
 
 import os
 import warnings
@@ -45,6 +45,7 @@ class SupervisedRoutine(L.LightningModule):
             ckpt_path: str = None,
             resume_training: bool = False,
             metrics: Union[Metric, MetricCollection, Dict[str, Union[Metric, MetricCollection]]] = None,
+            test_loader_names: Optional[List[str]] = None,
         ):
         """
         Initialize the SupervisedRoutine.
@@ -120,6 +121,9 @@ class SupervisedRoutine(L.LightningModule):
                     ...     optimizer=lambda params: torch.optim.Adam(params, lr=1e-3),
                     ...     metrics=metrics_dict,
                     ... )
+            test_loader_names (List[str], optional): List of names corresponding to each test dataloader.
+                This is used to prefix metric names during the test phase when multiple test dataloaders are used.
+                If provided, the length of this list must match the number of test dataloaders passed to `trainer.test()`.
 
         Raises:
             TypeError: If `metrics` is not a Metric, MetricCollection, or a dictionary of Metrics/MetricCollections.
@@ -135,6 +139,7 @@ class SupervisedRoutine(L.LightningModule):
         self.ckpt_path = ckpt_path
         self.resume_training = resume_training
         self.metrics = self._init_metrics(metrics) if self._should_init_metrics(metrics) else None
+        self.test_dataloader_names = test_loader_names if test_loader_names is not None else []
         self.ckpt_path = ckpt_path
         self.resume_training = resume_training
 
@@ -214,13 +219,24 @@ class SupervisedRoutine(L.LightningModule):
         return self.model(inputs)
     
     def training_step(self, batch: Tuple[torch.Tensor, torch.Tensor]) -> torch.Tensor:
-        return self._step(batch, split="train")
+        return self._step(batch, partition="train")
 
     def validation_step(self, batch: Tuple[torch.Tensor, torch.Tensor]) -> torch.Tensor:
-        return self._step(batch, split="val")
-    
-    def test_step(self, batch: Tuple[torch.Tensor, torch.Tensor]) -> torch.Tensor:
-        return self._step(batch, split="test")
+        return self._step(batch, partition="val")
+
+    def test_step(self, batch, batch_idx, dataloader_idx=0):
+        # For multiple test dataloaders, use the dataloader name as postfix
+        # Lightning will automatically add "test/" prefix, so we just need to distinguish between dataloaders
+        suffix = self._get_test_suffix(dataloader_idx)
+        return self._step(batch, partition="test", test_suffix=suffix)
+
+    def _get_test_suffix(self, dataloader_idx: int) -> str:
+        if dataloader_idx == 0:
+            return ""
+        elif dataloader_idx  < len(self.test_dataloader_names):
+            name = self.test_dataloader_names[dataloader_idx]
+            return f"/{name}" if name else f"/{dataloader_idx}"
+        return f"/{dataloader_idx}"
 
     def predict_step(self, batch: Union[torch.Tensor, Tuple[torch.Tensor, torch.Tensor]], batch_idx: int, dataloader_idx: int = 0) -> torch.Tensor:
         """
@@ -257,7 +273,8 @@ class SupervisedRoutine(L.LightningModule):
     def _step(
         self,
         batch: Tuple[torch.Tensor, torch.Tensor], 
-        split: Literal['train', 'val', 'test'],
+        partition: Literal['train', 'val', 'test'],
+        test_suffix: str = "",
     ) -> torch.Tensor:
         """
         Perform a training, validation, or test step.
@@ -267,28 +284,33 @@ class SupervisedRoutine(L.LightningModule):
         preds = self.forward(inputs)
         loss = self._loss(preds, targets)
 
-        self.log(f"{split}_loss", loss, 
-            on_step=True, 
-            batch_size=batch_size,
-            prog_bar = True, 
-        )
+        if partition in ["train", "val"]:
+            self.log(
+                f"{partition}_loss", loss, 
+                on_step=True, 
+                batch_size=batch_size,
+                prog_bar=True, 
+                add_dataloader_idx=False
+            )
 
-        if self.metrics and split in self.metrics:
-            self._update_metrics(self.metrics[split], preds, targets)
-            if isinstance(self.metrics[split], Metric):
+        if self.metrics and partition in self.metrics:
+            self._update_metrics(self.metrics[partition], preds, targets)
+            if isinstance(self.metrics[partition], Metric):
                 self.log(
-                    self.metrics[split]._get_name(), 
-                    self.metrics[split], 
+                    f"{self.metrics[partition]._get_name()}{test_suffix}",
+                    self.metrics[partition], 
                     on_step=False, 
                     on_epoch=True,
                     batch_size=batch_size,
+                    add_dataloader_idx=False
                 )
-            elif isinstance(self.metrics[split], MetricCollection):
+            elif isinstance(self.metrics[partition], MetricCollection):
                 self.log_dict(
-                    self.metrics[split], 
+                    {f"{k}{test_suffix}": v for k, v in self.metrics[partition].items()},
                     on_step=False, 
                     on_epoch=True,
-                    batch_size=batch_size
+                    batch_size=batch_size,
+                    add_dataloader_idx=False
                 )
 
         return loss
