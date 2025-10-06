@@ -25,6 +25,7 @@ dependencies = [
     "sympy>=1.12.1",
     "tqdm>=4.67.1",
     "torchmetrics>=1.5.2",
+    "pytest-order>=1.3.0",
 ]
 readme = "README.md"
 dynamic = ["version"]
@@ -39,4 +40,13 @@ version = { attr = "chemtorch.__version__" }
 dev = [
     "pytest>=8.4.1",
     "pytest-cov>=6.2.1",
+    "pytest-order>=1.3.0",
 ]
+
+[tool.pytest.ini_options]
+markers = [
+    "extended: marks tests as extended/comprehensive (deselect with '-m \"not extended\"')",
+    "integration: marks tests as integration tests that should run after unit tests",
+]
+testpaths = ["test"]
+addopts = "-v"
