@@ -1,5 +1,5 @@
 import os.path as osp
-from typing import List, Tuple
+from typing import List, Tuple, Optional
 
 import torch
 from rdkit import Chem
@@ -67,7 +67,50 @@ def symbols_to_atomic_numbers(symbols: List[str]) -> torch.Tensor:
         return torch.tensor(atomic_nums, dtype=torch.long)
     except Exception as e:
         raise ValueError(f"Error converting symbols to atomic numbers: {e}")
+    
 
+class Reaction3DData(Data):
+    """
+    Custom PyG Data class for reaction 3D graphs.
+
+    Attributes:
+        z_r (torch.Tensor): Atomic numbers for the reactant.
+        pos_r (torch.Tensor): Atomic positions for the reactant.
+        z_ts (torch.Tensor): Atomic numbers for the transition state.
+        pos_ts (torch.Tensor): Atomic positions for the transition state.
+    """
+    z_r: torch.Tensor
+    pos_r: torch.Tensor
+    z_ts: torch.Tensor
+    pos_ts: torch.Tensor
+
+    def __init__(
+        self,
+        z_r: torch.Tensor,
+        pos_r: torch.Tensor,
+        z_ts: torch.Tensor,
+        pos_ts: torch.Tensor,
+        smiles: Optional[str] = None,
+        num_nodes: Optional[int] = None,
+        **kwargs
+    ):
+        super().__init__(
+            z_r=z_r,
+            pos_r=pos_r,
+            z_ts=z_ts,
+            pos_ts=pos_ts,
+            smiles=smiles,
+            num_nodes=num_nodes,
+            **kwargs
+        )
+        self.z_r = z_r
+        self.pos_r = pos_r
+        self.z_ts = z_ts
+        self.pos_ts = pos_ts
+        if smiles is not None:
+            self.smiles = smiles
+        if num_nodes is not None:
+            self.num_nodes = num_nodes
 
 class Reaction3DGraph(AbstractRepresentation[Data]):
     """
@@ -133,7 +176,7 @@ class Reaction3DGraph(AbstractRepresentation[Data]):
                 f"Inconsistent number of atoms in reaction {reaction_dir}."
             )
 
-        data = Data(
+        data = Reaction3DData(
             z_r=structures["r"]["z"],
             pos_r=structures["r"]["pos"],
             z_ts=structures["ts"]["z"],
