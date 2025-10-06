@@ -27,6 +27,9 @@ lightning_logs/
 # predictions
 predictions/
 
+# test predictions for debugging
+test/test_integration/preds/
+
 # plotting
 plotting/
 
