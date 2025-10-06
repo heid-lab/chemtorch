@@ -1,9 +1,9 @@
 # @package _global_
 defaults:
-  - /trainer: basic_trainer
+  - /trainer: trainer
   - /data_pipeline: rgd1
   - /dataset: graph
-  - /dataloader: pyg_dataloader
+  - /dataloader_factory: pyg_dataloader
   - /model: dmpnn
   - /routine: regression
   - _self_

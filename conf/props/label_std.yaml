@@ -1,0 +1,5 @@
+_target_: chemtorch.core.property_system.LabelStd
+name: label_std
+source: train
+log: false
+add_to_cfg: true

@@ -1,0 +1,7 @@
+# Example configuration for VocabSize property
+# This property only works with token-based representations
+_target_: chemtorch.core.property_system.VocabSize
+name: vocab_size
+source: any
+log: false
+add_to_cfg: true

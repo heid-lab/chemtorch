@@ -1,0 +1,5 @@
+_target_: chemtorch.core.property_system.NumEdgeFeatures
+name: num_edge_features
+source: any
+log: false
+add_to_cfg: true
