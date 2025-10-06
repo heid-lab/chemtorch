@@ -186,10 +186,10 @@ def handle_prediction_saving(
         # For multi-partition scenarios (fit or multiple tasks or 'all')
         else:
             if not predictions_save_dir or not save_predictions_for:
-                raise ValueError(
-                    "To save predictions for multiple partitions, you must specify 'predictions_save_dir' and 'save_predictions_for' to indicate "
-                    "which partitions to save predictions for."
+                logging.warning(
+                    "'save_predictions_for' has to be set to save predictions when using multiple data partitions (i.e., when tasks include 'fit' or multiple tasks)."
                 )
+                return
 
             save_predictions_for_list = normalized_save_predictions_for
         
