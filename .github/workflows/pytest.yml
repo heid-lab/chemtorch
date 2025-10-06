@@ -3,7 +3,7 @@ name: tests
 on: [push, pull_request]
 
 jobs:
-  test:
+  unit-tests:
     runs-on: ubuntu-latest
     env:
       TORCH: 2.5.0
@@ -31,9 +31,11 @@ jobs:
         uv pip install torch_geometric \
           pyg_lib torch_scatter torch_sparse torch_cluster torch_spline_conv \
           -f https://data.pyg.org/whl/torch-${{ env.TORCH }}+${{ env.CUDA }}.html
-    - name: Run pytest with coverage
+    
+    - name: Run unit tests with coverage
       run: |
         uv run pytest test/ \
+          -m "not integration" \
           --cov=./src \
           --cov-report=xml:coverage.xml \
           --cov-report=term-missing
@@ -45,6 +47,60 @@ jobs:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         pytest-coverage-path: './coverage.xml'
         junitxml-path: './report.xml'	
+
+    - name: Prune uv cache
+      run: uv cache prune --ci
+
+  integration-tests:
+    runs-on: ubuntu-latest
+    needs: unit-tests  # This ensures unit tests pass first
+    env:
+      TORCH: 2.5.0
+      CUDA: cpu
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Download RDB7 forward barriers and geometries
+      run: |
+        mkdir -p data/rdb7/barriers/forward
+        wget -O data/rdb7/barriers/forward/data.csv https://raw.githubusercontent.com/heid-lab/reaction_database/main/data/rdb7/barriers/forward/data.csv
+        
+        # Use git sparse checkout to download only the geometries folder with full structure
+        git clone --filter=blob:none --sparse https://github.com/heid-lab/reaction_database.git temp_repo
+        cd temp_repo
+        git sparse-checkout set data/rdb7/geometries
+        cd ..
+        # Copy preserving the full directory structure
+        cp -r temp_repo/data/rdb7/geometries data/rdb7/
+        rm -rf temp_repo
+
+    - name: Install uv (and enable caching)
+      uses: astral-sh/setup-uv@v6
+      with:
+        enable-cache: true
+
+    - name: Setup Python
+      run: |           
+        uv python install
+
+    - name: Install project deps
+      run: |
+        uv sync --locked --all-extras --dev
+
+    - name: Install PyTorch Geometric
+      run: |
+        uv pip install torch_geometric \
+          pyg_lib torch_scatter torch_sparse torch_cluster torch_spline_conv \
+          -f https://data.pyg.org/whl/torch-${{ env.TORCH }}+${{ env.CUDA }}.html
+
+    - name: Run integration tests
+      run: |
+        uv run pytest test/ \
+          -m "integration" \
+          --tb=short
+      env:
+        RUN_EXTENDED_TESTS: false  # Disable 3-epoch tests in CI by default
 
     - name: Prune uv cache
       run: uv cache prune --ci
