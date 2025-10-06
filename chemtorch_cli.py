@@ -2,7 +2,7 @@ import logging
 import os
 import logging
 from pathlib import Path
-from typing import Any, List, cast, Callable, Optional
+from typing import Any, Dict, List, cast, Callable, Optional
 
 import hydra
 import pandas as pd
@@ -11,10 +11,12 @@ import lightning as L
 import wandb
 from omegaconf import DictConfig, OmegaConf
 
-from chemtorch.core.data_module import DataModule, Stage
+from chemtorch.core.property_system import DatasetProperty, compute_property_with_dataset_handling, resolve_sources
+from chemtorch.core.data_module import DataModule
 from chemtorch.utils.cli import cli_chemtorch_logo
 from chemtorch.utils.hydra import safe_instantiate
 from chemtorch.utils.misc import handle_prediction_saving
+from chemtorch.utils.types import DatasetKey, PropertySource
 
 ROOT_DIR = Path(__file__).parent
 
@@ -24,10 +26,21 @@ OmegaConf.register_new_resolver("eval", eval)
 def main(cfg: DictConfig):
     cli_chemtorch_logo()
 
+    # Configure logging for the entire application
+    # Force reconfiguration to override any Hydra logging setup
+    for handler in logging.root.handlers[:]:
+        logging.root.removeHandler(handler)
+    
     logging.basicConfig(
         level=logging.INFO,
-        format='%(levelname)s: %(message)s'
+        format='[%(levelname)s] %(message)s',
+        force=True
     )
+    
+    # Set the root logger level explicitly
+    logging.getLogger().setLevel(logging.INFO)
+    # Ensure chemtorch loggers propagate to root
+    logging.getLogger('chemtorch').setLevel(logging.INFO)
     
     # config mutable
     OmegaConf.set_struct(cfg, False)
@@ -58,66 +71,37 @@ def main(cfg: DictConfig):
                 merge=True,
             )
 
-    data_pipeline = safe_instantiate(cfg.data_pipeline)
-    dataset_factory = safe_instantiate(cfg.dataset)
-    dataloader_factory = safe_instantiate(cfg.dataloader)
-    data_module = DataModule(
-        data_pipeline=data_pipeline,
-        dataset_factory=dataset_factory,
-        dataloader_factory=dataloader_factory,
-    )
-
-    ##### UPDATE GLOBAL CONFIG FROM DATASET ATTRIBUTES ##############################
-    # TODO: Bad practice, find a proper solution to pass these dataset
-    # properties to the model/routine
-    if "fit" in cfg.tasks:
-        key = "train"
-    elif "validate" in cfg.tasks:
-        key = "val"
-    elif "test" in cfg.tasks:
-        key = "test"
-    else:
-        key = "predict"
-    dataset_properties = cfg.get("runtime_args_from_dataset", [])
-    if dataset_properties:
-        for dataset_property in dataset_properties:
-            OmegaConf.update(
-                cfg=cfg,
-                key=dataset_property,
-                value=data_module.get_dataset_property(
-                    key=key, property=dataset_property
-                ),
-                merge=True,
-            )
-    
-    run_name = getattr(cfg, "run_name", None)
-    OmegaConf.resolve(cfg)
-
-    # print(f"INFO: Final config:\n{OmegaConf.to_yaml(resolved_cfg)}")
-
-    ##### INITIALIZE W&B ##########################################################
+    ##### INITIALIZE W&B (BASIC) ##########################################################
+    # Initialize wandb first with basic project info, without the full config yet
     if cfg.log:
         wandb.init(
             project=cfg.project_name,
             group=cfg.group_name,
-            name=run_name,
-            config=OmegaConf.to_container(cfg, resolve=True),  # type: ignore
+            name=cfg.run_name,
+            # Don't pass config yet - we'll update it after computing dataset properties
         )
-        stages: List[Stage] = []
-        if "fit" in cfg.tasks:
-            stages.append("train")
-        if "validate" in cfg.tasks:
-            stages.append("val")
-        if "test" in cfg.tasks:
-            stages.append("test")
-        if "predict" in cfg.tasks:
-            stages.append("predict")
-        for dataset_key in stages:
-            precompute_time = data_module.get_dataset_property(dataset_key, "precompute_time")
-            wandb.log(
-                {f"{dataset_key}_precompute_time": precompute_time},
-                commit=False,
-            )
+
+    ##### RUNTIME DATASET PROPERTIES #########################################
+    data_module: DataModule = safe_instantiate(cfg.data_module)
+    runtime_props_from_data: Dict[str, DatasetProperty] = cfg.get("props", {})
+    logging.info(runtime_props_from_data)
+
+    for property_cfg in runtime_props_from_data.values():
+        property: DatasetProperty = safe_instantiate(property_cfg)
+        resolved_sources = resolve_sources(cast(PropertySource, property.source), cfg.tasks)
+        for source in resolved_sources:
+            prop_val = compute_property_with_dataset_handling(property, data_module.get_dataset(source))
+            prop_key = property.name if property.source == "any" else f"{source}_{property.name}"
+            if cfg.log and property.log:
+                wandb.log({f"{prop_key}": prop_val}, commit=False)
+            if property.add_to_cfg and prop_key not in cfg:
+                OmegaConf.update(cfg, prop_key, prop_val, merge=True)
+
+    # Resolve the config after all properties have been added and log it
+    OmegaConf.resolve(cfg)
+    if cfg.log:
+        wandb.config.update(OmegaConf.to_container(cfg, resolve=True), allow_val_change=True)
+    logging.debug(OmegaConf.to_yaml(cfg))
 
     ###### TRAINER ##########################################################
     # TODO: Add profiler
@@ -166,7 +150,8 @@ def main(cfg: DictConfig):
 
     ###### ROUTINE ##########################################################
     routine_factory = safe_instantiate(cfg.routine)
-    routine: L.LightningModule = routine_factory(model=model)
+    routine: L.LightningModule = routine_factory(model=model, test_loader_names=data_module.maybe_get_test_dataloader_names())
+    # routine: L.LightningModule = routine_factory(model=model)
 
     # load model checkpoint if specified
     ckpt_path = None
@@ -196,14 +181,14 @@ def main(cfg: DictConfig):
     ###### INFERENCE AND PREDICTION SAVING #####################################
     # Create closures to encapsulate the prediction generation logic
     def get_preds_func(dataset_key: str) -> List[Any]:
-        stage_key = cast(Stage, dataset_key)
-        dataloader = data_module.make_dataloader(stage_key)
+        dataset_key = cast(DatasetKey, dataset_key)
+        dataloader = data_module.make_dataloader(dataset_key)
         preds = trainer.predict(routine, ckpt_path=ckpt_for_inference, dataloaders=dataloader)
         return preds if preds else []
     
     def get_reference_df_func(dataset_key: str) -> pd.DataFrame:
-        stage_key = cast(Stage, dataset_key)
-        dataset = data_module.get_dataset(stage_key)
+        dataset_key = cast(DatasetKey, dataset_key)
+        dataset = data_module.get_dataset(dataset_key)
         return dataset.dataframe.copy()
 
     handle_prediction_saving(
