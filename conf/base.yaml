@@ -1,7 +1,7 @@
 defaults:
-  - /trainer: trainer
-  - /data_module: data_module
-  - /props/precompute_time@props.precompute_time
+  - trainer: trainer
+  - data_module: data_module
+  - props/precompute_time@props.precompute_time
   - override hydra/job_logging: disabled
   - override hydra/hydra_logging: disabled
   - _self_
