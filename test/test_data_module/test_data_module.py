@@ -229,25 +229,26 @@ def test_data_module_test_transform_list(mock_data_pipeline, mock_dataloader_fac
         transform=transforms  # type: ignore
     )
     
-    # Test dataset should be a list with multiple datasets
-    assert isinstance(data_module.test_dataset, list)
-    assert len(data_module.test_dataset) == 3  # original + 2 transforms
+    # Should have main test dataset plus additional test datasets for each transform
+    assert hasattr(data_module, 'test_dataset')
+    assert hasattr(data_module, 'test_1_dataset')
+    assert hasattr(data_module, 'test_2_dataset')
     
-    # First dataset (no transform)
-    test_item_0 = data_module.test_dataset[0][0]
-    assert test_item_0 == (None, 8)  # No transform
+    # Main test dataset (no transform)
+    test_item_main = data_module.get_dataset("test")[0]
+    assert test_item_main == (None, 8)  # No transform
     
-    # Second dataset (first transform)
-    test_item_1 = data_module.test_dataset[1][0]
+    # First additional test dataset (first transform)
+    test_item_1 = data_module.get_dataset("test_1")[0]
     assert test_item_1[0] == "test_transform_1_1"
     
-    # Third dataset (second transform)
-    test_item_2 = data_module.test_dataset[2][0]
+    # Second additional test dataset (second transform)
+    test_item_2 = data_module.get_dataset("test_2")[0]
     assert test_item_2[0] == "test_transform_2_1"
     
-    # Test dataloader names should be None for list
-    names = data_module.maybe_get_test_dataloader_names()
-    assert names is None
+    # Test dataloader names mapping should return proper indices
+    names = data_module.maybe_get_test_dataloader_idx_to_suffix()
+    assert names == {1: "1", 2: "2"}  # index 0 is main test, 1 and 2 are additional
 
 def test_data_module_test_transform_dict(mock_data_pipeline, mock_dataloader_factory, mock_representation):
     """Test data module with dict of named transforms for test set."""
@@ -266,25 +267,26 @@ def test_data_module_test_transform_dict(mock_data_pipeline, mock_dataloader_fac
         transform=transforms  # type: ignore
     )
     
-    # Test dataset should be a dict with named datasets
-    assert isinstance(data_module.test_dataset, dict)
-    assert set(data_module.test_dataset.keys()) == {"test", "augmented", "normalized"}
+    # Should have main test dataset plus additional named test datasets
+    assert hasattr(data_module, 'test_dataset')
+    assert hasattr(data_module, 'test_augmented_dataset')
+    assert hasattr(data_module, 'test_normalized_dataset')
     
-    # Default test dataset (no transform)
-    test_item_default = data_module.test_dataset["test"][0]
-    assert test_item_default == (None, 8)
+    # Main test dataset (no transform)
+    test_item_main = data_module.get_dataset("test")[0]
+    assert test_item_main == (None, 8)
     
     # Augmented test dataset
-    test_item_aug = data_module.test_dataset["augmented"][0]
+    test_item_aug = data_module.get_dataset("test_augmented")[0]
     assert test_item_aug[0] == "augmented_1"
     
     # Normalized test dataset
-    test_item_norm = data_module.test_dataset["normalized"][0]
+    test_item_norm = data_module.get_dataset("test_normalized")[0]
     assert test_item_norm[0] == "normalized_1"
     
-    # Test getting test dataset names
-    names = data_module.maybe_get_test_dataloader_names()
-    assert names == ["test", "augmented", "normalized"]
+    # Test getting test dataset names mapping
+    names = data_module.maybe_get_test_dataloader_idx_to_suffix()
+    assert names == {1: "augmented", 2: "normalized"}  # index 0 is main test
 
 def test_data_module_test_dataloader_multiple_list(mock_data_pipeline, mock_dataloader_factory, mock_representation):
     """Test that multiple test datasets from list transforms create multiple dataloaders."""
@@ -302,7 +304,7 @@ def test_data_module_test_dataloader_multiple_list(mock_data_pipeline, mock_data
     # Test dataloader should return a list
     test_dataloaders = data_module.test_dataloader()
     assert isinstance(test_dataloaders, list)
-    assert len(test_dataloaders) == 3  # original + 2 transforms
+    assert len(test_dataloaders) == 3  # test + test_1 + test_2
 
 def test_data_module_test_dataloader_multiple_dict(mock_data_pipeline, mock_dataloader_factory, mock_representation):
     """Test that multiple test datasets from dict transforms create multiple dataloaders."""
@@ -320,7 +322,7 @@ def test_data_module_test_dataloader_multiple_dict(mock_data_pipeline, mock_data
     # Test dataloader should return a list
     test_dataloaders = data_module.test_dataloader()
     assert isinstance(test_dataloaders, list)
-    assert len(test_dataloaders) == 3  # original + 2 transforms
+    assert len(test_dataloaders) == 3  # test + test_aug1 + test_aug2
 
 def test_data_module_callable_transforms(mock_data_pipeline, mock_dataloader_factory, mock_representation):
     """Test data module with callable transforms."""
@@ -469,11 +471,16 @@ def test_data_module_empty_test_transform_list(mock_data_pipeline, mock_dataload
     )
     
     # Should create only the original test dataset
-    assert isinstance(data_module.test_dataset, list)
-    assert len(data_module.test_dataset) == 1  # Only original dataset
+    assert hasattr(data_module, 'test_dataset')
+    # Should not have any additional test datasets
+    assert not hasattr(data_module, 'test_1_dataset')
     
-    test_item = data_module.test_dataset[0][0]
+    test_item = data_module.get_dataset("test")[0]
     assert test_item == (None, 8)  # No transform
+    
+    # Names should return None for single test dataset
+    names = data_module.maybe_get_test_dataloader_idx_to_suffix()
+    assert names is None
 
 def test_data_module_empty_test_transform_dict(mock_data_pipeline, mock_dataloader_factory, mock_representation):
     """Test data module with empty test transform dict."""
@@ -487,12 +494,15 @@ def test_data_module_empty_test_transform_dict(mock_data_pipeline, mock_dataload
     )
     
     # Should create only the original test dataset
-    assert isinstance(data_module.test_dataset, dict)
-    assert list(data_module.test_dataset.keys()) == ["test"]  # Only original dataset
+    assert hasattr(data_module, 'test_dataset')
+    # Should not have any additional test datasets
+    dataset_names = data_module.get_dataset_names()
+    test_dataset_names = [name for name in dataset_names if name.startswith("test")]
+    assert test_dataset_names == ["test"]  # Only original dataset
     
-    test_item = data_module.test_dataset["test"][0]
+    test_item = data_module.get_dataset("test")[0]
     assert test_item == (None, 8)  # No transform
     
-    # Names should return just the default
-    names = data_module.maybe_get_test_dataloader_names()
-    assert names == ["test"]
+    # Names should return None for single test dataset
+    names = data_module.maybe_get_test_dataloader_idx_to_suffix()
+    assert names is None

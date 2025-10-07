@@ -8,7 +8,7 @@ representation: null
 dataloader_factory: null
 ###### Optional arguments #######
 transform: null
-augmentation_list: null
+augmentations: null
 subsample: null
 precompute_all: true
 cache: false

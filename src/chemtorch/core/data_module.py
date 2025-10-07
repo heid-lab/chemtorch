@@ -1,5 +1,5 @@
 import builtins
-from typing import Any, Callable, Dict, List, Optional, Union, TypeGuard
+from typing import Any, Callable, Dict, List, Optional, Union, TypeGuard, cast
 import lightning as L
 import pandas as pd
 from torch.utils.data import DataLoader
@@ -23,7 +23,7 @@ class DataModule(L.LightningDataModule):
         representation: AbstractRepresentation,
         dataloader_factory: DataLoaderFactoryProtocol,
         transform: Optional[TransformType | Dict[DatasetKey, TransformType] | Dict[DatasetKey, Union[List[TransformType], Dict[str, TransformType]]]] = None,
-        augmentation_list: Optional[List[AugmentationType]] = None,
+        augmentations: Optional[List[AugmentationType] | Dict[str, AugmentationType]] = None,
         subsample: Optional[int | float | Dict[DatasetKey, int | float]] = None,
         precompute_all: bool = True,
         cache: bool = False,
@@ -45,8 +45,8 @@ class DataModule(L.LightningDataModule):
                 If a dictionary is provided, it should map each dataset key to its corresponding transform.
                 For the test set, a list or dict of transforms can be provided to create multiple test datasets.
                 If a dict is provided, the keys should be the names of the test datasets.
-            augmentation_list (Optional[List[AbstractAugmentation]]):
-                An optional list of augmentations to be applied to the training dataset.
+            augmentations (Optional[List[AbstractAugmentation]] | Dict[str, AbstractAugmentation]):
+                An optional list or dictionary of augmentations to be applied to the training dataset.
             subsample (Optional[Union[int, float, Dict[DatasetKey, Union[int, float]]]]):
                 An optional integer or float to subsample the datasets. If a float is provided,
                 it should be between 0 and 1 and represents the fraction of the dataset to keep.
@@ -113,7 +113,7 @@ class DataModule(L.LightningDataModule):
             dataframe: pd.DataFrame,
             subsample: Optional[int | float],
             transform: Optional[Any] = None,
-            augmentation_list: Optional[List[AugmentationType]] = None,
+            augmentations: Optional[List[AugmentationType]] = None,
         ) -> DatasetBase:
             assert transform is None or is_single_transform(transform), f"{name} transform validation failed"
             return DatasetBase(
@@ -121,7 +121,7 @@ class DataModule(L.LightningDataModule):
                 representation=representation,  # from __init__
                 name=name,
                 transform=transform,
-                augmentation_list=augmentation_list,
+                augmentation_list=augmentations,
                 subsample=subsample,
                 precompute_all=precompute_all,  # from __init__
                 cache=cache,                    # from __init__
@@ -137,21 +137,22 @@ class DataModule(L.LightningDataModule):
             )
 
         elif isinstance(data, DataSplit):
+            augmentation_list = list(augmentations.values()) if isinstance(augmentations, dict) else augmentations
             self.train_dataset = create_dataset("train", data.train, subsample_dict.get("train"), transform_dict.get("train"), augmentation_list)
             self.val_dataset = create_dataset("val", data.val, subsample_dict.get("val"), transform_dict.get("val"))
 
-            # Handle test datasets - can be single, list, or dict of transforms
+            # Handle test datasets - flatten them as individual properties
             test_transforms = transform_dict.get("test")
             if isinstance(test_transforms, list):
-                # Create list of test datasets with different transforms
-                self.test_dataset = [create_dataset("", data.test, subsample_dict.get("test"))]  # First without transform
+                # Create multiple test datasets with different transforms
+                self.test_dataset = create_dataset("test", data.test, subsample_dict.get("test"))  # Default without transform
                 for i, transform in enumerate(test_transforms):
-                    self.test_dataset.append(create_dataset(f"", data.test, subsample_dict.get("test"), transform=transform))
+                    setattr(self, f"test_{i+1}_dataset", create_dataset(f"test_{i+1}", data.test, subsample_dict.get("test"), transform=transform))
             elif isinstance(test_transforms, dict):
-                # Create dict of named test datasets
-                self.test_dataset = {"": create_dataset("test", data.test, subsample_dict.get("test"))}  # Default without transform
+                # Create named test datasets
+                self.test_dataset = create_dataset("test", data.test, subsample_dict.get("test"))  # Default without transform
                 for name, transform in test_transforms.items():
-                    self.test_dataset[name] = create_dataset(f"test/{name}", data.test, subsample_dict.get("test"), transform=transform)
+                    setattr(self, f"test_{name}_dataset", create_dataset(f"test/{name}", data.test, subsample_dict.get("test"), transform=transform))
             else:
                 # Single test transform or None -> single test dataset 
                 self.test_dataset = create_dataset("test", data.test, subsample_dict.get("test"), test_transforms)
@@ -161,15 +162,15 @@ class DataModule(L.LightningDataModule):
         
         self.dataloader_factory = dataloader_factory
 
-    def get_dataset(self, key: DatasetKey) -> DatasetBase:
+    def get_dataset(self, key: str) -> DatasetBase:
         """
         Retrieve the dataset for the specified key.
 
         Args:
-            key (str): The key for which to retrieve the dataset ('train', 'val', 'test', 'predict').
+            key (str): The key for which to retrieve the dataset ('train', 'val', 'test', 'predict', 'test_<name>').
 
         Returns:
-            Any: The dataset corresponding to the specified key.
+            DatasetBase: The dataset corresponding to the specified key.
 
         Raises:
             ValueError: If the dataset for the specified key is not initialized.
@@ -180,40 +181,82 @@ class DataModule(L.LightningDataModule):
             raise ValueError(f"{key.capitalize()} dataset is not initialized.")
         return dataset
 
-    def make_dataloader(self, key: DatasetKey) -> DataLoader | List[DataLoader]:
+    def get_dataset_names(self) -> List[str]:
+        """
+        Get all available dataset names/keys.
+
+        Returns:
+            List[str]: List of all dataset keys that can be used with get_dataset() and make_dataloader().
+        """
+        dataset_names = []
+        
+        # Check for standard datasets
+        for key in ["train", "val", "test", "predict"]:
+            if hasattr(self, f"{key}_dataset"):
+                dataset_names.append(key)
+        
+        # Check for additional test datasets (test_<name>)
+        for attr_name in dir(self):
+            if attr_name.startswith("test_") and attr_name.endswith("_dataset") and attr_name != "test_dataset":
+                # Extract the dataset key (remove '_dataset' suffix)
+                dataset_key = attr_name[:-8]  # Remove '_dataset'
+                dataset_names.append(dataset_key)
+        
+        return dataset_names
+
+    def make_dataloader(self, key: str) -> DataLoader:
         """
         Create a dataloader for the specified key.
 
         Args:
-            key (str): The key for which to create the dataloader ('train', 'val', 'test', 'predict').
+            key (str): The key for which to create the dataloader ('train', 'val', 'test', 'predict', 'test_<name>').
 
         Returns:
-            DataLoader or List[DataLoader]: The created dataloader(s) for the specified dataset key.
+            DataLoader: The created dataloader for the specified dataset key.
 
         Raises:
             ValueError: If the dataset for the specified key is not initialized.
         """
-        if key == "test":
-            return self._make_test_dataloader()
-        else:
-            return self.dataloader_factory(
-                dataset=self.get_dataset(key), 
-                shuffle=(key == "train")
-            )
+        # if key == "test":
+        #     return self._make_test_dataloader()
+        # else:
+        return self.dataloader_factory(
+            dataset=self.get_dataset(key), 
+            shuffle=(key == "train")
+        )
     
-    def maybe_get_test_dataloader_names(self) -> List[str] | None:
+    # TODO: Remove (not needed if custom trainer is implemented that passes the dataloader name directly to the routine)
+    def maybe_get_test_dataloader_idx_to_suffix(self) -> Dict[int, str] | None:
         """
         If multiple named test datasets are initialized by passing a dict with named
-        test set transforms, return their names.
+        test set transforms, return a mapping from dataloader index to suffix.
         Otherwise, return None.
 
         Returns:
-            List[str]: A list of names corresponding to each test dataset, or None.
+            Dict[int, str]: A mapping from dataloader index to suffix, or None.
+            Index 0 is always the main "test" dataset (no suffix).
+            Indices 1+ correspond to additional test datasets sorted alphabetically.
         """
-        if isinstance(self.test_dataset, dict):
-            return list(self.test_dataset.keys())
-        else:
+        # Get all test dataset names in consistent order
+        sorted_names = self._get_sorted_test_dataset_names()
+        
+        if len(sorted_names) <= 1:
             return None
+        
+        # Create mapping: index 0 has no suffix, others get suffixes
+        idx_to_suffix = {}
+        for i, name in enumerate(sorted_names):
+            if i == 0:  # Main test dataset
+                continue  # No suffix for index 0
+            else:
+                # Extract suffix from test dataset name
+                if name == "test":
+                    suffix = ""  # This shouldn't happen since "test" should be first
+                else:
+                    suffix = name.split("test_", 1)[1] if name.startswith("test_") else name
+                idx_to_suffix[i] = suffix
+        
+        return idx_to_suffix
 
     ########## Lightning DataModule Methods ##############################################
     # TODO: Optionally, add `prepare_data()` to preprocess datasets and save preprocesssed data to disc.
@@ -225,29 +268,46 @@ class DataModule(L.LightningDataModule):
         return self.make_dataloader("val")
 
     def test_dataloader(self):
-        return self.make_dataloader("test")
+        return self._make_test_dataloader()
 
     def predict_dataloader(self):
         return self.make_dataloader("predict")
 
     ########### Private Methods ##########################################################
+    def _get_sorted_test_dataset_names(self) -> List[str]:
+        """
+        Get all test dataset names sorted in a consistent order.
+        
+        Returns:
+            List[str]: Test dataset names sorted with "test" first, then others alphabetically.
+        """
+        # Get all test dataset names (including test_<name> variants)
+        test_dataset_names = [name for name in self.get_dataset_names() if name.startswith("test")]
+        
+        # Sort to ensure consistent ordering: "test" first, then others alphabetically
+        return sorted(test_dataset_names, key=lambda x: (x != "test", x))
+
     def _make_test_dataloader(self) -> DataLoader | List[DataLoader]:
         """
         Create dataloaders for the test datasets. If multiple test datasets are initialized,
         it returns a list of dataloaders, one for each test dataset.
+        
+        The ordering is consistent with maybe_get_test_dataloader_idx_to_suffix():
+        - Index 0: main "test" dataset
+        - Index 1+: additional test datasets sorted alphabetically
 
         Returns:
             DataLoader or List[DataLoader]: The created dataloader(s) for the test dataset(s).
         """
-        if isinstance(self.test_dataset, list):
-            return [
-                self.dataloader_factory(dataset=ds, shuffle=False)
-                for ds in self.test_dataset
-            ]
-        elif isinstance(self.test_dataset, dict):
-            return [
-                self.dataloader_factory(dataset=ds, shuffle=False)
-                for ds in self.test_dataset.values()
-            ]
-        else:
+        # Get all test dataset names in consistent order
+        sorted_names = self._get_sorted_test_dataset_names()
+        
+        if len(sorted_names) == 1:
+            # Single test dataset
             return self.dataloader_factory(dataset=self.test_dataset, shuffle=False)
+        else:
+            # Multiple test datasets - create list of dataloaders in consistent order
+            return [
+                self.dataloader_factory(dataset=self.get_dataset(cast(DatasetKey, name)), shuffle=False)
+                for name in sorted_names
+            ]
