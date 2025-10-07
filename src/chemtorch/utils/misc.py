@@ -89,6 +89,7 @@ def save_predictions(
 def handle_prediction_saving(
     get_preds_func: Callable[[str], List[Any]],
     get_reference_df_func: Callable[[str], pd.DataFrame],
+    get_dataset_names_func: Callable[[], List[str]],
     predictions_save_dir: Optional[str] = None,
     predictions_save_path: Optional[str] = None,
     save_predictions_for: Optional[Union[str, List[str], ListConfig]] = None,
@@ -102,6 +103,7 @@ def handle_prediction_saving(
     Args:
         get_preds_func: Function that takes a dataset_key and returns predictions
         get_reference_df_func: Function that takes a dataset_key and returns reference dataframe
+        get_dataset_names_func: Function that returns all available dataset names/keys
         predictions_save_dir: Directory to save predictions (for multiple partitions)
         predictions_save_path: Specific path to save predictions (for single partition)
         save_predictions_for: String or list of dataset keys to save predictions for
@@ -194,9 +196,17 @@ def handle_prediction_saving(
             save_predictions_for_list = normalized_save_predictions_for
         
         # 2. Generate and save predictions for each specified partition
-        for dataset_key in ["train", "val", "test", "predict"]:
-            if dataset_key in save_predictions_for_list:
-
+        available_dataset_names = get_dataset_names_func()
+        
+        for dataset_key in available_dataset_names:
+            # Check if this dataset should be saved based on save_predictions_for_list
+            should_save = False
+            for save_key in save_predictions_for_list:
+                if save_key == dataset_key or dataset_key.startswith(f"{save_key}_"):
+                    should_save = True
+                    break
+            
+            if should_save:
                 # Use the closures to get predictions and reference dataframe
                 preds = get_preds_func(dataset_key)
                 pred_df = get_reference_df_func(dataset_key)

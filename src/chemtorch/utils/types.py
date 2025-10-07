@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import torch
 import pandas as pd
+import lightning as L
 
 from typing import Any, Callable, Generic, List, Literal, Optional, TypeVar, TYPE_CHECKING, Union
 from typing_extensions import Protocol
@@ -49,6 +50,28 @@ class DataLoaderFactoryProtocol(Protocol):
             
         Returns:
             A DataLoader instance.
+        """
+        ...
+
+class RoutineFactoryProtocol(Protocol):
+    """Protocol defining the interface for routine factory functions."""
+    
+    def __call__(
+        self,
+        *,
+        model: torch.nn.Module,
+        test_dataloader_idx_to_suffix: Optional[dict[int, str]] = None,
+        **kwargs: Any
+    ) -> L.LightningModule:
+        """
+        Create a routine (LightningModule) from a model.
+        
+        Args:
+            model: The model to create a routine for.
+            **kwargs: Additional keyword arguments passed to the routine constructor.
+            
+        Returns:
+            A LightningModule instance.
         """
         ...
 
