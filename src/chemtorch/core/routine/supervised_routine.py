@@ -39,13 +39,13 @@ class SupervisedRoutine(L.LightningModule):
     def __init__(
             self, 
             model: nn.Module, 
-            loss: Callable = None, 
+            loss: Optional[Callable] = None, 
             optimizer: Union[Callable[[Iterator[nn.Parameter]], Optimizer], None] = None,
             lr_scheduler: Union[Callable[[Optimizer], LRScheduler], Dict[str, Any], None] = None,
-            ckpt_path: str = None,
+            ckpt_path: Optional[str] = None,
             resume_training: bool = False,
-            metrics: Union[Metric, MetricCollection, Dict[str, Union[Metric, MetricCollection]]] = None,
-            test_loader_names: Optional[List[str]] = None,
+            metrics: Optional[Union[Metric, MetricCollection, Dict[str, Union[Metric, MetricCollection]]]] = None,
+            test_dataloader_idx_to_suffix: Optional[Dict[int, str]] = None,
         ):
         """
         Initialize the SupervisedRoutine.
@@ -121,9 +121,12 @@ class SupervisedRoutine(L.LightningModule):
                     ...     optimizer=lambda params: torch.optim.Adam(params, lr=1e-3),
                     ...     metrics=metrics_dict,
                     ... )
-            test_loader_names (List[str], optional): List of names corresponding to each test dataloader.
-                This is used to prefix metric names during the test phase when multiple test dataloaders are used.
-                If provided, the length of this list must match the number of test dataloaders passed to `trainer.test()`.
+            test_dataloader_idx_to_suffix (Dict[int, str], optional): A mapping from test dataloader index to its suffix.
+                This is used to suffix test metrics like `test_<metric_name>/<suffix>`. If not suffix mapping is provided,
+                the dataloader index will be used as the suffix. 
+                The keys should be integers corresponding to dataloader indices (1, 2, ...).
+                No suffix mapping is needed for the first test dataloader (index 0) since it is assumed to be the main test set
+                and not suffixed.
 
         Raises:
             TypeError: If `metrics` is not a Metric, MetricCollection, or a dictionary of Metrics/MetricCollections.
@@ -138,8 +141,8 @@ class SupervisedRoutine(L.LightningModule):
         self.metrics = self._init_metrics(metrics) if metrics and (not isinstance(metrics, dict) or len(metrics) > 0) else None
         self.ckpt_path = ckpt_path
         self.resume_training = resume_training
-        self.metrics = self._init_metrics(metrics) if self._should_init_metrics(metrics) else None
-        self.test_dataloader_names = test_loader_names if test_loader_names is not None else []
+        self.metrics = self._init_metrics(metrics) if self._should_init_metrics(metrics) else None  # type: ignore
+        self.test_dataloader_idx_to_suffix = test_dataloader_idx_to_suffix if test_dataloader_idx_to_suffix else {}
         self.ckpt_path = ckpt_path
         self.resume_training = resume_training
 
@@ -153,6 +156,7 @@ class SupervisedRoutine(L.LightningModule):
         if isinstance(metrics, dict):
             return len(metrics) > 0
         return True
+
     ########## LightningModule Methods ##############################################
     def setup(self, stage: Literal['fit', 'validate', 'test', 'predict'] | None = None):
         if stage in ['fit', 'validate', 'test']:
@@ -233,8 +237,8 @@ class SupervisedRoutine(L.LightningModule):
     def _get_test_suffix(self, dataloader_idx: int) -> str:
         if dataloader_idx == 0:
             return ""
-        elif dataloader_idx  < len(self.test_dataloader_names):
-            name = self.test_dataloader_names[dataloader_idx]
+        elif dataloader_idx in self.test_dataloader_idx_to_suffix:
+            name = self.test_dataloader_idx_to_suffix[dataloader_idx]
             return f"/{name}" if name else f"/{dataloader_idx}"
         return f"/{dataloader_idx}"
 
@@ -298,7 +302,7 @@ class SupervisedRoutine(L.LightningModule):
             if isinstance(self.metrics[partition], Metric):
                 self.log(
                     f"{self.metrics[partition]._get_name()}{test_suffix}",
-                    self.metrics[partition], 
+                    self.metrics[partition],    # type: ignore
                     on_step=False, 
                     on_epoch=True,
                     batch_size=batch_size,
@@ -320,6 +324,8 @@ class SupervisedRoutine(L.LightningModule):
         Compute the loss for the given predictions and targets.
         Override this method to customize loss computation.
         """
+        if self.loss is None:
+            raise RuntimeError("Loss function is not defined. Cannot compute loss.")
         return self.loss(preds, targets)
 
     def _update_metrics(self, metrics: Metric | MetricCollection, preds: torch.Tensor, targets: torch.Tensor):
