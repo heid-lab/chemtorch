@@ -16,7 +16,7 @@ from chemtorch.core.data_module import DataModule
 from chemtorch.utils.cli import cli_chemtorch_logo
 from chemtorch.utils.hydra import safe_instantiate
 from chemtorch.utils.misc import handle_prediction_saving
-from chemtorch.utils.types import DatasetKey, PropertySource
+from chemtorch.utils.types import DatasetKey, PropertySource, RoutineFactoryProtocol
 
 ROOT_DIR = Path(__file__).parent
 
@@ -84,13 +84,14 @@ def main(cfg: DictConfig):
     ##### RUNTIME DATASET PROPERTIES #########################################
     data_module: DataModule = safe_instantiate(cfg.data_module)
     runtime_props_from_data: Dict[str, DatasetProperty] = cfg.get("props", {})
-    logging.info(runtime_props_from_data)
+    logging.debug(runtime_props_from_data)
 
+    # NOTE: Properties cannot be computed on test datasets other than the base "test" dataset
     for property_cfg in runtime_props_from_data.values():
         property: DatasetProperty = safe_instantiate(property_cfg)
         resolved_sources = resolve_sources(cast(PropertySource, property.source), cfg.tasks)
         for source in resolved_sources:
-            prop_val = compute_property_with_dataset_handling(property, data_module.get_dataset(source))
+            prop_val = property.compute(data_module.get_dataset(source))
             prop_key = property.name if property.source == "any" else f"{source}_{property.name}"
             if cfg.log and property.log:
                 wandb.log({f"{prop_key}": prop_val}, commit=False)
@@ -149,9 +150,8 @@ def main(cfg: DictConfig):
         return False
 
     ###### ROUTINE ##########################################################
-    routine_factory = safe_instantiate(cfg.routine)
-    routine: L.LightningModule = routine_factory(model=model, test_loader_names=data_module.maybe_get_test_dataloader_names())
-    # routine: L.LightningModule = routine_factory(model=model)
+    routine_factory: RoutineFactoryProtocol = safe_instantiate(cfg.routine)
+    routine: L.LightningModule = routine_factory(model=model, test_dataloader_idx_to_suffix=data_module.maybe_get_test_dataloader_idx_to_suffix())
 
     # load model checkpoint if specified
     ckpt_path = None
@@ -173,6 +173,7 @@ def main(cfg: DictConfig):
         trainer.validate(routine, datamodule=data_module, ckpt_path=ckpt_for_inference)
 
     if "test" in cfg.tasks:
+        # Use the datamodule's test_dataloader method which handles both single and multiple test datasets
         trainer.test(routine, datamodule=data_module, ckpt_path=ckpt_for_inference)
 
     if "predict" in cfg.tasks and not (cfg.predictions_save_path or cfg.predictions_save_dir):
@@ -181,7 +182,8 @@ def main(cfg: DictConfig):
     ###### INFERENCE AND PREDICTION SAVING #####################################
     # Create closures to encapsulate the prediction generation logic
     def get_preds_func(dataset_key: str) -> List[Any]:
-        dataset_key = cast(DatasetKey, dataset_key)
+        # dataset_key = cast(DatasetKey, dataset_key)
+        # TODO: make_dataloader should return a single dataloader
         dataloader = data_module.make_dataloader(dataset_key)
         preds = trainer.predict(routine, ckpt_path=ckpt_for_inference, dataloaders=dataloader)
         return preds if preds else []
@@ -194,6 +196,7 @@ def main(cfg: DictConfig):
     handle_prediction_saving(
         get_preds_func=get_preds_func,
         get_reference_df_func=get_reference_df_func,
+        get_dataset_names_func=data_module.get_dataset_names,
         predictions_save_dir=cfg.get("predictions_save_dir", None),
         predictions_save_path=cfg.get("predictions_save_path", None),
         save_predictions_for=cfg.get("save_predictions_for", None),
