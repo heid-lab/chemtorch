@@ -5,15 +5,15 @@ defaults:
   - /data_module/dataloader_factory: pyg_dataloader
   - /model: dmpnn
   - /routine: regression
-  - /props:
-      - num_node_features
-      - num_edge_features
-      - label_mean
-      - label_std
-  # - /props/num_node_features@props.num_node_features
-  # - /props/num_edge_features@props.num_edge_features
-  # - /props/label_mean@props.label_mean
-  # - /props/label_std@props.label_std
+  # - /props:
+  #     - num_node_features
+  #     - num_edge_features
+  #     - label_mean
+  #     - label_std
+  - /props/num_node_features@props.num_node_features
+  - /props/num_edge_features@props.num_edge_features
+  - /props/label_mean@props.label_mean
+  - /props/label_std@props.label_std
   - _self_
 
 # LOGGING (Weight and Biases)
