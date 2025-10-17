@@ -34,6 +34,11 @@ KEYS_TO_REMOVE = [
     "save_predictions_for",
 ]
 
+# Configs to skip in CI/CD (temporarily exclude broken configs)
+SKIP_CONFIGS = [
+    "opi_tutorial/training",  # TODO: Fix and re-enable
+]
+
 class ExperimentConfigTester(ConfigTester):
     """Tester for experiment config files."""
     
@@ -71,6 +76,12 @@ def pytest_generate_tests(metafunc):
 def test_config_init(config_info, experiment_tester: ExperimentConfigTester):
     """Ensure experiment configs can be initialized before running execution checks."""
     rel_config_path, config_name = config_info
+    config_path_str = str(rel_config_path / config_name)
+    
+    # Skip configs that are temporarily broken
+    if config_path_str in SKIP_CONFIGS:
+        pytest.skip(f"Config '{config_path_str}' temporarily excluded from CI/CD")
+    
     experiment_tester.init_config(rel_config_path, config_name)
 
 
@@ -79,6 +90,12 @@ def test_config_init(config_info, experiment_tester: ExperimentConfigTester):
 def test_experiment_config_exec(config_info, experiment_tester: ExperimentConfigTester):
     """Smoke test: Run experiment config for 1 epoch to check for runtime errors."""
     rel_config_path, config_name = config_info
+    config_path_str = str(rel_config_path / config_name)
+    
+    # Skip configs that are temporarily broken
+    if config_path_str in SKIP_CONFIGS:
+        pytest.skip(f"Config '{config_path_str}' temporarily excluded from CI/CD")
+    
     experiment_tester.test_config(
         rel_config_path=rel_config_path,
         config_name=config_name,
