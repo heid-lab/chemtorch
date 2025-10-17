@@ -1,11 +1,13 @@
 # @package _global_
 defaults:
-  - /trainer: trainer
-  - /data_pipeline: rdb7_fwd
-  - /dataset: token
-  - /dataloader_factory: torch_dataloader
+  - /data_module/data_pipeline: rdb7_fwd
+  - /data_module/representation: token
+  - /data_module/dataloader_factory: torch_dataloader
   - /model: han
   - /routine: regression
+  - /props/label_mean@props.label_mean
+  - /props/label_std@props.label_std
+  - /props/vocab_size@props.vocab_size
   - _self_
 
 # LOGGING (Weight and Biases)
@@ -22,16 +24,9 @@ tasks:
   - test
 
 num_classes: 1
-dataset:
-  integer_labels: false
-  
+ 
 trainer:
   max_epochs: 100
-
-runtime_args_from_dataset:
-  - vocab_size
-  - mean
-  - std
 
 # MODEL LOADING
 load_model: false
