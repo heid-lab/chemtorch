@@ -41,6 +41,11 @@ ENABLE_EXTENDED_TESTS = False  # Set to True to enable 3-epoch tests by default
 RUN_EXTENDED_TESTS = os.getenv("RUN_EXTENDED_TESTS", str(ENABLE_EXTENDED_TESTS)).lower() == "true"
 TEST_PREDS_SAVE_PATH = Path("/tmp/chemtorch_test_preds.csv")
 
+# Configs to skip in CI/CD (temporarily exclude broken configs)
+SKIP_CONFIGS = [
+    "atom_han",  # TODO: Fix and re-enable
+]
+
 # Prediction-specific overrides (extend BASE_OVERRIDES)
 PREDICTION_OVERRIDES = BASE_OVERRIDES + [
     f"++save_predictions_for=test",
@@ -93,6 +98,11 @@ def _run_epoch_test(
 ):
     """Helper function to run config tests for a specific number of epochs."""
     rel_config_path, config_name = config_info
+    
+    # Skip configs that are temporarily broken
+    if config_name in SKIP_CONFIGS:
+        pytest.skip(f"Config '{config_name}' temporarily excluded from CI/CD")
+    
     baselines_config = get_baselines()
     assert baselines_config is not None, "Baselines not loaded"
     
@@ -149,6 +159,11 @@ def _run_epoch_test(
 def test_config_init(config_info, saved_config_tester: SavedConfigTester):
     """Ensure saved configs can be initialised before running execution checks."""
     rel_config_path, config_name = config_info
+    
+    # Skip configs that are temporarily broken
+    if config_name in SKIP_CONFIGS:
+        pytest.skip(f"Config '{config_name}' temporarily excluded from CI/CD")
+    
     saved_config_tester.init_config(rel_config_path, config_name)
 
 

@@ -1,11 +1,15 @@
 # @package _global_
 defaults:
-  - /trainer: trainer
-  - /data_pipeline: rgd1
-  - /dataset: graph
-  - /dataloader_factory: pyg_dataloader
+  - /data_module/data_pipeline: rgd1
+  - /data_module/representation: cgr
+  - /data_module/dataloader_factory: pyg_dataloader
   - /model: dmpnn
   - /routine: regression
+  # Parameters computed at runtime from the data which are required for interpolation in lower-level configs
+  - /props/num_node_features@props.num_node_features
+  - /props/num_edge_features@props.num_edge_features
+  - /props/label_mean@props.label_mean
+  - /props/label_std@props.label_std
   - _self_
 
 # Configure logging via Weight and Biases
@@ -27,15 +31,10 @@ data_pipeline:
   data_source:
     data_path: "../QM_data_precomputed.csv"
 
+# Save model checkpoints
+trainer.enable_checkpointing: true
+trainer.checkpoint_callback.dirpath: experiment/opi_tutorial/${run_name}/seed_${seed}_${now:%Y-%m-%d_%H-%M-%S}/checkpoints
+
 # Set the maximum number of training iterations
 trainer:
   max_epochs: 200
-
-# Parameters computed at runtime from the data which are required for interpolation in lower-level configs
-runtime_args_from_dataset:
-  # dimensions of feature vectors are needed for model initialization
-  - num_node_features
-  - num_edge_features
-  # mean and std of the training dataset are needed for standardization of the models predictions for better convergence
-  - mean
-  - std

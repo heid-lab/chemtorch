@@ -108,18 +108,39 @@ models:
 RUN_EXTENDED_TESTS=true pytest test/test_integration/test_saved_configs.py::test_saved_config_3_epoch[my_new_model] -v
 ```
 
-### Adding New Experiment Configs
+### Adding a New Experiment Config
 
-Simply add YAML to `conf/experiment/` - auto-discovered!
+Simply add your config YAML to `conf/experiment/` or any subdirectory:
 
 ```bash
-# Create new config
-echo "# My experiment" > conf/experiment/my_experiment.yaml
+# Config is auto-discovered, no setup needed
+echo "# My new experiment config" > conf/experiment/my_new_experiment.yaml
 
-# Test automatically runs
-pytest test/test_integration/test_experiment_configs.py::test_experiment_config_exec[my_experiment] -v
+# Test will automatically run
+pytest test/test_integration/test_experiment_configs.py::test_experiment_config_exec[my_new_experiment] -v
 ```
 
+### Temporarily Excluding Configs from CI/CD
+
+If a config is broken and you need to temporarily exclude it from CI/CD:
+
+**For experiment configs**, edit `test_experiment_configs.py`:
+```python
+SKIP_CONFIGS = [
+    "opi_tutorial/training",  # TODO: Fix and re-enable
+    "my_broken_config",
+]
+```
+
+**For saved configs**, edit `test_saved_configs.py`:
+```python
+SKIP_CONFIGS = [
+    "atom_han",  # TODO: Fix and re-enable
+    "my_broken_model",
+]
+```
+
+Skipped configs will show as `SKIPPED` in test output with a clear message.
 ## Debugging Failed Tests
 
 ### Validation Loss Mismatch
