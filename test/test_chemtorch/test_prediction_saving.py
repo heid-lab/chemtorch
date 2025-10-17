@@ -20,6 +20,7 @@ class TestHandlePredictionSaving:
         self.mock_get_preds_func = Mock()
         self.mock_get_reference_df_func = Mock()
         self.mock_log_func = Mock()
+        self.mock_get_dataset_names_func = Mock()
         
         # Sample data
         self.sample_preds = [torch.tensor([1.0, 2.0, 3.0])]
@@ -31,12 +32,15 @@ class TestHandlePredictionSaving:
         # Configure mocks to return sample data
         self.mock_get_preds_func.return_value = self.sample_preds
         self.mock_get_reference_df_func.return_value = self.sample_df
+        # Default dataset names - can be overridden in individual tests
+        self.mock_get_dataset_names_func.return_value = ["train", "val", "test"]
 
     def test_no_saving_when_no_save_paths(self):
         """Test that no saving occurs when neither save_dir nor save_path is provided."""
         handle_prediction_saving(
             get_preds_func=self.mock_get_preds_func,
             get_reference_df_func=self.mock_get_reference_df_func,
+                get_dataset_names_func=self.mock_get_dataset_names_func,
             predictions_save_dir=None,
             predictions_save_path=None,
             save_predictions_for="test",
@@ -52,6 +56,7 @@ class TestHandlePredictionSaving:
         handle_prediction_saving(
             get_preds_func=self.mock_get_preds_func,
             get_reference_df_func=self.mock_get_reference_df_func,
+                get_dataset_names_func=self.mock_get_dataset_names_func,
             predictions_save_dir=None,
             predictions_save_path=None,
             save_predictions_for="test",
@@ -68,6 +73,7 @@ class TestHandlePredictionSaving:
             handle_prediction_saving(
                 get_preds_func=self.mock_get_preds_func,
                 get_reference_df_func=self.mock_get_reference_df_func,
+                get_dataset_names_func=self.mock_get_dataset_names_func,
                 predictions_save_dir=None,
                 predictions_save_path=str(temp_path / "test_preds.csv"),
                 save_predictions_for="test",
@@ -89,6 +95,7 @@ class TestHandlePredictionSaving:
             handle_prediction_saving(
                 get_preds_func=self.mock_get_preds_func,
                 get_reference_df_func=self.mock_get_reference_df_func,
+                get_dataset_names_func=self.mock_get_dataset_names_func,
                 predictions_save_dir=str(temp_path),
                 predictions_save_path=None,
                 save_predictions_for=["test", "val"],
@@ -113,6 +120,7 @@ class TestHandlePredictionSaving:
             handle_prediction_saving(
                 get_preds_func=self.mock_get_preds_func,
                 get_reference_df_func=self.mock_get_reference_df_func,
+                get_dataset_names_func=self.mock_get_dataset_names_func,
                 predictions_save_dir=str(temp_path),
                 predictions_save_path=None,
                 save_predictions_for="[test]",
@@ -134,6 +142,7 @@ class TestHandlePredictionSaving:
             handle_prediction_saving(
                 get_preds_func=self.mock_get_preds_func,
                 get_reference_df_func=self.mock_get_reference_df_func,
+                get_dataset_names_func=self.mock_get_dataset_names_func,
                 predictions_save_dir=str(temp_path / "multi"),
                 predictions_save_path=None,
                 save_predictions_for="[test, val]",
@@ -156,6 +165,7 @@ class TestHandlePredictionSaving:
             handle_prediction_saving(
                 get_preds_func=self.mock_get_preds_func,
                 get_reference_df_func=self.mock_get_reference_df_func,
+                get_dataset_names_func=self.mock_get_dataset_names_func,
                 predictions_save_dir=str(temp_path),
                 predictions_save_path=None,
                 save_predictions_for=list_config,
@@ -176,9 +186,13 @@ class TestHandlePredictionSaving:
         with tempfile.TemporaryDirectory() as temp_dir:
             temp_path = Path(temp_dir)
             
+            # Configure mock to return dataset names that match the expected partitions
+            self.mock_get_dataset_names_func.return_value = ["train", "val", "test", "predict"]
+            
             handle_prediction_saving(
                 get_preds_func=self.mock_get_preds_func,
                 get_reference_df_func=self.mock_get_reference_df_func,
+                get_dataset_names_func=self.mock_get_dataset_names_func,
                 predictions_save_dir=str(temp_path),
                 predictions_save_path=None,
                 save_predictions_for="all",
@@ -198,6 +212,7 @@ class TestHandlePredictionSaving:
             handle_prediction_saving(
                 get_preds_func=self.mock_get_preds_func,
                 get_reference_df_func=self.mock_get_reference_df_func,
+                get_dataset_names_func=self.mock_get_dataset_names_func,
                 predictions_save_dir=None,
                 predictions_save_path=str(temp_path / "val_preds.csv"),
                 save_predictions_for=None,  # Will use task
@@ -217,6 +232,7 @@ class TestHandlePredictionSaving:
             handle_prediction_saving(
                 get_preds_func=self.mock_get_preds_func,
                 get_reference_df_func=self.mock_get_reference_df_func,
+                get_dataset_names_func=self.mock_get_dataset_names_func,
                 predictions_save_dir=str(temp_path),
                 predictions_save_path=str(custom_path),
                 save_predictions_for="test",
@@ -235,6 +251,7 @@ class TestHandlePredictionSaving:
             handle_prediction_saving(
                 get_preds_func=self.mock_get_preds_func,
                 get_reference_df_func=self.mock_get_reference_df_func,
+                get_dataset_names_func=self.mock_get_dataset_names_func,
                 predictions_save_dir=str(temp_path),
                 predictions_save_path=str(temp_path / "custom.csv"),
                 save_predictions_for=["test", "val"],
@@ -252,6 +269,7 @@ class TestHandlePredictionSaving:
             handle_prediction_saving(
                 get_preds_func=self.mock_get_preds_func,
                 get_reference_df_func=self.mock_get_reference_df_func,
+                get_dataset_names_func=self.mock_get_dataset_names_func,
                 predictions_save_dir="/tmp",
                 predictions_save_path=None,
                 save_predictions_for=["invalid_key"],
@@ -264,23 +282,29 @@ class TestHandlePredictionSaving:
             handle_prediction_saving(
                 get_preds_func=self.mock_get_preds_func,
                 get_reference_df_func=self.mock_get_reference_df_func,
+                get_dataset_names_func=self.mock_get_dataset_names_func,
                 predictions_save_dir="/tmp",
                 predictions_save_path=None,
                 save_predictions_for=123,  # Invalid type
                 tasks=["test"]
             )
 
-    def test_multi_partition_without_save_dir_raises_error(self):
-        """Test that multi-partition scenarios without save_dir raise ValueError."""
-        with pytest.raises(ValueError, match="To save predictions for multiple partitions"):
-            handle_prediction_saving(
-                get_preds_func=self.mock_get_preds_func,
-                get_reference_df_func=self.mock_get_reference_df_func,
-                predictions_save_dir=None,
-                predictions_save_path="/tmp/test.csv",
-                save_predictions_for=["test", "val"],
-                tasks=["fit"]
-            )
+    def test_multi_partition_without_save_dir_raises_error(self, caplog):
+        """Test that multi-partition scenarios without save_dir log warning and return early."""
+        handle_prediction_saving(
+            get_preds_func=self.mock_get_preds_func,
+            get_reference_df_func=self.mock_get_reference_df_func,
+            get_dataset_names_func=self.mock_get_dataset_names_func,
+            predictions_save_dir=None,
+            predictions_save_path="/tmp/test.csv",
+            save_predictions_for=["test", "val"],
+            tasks=["fit"]
+        )
+        
+        # Should log warning and not call prediction functions
+        assert "'save_predictions_for' has to be set to save predictions" in caplog.text
+        self.mock_get_preds_func.assert_not_called()
+        self.mock_get_reference_df_func.assert_not_called()
 
     def test_logging_function_called_when_provided(self):
         """Test that log_func is called when predictions are saved."""
@@ -290,6 +314,7 @@ class TestHandlePredictionSaving:
             handle_prediction_saving(
                 get_preds_func=self.mock_get_preds_func,
                 get_reference_df_func=self.mock_get_reference_df_func,
+                get_dataset_names_func=self.mock_get_dataset_names_func,
                 predictions_save_dir=None,
                 predictions_save_path=str(temp_path / "test_preds.csv"),
                 save_predictions_for="test",
@@ -315,6 +340,7 @@ class TestHandlePredictionSaving:
             handle_prediction_saving(
                 get_preds_func=self.mock_get_preds_func,
                 get_reference_df_func=self.mock_get_reference_df_func,
+                get_dataset_names_func=self.mock_get_dataset_names_func,
                 predictions_save_dir=None,
                 predictions_save_path=str(save_path),
                 save_predictions_for="test",
@@ -333,6 +359,7 @@ class TestHandlePredictionSaving:
             handle_prediction_saving(
                 get_preds_func=self.mock_get_preds_func,
                 get_reference_df_func=self.mock_get_reference_df_func,
+                get_dataset_names_func=self.mock_get_dataset_names_func,
                 predictions_save_dir=None,
                 predictions_save_path=relative_path,
                 save_predictions_for="test",
@@ -353,6 +380,7 @@ class TestHandlePredictionSaving:
             handle_prediction_saving(
                 get_preds_func=self.mock_get_preds_func,
                 get_reference_df_func=self.mock_get_reference_df_func,
+                get_dataset_names_func=self.mock_get_dataset_names_func,
                 predictions_save_dir=None,
                 predictions_save_path=str(save_path),
                 save_predictions_for="test",
