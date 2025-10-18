@@ -138,7 +138,6 @@ class SupervisedRoutine(L.LightningModule):
         self.loss = loss
         self.optimizer_factory = optimizer
         self.lr_scheduler_config = lr_scheduler
-        self.metrics = self._init_metrics(metrics) if metrics and (not isinstance(metrics, dict) or len(metrics) > 0) else None
         self.ckpt_path = ckpt_path
         self.resume_training = resume_training
         self.metrics = self._init_metrics(metrics) if self._should_init_metrics(metrics) else None  # type: ignore
