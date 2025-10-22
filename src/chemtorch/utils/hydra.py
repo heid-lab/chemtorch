@@ -1,4 +1,6 @@
 from collections import OrderedDict
+import os
+import sys
 
 from hydra.utils import instantiate
 from omegaconf import DictConfig, OmegaConf
@@ -156,3 +158,44 @@ def safe_instantiate(cfg, *args, **kwargs):
     cfg = order_config_by_signature(cfg)
     cfg = filter_config_by_signature(cfg)
     return instantiate(cfg, *args, **kwargs)
+
+def get_num_workers(slurm_env: str = 'SLURM_CPUS_PER_TASK', leave_free: int = 1) -> int:
+    """Return a safe number of PyTorch DataLoader workers.
+
+    Behavior:
+    - If the SLURM env var (default: ``SLURM_CPUS_PER_TASK``) is present and an
+      integer, use min(slurm_value, os.cpu_count()) - leave_free.
+    - Otherwise use os.cpu_count() - leave_free.
+    - Never return a negative number; result is clamped to 0.
+
+    leave_free defaults to 1 to leave one CPU for the main process. This is a
+    common pattern but optional depending on your workload.
+    """
+    # On macOS (Darwin) the default multiprocessing start method is 'spawn',
+    # which requires that objects passed to worker processes be picklable.
+    # Many C/C++ extension callables (e.g. Boost.Python function objects) are
+    # not picklable and will raise a TypeError inside workers. To avoid
+    # surprising crashes for mac users, default to 0 workers on Darwin unless
+    # explicitly overridden by the env var ``CHEMTORCH_ALLOW_MULTIPROC_ON_MAC``.
+    if sys.platform == 'darwin':
+        allow = os.getenv('CHEMTORCH_ALLOW_MULTIPROC_ON_MAC', '')
+        if allow not in ('1', 'true', 'True'):
+            return 0
+
+    slurm_val = os.getenv(slurm_env)
+    slurm = None
+    if slurm_val not in (None, ''):
+        try:
+            slurm = int(slurm_val)
+        except (ValueError, TypeError):
+            # Ignore invalid SLURM value and fall back to cpu_count()
+            slurm = None
+
+    cpu_count = os.cpu_count() or 1
+
+    if slurm is not None:
+        workers = min(slurm, cpu_count) - leave_free
+    else:
+        workers = cpu_count - leave_free
+
+    return max(0, int(workers))
