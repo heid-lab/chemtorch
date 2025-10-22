@@ -74,9 +74,9 @@ To launch a simple experiment, run the following command from the root directory
 
 .. code-block:: chemtorch
 
-   chemtorch +experiment=graph dataset.subsample=0.05
+   chemtorch +experiment=graph data_module.subsample=0.05
 
-The experiment will use the default graph learning pipeline to train and evaluate a directed message passing neural network (DMPNN) on a random subset of the RDB7 dataset.
+The experiment will use the default graph learning pipeline to train and evaluate a directed message passing neural network (D-MPNN) on a random subset of the RDB7 dataset.
 The output will display the run details, training progress, and final evaluation metrics.
 Congratulations, you have successfully run your first experiment with ChemTorch!🎉
 

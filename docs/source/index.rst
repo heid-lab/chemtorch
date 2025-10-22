@@ -18,15 +18,18 @@ It is designed to facilitate rapid prototyping, experimentation, and benchmarkin
 
 Ready to dive in? Follow the :ref:`quick-start` to install ChemTorch and run your first experiment!
 
+.. TODO: explain what ChemTorch actually does (see paper)
+
 .. toctree::
    :maxdepth: 2
    :caption: Getting Started
    :hidden:
 
-   getting_started/quick_start
-   getting_started/wandb
-   getting_started/cli_usage
-   getting_started/custom_dataset
+   getting_started/01_quick_start
+   getting_started/02_experiments
+   getting_started/03_logging
+   getting_started/04_custom_dataset
+   getting_started/05_custom_components
 
 .. toctree::
    :maxdepth: 2

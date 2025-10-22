@@ -1,7 +1,7 @@
 .. _wandb:
 
 =========================
-Intro to Weights & Biases
+Setup Logging
 =========================
 
 ChemTorch uses Weights & Biases (W&B) for logging, visualization, and run management.
@@ -34,7 +34,7 @@ For example, using the quick start command from the :ref:`quick-start` guide:
 
 .. code-block:: chemtorch
 
-   chemtorch +experiment=graph dataset.subsample=0.05 log=true
+   chemtorch +experiment=graph data_module.subsample=0.05 log=true
 
 Now, you run will be logged to your W&B account.
 Open the `W&B web interface <https://wandb.ai/signup>`__ and navigate to `Projects → chemtorch` to see your run in the project workspace.
@@ -43,7 +43,7 @@ You can change the project name via the :code:`project_name` option:
 
 .. code-block:: chemtorch
 
-   chemtorch +experiment=graph dataset.subsample=0.05 log=true project_name=my_project
+   chemtorch +experiment=graph data_module.subsample=0.05 log=true project_name=my_project
 
 To avoid having to specify :code:`project_name` every time, you can override the default project name
 in :code:`conf/base.yaml` to your desired project name:
@@ -58,11 +58,11 @@ You can name your runs by setting :code:`run_name`:
 
 .. code-block:: chemtorch
 
-   chemtorch +experiment=graph dataset.subsample=0.05 log=true run_name=my_first_run
+   chemtorch +experiment=graph data_module.subsample=0.05 log=true run_name=my_first_run
 
 You can also group related runs together by setting :code:`group_name`:
 
 .. code-block:: chemtorch
 
-   chemtorch +experiment=graph dataset.subsample=0.05 log=true group_name=my_experiment
+   chemtorch +experiment=graph data_module.subsample=0.05 log=true group_name=my_experiment
 
