@@ -18,28 +18,51 @@ It is designed to facilitate rapid prototyping, experimentation, and benchmarkin
 
 Ready to dive in? Follow the :ref:`quick-start` to install ChemTorch and run your first experiment!
 
+.. TODO: explain what ChemTorch actually does (see paper)
+
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :caption: Getting Started
    :hidden:
 
    getting_started/quick_start
-   getting_started/wandb
-   getting_started/cli_usage
-   getting_started/custom_dataset
+   getting_started/logging
+   getting_started/config
+   getting_started/experiments
 
 .. toctree::
-   :maxdepth: 2
-   :caption: Examples & Tutorials
+   :maxdepth: 1
+   :caption: User Guide
+   :hidden:
+
+   user_guide/pipeline_overview
+   user_guide/custom_data
+   user_guide/custom_components
+   user_guide/cli_usage
+   user_guide/sweeps
+   user_guide/reproducibility
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Advanced Guide
    :hidden:
    
-   examples/sweeps
-
+   advanced_guide/hydra
+   advanced_guide/props
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
+   :caption: Examples
+   :hidden:
+   
+   examples/training_curves
+   examples/ood_benchmarking
+
+.. toctree::
+   :maxdepth: 1
    :caption: Developer Guide
    :hidden:
 
-   developer_guide/hydra
+   developer_guide/contributing
    developer_guide/framework_structure
+   developer_guide/testing

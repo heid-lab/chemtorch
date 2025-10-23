@@ -45,7 +45,7 @@
     <link rel="icon" href="../_static/chemtorch_favicon.png"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Intro to Weights &amp; Biases" href="wandb.html" />
+    <link rel="next" title="Setup Logging" href="logging.html" />
     <link rel="prev" title="Welcome to ChemTorch!" href="../index.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -159,18 +159,34 @@
         <p aria-level="2" class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
 <ul class="current nav bd-sidenav">
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Quick Start</a></li>
-<li class="toctree-l1"><a class="reference internal" href="wandb.html">Intro to Weights &amp; Biases</a></li>
-<li class="toctree-l1"><a class="reference internal" href="cli_usage.html">CLI Usage</a></li>
-<li class="toctree-l1"><a class="reference internal" href="custom_dataset.html">Using Your Own Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="logging.html">Setup Logging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="config.html">Understand Configs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="experiments.html">Create Experiments</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Examples &amp; Tutorials</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">User Guide</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../examples/sweeps.html">Hyperparameter Sweeps with W&amp;B</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/pipeline_overview.html">Components Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/custom_data.html">Using Your Own Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/custom_components.html">Defining Custom Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/cli_usage.html">CLI Usage &amp; Config Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/sweeps.html">Hyperparameter Sweeps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/reproducibility.html">Reproducing Experiments</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Advanced Guide</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../advanced_guide/hydra.html">Hydra</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../advanced_guide/props.html">Runtime Properties</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Examples</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../examples/training_curves.html">Training Curves</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/ood_benchmarking.html">OOD benchmarking</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Developer Guide</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../developer_guide/hydra.html">Hydra Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer_guide/contributing.html">Contribution</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../developer_guide/framework_structure.html">Framework Structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer_guide/testing.html">Testing</a></li>
 </ul>
 
     </div>
@@ -340,7 +356,7 @@ document.write(`
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#import-data">Import Data</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#your-first-experiment">Your First Experiment</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#launch-your-first-experiment">Launch Your First Experiment</a></li>
 </ul>
             </nav>
         </div>
@@ -402,15 +418,15 @@ For this quick start guide, we will use our reaction database which you can down
 </pre></div>
 </div>
 </section>
-<section id="your-first-experiment">
-<h2>Your First Experiment<a class="headerlink" href="#your-first-experiment" title="Link to this heading">#</a></h2>
+<section id="launch-your-first-experiment">
+<h2>Launch Your First Experiment<a class="headerlink" href="#launch-your-first-experiment" title="Link to this heading">#</a></h2>
 <p>Finally, you are ready to run your first experiment with ChemTorch.
 You can do so conveniently via the command line interface (CLI).
 To launch a simple experiment, run the following command from the root directory of the repository:</p>
-<div class="highlight-chemtorch notranslate"><div class="highlight"><pre><span></span><span class="ne">chemtorch</span><span class="w"> </span><span class="gi">+experiment</span><span class="o">=</span>graph<span class="w"> </span><span class="gi">dataset.subsample</span><span class="o">=</span>0.05
+<div class="highlight-chemtorch notranslate"><div class="highlight"><pre><span></span><span class="ne">chemtorch</span><span class="w"> </span><span class="gi">+experiment</span><span class="o">=</span>graph<span class="w"> </span><span class="gi">data_module.subsample</span><span class="o">=</span>0.05<span class="w"> </span><span class="gi">log</span><span class="o">=</span>false
 </pre></div>
 </div>
-<p>The experiment will use the default graph learning pipeline to train and evaluate a directed message passing neural network (DMPNN) on a random subset of the RDB7 dataset.
+<p>The experiment will use the default graph learning pipeline to train and evaluate a directed message passing neural network (D-MPNN) on a random subset of the RDB7 dataset.
 The output will display the run details, training progress, and final evaluation metrics.
 Congratulations, you have successfully run your first experiment with ChemTorch!🎉</p>
 </section>
@@ -437,11 +453,11 @@ Congratulations, you have successfully run your first experiment with ChemTorch!
       </div>
     </a>
     <a class="right-next"
-       href="wandb.html"
+       href="logging.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Intro to Weights &amp; Biases</p>
+        <p class="prev-next-title">Setup Logging</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -467,7 +483,7 @@ Congratulations, you have successfully run your first experiment with ChemTorch!
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#import-data">Import Data</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#your-first-experiment">Your First Experiment</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#launch-your-first-experiment">Launch Your First Experiment</a></li>
 </ul>
   </nav></div>
 

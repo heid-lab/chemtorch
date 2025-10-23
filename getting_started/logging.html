@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>CLI Usage &#8212; ChemTorch</title>
+    <title>Setup Logging &#8212; ChemTorch</title>
   
   
   
@@ -41,12 +41,12 @@
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'getting_started/cli_usage';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'getting_started/logging';</script>
     <link rel="icon" href="../_static/chemtorch_favicon.png"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Using Your Own Dataset" href="custom_dataset.html" />
-    <link rel="prev" title="Intro to Weights &amp; Biases" href="wandb.html" />
+    <link rel="next" title="Understand Configs" href="config.html" />
+    <link rel="prev" title="Quick Start" href="quick_start.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -159,18 +159,34 @@
         <p aria-level="2" class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
 <ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="quick_start.html">Quick Start</a></li>
-<li class="toctree-l1"><a class="reference internal" href="wandb.html">Intro to Weights &amp; Biases</a></li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">CLI Usage</a></li>
-<li class="toctree-l1"><a class="reference internal" href="custom_dataset.html">Using Your Own Dataset</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Setup Logging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="config.html">Understand Configs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="experiments.html">Create Experiments</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Examples &amp; Tutorials</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">User Guide</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../examples/sweeps.html">Hyperparameter Sweeps with W&amp;B</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/pipeline_overview.html">Components Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/custom_data.html">Using Your Own Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/custom_components.html">Defining Custom Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/cli_usage.html">CLI Usage &amp; Config Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/sweeps.html">Hyperparameter Sweeps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/reproducibility.html">Reproducing Experiments</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Advanced Guide</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../advanced_guide/hydra.html">Hydra</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../advanced_guide/props.html">Runtime Properties</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Examples</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../examples/training_curves.html">Training Curves</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/ood_benchmarking.html">OOD benchmarking</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Developer Guide</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../developer_guide/hydra.html">Hydra Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer_guide/contributing.html">Contribution</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../developer_guide/framework_structure.html">Framework Structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer_guide/testing.html">Testing</a></li>
 </ul>
 
     </div>
@@ -240,7 +256,7 @@
       
       
       
-      <li><a href="../_sources/getting_started/cli_usage.rst" target="_blank"
+      <li><a href="../_sources/getting_started/logging.rst" target="_blank"
    class="btn btn-sm btn-download-source-button dropdown-item"
    title="Download source file"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -311,7 +327,9 @@ document.write(`
   </button>
 `);
 </script>
-
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
 </div></div>
       
     </div>
@@ -322,11 +340,20 @@ document.write(`
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>CLI Usage</h1>
+    <h1>Setup Logging</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
             
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#connect-w-b">Connect W&amp;B</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#log-your-chemtorch-runs">Log Your ChemTorch Runs</a></li>
+</ul>
+            </nav>
         </div>
     </div>
 </div>
@@ -336,8 +363,58 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="cli-usage">
-<span id="id1"></span><h1>CLI Usage<a class="headerlink" href="#cli-usage" title="Link to this heading">#</a></h1>
+  <section id="setup-logging">
+<span id="logging"></span><h1>Setup Logging<a class="headerlink" href="#setup-logging" title="Link to this heading">#</a></h1>
+<p>ChemTorch uses Weights &amp; Biases (W&amp;B) for logging, visualization, and run management.
+This guide will show you how to quickly setup W&amp;B for ChemTorch.</p>
+<section id="connect-w-b">
+<h2>Connect W&amp;B<a class="headerlink" href="#connect-w-b" title="Link to this heading">#</a></h2>
+<p>If you are new to W&amp;B, you will need to create an account and authorize your machine:</p>
+<ol class="arabic">
+<li><p>First, create a free account at <a class="reference external" href="https://wandb.ai/signup">https://wandb.ai/signup</a> (if you don’t have one yet).</p></li>
+<li><p>Then, go to <a class="reference external" href="https://wandb.ai/authorize">https://wandb.ai/authorize</a>, copy your API key, and set the <code class="code docutils literal notranslate"><span class="pre">WANDB_API_KEY</span></code> environment variable (if you haven’t done so already):</p>
+<div class="highlight-wandb notranslate"><div class="highlight"><pre><span></span>export<span class="w"> </span>WANDB_API_KEY=&quot;your_api_key_here&quot;
+</pre></div>
+</div>
+</li>
+<li><p>Login to W&amp;B from the command line:</p>
+<div class="highlight-wandb notranslate"><div class="highlight"><pre><span></span><span class="ne">wandb</span><span class="w"> </span><span class="gi">login</span>
+</pre></div>
+</div>
+</li>
+</ol>
+<p>Whenever you use another machine or a new environment (e.g. GPU cluster), you will need to repeat step 2 and 3.</p>
+</section>
+<section id="log-your-chemtorch-runs">
+<h2>Log Your ChemTorch Runs<a class="headerlink" href="#log-your-chemtorch-runs" title="Link to this heading">#</a></h2>
+<p>Once you are connected to W&amp;B, you can log your ChemTorch runs by appending <code class="code docutils literal notranslate"><span class="pre">log=true</span></code> when launching an experiment.
+For example, using the quick start command from the <a class="reference internal" href="quick_start.html#quick-start"><span class="std std-ref">Quick Start</span></a> guide:</p>
+<div class="highlight-chemtorch notranslate"><div class="highlight"><pre><span></span><span class="ne">chemtorch</span><span class="w"> </span><span class="gi">+experiment</span><span class="o">=</span>graph<span class="w"> </span><span class="gi">data_module.subsample</span><span class="o">=</span>0.05<span class="w"> </span><span class="gi">log</span><span class="o">=</span>true
+</pre></div>
+</div>
+<p>Now, you run will be logged to your W&amp;B account.
+Open the <a class="reference external" href="https://wandb.ai/signup">W&amp;B web interface</a> and navigate to <cite>Projects → chemtorch</cite> to see your run in the project workspace.
+By default, the run will be logged to the project <code class="code docutils literal notranslate"><span class="pre">chemtorch</span></code> under your username.
+You can change the project name via the <code class="code docutils literal notranslate"><span class="pre">project_name</span></code> option:</p>
+<div class="highlight-chemtorch notranslate"><div class="highlight"><pre><span></span><span class="ne">chemtorch</span><span class="w"> </span><span class="gi">+experiment</span><span class="o">=</span>graph<span class="w"> </span><span class="gi">data_module.subsample</span><span class="o">=</span>0.05<span class="w"> </span><span class="gi">log</span><span class="o">=</span>true<span class="w"> </span><span class="gi">project_name</span><span class="o">=</span>my_project
+</pre></div>
+</div>
+<p>To avoid having to specify <code class="code docutils literal notranslate"><span class="pre">project_name</span></code> every time, you can override the default project name
+in <code class="code docutils literal notranslate"><span class="pre">conf/base.yaml</span></code> to your desired project name:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># conf/base.yaml</span>
+<span class="nt">project_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_project</span>
+</pre></div>
+</div>
+<p>By default, the runs will have arbitrary names.
+You can name your runs by setting <code class="code docutils literal notranslate"><span class="pre">run_name</span></code>:</p>
+<div class="highlight-chemtorch notranslate"><div class="highlight"><pre><span></span><span class="ne">chemtorch</span><span class="w"> </span><span class="gi">+experiment</span><span class="o">=</span>graph<span class="w"> </span><span class="gi">data_module.subsample</span><span class="o">=</span>0.05<span class="w"> </span><span class="gi">log</span><span class="o">=</span>true<span class="w"> </span><span class="gi">run_name</span><span class="o">=</span>my_first_run
+</pre></div>
+</div>
+<p>You can also group related runs together by setting <code class="code docutils literal notranslate"><span class="pre">group_name</span></code>:</p>
+<div class="highlight-chemtorch notranslate"><div class="highlight"><pre><span></span><span class="ne">chemtorch</span><span class="w"> </span><span class="gi">+experiment</span><span class="o">=</span>graph<span class="w"> </span><span class="gi">data_module.subsample</span><span class="o">=</span>0.05<span class="w"> </span><span class="gi">log</span><span class="o">=</span>true<span class="w"> </span><span class="gi">group_name</span><span class="o">=</span>my_experiment
+</pre></div>
+</div>
+</section>
 </section>
 
 
@@ -352,20 +429,20 @@ document.write(`
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="wandb.html"
+       href="quick_start.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Intro to Weights &amp; Biases</p>
+        <p class="prev-next-title">Quick Start</p>
       </div>
     </a>
     <a class="right-next"
-       href="custom_dataset.html"
+       href="config.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Using Your Own Dataset</p>
+        <p class="prev-next-title">Understand Configs</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -375,6 +452,22 @@ document.write(`
             </div>
             
             
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#connect-w-b">Connect W&amp;B</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#log-your-chemtorch-runs">Log Your ChemTorch Runs</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
               
             
           </div>

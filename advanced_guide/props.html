@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Hydra Guide &#8212; ChemTorch</title>
+    <title>Runtime Properties &#8212; ChemTorch</title>
   
   
   
@@ -41,12 +41,12 @@
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'developer_guide/hydra';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'advanced_guide/props';</script>
     <link rel="icon" href="../_static/chemtorch_favicon.png"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Framework Structure" href="framework_structure.html" />
-    <link rel="prev" title="Hyperparameter Sweeps with W&amp;B" href="../examples/sweeps.html" />
+    <link rel="next" title="Training Curves" href="../examples/training_curves.html" />
+    <link rel="prev" title="Hydra" href="hydra.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -159,18 +159,34 @@
         <p aria-level="2" class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/quick_start.html">Quick Start</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/wandb.html">Intro to Weights &amp; Biases</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/cli_usage.html">CLI Usage</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/custom_dataset.html">Using Your Own Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/logging.html">Setup Logging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/config.html">Understand Configs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/experiments.html">Create Experiments</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Examples &amp; Tutorials</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">User Guide</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../examples/sweeps.html">Hyperparameter Sweeps with W&amp;B</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/pipeline_overview.html">Components Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/custom_data.html">Using Your Own Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/custom_components.html">Defining Custom Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/cli_usage.html">CLI Usage &amp; Config Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/sweeps.html">Hyperparameter Sweeps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/reproducibility.html">Reproducing Experiments</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Advanced Guide</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="hydra.html">Hydra</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Runtime Properties</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Examples</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../examples/training_curves.html">Training Curves</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/ood_benchmarking.html">OOD benchmarking</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Developer Guide</span></p>
-<ul class="current nav bd-sidenav">
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Hydra Guide</a></li>
-<li class="toctree-l1"><a class="reference internal" href="framework_structure.html">Framework Structure</a></li>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../developer_guide/contributing.html">Contribution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer_guide/framework_structure.html">Framework Structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer_guide/testing.html">Testing</a></li>
 </ul>
 
     </div>
@@ -240,7 +256,7 @@
       
       
       
-      <li><a href="../_sources/developer_guide/hydra.rst" target="_blank"
+      <li><a href="../_sources/advanced_guide/props.rst" target="_blank"
    class="btn btn-sm btn-download-source-button dropdown-item"
    title="Download source file"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -322,7 +338,7 @@ document.write(`
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>Hydra Guide</h1>
+    <h1>Runtime Properties</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -336,8 +352,9 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="hydra-guide">
-<span id="id1"></span><h1>Hydra Guide<a class="headerlink" href="#hydra-guide" title="Link to this heading">#</a></h1>
+  <section id="runtime-properties">
+<span id="props"></span><h1>Runtime Properties<a class="headerlink" href="#runtime-properties" title="Link to this heading">#</a></h1>
+<p>Coming soon …</p>
 </section>
 
 
@@ -352,20 +369,20 @@ document.write(`
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="../examples/sweeps.html"
+       href="hydra.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Hyperparameter Sweeps with W&amp;B</p>
+        <p class="prev-next-title">Hydra</p>
       </div>
     </a>
     <a class="right-next"
-       href="framework_structure.html"
+       href="../examples/training_curves.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Framework Structure</p>
+        <p class="prev-next-title">Training Curves</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>

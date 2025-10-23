@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Hyperparameter Sweeps with W&amp;B &#8212; ChemTorch</title>
+    <title>Hyperparameter Sweeps &#8212; ChemTorch</title>
   
   
   
@@ -41,12 +41,12 @@
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'examples/sweeps';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'user_guide/sweeps';</script>
     <link rel="icon" href="../_static/chemtorch_favicon.png"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Hydra Guide" href="../developer_guide/hydra.html" />
-    <link rel="prev" title="Using Your Own Dataset" href="../getting_started/custom_dataset.html" />
+    <link rel="next" title="Reproducing Experiments" href="reproducibility.html" />
+    <link rel="prev" title="CLI Usage &amp; Config Reference" href="cli_usage.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -159,18 +159,34 @@
         <p aria-level="2" class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/quick_start.html">Quick Start</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/wandb.html">Intro to Weights &amp; Biases</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/cli_usage.html">CLI Usage</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/custom_dataset.html">Using Your Own Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/logging.html">Setup Logging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/config.html">Understand Configs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/experiments.html">Create Experiments</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Examples &amp; Tutorials</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">User Guide</span></p>
 <ul class="current nav bd-sidenav">
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Hyperparameter Sweeps with W&amp;B</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pipeline_overview.html">Components Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="custom_data.html">Using Your Own Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="custom_components.html">Defining Custom Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cli_usage.html">CLI Usage &amp; Config Reference</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Hyperparameter Sweeps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reproducibility.html">Reproducing Experiments</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Advanced Guide</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../advanced_guide/hydra.html">Hydra</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../advanced_guide/props.html">Runtime Properties</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Examples</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../examples/training_curves.html">Training Curves</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/ood_benchmarking.html">OOD benchmarking</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Developer Guide</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../developer_guide/hydra.html">Hydra Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer_guide/contributing.html">Contribution</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../developer_guide/framework_structure.html">Framework Structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer_guide/testing.html">Testing</a></li>
 </ul>
 
     </div>
@@ -240,7 +256,7 @@
       
       
       
-      <li><a href="../_sources/examples/sweeps.rst" target="_blank"
+      <li><a href="../_sources/user_guide/sweeps.rst" target="_blank"
    class="btn btn-sm btn-download-source-button dropdown-item"
    title="Download source file"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -324,7 +340,7 @@ document.write(`
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>Hyperparameter Sweeps with W&B</h1>
+    <h1>Hyperparameter Sweeps</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -338,6 +354,7 @@ document.write(`
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#setup-a-sweep">Setup a Sweep</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#chemtorch-specific-configuration">ChemTorch-Specific Configuration</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#command-setup">Command Setup</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optimization-goal">Optimization Goal</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#parameter-naming">Parameter Naming</a></li>
 </ul>
 </li>
@@ -354,8 +371,8 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="hyperparameter-sweeps-with-w-b">
-<span id="sweeps"></span><h1>Hyperparameter Sweeps with W&amp;B<a class="headerlink" href="#hyperparameter-sweeps-with-w-b" title="Link to this heading">#</a></h1>
+  <section id="hyperparameter-sweeps">
+<span id="sweeps"></span><h1>Hyperparameter Sweeps<a class="headerlink" href="#hyperparameter-sweeps" title="Link to this heading">#</a></h1>
 <p>This tutorial shows you how to run hyperparameter sweeps with ChemTorch and Weights &amp; Biases (W&amp;B).
 A sweep allows you to systematically explore different hyperparameter configurations to find the best performing model.
 Please refer to the <a class="reference external" href="https://docs.wandb.ai/guides/sweeps">official W&amp;B sweeps documentation</a> for more details on sweeps.</p>
@@ -371,7 +388,7 @@ Please refer to the <a class="reference external" href="https://docs.wandb.ai/gu
 <section id="setup-a-sweep">
 <h2>Setup a Sweep<a class="headerlink" href="#setup-a-sweep" title="Link to this heading">#</a></h2>
 <p>To setup a sweep, you need to define a sweep configuration in a YAML file.
-Here’s a simple example for tuning a DMPNN model:</p>
+Here’s a simple example for tuning a D-MPNN model:</p>
 <div class="sweep-chemtorch-command highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="w"> </span><span class="nt">program</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">chemtorch</span>
 <span class="w"> </span><span class="nt">command</span><span class="p">:</span>
 <span class="w">   </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${env}</span>
@@ -416,7 +433,8 @@ Here’s a simple example for tuning a DMPNN model:</p>
 <h2>ChemTorch-Specific Configuration<a class="headerlink" href="#chemtorch-specific-configuration" title="Link to this heading">#</a></h2>
 <section id="command-setup">
 <h3>Command Setup<a class="headerlink" href="#command-setup" title="Link to this heading">#</a></h3>
-<p>The <code class="docutils literal notranslate"><span class="pre">command</span></code> section is crucial for ChemTorch compatibility:</p>
+<p>In the <code class="docutils literal notranslate"><span class="pre">command</span></code> we specify the same command that one would use to run
+ChemTorch from the CLI:</p>
 <div class="sweep-chemtorch-command highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="w"> </span><span class="nt">command</span><span class="p">:</span>
 <span class="w">   </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${env}</span>
 <span class="w">   </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${program}</span>
@@ -431,6 +449,20 @@ Here’s a simple example for tuning a DMPNN model:</p>
 <li><p><code class="docutils literal notranslate"><span class="pre">&quot;+experiment=graph&quot;</span></code>: Loads a base experiment configuration for graph-based models</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">${args_no_hyphens}</span></code>: formats sweep parameters without hyphens for Hydra compatibility</p></li>
 </ul>
+</section>
+<section id="optimization-goal">
+<h3>Optimization Goal<a class="headerlink" href="#optimization-goal" title="Link to this heading">#</a></h3>
+<p>In this config we tell the agent to minimize the epoch-level validation
+loss:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">metric</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">goal</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">minimize</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">val_loss_epoch</span>
+</pre></div>
+</div>
+<p>This requires that <cite>val_loss_epoch</cite> is logged to W&amp;B during training.
+ChemTorch does this by default, but if you want to optimize hyperparameters
+with respect to another metric you must ensure that it is logged under the
+same name as specified in the sweep config.</p>
 </section>
 <section id="parameter-naming">
 <h3>Parameter Naming<a class="headerlink" href="#parameter-naming" title="Link to this heading">#</a></h3>
@@ -492,7 +524,6 @@ Here’s a simple example for tuning a DMPNN model:</p>
 - <code class="docutils literal notranslate"><span class="pre">uniform</span></code> for continuous ranges</p></li>
 <li><p><strong>Set early termination</strong>: Use Hyperband or other early stopping to save compute</p></li>
 <li><p><strong>Cap the number of runs</strong>: Limit total runs by setting the <cite>–count</cite> flag in the <cite>wandb agent</cite> command</p></li>
-<li><p><strong>Monitor your metric</strong>: Ensure your target metric (e.g., <code class="docutils literal notranslate"><span class="pre">val_loss_epoch</span></code>) is logged by ChemTorch</p></li>
 <li><p><strong>Use base experiments</strong>: Leverage existing experiment configs with <code class="docutils literal notranslate"><span class="pre">+experiment=&lt;name&gt;</span></code> to reduce configuration complexity</p></li>
 </ul>
 </section>
@@ -510,20 +541,20 @@ Here’s a simple example for tuning a DMPNN model:</p>
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="../getting_started/custom_dataset.html"
+       href="cli_usage.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Using Your Own Dataset</p>
+        <p class="prev-next-title">CLI Usage &amp; Config Reference</p>
       </div>
     </a>
     <a class="right-next"
-       href="../developer_guide/hydra.html"
+       href="reproducibility.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Hydra Guide</p>
+        <p class="prev-next-title">Reproducing Experiments</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -547,6 +578,7 @@ Here’s a simple example for tuning a DMPNN model:</p>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#setup-a-sweep">Setup a Sweep</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#chemtorch-specific-configuration">ChemTorch-Specific Configuration</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#command-setup">Command Setup</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optimization-goal">Optimization Goal</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#parameter-naming">Parameter Naming</a></li>
 </ul>
 </li>

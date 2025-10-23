@@ -1,0 +1,698 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Understand Configs &#8212; ChemTorch</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom_syntax.css?v=cf89f813" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../_static/documentation_options.js?v=1a9ffd16"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'getting_started/config';</script>
+    <link rel="icon" href="../_static/chemtorch_favicon.png"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Create Experiments" href="experiments.html" />
+    <link rel="prev" title="Setup Logging" href="logging.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/chemtorch_logo_light.svg" class="logo__image only-light" alt="ChemTorch documentation - Home"/>
+    <script>document.write(`<img src="../_static/chemtorch_logo_dark_lightbackground.png" class="logo__image only-dark" alt="ChemTorch documentation - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="quick_start.html">Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="logging.html">Setup Logging</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Understand Configs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="experiments.html">Create Experiments</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/pipeline_overview.html">Components Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/custom_data.html">Using Your Own Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/custom_components.html">Defining Custom Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/cli_usage.html">CLI Usage &amp; Config Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/sweeps.html">Hyperparameter Sweeps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/reproducibility.html">Reproducing Experiments</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Advanced Guide</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../advanced_guide/hydra.html">Hydra</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../advanced_guide/props.html">Runtime Properties</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Examples</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../examples/training_curves.html">Training Curves</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/ood_benchmarking.html">OOD benchmarking</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Developer Guide</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../developer_guide/contributing.html">Contribution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer_guide/framework_structure.html">Framework Structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer_guide/testing.html">Testing</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+<a href="https://github.com/heid-lab/chemtorch" target="_blank"
+   class="btn btn-sm btn-source-repository-button"
+   title="Source repository"
+   data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+
+</a>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/getting_started/config.rst" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.rst</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Understand Configs</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-is-configuration">What is Configuration?</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-configuration-folder">The Configuration Folder</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#hierarchical-configuration-with-hydra">Hierarchical Configuration with Hydra</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-config-tree">The Config Tree</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#anatomy-of-a-config-file">Anatomy of a Config File</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hierarchical-composition">Hierarchical Composition</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#changing-configuration-values">Changing Configuration Values</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#via-command-line-quick-experiments">1. Via Command Line (Quick Experiments)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#via-editing-component-configs-not-recommended">2. Via Editing Component Configs (Not Recommended)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#via-experiment-configs-recommended">3. Via Experiment Configs (Recommended)</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#how-values-get-resolved">How Values Get Resolved</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#next-steps">Next Steps</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="understand-configs">
+<span id="config"></span><h1>Understand Configs<a class="headerlink" href="#understand-configs" title="Link to this heading">#</a></h1>
+<p>In the <a class="reference internal" href="quick_start.html#quick-start"><span class="std std-ref">Quick Start</span></a>, you launched an experiment using the command line.
+Behind the scenes, ChemTorch used configuration files to set up your entire machine learning pipeline.
+This page explains the core concepts of ChemTorch’s configuration system.</p>
+<section id="what-is-configuration">
+<h2>What is Configuration?<a class="headerlink" href="#what-is-configuration" title="Link to this heading">#</a></h2>
+<p>Configuration files define <em>what</em> your experiment does without changing the source code.
+They specify which model to use, how to process your data, which optimizer to use, and many other settings.</p>
+<p>ChemTorch uses <strong>YAML files</strong> for configuration. If you’re new to YAML, here’s a quick primer:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># This is a comment</span>
+<span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">value</span>
+<span class="nt">number</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">42</span>
+<span class="nt">boolean</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+
+<span class="nt">nested</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">subkey</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">nested_value</span>
+
+<span class="nt">list</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">item1</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">item2</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">item3</span>
+</pre></div>
+</div>
+<p>YAML is human-readable and uses indentation (like Python) to show structure.</p>
+</section>
+<section id="the-configuration-folder">
+<h2>The Configuration Folder<a class="headerlink" href="#the-configuration-folder" title="Link to this heading">#</a></h2>
+<p>All configuration files live in the <code class="docutils literal notranslate"><span class="pre">conf/</span></code> folder at the root of the ChemTorch repository:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>conf/
+├── base.yaml
+├── experiment/
+├── data_module/
+├── model/
+├── routine/
+├── trainer/
+├── props/
+└── saved_configs/
+</pre></div>
+</div>
+<p>Here’s what each part does:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">base.yaml</span></code>: Top-level defaults loaded automatically</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">data_module/</span></code>, <code class="docutils literal notranslate"><span class="pre">model/</span></code>, <code class="docutils literal notranslate"><span class="pre">routine/</span></code>, <code class="docutils literal notranslate"><span class="pre">trainer/</span></code>: Component building blocks</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">experiment/</span></code>: Your experiment configurations (see <a class="reference internal" href="experiments.html#experiments"><span class="std std-ref">Create Experiments</span></a>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">saved_configs/</span></code>: Saved configs for reproducibility (see <a class="reference internal" href="../user_guide/reproducibility.html#reproducability"><span class="std std-ref">Reproducing Experiments</span></a>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">props/</span></code>: Runtime-computed properties (see <a class="reference internal" href="../advanced_guide/props.html#props"><span class="std std-ref">Runtime Properties</span></a>)</p></li>
+</ul>
+</section>
+<section id="hierarchical-configuration-with-hydra">
+<h2>Hierarchical Configuration with Hydra<a class="headerlink" href="#hierarchical-configuration-with-hydra" title="Link to this heading">#</a></h2>
+<p>ChemTorch uses <a class="reference external" href="https://hydra.cc/">Hydra</a> for configuration management.
+Hydra’s key feature is <strong>hierarchical composition</strong> - the ability to build complex configs by combining simpler ones.</p>
+<section id="the-config-tree">
+<h3>The Config Tree<a class="headerlink" href="#the-config-tree" title="Link to this heading">#</a></h3>
+<p>The component folders (<code class="docutils literal notranslate"><span class="pre">model/</span></code>, <code class="docutils literal notranslate"><span class="pre">routine/</span></code>, etc.) form a <strong>config tree</strong>.
+Each folder is a <strong>config group</strong> - a category of interchangeable components.</p>
+<p>For example, <code class="docutils literal notranslate"><span class="pre">conf/model/</span></code> contains different model architectures:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>model/
+├── dmpnn.yaml
+├── gcn.yaml
+├── gat.yaml
+└── ...
+</pre></div>
+</div>
+<p>Each file configures a specific model that can be selected for your experiment.</p>
+</section>
+<section id="anatomy-of-a-config-file">
+<h3>Anatomy of a Config File<a class="headerlink" href="#anatomy-of-a-config-file" title="Link to this heading">#</a></h3>
+<p>Let’s look at an example config, <code class="docutils literal notranslate"><span class="pre">model/dmpnn.yaml</span></code>:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">_target_</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">chemtorch.components.model.gnn.gnn.GNN</span>
+
+<span class="nt">defaults</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">encoder</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">directed_edge_enc</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">layer_stack</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dmpnn_stack</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">pool</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">global_pool</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">head</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mlp</span>
+
+<span class="nt">hidden_channels</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">128</span>
+</pre></div>
+</div>
+<p>Key elements:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">_target_</span></code>: The Python class to instantiate (appears in every config file)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">defaults</span></code>: Sub-components this config depends on</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">hidden_channels</span></code>: A parameter passed to the class’s <code class="docutils literal notranslate"><span class="pre">__init__()</span></code> method</p></li>
+</ul>
+</section>
+<section id="hierarchical-composition">
+<h3>Hierarchical Composition<a class="headerlink" href="#hierarchical-composition" title="Link to this heading">#</a></h3>
+<p>Configs can include other configs via the <code class="docutils literal notranslate"><span class="pre">defaults</span></code> list, forming a hierarchy.</p>
+<p>For example, <code class="docutils literal notranslate"><span class="pre">routine/regression.yaml</span></code> composes multiple sub-components:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">_target_</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">chemtorch.core.routine.RegressionRoutine</span>
+
+<span class="nt">defaults</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">loss</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mse</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">optimizer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">adamw</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">lr_scheduler</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">cosine_with_warmup</span>
+</pre></div>
+</div>
+<p>This means: “Use the regression routine with MSE loss, AdamW optimizer, and cosine warmup scheduler.”</p>
+<p>The config tree for <code class="docutils literal notranslate"><span class="pre">routine/</span></code> looks like:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>routine/
+├── regression.yaml
+├── loss/
+│   ├── mse.yaml
+│   ├── cross_entropy.yaml
+│   └── ...
+├── optimizer/
+│   ├── adamw.yaml
+│   └── ...
+└── lr_scheduler/
+    ├── cosine_with_warmup.yaml
+    └── ...
+</pre></div>
+</div>
+<p>Each sub-component can be swapped independently, making configs highly modular and reusable.</p>
+</section>
+</section>
+<section id="changing-configuration-values">
+<h2>Changing Configuration Values<a class="headerlink" href="#changing-configuration-values" title="Link to this heading">#</a></h2>
+<p>There are three ways to customize your experiments, listed from most to least common:</p>
+<section id="via-command-line-quick-experiments">
+<h3>1. Via Command Line (Quick Experiments)<a class="headerlink" href="#via-command-line-quick-experiments" title="Link to this heading">#</a></h3>
+<p>The easiest way to experiment is using command-line overrides.
+You can change any configuration value without editing files:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Change the number of training epochs</span>
+chemtorch<span class="w"> </span>+experiment<span class="o">=</span>graph<span class="w"> </span>trainer.max_epochs<span class="o">=</span><span class="m">200</span>
+
+<span class="c1"># Use a different model</span>
+chemtorch<span class="w"> </span>+experiment<span class="o">=</span>graph<span class="w"> </span><span class="nv">model</span><span class="o">=</span>gcn
+
+<span class="c1"># Change multiple values</span>
+chemtorch<span class="w"> </span>+experiment<span class="o">=</span>graph<span class="w"> </span><span class="nv">model</span><span class="o">=</span>gcn<span class="w"> </span>model.hidden_channels<span class="o">=</span><span class="m">256</span><span class="w"> </span><span class="nv">seed</span><span class="o">=</span><span class="m">42</span>
+</pre></div>
+</div>
+<p>The syntax is simple: <code class="docutils literal notranslate"><span class="pre">key.subkey=value</span></code></p>
+<p>This is perfect for quick experiments and hyperparameter tuning.
+For more CLI patterns, see <a class="reference internal" href="../user_guide/cli_usage.html#cli-usage"><span class="std std-ref">CLI Usage &amp; Config Reference</span></a>.</p>
+</section>
+<section id="via-editing-component-configs-not-recommended">
+<h3>2. Via Editing Component Configs (Not Recommended)<a class="headerlink" href="#via-editing-component-configs-not-recommended" title="Link to this heading">#</a></h3>
+<p>You <em>can</em> directly edit files in <code class="docutils literal notranslate"><span class="pre">conf/model/</span></code>, <code class="docutils literal notranslate"><span class="pre">conf/routine/</span></code>, etc.
+For example, you could open <code class="docutils literal notranslate"><span class="pre">conf/model/dmpnn.yaml</span></code> and change <code class="docutils literal notranslate"><span class="pre">hidden_channels:</span> <span class="pre">128</span></code> to <code class="docutils literal notranslate"><span class="pre">hidden_channels:</span> <span class="pre">256</span></code>.</p>
+<p>However, this is <strong>not recommended</strong> because:</p>
+<ul class="simple">
+<li><p>It changes defaults for <em>all</em> experiments</p></li>
+<li><p>It makes tracking changes difficult</p></li>
+<li><p>It can break existing experiments</p></li>
+</ul>
+<p>Only edit component configs if you want to permanently change default behavior across all experiments.</p>
+</section>
+<section id="via-experiment-configs-recommended">
+<h3>3. Via Experiment Configs (Recommended)<a class="headerlink" href="#via-experiment-configs-recommended" title="Link to this heading">#</a></h3>
+<p>Instead of editing component configs, create a new experiment config in <code class="docutils literal notranslate"><span class="pre">conf/experiment/</span></code>:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># @package _global_</span>
+<span class="nt">defaults</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">/data_module/data_pipeline</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">rdb7_fwd</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">/data_module/representation</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">cgr</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">/model</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dmpnn</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">/routine</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">regression</span>
+
+<span class="c1"># Override values</span>
+<span class="nt">model</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">hidden_channels</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">256</span>
+
+<span class="nt">trainer</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">max_epochs</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">200</span>
+
+<span class="nt">tasks</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">fit</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">test</span>
+</pre></div>
+</div>
+<p>Then run: <code class="docutils literal notranslate"><span class="pre">chemtorch</span> <span class="pre">+experiment=my_experiment</span></code></p>
+<p>This approach keeps your experiments organized and component configs reusable.
+Learn more in <a class="reference internal" href="experiments.html#experiments"><span class="std std-ref">Create Experiments</span></a>.</p>
+</section>
+</section>
+<section id="how-values-get-resolved">
+<h2>How Values Get Resolved<a class="headerlink" href="#how-values-get-resolved" title="Link to this heading">#</a></h2>
+<p>When you run ChemTorch, configuration values are determined by priority (highest to lowest):</p>
+<ol class="arabic simple">
+<li><p><strong>Command-line overrides</strong>: <code class="docutils literal notranslate"><span class="pre">trainer.max_epochs=200</span></code></p></li>
+<li><p><strong>Experiment config</strong>: Values in <code class="docutils literal notranslate"><span class="pre">conf/experiment/your_experiment.yaml</span></code></p></li>
+<li><p><strong>Component defaults</strong>: Values in component configs (e.g., <code class="docutils literal notranslate"><span class="pre">conf/model/dmpnn.yaml</span></code>)</p></li>
+<li><p><strong>Base config</strong>: Values in <code class="docutils literal notranslate"><span class="pre">conf/base.yaml</span></code></p></li>
+</ol>
+<p>This means command-line overrides always win, followed by your experiment config, and so on.</p>
+</section>
+<section id="next-steps">
+<h2>Next Steps<a class="headerlink" href="#next-steps" title="Link to this heading">#</a></h2>
+<p>Now that you understand the core configuration concepts, you’re ready to:</p>
+<ul class="simple">
+<li><p><strong>Create your first experiment</strong>: <a class="reference internal" href="experiments.html#experiments"><span class="std std-ref">Create Experiments</span></a></p></li>
+<li><p><strong>Explore available components</strong>: <a class="reference internal" href="../user_guide/pipeline_overview.html#pipeline-overview"><span class="std std-ref">Components Overview</span></a></p></li>
+<li><p><strong>Learn advanced Hydra features</strong>: <a class="reference internal" href="../advanced_guide/hydra.html#hydra"><span class="std std-ref">Hydra</span></a></p></li>
+<li><p><strong>Set up reproducibility</strong>: <a class="reference internal" href="../user_guide/reproducibility.html#reproducability"><span class="std std-ref">Reproducing Experiments</span></a></p></li>
+</ul>
+<p>For a deeper dive into Hydra’s capabilities, see the <a class="reference external" href="https://hydra.cc/docs/intro/">official Hydra documentation</a>.</p>
+</section>
+</section>
+
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="logging.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Setup Logging</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="experiments.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Create Experiments</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-is-configuration">What is Configuration?</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-configuration-folder">The Configuration Folder</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#hierarchical-configuration-with-hydra">Hierarchical Configuration with Hydra</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-config-tree">The Config Tree</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#anatomy-of-a-config-file">Anatomy of a Config File</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hierarchical-composition">Hierarchical Composition</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#changing-configuration-values">Changing Configuration Values</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#via-command-line-quick-experiments">1. Via Command Line (Quick Experiments)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#via-editing-component-configs-not-recommended">2. Via Editing Component Configs (Not Recommended)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#via-experiment-configs-recommended">3. Via Experiment Configs (Recommended)</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#how-values-get-resolved">How Values Get Resolved</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#next-steps">Next Steps</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Jasper De Landsheere, Anton Zamyatin, Esther Heid
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2025 Esther Heid.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

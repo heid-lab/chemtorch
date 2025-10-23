@@ -1,0 +1,783 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>CLI Usage &amp; Config Reference &#8212; ChemTorch</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom_syntax.css?v=cf89f813" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../_static/documentation_options.js?v=1a9ffd16"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'user_guide/cli_usage';</script>
+    <link rel="icon" href="../_static/chemtorch_favicon.png"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Hyperparameter Sweeps" href="sweeps.html" />
+    <link rel="prev" title="Defining Custom Components" href="custom_components.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/chemtorch_logo_light.svg" class="logo__image only-light" alt="ChemTorch documentation - Home"/>
+    <script>document.write(`<img src="../_static/chemtorch_logo_dark_lightbackground.png" class="logo__image only-dark" alt="ChemTorch documentation - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/quick_start.html">Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/logging.html">Setup Logging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/config.html">Understand Configs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/experiments.html">Create Experiments</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="pipeline_overview.html">Components Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="custom_data.html">Using Your Own Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="custom_components.html">Defining Custom Components</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">CLI Usage &amp; Config Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sweeps.html">Hyperparameter Sweeps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reproducibility.html">Reproducing Experiments</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Advanced Guide</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../advanced_guide/hydra.html">Hydra</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../advanced_guide/props.html">Runtime Properties</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Examples</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../examples/training_curves.html">Training Curves</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/ood_benchmarking.html">OOD benchmarking</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Developer Guide</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../developer_guide/contributing.html">Contribution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer_guide/framework_structure.html">Framework Structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer_guide/testing.html">Testing</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+<a href="https://github.com/heid-lab/chemtorch" target="_blank"
+   class="btn btn-sm btn-source-repository-button"
+   title="Source repository"
+   data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+
+</a>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/user_guide/cli_usage.rst" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.rst</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>CLI Usage & Config Reference</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#command-line-interface">Command-Line Interface</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#basic-usage">Basic Usage</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#override-syntax">Override Syntax</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#chemtorch-configuration-reference">ChemTorch Configuration Reference</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#execution-control">Execution Control</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#logging-weights-biases">Logging (Weights &amp; Biases)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#model-loading">Model Loading</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#prediction-saving">Prediction Saving</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#data-subsampling">Data Subsampling</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#advanced-options">Advanced Options</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#common-cli-patterns">Common CLI Patterns</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#quick-testing">Quick Testing</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#inference">Inference</a></li>
+</ul>
+</li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="cli-usage-config-reference">
+<span id="cli-usage"></span><h1>CLI Usage &amp; Config Reference<a class="headerlink" href="#cli-usage-config-reference" title="Link to this heading">#</a></h1>
+<p>This page provides a comprehensive reference for using the ChemTorch command-line interface (CLI) and all ChemTorch-specific configuration options.</p>
+<section id="command-line-interface">
+<h2>Command-Line Interface<a class="headerlink" href="#command-line-interface" title="Link to this heading">#</a></h2>
+<section id="basic-usage">
+<h3>Basic Usage<a class="headerlink" href="#basic-usage" title="Link to this heading">#</a></h3>
+<p>The ChemTorch CLI follows this general pattern:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>chemtorch<span class="w"> </span>+experiment<span class="o">=</span>NAME<span class="w"> </span><span class="o">[</span><span class="nv">key</span><span class="o">=</span>value<span class="o">]</span><span class="w"> </span><span class="o">[</span>key.subkey<span class="o">=</span>value<span class="o">]</span><span class="w"> </span>...
+</pre></div>
+</div>
+<p><strong>Examples:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Run an experiment</span>
+chemtorch<span class="w"> </span>+experiment<span class="o">=</span>graph
+
+<span class="c1"># Override values</span>
+chemtorch<span class="w"> </span>+experiment<span class="o">=</span>graph<span class="w"> </span>trainer.max_epochs<span class="o">=</span><span class="m">200</span><span class="w"> </span><span class="nv">seed</span><span class="o">=</span><span class="m">42</span>
+
+<span class="c1"># Change a component</span>
+chemtorch<span class="w"> </span>+experiment<span class="o">=</span>graph<span class="w"> </span><span class="nv">model</span><span class="o">=</span>gcn
+</pre></div>
+</div>
+</section>
+<section id="override-syntax">
+<h3>Override Syntax<a class="headerlink" href="#override-syntax" title="Link to this heading">#</a></h3>
+<p><strong>Nested keys</strong> - Use dot notation:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>chemtorch<span class="w"> </span>+experiment<span class="o">=</span>graph<span class="w"> </span>model.hidden_channels<span class="o">=</span><span class="m">256</span>
+</pre></div>
+</div>
+<p><strong>Component selection</strong> - Swap entire configs:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>chemtorch<span class="w"> </span>+experiment<span class="o">=</span>graph<span class="w"> </span><span class="nv">model</span><span class="o">=</span>gcn
+</pre></div>
+</div>
+<p><strong>Lists</strong> - Use square brackets with single/double quotes:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>chemtorch<span class="w"> </span>+experiment<span class="o">=</span>graph<span class="w"> </span><span class="nv">tasks</span><span class="o">=</span><span class="s1">&#39;[fit,test]&#39;</span>
+</pre></div>
+</div>
+<p>There must be no white space before and after the comma!
+Otherwise Hydra will throw an error.</p>
+<p><strong>Booleans</strong>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>chemtorch<span class="w"> </span>+experiment<span class="o">=</span>graph<span class="w"> </span><span class="nv">log</span><span class="o">=</span><span class="nb">true</span>
+</pre></div>
+</div>
+<p><strong>Null values</strong> - Use <code class="docutils literal notranslate"><span class="pre">~</span></code> prefix:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>chemtorch<span class="w"> </span>+experiment<span class="o">=</span>graph<span class="w"> </span>~group_name
+</pre></div>
+</div>
+<p>You cannot use <code class="docutils literal notranslate"><span class="pre">key=null</span></code> because Hydra intreprets <code class="docutils literal notranslate"><span class="pre">null</span></code> as the string <code class="docutils literal notranslate"><span class="pre">&quot;null&quot;</span></code> when passed via the CLI.
+Importantly, <code class="docutils literal notranslate"><span class="pre">~</span></code> removes the key but this only works if the key is present in the config in the first place.
+Otherwise, Hydra will throw an error.</p>
+<p><strong>Strings with spaces</strong> - Use quotes:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>chemtorch<span class="w"> </span>+experiment<span class="o">=</span>graph<span class="w"> </span><span class="nv">run_name</span><span class="o">=</span><span class="s2">&quot;my experiment&quot;</span>
+</pre></div>
+</div>
+<p><strong>Multiple runs</strong> - Use multirun mode (<code class="docutils literal notranslate"><span class="pre">-m</span></code>):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>chemtorch<span class="w"> </span>-m<span class="w"> </span>+experiment<span class="o">=</span>graph<span class="w"> </span><span class="nv">seed</span><span class="o">=</span><span class="m">0</span>,1,2
+</pre></div>
+</div>
+</section>
+</section>
+<section id="chemtorch-configuration-reference">
+<h2>ChemTorch Configuration Reference<a class="headerlink" href="#chemtorch-configuration-reference" title="Link to this heading">#</a></h2>
+<p>This section documents all ChemTorch-specific configuration options that can be set in experiment configs or via the CLI.</p>
+<section id="execution-control">
+<h3>Execution Control<a class="headerlink" href="#execution-control" title="Link to this heading">#</a></h3>
+<p><strong>tasks</strong></p>
+<p>Controls which stages of the pipeline to execute.</p>
+<ul class="simple">
+<li><p><strong>Type</strong>: List of strings</p></li>
+<li><p><strong>Options</strong>: <code class="docutils literal notranslate"><span class="pre">fit</span></code>, <code class="docutils literal notranslate"><span class="pre">test</span></code>, <code class="docutils literal notranslate"><span class="pre">validate</span></code>, <code class="docutils literal notranslate"><span class="pre">predict</span></code></p></li>
+<li><p><strong>Default</strong>: <code class="docutils literal notranslate"><span class="pre">null</span></code> (must be specified)</p></li>
+</ul>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">tasks</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">fit</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">test</span>
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>chemtorch<span class="w"> </span>+experiment<span class="o">=</span>graph<span class="w"> </span><span class="nv">tasks</span><span class="o">=</span><span class="s1">&#39;[fit,test]&#39;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">fit</span></code>: Training and validation</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">test</span></code>: Evaluate on test set(s)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">validate</span></code>: Evaluate on validation set only</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">predict</span></code>: Run inference without training (see <span class="xref std std-ref">inference</span>)</p></li>
+</ul>
+<p><strong>seed</strong></p>
+<p>Random seed for reproducibility.</p>
+<ul class="simple">
+<li><p><strong>Type</strong>: Integer</p></li>
+<li><p><strong>Default</strong>: <code class="docutils literal notranslate"><span class="pre">0</span></code></p></li>
+</ul>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">seed</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">42</span>
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>chemtorch<span class="w"> </span>+experiment<span class="o">=</span>graph<span class="w"> </span><span class="nv">seed</span><span class="o">=</span><span class="m">42</span>
+</pre></div>
+</div>
+<p>Sets the random seed for Python, NumPy, PyTorch, and PyTorch Lightning to ensure reproducible results.</p>
+</section>
+<section id="logging-weights-biases">
+<h3>Logging (Weights &amp; Biases)<a class="headerlink" href="#logging-weights-biases" title="Link to this heading">#</a></h3>
+<p><strong>log</strong></p>
+<p>Enable or disable Weights &amp; Biases logging.</p>
+<ul class="simple">
+<li><p><strong>Type</strong>: Boolean</p></li>
+<li><p><strong>Default</strong>: <code class="docutils literal notranslate"><span class="pre">false</span></code></p></li>
+</ul>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">log</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>chemtorch<span class="w"> </span>+experiment<span class="o">=</span>graph<span class="w"> </span><span class="nv">log</span><span class="o">=</span><span class="nb">true</span>
+</pre></div>
+</div>
+<p><strong>project_name</strong></p>
+<p>W&amp;B project name for organizing runs.</p>
+<ul class="simple">
+<li><p><strong>Type</strong>: String</p></li>
+<li><p><strong>Default</strong>: <code class="docutils literal notranslate"><span class="pre">&quot;chemtorch&quot;</span></code></p></li>
+</ul>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">project_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_project</span>
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>chemtorch<span class="w"> </span>+experiment<span class="o">=</span>graph<span class="w"> </span><span class="nv">project_name</span><span class="o">=</span>my_project
+</pre></div>
+</div>
+<p><strong>group_name</strong></p>
+<p>W&amp;B group name for organizing related runs (e.g., hyperparameter sweeps).</p>
+<ul class="simple">
+<li><p><strong>Type</strong>: String or null</p></li>
+<li><p><strong>Default</strong>: <code class="docutils literal notranslate"><span class="pre">null</span></code></p></li>
+</ul>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">group_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">hyperparameter_sweep_1</span>
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>chemtorch<span class="w"> </span>+experiment<span class="o">=</span>graph<span class="w"> </span><span class="nv">group_name</span><span class="o">=</span>my_group
+</pre></div>
+</div>
+<p><strong>run_name</strong></p>
+<p>W&amp;B run name for identifying individual runs.</p>
+<ul class="simple">
+<li><p><strong>Type</strong>: String or null</p></li>
+<li><p><strong>Default</strong>: <code class="docutils literal notranslate"><span class="pre">null</span></code> (W&amp;B generates a random name)</p></li>
+</ul>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">run_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">baseline_experiment</span>
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>chemtorch<span class="w"> </span>+experiment<span class="o">=</span>graph<span class="w"> </span><span class="nv">run_name</span><span class="o">=</span><span class="s2">&quot;baseline run&quot;</span>
+</pre></div>
+</div>
+</section>
+<section id="model-loading">
+<h3>Model Loading<a class="headerlink" href="#model-loading" title="Link to this heading">#</a></h3>
+<p><strong>load_model</strong></p>
+<p>Load a pre-trained model from a checkpoint.</p>
+<ul class="simple">
+<li><p><strong>Type</strong>: Boolean</p></li>
+<li><p><strong>Default</strong>: <code class="docutils literal notranslate"><span class="pre">false</span></code></p></li>
+</ul>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">load_model</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="nt">ckpt_path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">path/to/checkpoint.ckpt</span>
+</pre></div>
+</div>
+<p><strong>ckpt_path</strong></p>
+<p>Path to the checkpoint file to load.</p>
+<ul class="simple">
+<li><p><strong>Type</strong>: String or null</p></li>
+<li><p><strong>Default</strong>: <code class="docutils literal notranslate"><span class="pre">null</span></code></p></li>
+<li><p><strong>Required if</strong>: <code class="docutils literal notranslate"><span class="pre">load_model=true</span></code></p></li>
+</ul>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">ckpt_path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">lightning_logs/checkpoints/epoch=99.ckpt</span>
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>chemtorch<span class="w"> </span>+experiment<span class="o">=</span>graph<span class="w"> </span><span class="nv">load_model</span><span class="o">=</span><span class="nb">true</span><span class="w"> </span><span class="nv">ckpt_path</span><span class="o">=</span>path/to/checkpoint.ckpt
+</pre></div>
+</div>
+<p>See <span class="xref std std-ref">inference</span> for more details on loading models.</p>
+</section>
+<section id="prediction-saving">
+<h3>Prediction Saving<a class="headerlink" href="#prediction-saving" title="Link to this heading">#</a></h3>
+<p><strong>predictions_save_path</strong></p>
+<p>Path to save predictions (for single partition experiments).</p>
+<ul class="simple">
+<li><p><strong>Type</strong>: String or null</p></li>
+<li><p><strong>Default</strong>: <code class="docutils literal notranslate"><span class="pre">null</span></code></p></li>
+</ul>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">predictions_save_path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">predictions/test_predictions.csv</span>
+</pre></div>
+</div>
+<p>Use when running a single task (<code class="docutils literal notranslate"><span class="pre">test</span></code>, <code class="docutils literal notranslate"><span class="pre">validate</span></code>, or <code class="docutils literal notranslate"><span class="pre">predict</span></code>).</p>
+<p><strong>predictions_save_dir</strong></p>
+<p>Directory to save predictions (for multi-partition experiments).</p>
+<ul class="simple">
+<li><p><strong>Type</strong>: String or null</p></li>
+<li><p><strong>Default</strong>: <code class="docutils literal notranslate"><span class="pre">null</span></code></p></li>
+</ul>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">predictions_save_dir</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">predictions/</span>
+</pre></div>
+</div>
+<p>Use when running multiple tasks (e.g., <code class="docutils literal notranslate"><span class="pre">tasks:</span> <span class="pre">[fit,</span> <span class="pre">test]</span></code>).</p>
+<p><strong>save_predictions_for</strong></p>
+<p>Specify which dataset partitions to save predictions for.</p>
+<ul class="simple">
+<li><p><strong>Type</strong>: String, list of strings, or null</p></li>
+<li><p><strong>Options</strong>: <code class="docutils literal notranslate"><span class="pre">&quot;train&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;val&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;test&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;predict&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;all&quot;</span></code></p></li>
+<li><p><strong>Default</strong>: <code class="docutils literal notranslate"><span class="pre">null</span></code></p></li>
+</ul>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># Save for single partition</span>
+<span class="nt">save_predictions_for</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">test</span>
+
+<span class="c1"># Save for multiple partitions</span>
+<span class="nt">save_predictions_for</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">train</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">val</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">test</span>
+
+<span class="c1"># Save for all partitions</span>
+<span class="nt">save_predictions_for</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">all</span>
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>chemtorch<span class="w"> </span>+experiment<span class="o">=</span>graph<span class="w"> </span><span class="nv">save_predictions_for</span><span class="o">=</span><span class="nb">test</span><span class="w"> </span><span class="nv">predictions_save_dir</span><span class="o">=</span>predictions/
+</pre></div>
+</div>
+</section>
+<section id="data-subsampling">
+<h3>Data Subsampling<a class="headerlink" href="#data-subsampling" title="Link to this heading">#</a></h3>
+<p><strong>data_module.subsample</strong></p>
+<p>Subsample the dataset for quick testing (not a ChemTorch root-level key, but commonly used).</p>
+<ul class="simple">
+<li><p><strong>Type</strong>: Float (0.0 to 1.0), int (0 to dataset size) or null</p></li>
+<li><p><strong>Default</strong>: <code class="docutils literal notranslate"><span class="pre">null</span></code> (use full dataset)</p></li>
+</ul>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Use 5% of data for quick testing</span>
+chemtorch<span class="w"> </span>+experiment<span class="o">=</span>graph<span class="w"> </span>data_module.subsample<span class="o">=</span><span class="m">0</span>.05
+
+<span class="c1"># Use 100 samples</span>
+chemtorch<span class="w"> </span>+experiment<span class="o">=</span>graph<span class="w"> </span>data_module.subsample<span class="o">=</span><span class="m">100</span>
+</pre></div>
+</div>
+<p>Useful for debugging or testing configurations quickly.</p>
+</section>
+<section id="advanced-options">
+<h3>Advanced Options<a class="headerlink" href="#advanced-options" title="Link to this heading">#</a></h3>
+<p><strong>parameter_limit</strong></p>
+<p>Limit the number of model parameters (for testing or architecture search).
+If the parameter limit is exceeded ChemTorch will skip the run.</p>
+<ul class="simple">
+<li><p><strong>Type</strong>: Integer or null</p></li>
+<li><p><strong>Default</strong>: <code class="docutils literal notranslate"><span class="pre">null</span></code> (no limit)</p></li>
+</ul>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">parameter_limit</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1000000</span><span class="w">  </span><span class="c1"># Max 1M parameters</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="common-cli-patterns">
+<h2>Common CLI Patterns<a class="headerlink" href="#common-cli-patterns" title="Link to this heading">#</a></h2>
+<section id="quick-testing">
+<h3>Quick Testing<a class="headerlink" href="#quick-testing" title="Link to this heading">#</a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Fast test run: subsample data, run a single batch from every dataloader, no logging</span>
+chemtorch<span class="w"> </span>+experiment<span class="o">=</span>graph<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>data_module.subsample<span class="o">=</span><span class="m">0</span>.01<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>+trainer.fast_dev_run<span class="o">=</span><span class="nb">true</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span><span class="nv">log</span><span class="o">=</span><span class="nb">false</span>
+</pre></div>
+</div>
+</section>
+<section id="inference">
+<h3>Inference<a class="headerlink" href="#inference" title="Link to this heading">#</a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Load model and run predictions</span>
+chemtorch<span class="w"> </span>+experiment<span class="o">=</span>graph<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span><span class="nv">load_model</span><span class="o">=</span><span class="nb">true</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span><span class="nv">ckpt_path</span><span class="o">=</span>path/to/checkpoint.ckpt<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span><span class="nv">tasks</span><span class="o">=[</span>predict<span class="o">]</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span><span class="nv">predictions_save_path</span><span class="o">=</span>predictions.csv
+</pre></div>
+</div>
+<p>For advanced Hydra features, see <a class="reference internal" href="../advanced_guide/hydra.html#hydra"><span class="std std-ref">Hydra</span></a> or the <a class="reference external" href="https://hydra.cc/docs/intro/">official Hydra documentation</a>.</p>
+</section>
+</section>
+</section>
+
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="custom_components.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Defining Custom Components</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="sweeps.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Hyperparameter Sweeps</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#command-line-interface">Command-Line Interface</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#basic-usage">Basic Usage</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#override-syntax">Override Syntax</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#chemtorch-configuration-reference">ChemTorch Configuration Reference</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#execution-control">Execution Control</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#logging-weights-biases">Logging (Weights &amp; Biases)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#model-loading">Model Loading</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#prediction-saving">Prediction Saving</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#data-subsampling">Data Subsampling</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#advanced-options">Advanced Options</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#common-cli-patterns">Common CLI Patterns</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#quick-testing">Quick Testing</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#inference">Inference</a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Jasper De Landsheere, Anton Zamyatin, Esther Heid
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2025 Esther Heid.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>
