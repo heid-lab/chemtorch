@@ -35,10 +35,10 @@ Ready to dive in? Follow the :ref:`quick-start` to install ChemTorch and run you
    :caption: User Guide
    :hidden:
 
+   user_guide/cli_usage
    user_guide/pipeline_overview
    user_guide/custom_data
    user_guide/custom_components
-   user_guide/cli_usage
    user_guide/sweeps
    user_guide/reproducibility
 
