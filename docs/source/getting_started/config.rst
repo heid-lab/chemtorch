@@ -159,7 +159,7 @@ There are three ways to customize your experiments, listed from most to least co
 The easiest way to experiment is using command-line overrides.
 You can change any configuration value without editing files:
 
-.. code-block:: bash
+.. code-block:: chemtorch
 
     # Change the number of training epochs
     chemtorch +experiment=graph trainer.max_epochs=200
@@ -233,16 +233,3 @@ When you run ChemTorch, configuration values are determined by priority (highest
 4. **Base config**: Values in ``conf/base.yaml``
 
 This means command-line overrides always win, followed by your experiment config, and so on.
-
-
-Next Steps
-==========
-
-Now that you understand the core configuration concepts, you're ready to:
-
-* **Create your first experiment**: :ref:`experiments`
-* **Explore available components**: :ref:`pipeline_overview`
-* **Learn advanced Hydra features**: :ref:`hydra`
-* **Set up reproducibility**: :ref:`reproducability`
-
-For a deeper dive into Hydra's capabilities, see the `official Hydra documentation <https://hydra.cc/docs/intro/>`__.
