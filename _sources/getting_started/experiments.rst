@@ -246,36 +246,3 @@ That's it! ChemTorch will:
 4. Evaluate on the test set
 
 You've successfully created and run your first experiment config! 🎉
-
-
-Advanced Topics
-===============
-
-For more complex experiments, you may need:
-
-*   **Runtime Properties**
-    Some configurations depend on values computed at runtime (e.g., feature dimensions that depend on the featurizer).
-    Learn more at :ref:`props`.
-
-*   **Advanced Hydra Features**: 
-    Special defaults list syntax, and package management, etc.
-    Learn more at :ref:`hydra`.
-
-*   **Custom Components**: 
-    Add your own models, representations, or training routines.
-    Learn more at :ref:`custom-components`.
-
-
-.. Next Steps
-.. ==========
-
-.. Now that you can create experiment configs, you're ready to:
-
-.. * **Set up logging**: :ref:`logging`
-.. * **Use your own data**: :ref:`custom-data`
-.. * **Explore available components**: :ref:`pipeline_overview`
-.. * **Learn all ChemTorch settings**: :ref:`cli-usage`
-
-
-
-

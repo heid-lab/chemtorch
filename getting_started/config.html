@@ -365,7 +365,6 @@ document.write(`
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#how-values-get-resolved">How Values Get Resolved</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#next-steps">Next Steps</a></li>
 </ul>
             </nav>
         </div>
@@ -503,14 +502,14 @@ Each folder is a <strong>config group</strong> - a category of interchangeable c
 <h3>1. Via Command Line (Quick Experiments)<a class="headerlink" href="#via-command-line-quick-experiments" title="Link to this heading">#</a></h3>
 <p>The easiest way to experiment is using command-line overrides.
 You can change any configuration value without editing files:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Change the number of training epochs</span>
-chemtorch<span class="w"> </span>+experiment<span class="o">=</span>graph<span class="w"> </span>trainer.max_epochs<span class="o">=</span><span class="m">200</span>
+<div class="highlight-chemtorch notranslate"><div class="highlight"><pre><span></span><span class="c"># Change the number of training epochs</span>
+<span class="ne">chemtorch</span><span class="w"> </span><span class="gi">+experiment</span><span class="o">=</span>graph<span class="w"> </span><span class="gi">trainer.max_epochs</span><span class="o">=</span>200
 
-<span class="c1"># Use a different model</span>
-chemtorch<span class="w"> </span>+experiment<span class="o">=</span>graph<span class="w"> </span><span class="nv">model</span><span class="o">=</span>gcn
+<span class="c"># Use a different model</span>
+<span class="ne">chemtorch</span><span class="w"> </span><span class="gi">+experiment</span><span class="o">=</span>graph<span class="w"> </span><span class="gi">model</span><span class="o">=</span>gcn
 
-<span class="c1"># Change multiple values</span>
-chemtorch<span class="w"> </span>+experiment<span class="o">=</span>graph<span class="w"> </span><span class="nv">model</span><span class="o">=</span>gcn<span class="w"> </span>model.hidden_channels<span class="o">=</span><span class="m">256</span><span class="w"> </span><span class="nv">seed</span><span class="o">=</span><span class="m">42</span>
+<span class="c"># Change multiple values</span>
+<span class="ne">chemtorch</span><span class="w"> </span><span class="gi">+experiment</span><span class="o">=</span>graph<span class="w"> </span><span class="gi">model</span><span class="o">=</span>gcn<span class="w"> </span><span class="gi">model.hidden_channels</span><span class="o">=</span>256<span class="w"> </span><span class="gi">seed</span><span class="o">=</span>42
 </pre></div>
 </div>
 <p>The syntax is simple: <code class="docutils literal notranslate"><span class="pre">key.subkey=value</span></code></p>
@@ -566,17 +565,6 @@ Learn more in <a class="reference internal" href="experiments.html#experiments">
 <li><p><strong>Base config</strong>: Values in <code class="docutils literal notranslate"><span class="pre">conf/base.yaml</span></code></p></li>
 </ol>
 <p>This means command-line overrides always win, followed by your experiment config, and so on.</p>
-</section>
-<section id="next-steps">
-<h2>Next Steps<a class="headerlink" href="#next-steps" title="Link to this heading">#</a></h2>
-<p>Now that you understand the core configuration concepts, you’re ready to:</p>
-<ul class="simple">
-<li><p><strong>Create your first experiment</strong>: <a class="reference internal" href="experiments.html#experiments"><span class="std std-ref">Create Experiments</span></a></p></li>
-<li><p><strong>Explore available components</strong>: <a class="reference internal" href="../user_guide/pipeline_overview.html#pipeline-overview"><span class="std std-ref">Components Overview</span></a></p></li>
-<li><p><strong>Learn advanced Hydra features</strong>: <a class="reference internal" href="../advanced_guide/hydra.html#hydra"><span class="std std-ref">Hydra</span></a></p></li>
-<li><p><strong>Set up reproducibility</strong>: <a class="reference internal" href="../user_guide/reproducibility.html#reproducability"><span class="std std-ref">Reproducing Experiments</span></a></p></li>
-</ul>
-<p>For a deeper dive into Hydra’s capabilities, see the <a class="reference external" href="https://hydra.cc/docs/intro/">official Hydra documentation</a>.</p>
 </section>
 </section>
 
@@ -640,7 +628,6 @@ Learn more in <a class="reference internal" href="experiments.html#experiments">
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#how-values-get-resolved">How Values Get Resolved</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#next-steps">Next Steps</a></li>
 </ul>
   </nav></div>
 
