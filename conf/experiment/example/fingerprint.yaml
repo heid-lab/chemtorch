@@ -27,7 +27,10 @@ num_classes: 1000
 
 fp_length: 2048
 
-data_module.representation.n_folded_length: ${fp_length}
+data_module:
+  integer_labels: true
+  representation:
+    n_folded_length: ${fp_length}
 
 model:
   in_channels: ${fp_length}
