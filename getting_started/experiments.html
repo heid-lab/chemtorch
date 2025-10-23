@@ -553,13 +553,12 @@ See <a class="reference internal" href="../user_guide/pipeline_overview.html#pip
 <span class="w">  </span><span class="nt">max_epochs</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">100</span>
 
 <span class="c1"># Task-specific settings</span>
+<span class="nt">data_module.integer_labels</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 <span class="nt">num_classes</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1000</span>
 <span class="nt">fp_length</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2048</span>
 
 <span class="c1"># Override representation config</span>
-<span class="nt">data_module</span><span class="p">:</span>
-<span class="w">  </span><span class="nt">representation</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">n_folded_length</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${fp_length}</span>
+<span class="nt">data_module.representation.n_folded_length</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${fp_length}</span>
 
 <span class="c1"># Override model config</span>
 <span class="nt">model</span><span class="p">:</span>

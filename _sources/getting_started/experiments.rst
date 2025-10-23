@@ -207,13 +207,12 @@ Finally, override specific values to customize the components:
       max_epochs: 100
 
     # Task-specific settings
+    data_module.integer_labels: true
     num_classes: 1000
     fp_length: 2048
 
     # Override representation config
-    data_module:
-      representation:
-        n_folded_length: ${fp_length}
+    data_module.representation.n_folded_length: ${fp_length}
 
     # Override model config
     model:
