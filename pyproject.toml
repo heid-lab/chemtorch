@@ -33,7 +33,7 @@ readme = "README.md"
 dynamic = ["version"]
 
 [project.scripts]
-chemtorch = "chemtorch.cli:main"
+chemtorch = "chemtorch.main:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
