@@ -59,6 +59,9 @@ uv sync
 uv pip install torch_scatter torch_sparse torch_cluster torch_spline_conv torch_geometric  --no-build-isolation
 ```
 
+To also install development and docuemntation dependencies add the `--groups` option followed by `dev` or `docs`.
+Alternatively, you can also use `--all-groups` to install both.
+
 ## Data
 
 Get the data from https://github.com/heid-lab/reaction_database and add it to the `data` folder.

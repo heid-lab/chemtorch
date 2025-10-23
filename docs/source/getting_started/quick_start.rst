@@ -66,7 +66,7 @@ For this quick start guide, we will use our reaction database which you can down
 .. If you want to use your own dataset checkout the :ref:`custom-dataset` tutorial.
 
 
-Your First Experiment
+Launch Your First Experiment
 =====================
 Finally, you are ready to run your first experiment with ChemTorch.
 You can do so conveniently via the command line interface (CLI).
@@ -74,7 +74,7 @@ To launch a simple experiment, run the following command from the root directory
 
 .. code-block:: chemtorch
 
-   chemtorch +experiment=graph data_module.subsample=0.05
+   chemtorch +experiment=graph data_module.subsample=0.05 log=false
 
 The experiment will use the default graph learning pipeline to train and evaluate a directed message passing neural network (D-MPNN) on a random subset of the RDB7 dataset.
 The output will display the run details, training progress, and final evaluation metrics.

@@ -1,8 +1,8 @@
 .. _sweeps:
 
-==============================
-Hyperparameter Sweeps with W&B
-==============================
+=====================
+Hyperparameter Sweeps
+=====================
 This tutorial shows you how to run hyperparameter sweeps with ChemTorch and Weights & Biases (W&B).
 A sweep allows you to systematically explore different hyperparameter configurations to find the best performing model.
 Please refer to the `official W&B sweeps documentation <https://docs.wandb.ai/guides/sweeps>`__ for more details on sweeps.
@@ -18,7 +18,7 @@ W&B sweeps integrate seamlessly with ChemTorch's Hydra-based configuration syste
 Setup a Sweep
 =============
 To setup a sweep, you need to define a sweep configuration in a YAML file. 
-Here's a simple example for tuning a DMPNN model:
+Here's a simple example for tuning a D-MPNN model:
 
 .. code-block:: yaml
    :class: sweep-chemtorch-command
@@ -67,7 +67,8 @@ ChemTorch-Specific Configuration
 
 Command Setup
 -------------
-The ``command`` section is crucial for ChemTorch compatibility:
+In the ``command`` we specify the same command that one would use to run 
+ChemTorch from the CLI:
 
 .. code-block:: yaml
    :class: sweep-chemtorch-command
@@ -84,6 +85,23 @@ Key points:
 - ``${program}``: References the ``program`` field (``chemtorch``)
 - ``"+experiment=graph"``: Loads a base experiment configuration for graph-based models
 - ``${args_no_hyphens}``: formats sweep parameters without hyphens for Hydra compatibility
+
+Optimization Goal
+-----------------
+In this config we tell the agent to minimize the epoch-level validation
+loss:
+
+.. code-block:: yaml
+
+    metric:
+      goal: minimize
+      name: val_loss_epoch
+
+This requires that `val_loss_epoch` is logged to W&B during training.
+ChemTorch does this by default, but if you want to optimize hyperparameters
+with respect to another metric you must ensure that it is logged under the
+same name as specified in the sweep config.
+
 
 Parameter Naming
 ----------------
@@ -150,5 +168,4 @@ Best Practices
   - ``uniform`` for continuous ranges
 - **Set early termination**: Use Hyperband or other early stopping to save compute
 - **Cap the number of runs**: Limit total runs by setting the `--count` flag in the `wandb agent` command
-- **Monitor your metric**: Ensure your target metric (e.g., ``val_loss_epoch``) is logged by ChemTorch
 - **Use base experiments**: Leverage existing experiment configs with ``+experiment=<name>`` to reduce configuration complexity

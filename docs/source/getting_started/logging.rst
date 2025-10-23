@@ -1,4 +1,4 @@
-.. _wandb:
+.. _logging:
 
 =========================
 Setup Logging
