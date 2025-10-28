@@ -354,5 +354,64 @@ code.language-yaml .sh {
     color: inherit !important;
 }
 
+/* ------------------------------------------------------------------
+   Override comment colors to match a standard 'bash' shell theme.
+   - Light mode: a medium green similar to GitHub/shell highlights
+   - Dark mode: a softer green (Monokai-style)
+   These rules intentionally target both Pygments and Prism-style
+   token classes and are placed last so they override earlier "inherit"
+   rules in this file.
+   ------------------------------------------------------------------ */
+
+:root {
+    --bash-comment-light: #22863a; /* light-mode shell comment (green) */
+    --bash-comment-dark:  #6a9955; /* dark-mode softer green */
+}
+
+/* Default / light mode */
+.highlight .c,
+.highlight .cm,
+.highlight .cp,
+.highlight .c1,
+.highlight .cs,
+.highlight-bash .c,
+.highlight-bash .cm,
+pre[class*="language-bash"] .token.comment,
+code[class*="language-bash"] .token.comment,
+pre[class*="language-sh"] .token.comment,
+code[class*="language-sh"] .token.comment {
+    color: var(--bash-comment-light) !important;
+}
+
+/* Dark mode overrides */
+[data-theme="dark"] .highlight .c,
+[data-theme="dark"] .highlight .cm,
+[data-theme="dark"] .highlight .cp,
+[data-theme="dark"] .highlight .c1,
+[data-theme="dark"] .highlight .cs,
+[data-theme="dark"] .highlight-bash .c,
+[data-theme="dark"] pre[class*="language-bash"] .token.comment,
+[data-theme="dark"] code[class*="language-bash"] .token.comment,
+.theme-dark .highlight .c,
+.theme-dark .highlight .cm,
+.theme-dark .highlight .cp,
+.theme-dark .highlight .c1,
+.theme-dark .highlight .cs,
+.theme-dark .highlight-bash .c {
+    color: var(--bash-comment-dark) !important;
+}
+
+/* prefers-color-scheme fallback */
+@media (prefers-color-scheme: dark) {
+    .highlight .c,
+    .highlight .cm,
+    .highlight .cp,
+    .highlight .c1,
+    .highlight .cs,
+    .highlight-bash .c {
+        color: var(--bash-comment-dark) !important;
+    }
+}
+
 
 
