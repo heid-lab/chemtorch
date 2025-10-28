@@ -39,6 +39,9 @@ extensions = [
     'cli_lexer',                # Custom CLI lexer
 ]
 
+# Allow embedding program output (we use this to include the `-h` output of scripts in the docs)
+extensions.append('sphinxcontrib.programoutput')
+
 
 # Napoleon settings for Google/NumPy style docstrings
 napoleon_google_docstring = True
