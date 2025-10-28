@@ -1,7 +1,7 @@
 .. _hydra:
 
-=====
-Hydra
-=====
+===================
+Hydra Config Design
+===================
 
 Coming soon ...
