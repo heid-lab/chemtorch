@@ -145,6 +145,52 @@ class WandbLexer(RegexLexer):
         ]
     }
 
+class WandbToHydraScriptLexer(RegexLexer):
+    """
+    A lexer for the wandb_to_hydra.py script command.
+    """
+    
+    name = 'WandbToHydra'
+    aliases = ['wandbtohydra']
+    filenames = []
+    mimetypes = []
+
+    tokens = {
+        'root': [
+            # Script name
+            (r'wandb_to_hydra\.py', Name.Exception),
+            
+            # Comments
+            (r'#.*$', Comment),
+            
+            # Flags (like '--run-id', '--output-path', etc.)
+            (r'--\w+(?:-\w+)*', Generic.Inserted),
+            
+            # Values after flags (remain uncolored)
+            (r'(?<=--\w+(?:-\w+)*\s)\S+', Text),
+            
+            # URLs/links (same as bash)
+            (r'https?://[^\s]+', String.Other),
+            
+            # Python command (same color as bash commands)
+            (r'\bpython\b', Name.Builtin),
+            
+            # Operators (same as bash)
+            (r'[&|;(){}]', Operator),
+            
+            # Punctuation (same as bash)
+            (r'[,.]', Punctuation),
+            
+            # Numbers
+            (r'\d+\.\d+', Number.Float),
+            (r'\d+', Number.Integer),
+            
+            # Everything else as text
+            (r'\S+', Text),
+            (r'\s+', Whitespace),
+        ]
+    }
+
 
 def setup(app):
     """Setup function for the Sphinx extension"""
@@ -152,6 +198,7 @@ def setup(app):
     app.add_lexer('install', InstallationLexer)
     app.add_lexer('chemtorch', ChemTorchCLILexer)
     app.add_lexer('wandb', WandbLexer)
+    app.add_lexer('wandbtohydra', WandbToHydraScriptLexer)
     
     return {
         'version': '1.0',
