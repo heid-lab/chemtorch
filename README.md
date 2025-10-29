@@ -13,6 +13,8 @@ When chemtorch is on PyPI uncomment this ^^
 [![Downloads](https://img.shields.io/github/downloads/heid-lab/chemtorch/total.svg)](https://github.com/heid-lab/chemtorch/releases)
 -->
 
+[![Docs](https://img.shields.io/badge/docs-online-brightgreen.svg)](https://heid-lab.github.io/chemtorch)
+
 [Installation](#installation) | [Data](#data) | [Usage](#usage) | [Citation](#citation)
 
 </div>
@@ -22,6 +24,8 @@ When chemtorch is on PyPI uncomment this ^^
 ChemTorch is a modular framework for developing and benchmarking deep learning models on chemical reaction data. The framework supports multiple families of reaction representations, neural network architectures, and downstream tasks.
 
 The code is provided under MIT license, making it freely available for both academic and commercial use.
+
+The detailed ChemTorch documentation is available at: https://heid-lab.github.io/chemtorch
 
 ## Installation
 
@@ -61,6 +65,12 @@ uv pip install torch_scatter torch_sparse torch_cluster torch_spline_conv torch_
 
 To also install development and docuemntation dependencies add the `--groups` option followed by `dev` or `docs`.
 Alternatively, you can also use `--all-groups` to install both.
+
+## Get help / Report issues
+
+If you encounter bugs, unexpected behaviour, or would like to request a feature, please open an issue on the GitHub issue tracker: https://github.com/heid-lab/chemtorch/issues
+
+Contributions and help are very welcome. If you'd like to contribute a larger change, please open an issue first so we can discuss the best approach.
 
 ## Data
 
