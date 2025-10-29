@@ -30,7 +30,7 @@
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=eba8b062" />
-    <link rel="stylesheet" type="text/css" href="../_static/custom_syntax.css?v=cf89f813" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom_syntax.css?v=9e2307e4" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
@@ -45,7 +45,7 @@
     <link rel="icon" href="../_static/chemtorch_favicon.png"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Hydra" href="../advanced_guide/hydra.html" />
+    <link rel="next" title="Hydra Config Design" href="../advanced_guide/hydra.html" />
     <link rel="prev" title="Hyperparameter Sweeps" href="sweeps.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -165,7 +165,8 @@
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">User Guide</span></p>
 <ul class="current nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="cli_usage.html">CLI Usage &amp; Config Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cli_usage.html">CLI Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="config_ref.html">Config Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pipeline_overview.html">Components Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="custom_data.html">Using Your Own Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="custom_components.html">Defining Custom Components</a></li>
@@ -174,7 +175,7 @@
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Advanced Guide</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../advanced_guide/hydra.html">Hydra</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../advanced_guide/hydra.html">Hydra Config Design</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../advanced_guide/props.html">Runtime Properties</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Examples</span></p>
@@ -327,7 +328,9 @@ document.write(`
   </button>
 `);
 </script>
-
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
 </div></div>
       
     </div>
@@ -343,6 +346,14 @@ document.write(`
     <div id="print-main-content">
         <div id="jb-print-toc">
             
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#reproducing-the-chemtorch-benchmarks">Reproducing The ChemTorch Benchmarks</a></li>
+</ul>
+            </nav>
         </div>
     </div>
 </div>
@@ -354,7 +365,75 @@ document.write(`
                   
   <section id="reproducing-experiments">
 <span id="reproducability"></span><h1>Reproducing Experiments<a class="headerlink" href="#reproducing-experiments" title="Link to this heading">#</a></h1>
-<p>Coming soon …</p>
+<p>In this tutorial you will learn how to seamlessly reproduce experiments run with ChemTorch.
+This tutorial assumes that you have already <a class="reference internal" href="../getting_started/logging.html#logging"><span class="std std-ref">setup logging with W&amp;B</span></a>.</p>
+<ol class="arabic">
+<li><p>Run your experiments with <code class="docutils literal notranslate"><span class="pre">log=true</span></code>.</p>
+<div class="highlight-chemtorch notranslate"><div class="highlight"><pre><span></span><span class="ne">chemtorch</span><span class="w"> </span><span class="gi">+experiment</span><span class="o">=</span>my_experiment<span class="w"> </span><span class="gi">log</span><span class="o">=</span>true
+</pre></div>
+</div>
+<p>When logging is active, ChemTorch will also log the fully resolved config to W&amp;B and it will be available in the <code class="docutils literal notranslate"><span class="pre">wandb/</span></code> folder.</p>
+</li>
+<li><p>The W&amp;B config format is slightly different from that used by Hydra.
+So you first need to parse the config to Hydra format using the <code class="docutils literal notranslate"><span class="pre">wandb_to_hydra.py</span></code> script located in the <code class="docutils literal notranslate"><span class="pre">scripts/</span></code> folder of ChemTorch.</p>
+<div class="literal-block-wrapper docutils container" id="id1">
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">wandb_to_hydra.py</span></code> usage</span><a class="headerlink" href="#id1" title="Link to this code">#</a></div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>usage: wandb_to_hydra.py [-h] --run-id RUN_ID --output-path OUTPUT_PATH
+                         [--wandb-dir WANDB_DIR]
+
+This script parses the config of a WandB run to Hydra format, removing the
+`value` wrappers and saving the result to a specified output path.
+
+options:
+  -h, --help            show this help message and exit
+  --run-id RUN_ID, -i RUN_ID
+                        Run ID of the WandB run.
+  --output-path OUTPUT_PATH, -o OUTPUT_PATH
+                        Path to save the resulting hydra config file. If not
+                        absolute, it is considered relative to the project
+                        directory (parent of the script directory).
+  --wandb-dir WANDB_DIR, -d WANDB_DIR
+                        Path to the `wandb/` directory. If not provided, the
+                        script will search in the project directory (parent of
+                        the script directory).
+</pre></div>
+</div>
+</div>
+</li>
+<li><p>If we save the config to <code class="docutils literal notranslate"><span class="pre">conf/saved_configs/my_experiment/my_run.yaml</span></code>, we can run the following command to reproduce the experiment:</p>
+<div class="highlight-chemtorch notranslate"><div class="highlight"><pre><span></span><span class="ne">chemtorch</span><span class="w"> </span>-cd=conf/saved_configs/my_experiment<span class="w"> </span>-cn<span class="o">=</span>my_run
+</pre></div>
+</div>
+<p>This will run the exact same experiment as before, using the same config parameters.</p>
+</li>
+</ol>
+<section id="reproducing-the-chemtorch-benchmarks">
+<h2>Reproducing The ChemTorch Benchmarks<a class="headerlink" href="#reproducing-the-chemtorch-benchmarks" title="Link to this heading">#</a></h2>
+<p>The <a class="reference external" href="https://chemrxiv.org/engage/chemrxiv/article-details/687556a4fc5f0acb52358b65">ChemTorch white paper</a> includes a set of benchmark experiments that can be easily reproduced using the steps outlined above.
+The configs for these experiments are available in the <code class="docutils literal notranslate"><span class="pre">conf/saved_configs/chemtorch_benchmarks/</span></code> folder:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>conf/saved_configs/chemtorch_benchmarks/
+├── optimal_model_configs
+│   ├── atom_han.yaml
+│   ├── cgr_dmpnn.yaml
+│   ├── dimreaction.yaml
+│   ├── drfp_mlp.yaml
+│   └── ...
+├── dmpnn_data_split_benchmark
+│   ├── random_split.yaml
+│   ├── reactant_scaffold_split.yaml
+│   ├── reaction_core_split.yaml
+│   └── ...
+└── ...
+</pre></div>
+</div>
+<p>The optimal model configs contain the best hyper-parameters found for each model/reaction representation on the benchmark datasets.
+The data split benchmark configs use the same hyper-parameters as the optimal model config, but vary the data splitting strategy to demonstrate the effect of data splits on model performance.</p>
+<p>For example, run the following command to reproduce the CGR/D-MPNN experiment with seeds 0 to 9:</p>
+<div class="highlight-chemtorch notranslate"><div class="highlight"><pre><span></span><span class="ne">chemtorch</span><span class="w"> </span>-m<span class="w"> </span>-cd=conf/saved_configs/chemtorch_benchmarks/optimal_model_configs<span class="w"> </span>-cn<span class="o">=</span>cgr_dmpnn<span class="w"> </span><span class="gi">+experiment</span><span class="o">=</span>chemtorch_benchmarks<span class="w"> </span><span class="gi">seed</span><span class="o">=</span>0,1,2,3,4,5,6,7,8,9
+</pre></div>
+</div>
+<p>The multirun (<code class="docutils literal notranslate"><span class="pre">-m</span></code>) flag will run the experiment with all the specified seeds in sequence (see <span class="xref std std-ref">cli_usage</span>).</p>
+</section>
 </section>
 
 
@@ -382,7 +461,7 @@ document.write(`
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Hydra</p>
+        <p class="prev-next-title">Hydra Config Design</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -392,6 +471,21 @@ document.write(`
             </div>
             
             
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#reproducing-the-chemtorch-benchmarks">Reproducing The ChemTorch Benchmarks</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
               
             
           </div>
