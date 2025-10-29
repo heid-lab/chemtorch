@@ -1,11 +1,10 @@
 name: docs
 
+# Build the docs for any push (to help preview changes on branches).
+# Publishing is gated to pushes/PRs into `main` below.
 on:
-  push:
-    branches:
-      - main
-      - dev
-      - 'docs/**'
+  push: {}
+  pull_request: {}
 
 permissions:
   contents: write
@@ -38,7 +37,10 @@ jobs:
         make html
         
     - name: Deploy to GitHub Pages
-      if: github.event_name != 'pull_request'  # avoid fork PRs
+      # Only publish when this is a push to main or a PR targeting main.
+      if: |
+        (github.event_name == 'push' && github.ref == 'refs/heads/main') ||
+        (github.event_name == 'pull_request' && github.base_ref == 'main')
       uses: peaceiris/actions-gh-pages@v4
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
