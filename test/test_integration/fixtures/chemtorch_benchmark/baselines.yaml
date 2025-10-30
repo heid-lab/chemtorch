@@ -6,7 +6,7 @@
 
 # Configuration defaults
 defaults:
-  tolerance: 1.1e-5  # Tolerance for prediction comparisons
+  tolerance: 1e-5  # Tolerance for prediction comparisons
 
 # Model-specific baselines
 models:

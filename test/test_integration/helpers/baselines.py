@@ -45,7 +45,7 @@ class BaselineConfig:
         
         # Load defaults from YAML, falling back to constants
         self.defaults = data.get("defaults", {})
-        self.tolerance = self.defaults.get("tolerance", 1e-5)
+        self.tolerance = float(self.defaults.get("tolerance", 1e-5))
         
         # Get default timeout values (from YAML or constants)
         default_precompute = self.defaults.get("precompute_timeout", PRECOMPUTE_TIMEOUT)
