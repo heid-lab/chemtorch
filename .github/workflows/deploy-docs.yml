@@ -1,0 +1,45 @@
+name: docs
+
+# Build the docs for any push (to help preview changes on branches).
+# Publishing is gated to pushes/PRs into `main` below.
+on:
+  push: {}
+  pull_request: {}
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install uv (and enable caching)
+      uses: astral-sh/setup-uv@v6
+      with:
+        enable-cache: true
+
+    - name: Setup Python
+      run: |           
+        # uv respects requires-python in pyproject.toml
+        uv python install
+
+    - name: Install project deps
+      run: |
+        # default deps + docs group
+        uv sync --locked --group docs
+
+    - name: Build docs 
+      run: |
+        source .venv/bin/activate
+        cd docs
+        make html
+        
+    - name: Deploy to GitHub Pages
+      # Only publish when this is a push to main (after merge).
+      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+      uses: peaceiris/actions-gh-pages@v4
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./docs/build/html

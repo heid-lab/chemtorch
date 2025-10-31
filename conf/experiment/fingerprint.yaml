@@ -14,7 +14,6 @@ defaults:
 log: true
 project_name: chemtorch
 group_name: fingerprint
-run_name: null
 
 # INITIALIZATION
 seed: 0
@@ -34,7 +33,3 @@ model:
   dropout: 0.02
   act: relu
   norm: null
-
-# MODEL LOADING
-load_model: false
-ckpt_path: null

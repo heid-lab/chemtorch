@@ -3,19 +3,18 @@ import argparse
 from pathlib import Path
 
 
-def preprocess_wandb_config(run_id, run_name, group_name, project_dir):
+def preprocess_wandb_config(run_id: str, output_path: Path, wandb_dir: Path):
     """
     Preprocess a WandB config file to make it compatible with Hydra.
-    Removes the `value` wrapper from each key, filters out `_wandb`, and adds/overwrites `run_name` and `group_name`.
+    Removes the `value` wrapper from each key, filters out `_wandb`.
     """
     # Validate input parameters
     if run_id is None:
         raise AttributeError("run_id cannot be None")
     
     # Locate the WandB run directory
-    wandb_dir = Path(project_dir) / "wandb"
     if not wandb_dir.exists():
-        raise FileNotFoundError(f"❌ WandB directory not found at: {wandb_dir}")
+        raise FileNotFoundError(f"❌ WandB directory not found: {wandb_dir}")
     # Find run with exact match for the run_id
     run_dir = next(
         (wandb_dir / d for d in wandb_dir.iterdir() if d.name.endswith(f"-{run_id}")),
@@ -54,10 +53,6 @@ def preprocess_wandb_config(run_id, run_name, group_name, project_dir):
     # Unwrap the WandB config
     hydra_config = unwrap_values(wandb_config)
 
-    # Add/overwrite `run_name` and `group_name`
-    hydra_config["name"] = run_name
-    hydra_config["group_name"] = group_name
-
     # Add Hydra configuration to prevent creating additional output directories
     hydra_config["hydra"] = {
         "output_subdir": None,
@@ -67,9 +62,8 @@ def preprocess_wandb_config(run_id, run_name, group_name, project_dir):
     }
 
     # Save the modified config to the saved_configs directory
-    output_dir = Path(project_dir) / "conf" / "saved_configs" / group_name
+    output_dir = output_path.parent
     output_dir.mkdir(parents=True, exist_ok=True)
-    output_path = output_dir / f"{run_name}.yaml"
 
     with open(output_path, "w") as f:
         yaml.dump(hydra_config, f, default_flow_style=False)
@@ -77,32 +71,61 @@ def preprocess_wandb_config(run_id, run_name, group_name, project_dir):
     print(f"✅ Preprocessed config saved to: {output_path}")
 
 
-def main():
-    parser = argparse.ArgumentParser(description="This script parses the config of a WandB run to Hydra " \
-    "format and saves it to the location `conf/saved_configs/group/name`.")
+def get_parser() -> argparse.ArgumentParser:
+    """Return an argparse.ArgumentParser configured for this script.
+
+    Having this as a separate function makes it trivial for Sphinx extensions
+    (or tests) to import and render the current CLI signature automatically.
+    """
+    parser = argparse.ArgumentParser(
+        description=(
+            "This script parses the config of a WandB run to Hydra "
+            "format, removing the `value` wrappers and saving the result "
+            "to a specified output path."
+        )
+    )
     parser.add_argument(
         "--run-id", "-i", required=True, type=str, help="Run ID of the WandB run."
     )
     parser.add_argument(
-        "--group", "-g", required=True, type=str, help="Name of the config group, i.e. the folder that the config is saved to."
+        "--output-path", "-o", required=True, type=str, 
+        help="Path to save the resulting hydra config file. If not absolute, " \
+        "it is considered relative to the project directory (parent of the script directory)."
     )
     parser.add_argument(
-        "--name", "-n", required=True, type=str, help="Name for the new resulting hydra config file."
+        "--wandb-dir", "-d",
+        type=str,
+        help="Path to the `wandb/` directory. If not provided, the script will search in the " \
+        "project directory (parent of the script directory).",
     )
-    parser.add_argument(
-        "--project-dir", type=str, help="Project directory path. If not provided, uses the parent of the script directory."
-    )
-    args = parser.parse_args()
+    return parser
 
-    # Determine the project directory
-    if args.project_dir:
-        project_dir = Path(args.project_dir)
+
+def main(argv=None):
+    """CLI entry point.
+
+    Accepts an optional `argv` for easier testing; otherwise uses sys.argv.
+    """
+    parser = get_parser()
+    args = parser.parse_args(argv)
+
+    script_dir = Path(__file__).resolve().parent
+    project_dir = script_dir.parent
+
+    # Determine the wandb directory
+    if args.wandb_dir:
+        wandb_dir = Path(args.wandb_dir)
+        if not wandb_dir.is_absolute():
+            wandb_dir = project_dir / wandb_dir
     else:
-        # Determine the project directory as the parent of the script directory
-        script_dir = Path(__file__).resolve().parent
-        project_dir = script_dir.parent
+        wandb_dir = project_dir / "wandb"
 
-    preprocess_wandb_config(args.run_id, args.name, args.group, project_dir)
+    # Determine the output path
+    output_path = Path(args.output_path)
+    if not output_path.is_absolute():
+        output_path = project_dir / output_path
+
+    preprocess_wandb_config(args.run_id, output_path, wandb_dir)
 
 
 if __name__ == "__main__":

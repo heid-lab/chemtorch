@@ -1,0 +1,42 @@
+# @package _global_
+defaults:
+  - /data_module/data_pipeline: uspto_1k
+  - /data_module/representation: drfp
+  - /data_module/dataloader_factory: torch_dataloader
+  - /model: mlp
+  - /routine: classification
+  - _self_
+
+# LOGGING (Weight and Biases)
+log: false
+project_name: chemtorch
+group_name: fingerprint
+run_name: null
+
+# INITIALIZATION
+seed: 0
+
+tasks:
+  - fit
+  - test
+
+trainer:
+  max_epochs: 100
+
+num_classes: 1000
+
+fp_length: 2048
+
+data_module:
+  integer_labels: true
+  representation:
+    n_folded_length: ${fp_length}
+
+model:
+  in_channels: ${fp_length}
+  hidden_size: 256
+  out_channels: ${num_classes}
+  num_hidden_layers: 2
+  dropout: 0.02
+  act: relu
+  norm: null

@@ -12,6 +12,7 @@ def compare_predictions(
     reference_preds_path: Path,
     tolerance: float = 1e-5,
     debug_dir: Optional[Path] = None,
+    force_debug_log: bool = False,
 ) -> None:
     """
     Compare test predictions with reference predictions.
@@ -21,6 +22,7 @@ def compare_predictions(
         reference_preds_path: Path to the reference predictions CSV
         tolerance: Maximum allowed absolute difference
         debug_dir: Optional directory to save debug CSV when errors occur
+        force_debug_log: If True, save a debug log even if no errors are found
         
     Raises:
         AssertionError: If predictions don't match within tolerance
@@ -56,17 +58,21 @@ def compare_predictions(
         )
         all_error_lines.update(errors)
         error_details.extend(details)
-    
-    # If errors were found, save debug CSV and raise detailed assertion
+
+    # Save debug log if errors are found or if forced
+    debug_path = None
+    if debug_dir and (all_error_lines or force_debug_log):
+        debug_df = _create_debug_df(test_df, ref_df, pred_cols_ref, all_error_lines)
+        debug_dir.mkdir(parents=True, exist_ok=True)
+        debug_path = debug_dir / reference_preds_path.name
+        debug_df.to_csv(debug_path, index=False)
+
+    # If errors were found, raise detailed assertion
     if all_error_lines:
         _handle_prediction_errors(
             all_error_lines,
             error_details,
-            test_df,
-            ref_df,
-            pred_cols_ref,
-            reference_preds_path,
-            debug_dir,
+            debug_path,
         )
 
 
@@ -129,17 +135,13 @@ def _compare_column(
     return error_lines, error_details
 
 
-def _handle_prediction_errors(
-    error_lines: Set[int],
-    error_details: List[str],
+def _create_debug_df(
     test_df: pd.DataFrame,
     ref_df: pd.DataFrame,
     pred_cols: List[str],
-    reference_path: Path,
-    debug_dir: Optional[Path] = None,
-) -> None:
-    """Save debug CSV and raise detailed error."""
-    # Create debug dataframe
+    error_lines: Set[int],
+) -> pd.DataFrame:
+    """Create a dataframe for debugging."""
     debug_df = ref_df.copy()
     
     # Add test prediction columns
@@ -152,13 +154,15 @@ def _handle_prediction_errors(
     error_indices = [line - 2 for line in error_lines]  # Convert back to 0-indexed
     debug_df.loc[error_indices, 'has_error'] = True
     
-    # Save debug CSV if directory provided
-    debug_path = None
-    if debug_dir is not None:
-        debug_dir.mkdir(parents=True, exist_ok=True)
-        debug_path = debug_dir / reference_path.name
-        debug_df.to_csv(debug_path, index=False)
-    
+    return debug_df
+
+
+def _handle_prediction_errors(
+    error_lines: Set[int],
+    error_details: List[str],
+    debug_path: Optional[Path],
+) -> None:
+    """Raise detailed error."""
     # Build error message
     sorted_error_lines = sorted(error_lines)
     error_msg = f"Found {len(sorted_error_lines)} lines with prediction mismatches:\n"

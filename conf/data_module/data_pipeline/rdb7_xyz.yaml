@@ -1,0 +1,19 @@
+_target_: chemtorch.components.data_pipeline.SimpleDataPipeline
+
+defaults:
+  - data_source: single_csv_source
+  - column_mapper: column_filter_and_rename
+  - data_splitter: ratio_splitter
+
+data_source:
+  data_path: "data/rdb7/barriers/forward/data.csv"
+
+column_mapper:
+  smiles: "smiles"
+  reaction_dir: "rxn"
+  label: "dE0"
+
+data_splitter:
+  train_ratio: 0.8
+  val_ratio: 0.1
+  test_ratio: 0.1

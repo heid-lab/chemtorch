@@ -27,12 +27,6 @@ tasks:
 trainer:
   max_epochs: 100
 
-runtime_args_from_dataset:
-  - num_node_features
-  - num_edge_features
-  - mean
-  - std
-
 # MODEL LOADING
 load_model: false
 ckpt_path: null

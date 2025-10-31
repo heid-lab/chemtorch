@@ -27,9 +27,14 @@ dependencies = [
     "torchmetrics>=1.5.2",
     "pytest-order>=1.3.0",
     "pytest-dependency>=0.6.0",
+    "sphinx>=8.1.3",
+    "sphinxcontrib-programoutput>=0.18",
 ]
 readme = "README.md"
 dynamic = ["version"]
+
+[project.scripts]
+chemtorch = "chemtorch.main:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
@@ -42,6 +47,14 @@ dev = [
     "pytest>=8.4.1",
     "pytest-cov>=6.2.1",
     "pytest-order>=1.3.0",
+]
+docs = [
+    "myst-parser>=4.0.1",
+    "sphinx>=8.1.3",
+    "sphinx-autobuild>=2024.10.3",
+    "sphinx-autodoc-typehints>=3.0.1",
+    "sphinx-book-theme>=1.1.4",
+    "sphinx-rtd-theme>=3.0.2",
 ]
 
 [tool.pytest.ini_options]
