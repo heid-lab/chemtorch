@@ -48,6 +48,7 @@ Ready to dive in? Follow the :ref:`quick-start` to install ChemTorch and run you
    :caption: Advanced Guide
    :hidden:
    
+   advanced_guide/integration_tests
    advanced_guide/hydra
    advanced_guide/props
 
