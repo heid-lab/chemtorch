@@ -101,7 +101,7 @@ name: cgr_dmpnn
 num_edge_features: 22
 num_node_features: 88
 parameter_limit: null
-prediction_save_path: null
+predictions_save_path: null
 predictions_save_dir: predictions/chemtorch_paper/rdb7_model_benchmark/cgr_dmpnn/seed_${seed}_${now:%Y-%m-%d_%H-%M-%S}
 project_name: chemtorch
 routine:

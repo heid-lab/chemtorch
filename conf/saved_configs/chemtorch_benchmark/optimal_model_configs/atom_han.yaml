@@ -55,7 +55,7 @@ model.gru_hidden_channels: 256
 name: atom_han
 num_classes: 1
 parameter_limit: null
-prediction_save_path: null
+predictions_save_path: null
 predictions_save_dir: predictions/chemtorch_paper/rdb7_model_benchmark/atom_han/seed_${seed}_${now:%Y-%m-%d_%H-%M-%S}
 project_name: chemtorch
 routine:
