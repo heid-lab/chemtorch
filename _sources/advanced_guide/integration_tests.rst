@@ -297,6 +297,52 @@ Common issues and tips:
   When a mismatch exceeds tolerance, the suite will emit debug CSVs under ``test/test_integration/debug/`` (enable via ``force_debug_log``).
 
 
+Hardware & environment note
+---------------------------
+
+Numerical results and model predictions can vary with the underlying hardware and low-level libraries. Differences can arise from:
+
+- CPU architecture and instruction set (e.g. x86_64 vs ARM; AVX/AVX2/AVX-512 availability)
+- GPU model, driver, CUDA and cuDNN versions
+- BLAS provider and configuration (OpenBLAS, MKL, BLIS, etc.)
+- PyTorch build flags, compiler, and Python / NumPy versions
+
+Recommendations:
+
+- Generate reference predictions on the same class of hardware where tests will run (your laptop/CI runner).
+- Record hardware + software metadata with each baseline (e.g. CPU model, GPU model, CUDA/cuDNN, PyTorch, Python, NumPy, BLAS). Example YAML metadata block:
+
+  .. code-block:: yaml
+
+     metadata:
+       hardware:
+         cpu: "Intel(R) Xeon(R) Gold 6248"
+         gpu: "NVIDIA V100"
+       software:
+         python: "3.10.18"
+         pytorch: "2.2.0"
+         cuda: "11.8"
+         numpy: "1.25.0"
+         blas: "OpenBLAS"
+
+- Use containerisation (Docker) or pinned environments to reduce drift between generation and test environments.
+- If you must run tests on different hardware than the one used to generate references, either regenerate baselines on the target hardware or increase numeric tolerances and document the rationale.
+
+Helper script
+-------------
+
+We include a small helper script that collects common hardware and software metadata and writes it as YAML. Run it on the machine used to generate reference predictions and commit the resulting YAML alongside your baselines.
+
+.. code-block:: bash
+
+  # write to the fixtures directory next to your baseline YAML
+  python scripts/collect_env.py --out test/test_integration/fixtures/my_models/baseline_env.yaml
+
+The generated YAML includes CPU information, any NVIDIA GPU details exposed via `nvidia-smi`, key package versions (PyTorch, NumPy, etc.), a short `pip freeze` snapshot, and a NumPy/BLAS configuration block when available.
+
+When updating baselines, include the hardware/software metadata and the reason for the change in the commit message so future investigators can trace regressions.
+
+
 Test Parameter IDs
 ==================
 

@@ -377,7 +377,11 @@ document.write(`
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#disable-entire-test-sets">Disable entire test sets</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#debugging-failed-tests">Debugging Failed Tests</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#debugging-failed-tests">Debugging Failed Tests</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hardware-environment-note">Hardware &amp; environment note</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#helper-script">Helper script</a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#test-parameter-ids">Test Parameter IDs</a></li>
 </ul>
             </nav>
@@ -664,6 +668,46 @@ Debug CSV saved to: test/test_integration/debug/...
 <p>When a mismatch exceeds tolerance, the suite will emit debug CSVs under <code class="docutils literal notranslate"><span class="pre">test/test_integration/debug/</span></code> (enable via <code class="docutils literal notranslate"><span class="pre">force_debug_log</span></code>).</p>
 </li>
 </ul>
+<section id="hardware-environment-note">
+<h3>Hardware &amp; environment note<a class="headerlink" href="#hardware-environment-note" title="Link to this heading">#</a></h3>
+<p>Numerical results and model predictions can vary with the underlying hardware and low-level libraries. Differences can arise from:</p>
+<ul class="simple">
+<li><p>CPU architecture and instruction set (e.g. x86_64 vs ARM; AVX/AVX2/AVX-512 availability)</p></li>
+<li><p>GPU model, driver, CUDA and cuDNN versions</p></li>
+<li><p>BLAS provider and configuration (OpenBLAS, MKL, BLIS, etc.)</p></li>
+<li><p>PyTorch build flags, compiler, and Python / NumPy versions</p></li>
+</ul>
+<p>Recommendations:</p>
+<ul>
+<li><p>Generate reference predictions on the same class of hardware where tests will run (your laptop/CI runner).</p></li>
+<li><p>Record hardware + software metadata with each baseline (e.g. CPU model, GPU model, CUDA/cuDNN, PyTorch, Python, NumPy, BLAS). Example YAML metadata block:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">metadata</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">hardware</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">cpu</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Intel(R)</span><span class="nv"> </span><span class="s">Xeon(R)</span><span class="nv"> </span><span class="s">Gold</span><span class="nv"> </span><span class="s">6248&quot;</span>
+<span class="w">    </span><span class="nt">gpu</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;NVIDIA</span><span class="nv"> </span><span class="s">V100&quot;</span>
+<span class="w">  </span><span class="nt">software</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">python</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;3.10.18&quot;</span>
+<span class="w">    </span><span class="nt">pytorch</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;2.2.0&quot;</span>
+<span class="w">    </span><span class="nt">cuda</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;11.8&quot;</span>
+<span class="w">    </span><span class="nt">numpy</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;1.25.0&quot;</span>
+<span class="w">    </span><span class="nt">blas</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;OpenBLAS&quot;</span>
+</pre></div>
+</div>
+</li>
+<li><p>Use containerisation (Docker) or pinned environments to reduce drift between generation and test environments.</p></li>
+<li><p>If you must run tests on different hardware than the one used to generate references, either regenerate baselines on the target hardware or increase numeric tolerances and document the rationale.</p></li>
+</ul>
+</section>
+<section id="helper-script">
+<h3>Helper script<a class="headerlink" href="#helper-script" title="Link to this heading">#</a></h3>
+<p>We include a small helper script that collects common hardware and software metadata and writes it as YAML. Run it on the machine used to generate reference predictions and commit the resulting YAML alongside your baselines.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># write to the fixtures directory next to your baseline YAML</span>
+python<span class="w"> </span>scripts/collect_env.py<span class="w"> </span>--out<span class="w"> </span>test/test_integration/fixtures/my_models/baseline_env.yaml
+</pre></div>
+</div>
+<p>The generated YAML includes CPU information, any NVIDIA GPU details exposed via <cite>nvidia-smi</cite>, key package versions (PyTorch, NumPy, etc.), a short <cite>pip freeze</cite> snapshot, and a NumPy/BLAS configuration block when available.</p>
+<p>When updating baselines, include the hardware/software metadata and the reason for the change in the commit message so future investigators can trace regressions.</p>
+</section>
 </section>
 <section id="test-parameter-ids">
 <h2>Test Parameter IDs<a class="headerlink" href="#test-parameter-ids" title="Link to this heading">#</a></h2>
@@ -745,7 +789,11 @@ Debug CSV saved to: test/test_integration/debug/...
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#disable-entire-test-sets">Disable entire test sets</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#debugging-failed-tests">Debugging Failed Tests</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#debugging-failed-tests">Debugging Failed Tests</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hardware-environment-note">Hardware &amp; environment note</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#helper-script">Helper script</a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#test-parameter-ids">Test Parameter IDs</a></li>
 </ul>
   </nav></div>

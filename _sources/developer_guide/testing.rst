@@ -29,8 +29,8 @@ Layers of testing
 
 Integration tests for experiment configs (CI/CD)
 ===============================================
-
 ChemTorch runs smoke tests on experiment configs in CI to catch breaking changes (e.g., API changes or runtime errors).
+This tutorial assumes that you are already familiar with the structure and usage of the integration test suite as documented in :ref:`integration_tests`.
 
 Register the CI test set
 ------------------------
