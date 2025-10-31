@@ -37,10 +37,8 @@ jobs:
         make html
         
     - name: Deploy to GitHub Pages
-      # Only publish when this is a push to main or a PR targeting main.
-      if: |
-        (github.event_name == 'push' && github.ref == 'refs/heads/main') ||
-        (github.event_name == 'pull_request' && github.base_ref == 'main')
+      # Only publish when this is a push to main (after merge).
+      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
       uses: peaceiris/actions-gh-pages@v4
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
