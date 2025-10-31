@@ -63,7 +63,7 @@ uv sync
 uv pip install torch_scatter torch_sparse torch_cluster torch_spline_conv torch_geometric  --no-build-isolation
 ```
 
-To also install development and docuemntation dependencies add the `--groups` option followed by `dev` or `docs`.
+To also install development and documentation dependencies add the `--groups` option followed by `dev` or `docs`.
 Alternatively, you can also use `--all-groups` to install both.
 
 ## Get help / Report issues
