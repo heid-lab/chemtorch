@@ -174,6 +174,7 @@
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Advanced Guide</span></p>
 <ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../advanced_guide/integration_tests.html">Reproducibility Regression Checks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../advanced_guide/hydra.html">Hydra Config Design</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../advanced_guide/props.html">Runtime Properties</a></li>
 </ul>
@@ -327,7 +328,9 @@ document.write(`
   </button>
 `);
 </script>
-
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
 </div></div>
       
     </div>
@@ -343,6 +346,22 @@ document.write(`
     <div id="print-main-content">
         <div id="jb-print-toc">
             
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#layers-of-testing">Layers of testing</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#integration-tests-for-experiment-configs-ci-cd">Integration tests for experiment configs (CI/CD)</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#register-the-ci-test-set">Register the CI test set</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#run-locally">Run locally</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#target-specific-configs">Target specific configs</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#temporary-exclusions">Temporary exclusions</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#extended-tests">Extended tests</a></li>
+</ul>
+</li>
+</ul>
+            </nav>
         </div>
     </div>
 </div>
@@ -354,7 +373,94 @@ document.write(`
                   
   <span class="target" id="testing"></span><section id="id1">
 <h1>Testing<a class="headerlink" href="#id1" title="Link to this heading">#</a></h1>
-<p>Coming soon …</p>
+<p>This page summarizes ChemTorch’s testing strategy and how to run tests locally and in CI.</p>
+<section id="layers-of-testing">
+<h2>Layers of testing<a class="headerlink" href="#layers-of-testing" title="Link to this heading">#</a></h2>
+<ol class="arabic simple">
+<li><dl class="simple">
+<dt>Unit tests (code-level)</dt><dd><ul class="simple">
+<li><p>Small, focused tests for core utilities and components</p></li>
+<li><p>Live under <code class="docutils literal notranslate"><span class="pre">test/</span></code> (e.g., <code class="docutils literal notranslate"><span class="pre">test/test_scheduler</span></code>, <code class="docutils literal notranslate"><span class="pre">test/test_routine</span></code>)</p></li>
+<li><p>Coming soon: contributor guide for writing unit tests</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Integration tests (config-level)</dt><dd><ul class="simple">
+<li><p>Ensure Hydra configs can be instantiated and executed without errors</p></li>
+<li><p>Implemented in <code class="docutils literal notranslate"><span class="pre">test/test_integration/test_integration.py</span></code> and driven by <code class="docutils literal notranslate"><span class="pre">test_registry.yaml</span></code></p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Reproducibility checks (saved configs)</dt><dd><ul class="simple">
+<li><p>Validate that saved configs still reproduce baseline validation loss and predictions</p></li>
+<li><p>Documented for experimentalists in <a class="reference internal" href="../advanced_guide/integration_tests.html#integration-tests"><span class="std std-ref">Reproducibility Regression Checks</span></a></p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ol>
+</section>
+<section id="integration-tests-for-experiment-configs-ci-cd">
+<h2>Integration tests for experiment configs (CI/CD)<a class="headerlink" href="#integration-tests-for-experiment-configs-ci-cd" title="Link to this heading">#</a></h2>
+<p>ChemTorch runs smoke tests on experiment configs in CI to catch breaking changes (e.g., API changes or runtime errors).</p>
+<section id="register-the-ci-test-set">
+<h3>Register the CI test set<a class="headerlink" href="#register-the-ci-test-set" title="Link to this heading">#</a></h3>
+<p>Add (or keep) the following entry in <code class="docutils literal notranslate"><span class="pre">test/test_integration/test_registry.yaml</span></code>:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">test_sets</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">experiment_configs</span><span class="p">:</span>
+<span class="w">         </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">         </span><span class="nt">invocation_mode</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">experiment</span>
+<span class="w">         </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">conf/experiment</span>
+<span class="w">         </span><span class="nt">test_cases</span><span class="p">:</span>
+<span class="w">                </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">init</span>
+<span class="w">                </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">smoke</span>
+</pre></div>
+</div>
+</section>
+<section id="run-locally">
+<h3>Run locally<a class="headerlink" href="#run-locally" title="Link to this heading">#</a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Run only experiment config smoke tests</span>
+pytest<span class="w"> </span>test/test_integration/test_integration.py::test_smoke<span class="w"> </span>-k<span class="w"> </span><span class="s2">&quot;experiment_configs&quot;</span><span class="w"> </span>-v
+
+<span class="c1"># Or just ensure configs load</span>
+pytest<span class="w"> </span>test/test_integration/test_integration.py::test_config_init<span class="w"> </span>-k<span class="w"> </span><span class="s2">&quot;experiment_configs&quot;</span><span class="w"> </span>-v
+</pre></div>
+</div>
+</section>
+<section id="target-specific-configs">
+<h3>Target specific configs<a class="headerlink" href="#target-specific-configs" title="Link to this heading">#</a></h3>
+<p>Parametrized test IDs follow <code class="docutils literal notranslate"><span class="pre">&lt;test_set&gt;-&lt;config_path_or_name&gt;</span></code>. Use <code class="docutils literal notranslate"><span class="pre">--collect-only</span></code> to discover IDs:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pytest<span class="w"> </span>-q<span class="w"> </span>test/test_integration/test_integration.py<span class="w"> </span>--collect-only<span class="w"> </span>-k<span class="w"> </span><span class="s2">&quot;experiment_configs&quot;</span>
+</pre></div>
+</div>
+<p>Then target a specific config:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pytest<span class="w"> </span>test/test_integration/test_integration.py::test_smoke<span class="o">[</span>experiment_configs-subdir/my_config<span class="o">]</span><span class="w"> </span>-v
+</pre></div>
+</div>
+</section>
+<section id="temporary-exclusions">
+<h3>Temporary exclusions<a class="headerlink" href="#temporary-exclusions" title="Link to this heading">#</a></h3>
+<p>To keep CI green, temporarily skip configs via <code class="docutils literal notranslate"><span class="pre">skip_configs</span></code> in the registry:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">test_sets</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">experiment_configs</span><span class="p">:</span>
+<span class="w">         </span><span class="nt">skip_configs</span><span class="p">:</span>
+<span class="w">                </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">opi_tutorial/training</span><span class="w">  </span><span class="c1"># TODO: fix &amp; re-enable</span>
+</pre></div>
+</div>
+</section>
+<section id="extended-tests">
+<h3>Extended tests<a class="headerlink" href="#extended-tests" title="Link to this heading">#</a></h3>
+<p>Three-epoch “extended” tests are gated by the environment variable <code class="docutils literal notranslate"><span class="pre">RUN_EXTENDED_TESTS</span></code> and are typically disabled in CI:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">RUN_EXTENDED_TESTS</span><span class="o">=</span><span class="nb">true</span><span class="w"> </span>pytest<span class="w"> </span>test/test_integration/test_integration.py::test_extended<span class="w"> </span>-k<span class="w"> </span><span class="s2">&quot;experiment_configs&quot;</span><span class="w"> </span>-v
+</pre></div>
+</div>
+<p>For reproducibility checks on saved configs (including baselines and reference predictions), see <a class="reference internal" href="../advanced_guide/integration_tests.html#integration-tests"><span class="std std-ref">Reproducibility Regression Checks</span></a>.</p>
+</section>
+</section>
 </section>
 
 
@@ -383,6 +489,29 @@ document.write(`
             </div>
             
             
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#layers-of-testing">Layers of testing</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#integration-tests-for-experiment-configs-ci-cd">Integration tests for experiment configs (CI/CD)</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#register-the-ci-test-set">Register the CI test set</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#run-locally">Run locally</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#target-specific-configs">Target specific configs</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#temporary-exclusions">Temporary exclusions</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#extended-tests">Extended tests</a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
               
             
           </div>

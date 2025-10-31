@@ -1,0 +1,804 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Reproducibility Regression Checks &#8212; ChemTorch</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom_syntax.css?v=9e2307e4" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../_static/documentation_options.js?v=1a9ffd16"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'advanced_guide/integration_tests';</script>
+    <link rel="icon" href="../_static/chemtorch_favicon.png"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Hydra Config Design" href="hydra.html" />
+    <link rel="prev" title="Hyperparameter Sweeps" href="../user_guide/sweeps.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/chemtorch_logo_light.svg" class="logo__image only-light" alt="ChemTorch documentation - Home"/>
+    <script>document.write(`<img src="../_static/chemtorch_logo_dark_lightbackground.png" class="logo__image only-dark" alt="ChemTorch documentation - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/quick_start.html">Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/logging.html">Setup Logging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/config.html">Understand Configs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/experiments.html">Create Experiments</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/cli_usage.html">CLI Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/config_ref.html">Config Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/reproducibility.html">Reproducing Experiments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/pipeline_overview.html">Components Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/custom_data.html">Using Your Own Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/custom_components.html">Defining Custom Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/sweeps.html">Hyperparameter Sweeps</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Advanced Guide</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Reproducibility Regression Checks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydra.html">Hydra Config Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="props.html">Runtime Properties</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Examples</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../examples/training_curves.html">Training Curves</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/ood_benchmarking.html">OOD benchmarking</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Developer Guide</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../developer_guide/contributing.html">Contribution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer_guide/framework_structure.html">Framework Structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer_guide/testing.html">Testing</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+<a href="https://github.com/heid-lab/chemtorch" target="_blank"
+   class="btn btn-sm btn-source-repository-button"
+   title="Source repository"
+   data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+
+</a>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/advanced_guide/integration_tests.rst" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.rst</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Reproducibility Regression Checks</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#directory-layout">Directory Layout</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#quick-start">Quick Start</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#test-types">Test Types</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#registry-configuration">Registry Configuration</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#fields">Fields</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#example-saved-configs">Example (saved configs)</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#saved-configs-with-baseline-validation">Saved Configs with Baseline Validation</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#create-fixtures-directories">1) Create fixtures directories</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#generate-reference-predictions">2) Generate reference predictions</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#define-baselines">3) Define baselines</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#register-the-test-set">4) Register the test set</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#run">5) Run</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#extended-tests-3-epochs">Extended Tests (3 Epochs)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#managing-test-sets">Managing Test Sets</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#temporarily-skip-configs">Temporarily skip configs</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#disable-entire-test-sets">Disable entire test sets</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#debugging-failed-tests">Debugging Failed Tests</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#test-parameter-ids">Test Parameter IDs</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="reproducibility-regression-checks">
+<span id="integration-tests"></span><h1>Reproducibility Regression Checks<a class="headerlink" href="#reproducibility-regression-checks" title="Link to this heading">#</a></h1>
+<p>ChemTorch ships with a configurable, registry-driven integration test suite focused on catching reproducibility regressions early. It verifies:</p>
+<ul class="simple">
+<li><p>Configs can be instantiated without errors</p></li>
+<li><p>Training runs for at least one epoch per dataloader</p></li>
+<li><p>Saved configs still reproduce reference results (validation loss and predictions)</p></li>
+</ul>
+<p>This page is written for experimentalists. It explains how to:</p>
+<ol class="arabic simple">
+<li><p>set up reproducibility checks for saved configs using the integration test registry,</p></li>
+<li><p>add baseline reference values against which to test, and</p></li>
+<li><p>run and debug these checks locally or in CI.</p></li>
+</ol>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">#</a></h2>
+<p>Integration tests are defined in <code class="docutils literal notranslate"><span class="pre">test/test_integration/</span></code> and driven by a single registry file, <code class="docutils literal notranslate"><span class="pre">test_registry.yaml</span></code>. Each entry in the registry declares a “test set” (for example, all experiment configs, or a curated set of saved configs) and which test cases to run for that set.</p>
+<section id="directory-layout">
+<h3>Directory Layout<a class="headerlink" href="#directory-layout" title="Link to this heading">#</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>test/test_integration/
+├── test_registry.yaml         # Central registry for all test sets
+├── test_integration.py        # Unified test implementation
+├── fixtures/                  # Reference data organized by test set
+│   └── &lt;test_set_name&gt;/
+│       ├── baselines.yaml     # Baseline metadata (expected losses, timeouts, references)
+│       └── ref_preds/         # Reference prediction CSVs
+├── debug/                     # Auto-generated debug CSVs on failure
+└── helpers/                   # Shared utilities used by the suite
+</pre></div>
+</div>
+</section>
+</section>
+<section id="quick-start">
+<h2>Quick Start<a class="headerlink" href="#quick-start" title="Link to this heading">#</a></h2>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Run a single saved-config baseline by parameter ID (most common)</span>
+pytest<span class="w"> </span>test/test_integration/test_integration.py::test_baseline<span class="o">[</span>chemtorch_benchmark-cgr_dmpnn<span class="o">]</span><span class="w"> </span>-v
+
+<span class="c1"># Run all reproducibility baselines for a test set</span>
+pytest<span class="w"> </span>test/test_integration/test_integration.py::test_baseline<span class="w"> </span>-k<span class="w"> </span><span class="s2">&quot;chemtorch_benchmark&quot;</span><span class="w"> </span>-v
+
+<span class="w"> </span><span class="c1"># Run extended (3-epoch) tests</span>
+<span class="w"> </span><span class="nb">export</span><span class="w"> </span><span class="nv">RUN_EXTENDED_TESTS</span><span class="o">=</span><span class="nb">true</span>
+<span class="w"> </span>pytest<span class="w"> </span>test/test_integration/test_integration.py::test_extended<span class="w"> </span>-k<span class="w"> </span><span class="s2">&quot;chemtorch_benchmark&quot;</span><span class="w"> </span>-v
+
+<span class="c1"># Discover parameter IDs for a test set (to target a single config)</span>
+<span class="w"> </span>pytest<span class="w"> </span>-q<span class="w"> </span>test/test_integration/test_integration.py<span class="w"> </span>--collect-only<span class="w"> </span>-k<span class="w"> </span><span class="s2">&quot;chemtorch_benchmark&quot;</span>
+</pre></div>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>Execution-only smoke tests for experiment configs are documented in the Developer Guide. See <span class="xref std std-ref">testing</span>.</p>
+</div>
+</section>
+<section id="test-types">
+<h2>Test Types<a class="headerlink" href="#test-types" title="Link to this heading">#</a></h2>
+<p>The suite supports three complementary test types, with an emphasis on reproducibility for saved configs:</p>
+<ul class="simple">
+<li><p><strong>Reproducibility</strong> (<code class="docutils literal notranslate"><span class="pre">test_baseline</span></code> / <code class="docutils literal notranslate"><span class="pre">test_extended</span></code>): run training and validate against stored baselines and reference predictions. This is the primary check for experimental results.</p></li>
+<li><p><strong>Instantiation</strong> (<code class="docutils literal notranslate"><span class="pre">test_config_init</span></code>): ensure a config loads without errors (very fast).</p></li>
+<li><p><strong>Execution</strong> (<code class="docutils literal notranslate"><span class="pre">test_smoke</span></code>): run one epoch per dataloader to catch runtime issues quickly.</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Extended tests (3 epochs) are opt-in via the environment variable <code class="docutils literal notranslate"><span class="pre">RUN_EXTENDED_TESTS=true</span></code> so CI can skip them by default.</p>
+</div>
+</section>
+<section id="registry-configuration">
+<h2>Registry Configuration<a class="headerlink" href="#registry-configuration" title="Link to this heading">#</a></h2>
+<p>Test sets are declared in <code class="docutils literal notranslate"><span class="pre">test_registry.yaml</span></code>. Each set specifies where to find configs, how to invoke them, and which test cases to run.</p>
+<section id="fields">
+<h3>Fields<a class="headerlink" href="#fields" title="Link to this heading">#</a></h3>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">enabled</span></code>: set <code class="docutils literal notranslate"><span class="pre">false</span></code> to disable the entire set</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">invocation_mode</span></code>: how configs are invoked</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">experiment</span></code>: for experiment configs that are invoked like</p>
+<div class="highlight-chemtorch notranslate"><div class="highlight"><pre><span></span><span class="ne">chemtorch</span><span class="w"> </span><span class="gi">+experiment</span><span class="o">=</span>path/config_name
+</pre></div>
+</div>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">config_name</span></code>: for saved configs which are invoked like</p>
+<div class="highlight-chemtorch notranslate"><div class="highlight"><pre><span></span><span class="ne">chemtorch</span><span class="w"> </span>\
+<span class="w">  </span>--config-dir<span class="w"> </span>conf/saved_configs/my_models<span class="w"> </span>\
+<span class="w">  </span>--config-name<span class="w"> </span>my_model
+</pre></div>
+</div>
+</li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">path</span></code>: directory containing config files (relative to project root)</p></li>
+<li><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">test_cases</span></code>: list of test types to run. Any of</dt><dd><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">init</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">smoke</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">baseline</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">extended</span></code></p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">fixtures_path</span></code>: path to <code class="docutils literal notranslate"><span class="pre">baselines.yaml</span></code> and <code class="docutils literal notranslate"><span class="pre">ref_preds/</span></code> (required only for reproducability tests)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">skip_configs</span></code> (optional): list of config names (or paths for experiment sets) to temporarily exclude</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">force_debug_log</span></code> (optional): save detailed CSVs when prediction comparisons fail</p></li>
+</ul>
+</section>
+<section id="example-saved-configs">
+<h3>Example (saved configs)<a class="headerlink" href="#example-saved-configs" title="Link to this heading">#</a></h3>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">test_sets</span><span class="p">:</span>
+<span class="w">  </span><span class="c1"># Detects regressions in reproducibility for experiments from the paper</span>
+<span class="w">  </span><span class="nt">chemtorch_benchmark</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">    </span><span class="nt">invocation_mode</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">config_name</span>
+<span class="w">    </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">conf/saved_configs/chemtorch_benchmark/optimal_model_configs</span>
+<span class="w">    </span><span class="nt">test_cases</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">init</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">baseline</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">extended</span>
+<span class="w">    </span><span class="nt">fixtures_path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">test/test_integration/fixtures/chemtorch_benchmark</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>CI/CD smoke testing for experiment configs (<code class="docutils literal notranslate"><span class="pre">experiment_configs</span></code>) is covered in the Developer Guide. See <span class="xref std std-ref">testing</span>.</p>
+</div>
+</section>
+</section>
+<section id="saved-configs-with-baseline-validation">
+<h2>Saved Configs with Baseline Validation<a class="headerlink" href="#saved-configs-with-baseline-validation" title="Link to this heading">#</a></h2>
+<p>To ensure saved configs remain reproducible, create a fixtures directory with a baseline file and reference predictions.</p>
+<section id="create-fixtures-directories">
+<h3>1) Create fixtures directories<a class="headerlink" href="#create-fixtures-directories" title="Link to this heading">#</a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mkdir<span class="w"> </span>-p<span class="w"> </span>test/test_integration/fixtures/my_models/ref_preds
+</pre></div>
+</div>
+</section>
+<section id="generate-reference-predictions">
+<h3>2) Generate reference predictions<a class="headerlink" href="#generate-reference-predictions" title="Link to this heading">#</a></h3>
+<div class="highlight-chemtorch notranslate"><div class="highlight"><pre><span></span><span class="ne">chemtorch</span><span class="w"> </span>\
+<span class="w">  </span>--config-dir<span class="w"> </span>conf/saved_configs/my_models<span class="w"> </span>\
+<span class="w">  </span>--config-name<span class="w"> </span>my_model<span class="w"> </span>\
+<span class="w">  </span><span class="gi">++data_module.subsample</span><span class="o">=</span>0.01<span class="w"> </span>\
+<span class="w">  </span><span class="gi">++save_predictions_for</span><span class="o">=</span>test<span class="w"> </span>\
+<span class="w">  </span><span class="gi">++predictions_save_path</span><span class="o">=</span>test/test_integration/fixtures/my_models/ref_preds/my_model_epoch_1.csv<span class="w"> </span>\
+<span class="w">  </span><span class="gi">trainer.max_epochs</span><span class="o">=</span>1
+</pre></div>
+</div>
+<p>Record the final <code class="docutils literal notranslate"><span class="pre">val_loss_epoch</span></code> from the CLI output (e.g., <code class="docutils literal notranslate"><span class="pre">1.25</span></code>).</p>
+</section>
+<section id="define-baselines">
+<h3>3) Define baselines<a class="headerlink" href="#define-baselines" title="Link to this heading">#</a></h3>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">defaults</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">tolerance</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1e-5</span><span class="w">   </span><span class="c1"># Set based on precision of target labels</span>
+
+<span class="nt">models</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">my_model</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">val_loss</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">epoch_1</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1.25</span><span class="w">  </span><span class="c1"># From step 2</span>
+<span class="w">    </span><span class="nt">reference_predictions</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">epoch_1</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_model_epoch_1.csv</span>
+<span class="w">    </span><span class="c1"># Optional: customize timeouts if needed</span>
+<span class="w">    </span><span class="nt">timeout</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">precompute</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">30</span><span class="w">  </span><span class="c1"># seconds for data preparation (default: 30)</span>
+<span class="w">      </span><span class="nt">per_epoch</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">60</span><span class="w">   </span><span class="c1"># seconds per epoch (default: 60)</span>
+</pre></div>
+</div>
+</section>
+<section id="register-the-test-set">
+<h3>4) Register the test set<a class="headerlink" href="#register-the-test-set" title="Link to this heading">#</a></h3>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">test_sets</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">my_models</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">    </span><span class="nt">invocation_mode</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">config_name</span>
+<span class="w">    </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">conf/saved_configs/my_models</span>
+<span class="w">    </span><span class="nt">test_cases</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">init</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">baseline</span>
+<span class="w">    </span><span class="nt">fixtures_path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">test/test_integration/fixtures/my_models</span>
+</pre></div>
+</div>
+</section>
+<section id="run">
+<h3>5) Run<a class="headerlink" href="#run" title="Link to this heading">#</a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Run all tests for your set</span>
+pytest<span class="w"> </span>test/test_integration/test_integration.py<span class="w"> </span>-k<span class="w"> </span><span class="s2">&quot;my_models&quot;</span><span class="w"> </span>-v
+
+<span class="c1"># Only init tests</span>
+pytest<span class="w"> </span>test/test_integration/test_integration.py::test_config_init<span class="w"> </span>-k<span class="w"> </span><span class="s2">&quot;my_models&quot;</span><span class="w"> </span>-v
+
+<span class="c1"># Single model by parameter ID</span>
+pytest<span class="w"> </span>test/test_integration/test_integration.py::test_baseline<span class="o">[</span>my_models-my_model<span class="o">]</span><span class="w"> </span>-v
+</pre></div>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>Discover the exact parameter IDs generated for your set with:</p>
+<p><code class="docutils literal notranslate"><span class="pre">pytest</span> <span class="pre">-q</span> <span class="pre">test/test_integration/test_integration.py</span> <span class="pre">--collect-only</span> <span class="pre">-k</span> <span class="pre">&quot;my_models&quot;</span></code></p>
+</div>
+</section>
+</section>
+<section id="extended-tests-3-epochs">
+<h2>Extended Tests (3 Epochs)<a class="headerlink" href="#extended-tests-3-epochs" title="Link to this heading">#</a></h2>
+<p>To validate over 3 epochs, generate reference predictions and values for epoch 3 and enable the <code class="docutils literal notranslate"><span class="pre">extended</span></code> test case.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>chemtorch<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--config-path<span class="w"> </span>conf/saved_configs/my_models<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--config-name<span class="w"> </span>my_model<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>++data_module.subsample<span class="o">=</span><span class="m">0</span>.01<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>++save_predictions_for<span class="o">=</span><span class="nb">test</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>++predictions_save_path<span class="o">=</span>test/test_integration/fixtures/my_models/ref_preds/my_model_epoch_3.csv<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>trainer.max_epochs<span class="o">=</span><span class="m">3</span>
+</pre></div>
+</div>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">models</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">my_model</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">val_loss</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">epoch_1</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1.25</span>
+<span class="w">      </span><span class="nt">epoch_3</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1.10</span>
+<span class="w">    </span><span class="nt">reference_predictions</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">epoch_1</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_model_epoch_1.csv</span>
+<span class="w">      </span><span class="nt">epoch_3</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_model_epoch_3.csv</span>
+</pre></div>
+</div>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">test_sets</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">my_models</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">test_cases</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;init&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;baseline&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;extended&quot;</span><span class="p p-Indicator">]</span>
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">RUN_EXTENDED_TESTS</span><span class="o">=</span><span class="nb">true</span><span class="w"> </span>pytest<span class="w"> </span>test/test_integration/test_integration.py::test_extended<span class="w"> </span>-k<span class="w"> </span><span class="s2">&quot;my_models&quot;</span><span class="w"> </span>-v
+</pre></div>
+</div>
+</section>
+<section id="managing-test-sets">
+<h2>Managing Test Sets<a class="headerlink" href="#managing-test-sets" title="Link to this heading">#</a></h2>
+<section id="temporarily-skip-configs">
+<h3>Temporarily skip configs<a class="headerlink" href="#temporarily-skip-configs" title="Link to this heading">#</a></h3>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">test_sets</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">my_models</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">skip_configs</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">broken_model</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">experimental_v2</span>
+</pre></div>
+</div>
+</section>
+<section id="disable-entire-test-sets">
+<h3>Disable entire test sets<a class="headerlink" href="#disable-entire-test-sets" title="Link to this heading">#</a></h3>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">test_sets</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">my_old_models</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="debugging-failed-tests">
+<h2>Debugging Failed Tests<a class="headerlink" href="#debugging-failed-tests" title="Link to this heading">#</a></h2>
+<p>Common issues and tips:</p>
+<ul>
+<li><p>Validation loss mismatch:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>AssertionError: Expected val_loss to be 1.36, but got 1.37
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Compare runs in the Weights &amp; Biases dashboard (<em>Workspace → Add panels → Run comparer</em>)</p></li>
+<li><p>Check for hardware differences (low-level kernels can vary across architectures)</p></li>
+<li><p>Reproduce the baseline on the original hardware; if acceptable, update the baseline values</p></li>
+</ul>
+</li>
+<li><p>Prediction mismatch:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Found 5 lines with prediction mismatches:
+  Line 10: Value exceeds tolerance (test=2.3456789, ref=2.3456788, diff=1.1e-07)
+Debug CSV saved to: test/test_integration/debug/...
+</pre></div>
+</div>
+<p>When a mismatch exceeds tolerance, the suite will emit debug CSVs under <code class="docutils literal notranslate"><span class="pre">test/test_integration/debug/</span></code> (enable via <code class="docutils literal notranslate"><span class="pre">force_debug_log</span></code>).</p>
+</li>
+</ul>
+</section>
+<section id="test-parameter-ids">
+<h2>Test Parameter IDs<a class="headerlink" href="#test-parameter-ids" title="Link to this heading">#</a></h2>
+<p>Parameter IDs follow:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">test_set_name</span><span class="o">&gt;-&lt;</span><span class="n">config_name</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>For experiment configs inside subfolders, the relative path is included (for example, <code class="docutils literal notranslate"><span class="pre">experiment_configs-subdir/config_name</span></code>).</p>
+</section>
+</section>
+
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="../user_guide/sweeps.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Hyperparameter Sweeps</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="hydra.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Hydra Config Design</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#directory-layout">Directory Layout</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#quick-start">Quick Start</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#test-types">Test Types</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#registry-configuration">Registry Configuration</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#fields">Fields</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#example-saved-configs">Example (saved configs)</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#saved-configs-with-baseline-validation">Saved Configs with Baseline Validation</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#create-fixtures-directories">1) Create fixtures directories</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#generate-reference-predictions">2) Generate reference predictions</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#define-baselines">3) Define baselines</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#register-the-test-set">4) Register the test set</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#run">5) Run</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#extended-tests-3-epochs">Extended Tests (3 Epochs)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#managing-test-sets">Managing Test Sets</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#temporarily-skip-configs">Temporarily skip configs</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#disable-entire-test-sets">Disable entire test sets</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#debugging-failed-tests">Debugging Failed Tests</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#test-parameter-ids">Test Parameter IDs</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Jasper De Landsheere, Anton Zamyatin, Esther Heid
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2025 Esther Heid.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>
