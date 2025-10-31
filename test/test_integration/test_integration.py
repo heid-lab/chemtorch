@@ -49,6 +49,7 @@ SMOKE_KEYS_TO_REMOVE = [
 
 # Overrides for baseline tests that generate predictions
 PREDICTION_OVERRIDES = BASE_OVERRIDES + [
+    f"++trainer.accelerator=cpu",
     f"++save_predictions_for=test",
     f"++predictions_save_path={TEST_PREDS_SAVE_PATH}",
 ]

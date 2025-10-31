@@ -1,4 +1,4 @@
-# A registry of all test sets for saved configs.
+# A registry of all test sets.
 # Users can disable default sets or add their own.
 test_sets:
   # Our default benchmark suite. Users can disable this.
@@ -6,11 +6,9 @@ test_sets:
     path: "conf/saved_configs/chemtorch_benchmark/optimal_model_configs"
     enabled: true
     invocation_mode: "config_name"
-    test_cases: ["init", "baseline"]
+    test_cases: ["init", "baseline", "extended"]
     fixtures_path: "test/test_integration/fixtures/chemtorch_benchmark"
-    force_debug_log: true
-    skip_configs:
-      - "atom_han"
+    force_debug_log: false
       
   experiment_configs:
     path: "conf/experiment"
@@ -19,11 +17,3 @@ test_sets:
     test_cases: ["init", "smoke"]  # Available: init, smoke, baseline, extended
     skip_configs:
       - "opi_tutorial/training"
-
-  # Example of how a user would add their own test set.
-  # my_custom_tests:
-  #   path: "path/to/my/configs"
-  #   enabled: true
-  #   invocation_mode: "config_name"
-  #   test_cases: ["init", "smoke"]
-  #   skip_configs: []

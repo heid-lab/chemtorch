@@ -11,12 +11,13 @@ def extract_val_loss(output: str) -> Optional[float]:
         output: The stdout from running a config test
         
     Returns:
-        The validation loss value, or None if not found
+        The validation loss value from the last epoch, or None if not found
     """
     lines = output.split('\n')
     
     # Look for Lightning progress bar output with val_loss_epoch
-    for line in lines:
+    # Iterate from the end to find the LAST occurrence (final epoch's loss)
+    for line in reversed(lines):
         # Look for validation metrics in progress bar: "val_loss_epoch=1.280"
         if "val_loss_epoch=" in line:
             try:
