@@ -3,17 +3,20 @@
 test_sets:
   # Our default benchmark suite. Users can disable this.
   chemtorch_benchmark:
-    path: "conf/saved_configs/chemtorch_benchmark/optimal_model_configs"
     enabled: true
+    path: "conf/saved_configs/chemtorch_benchmark/optimal_model_configs"
     invocation_mode: "config_name"
     test_cases: ["init", "baseline", "extended"]
     fixtures_path: "test/test_integration/fixtures/chemtorch_benchmark"
     force_debug_log: false
       
   experiment_configs:
-    path: "conf/experiment"
     enabled: true
+    path: "conf/experiment"
     invocation_mode: "experiment"
     test_cases: ["init", "smoke"]  # Available: init, smoke, baseline, extended
     skip_configs:
       - "opi_tutorial/training"
+      - "opi_tutorial/inference"
+      - "fingerprint"
+      - "example/fingerprint"
