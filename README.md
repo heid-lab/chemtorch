@@ -23,7 +23,7 @@ When chemtorch is on PyPI uncomment this ^^
 
 ChemTorch is a modular framework for developing and benchmarking deep learning models on chemical reaction data. The framework supports multiple families of reaction representations, neural network architectures, and downstream tasks.
 
-The code is provided under MIT license, making it freely available for both academic and commercial use.
+The code is provided under the MIT license, making it freely available for both academic and commercial use.
 
 The detailed ChemTorch documentation is available at: https://heid-lab.github.io/chemtorch
 
@@ -34,7 +34,7 @@ First clone this repo and navigate to it:
 git clone https://github.com/heid-lab/chemtorch.git
 cd chemtorch
 ```
-Then follow the instructions below to install ChemTorch's dependencies using you package manager of choice.
+Then follow the instructions below to install ChemTorch's dependencies using your package manager of choice.
 
 ### Via conda
 
