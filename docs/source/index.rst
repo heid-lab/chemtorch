@@ -6,19 +6,17 @@
 Welcome to ChemTorch!
 =====================
 
-ChemTorch is an open-source deep learning framework for chemical reaction modeling that streamlines core research workflows.
-It is designed to facilitate rapid prototyping, experimentation, and benchmarking.
+ChemTorch is a modular open-source research framework for deep learning of chemical reactions.
 
-* 🔬 **No More Boilerplate**: Focus on research, not engineering. Pre-built data handling, model training, and evaluation pipelines.
-* 🧩 **Reusable Component Library**: Out-of-the-box implementations of common  models, reaction representations, and data splitting strategies.
-* 🏗️ **Modular Architecture**: Easy to extend with custom datasets, representations, models, and training routines.
-* 🔁 **Reproducibility By Design**: Built-in configuration and run management for reproducible experiments.
-* 📊 **Built-in Benchmarks**: Standard datasets and evaluation protocols.
-* 🚀 **Seamless Workflow**: CLI interface for easy experimentation, hyper-parameter tuning, and one-stop reproducibility.
+- 🚀 **Streamline your research workflow**: seamlessly assemble modular deep learning pipelines, track experiments, conduct hyperparameter sweeps, and run benchmarks.
+- 💡 **Multiple reaction representations** with baseline implementations including SMILES tokenizations, molecular graphs, 3D geometries, and fingerprint descriptors.
+- ⚙️ **Preconfigured data pipelines** for common benchmark datasets including RDB7, cycloadditions, USPTO-1k, and more.
+- 🔬 **OOD evaluation** via chemically informed data splitters (size, target, scaffold, reaction core, ...).
+- 🗂️ **Extensible component library** (growing) for all parts of the ChemTorch pipeline.
+- 🔄 **Reproducibility by design** with Weights & Biases experiment tracking and a guide for setting up reproducibility smoke tests.
 
-Ready to dive in? Follow the :ref:`quick-start` to install ChemTorch and run your first experiment!
-
-.. TODO: explain what ChemTorch actually does (see paper)
+Ready? Start with the :ref:`quick-start`.
+For a few examples of what you can already do with ChemTorch read the `white paper <https://chemrxiv.org/engage/chemrxiv/article-details/690357d9a482cba122e366b6>`__ on ChemRxiv.
 
 .. toctree::
    :maxdepth: 1
