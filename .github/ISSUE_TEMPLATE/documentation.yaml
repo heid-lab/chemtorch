@@ -1,0 +1,45 @@
+name: Documentation improvement
+description: Help us improve tutorials, guides, and reference material.
+labels:
+  - documentation
+  - needs-triage
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Documentation feedback
+        Let us know what is missing or confusing in the docs or README.
+  - type: input
+    id: summary
+    attributes:
+      label: Summary
+      placeholder: e.g. "Quick Start sample command fails on macOS".
+    validations:
+      required: true
+  - type: textarea
+    id: section
+    attributes:
+      label: Affected page or section
+      description: Provide a URL or path (e.g. `docs/source/getting_started/quick_start.rst`).
+    validations:
+      required: true
+  - type: textarea
+    id: details
+    attributes:
+      label: What needs to change?
+      description: Describe the correction, addition, or clarification that would help future users.
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Screenshots, logs, or references to other docs are helpful.
+  - type: checkboxes
+    id: contribution
+    attributes:
+      label: Can you help us update the docs?
+      options:
+        - label: I will open a pull request with the proposed changes.
+        - label: I can review updated documentation.
+        - label: I am only reporting the issue.
