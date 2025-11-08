@@ -10,7 +10,7 @@ jobs:
       CUDA: cpu       # or cu118, cu124, etc.
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
 
     - name: Install uv (and enable caching)
       uses: astral-sh/setup-uv@v6
@@ -59,7 +59,7 @@ jobs:
       CUDA: cpu
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
 
     - name: Download RDB7 forward barriers and geometries
       run: |
