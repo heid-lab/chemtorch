@@ -12,10 +12,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com) and this proje
 - Release drafter config and GitHub Actions workflow
 - Dependabot and Renovate config for (semi-)automatic dependency management via PRs
 - CODEOWNERS file
+- PR templates
 
 ### Changed
 - Revamped README with white paper link, stability notice, and feature overview.
 - Improved documentation landing page with updated feature overview.
+- Installation instructions for conda managed environments
 
 ### Fixed
 - Typographical errors in README and docs landing page.

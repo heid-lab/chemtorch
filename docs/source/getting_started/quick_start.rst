@@ -16,45 +16,33 @@ First clone this repo and navigate to it:
     git clone https://github.com/heid-lab/chemtorch.git
     cd chemtorch   
 
-Next, you can install ChemTorch either via :code:`conda` or :code:`uv`.
+Next, you can install ChemTorch either via :code:`uv` (recommended) or :code:`conda`.
 We recommend using :code:`uv` for a seamless, fast, and lightweight installation.
 
-Via :code:`uv`
---------------
+Via :code:`uv` (recommended)
+----------------------------
 
 .. code-block:: install
 
     uv sync
-    uv pip install torch_scatter torch_sparse torch_cluster torch_spline_conv torch_geometric  --no-build-isolation
+    uv pip install torch_scatter torch_sparse torch_cluster torch_spline_conv torch_geometric --no-build-isolation
 
 To also install development and documentation dependencies add the `--groups` option followed by `dev` or `docs`.
 Alternatively, you can also use `--all-groups` to install both.
 
 Via :code:`conda`
------------------
+------------------------------------------------------
+
+If you prefer using :code:`conda` to manage the base interpreter, create a minimal environment and then let :code:`uv` install all Python dependencies from :code:`pyproject.toml` and :code:`uv.lock`:
 
 .. code-block:: install
 
-    conda create -n chemtorch python=3.10 && \
-    conda activate chemtorch && \
-    pip install rdkit numpy==1.26.4 scikit-learn pandas && \
-    pip install torch && \
-    pip install hydra-core && \
-    pip install torch_geometric && \
-    pip install torch_scatter torch_sparse torch_cluster torch_spline_conv -f https://data.pyg.org/whl/torch-2.5.0+cpu.html && \
-    pip install wandb && \
-    pip install ipykernel && \
-    pip install -e .
+    conda env create -f env/environment.yml
+    conda activate chemtorch
+    uv sync
+    uv pip install torch_scatter torch_sparse torch_cluster torch_spline_conv torch_geometric --no-build-isolation
 
-If you have a GPU, follow the `official PyTorch installation instructions <https://pytorch.org/get-started/locally/>`__ to install 
-the appropriate :code:`torch` version for your CUDA setup and then install the corresponding :code:`torch-scatter` and :code:`torch-sparse` 
-versions:
-
-.. code-block:: install
-
-    pip install torch-scatter torch-sparse -f https://data.pyg.org/whl/torch-${TORCH}+${CUDA}.html
-
-where :code:`TORCH` is your installed torch version (e.g. :code:`2.5.0+cu121`) and :code:`CUDA` is your CUDA version (e.g. :code:`cu121`).
+This keeps a single source of truth for Python packages (uv) while still letting you use conda to manage the environment itself.
 
 
 Import Data

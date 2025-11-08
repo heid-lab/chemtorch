@@ -33,13 +33,24 @@ ChemTorch is a modular research framework for deep learning of chemical reaction
 
 ## 🐎 Quick Start
 ### 1. Installation
-Clone this repo, navigate to it, and install the required dependencies.
-We recommend the [uv package manager](https://docs.astral.sh/uv/#installation) for a quick and easy setup:
+First, clone this repo and navigate to it:
 ```bash
 git clone https://github.com/heid-lab/chemtorch.git
 cd chemtorch
+```
+Then, install the required dependencies. 
+We recommend the [uv package manager](https://docs.astral.sh/uv/#installation) for a quick and easy setup:
+```bash
 uv sync
-uv pip install torch_scatter torch_sparse torch_cluster torch_spline_conv torch_geometric  --no-build-isolation
+uv pip install torch_scatter torch_sparse torch_cluster torch_spline_conv torch_geometric --no-build-isolation
+```
+
+You can still use `conda` for you Python environment and just use `uv` to install all Python packages (similar to `pip`):
+```bash
+conda env create -f env/environment.yml  # creates 'chemtorch'
+conda activate chemtorch
+uv sync
+uv pip install torch_scatter torch_sparse torch_cluster torch_spline_conv torch_geometric --no-build-isolation
 ```
 
 ### 2. Import Data
@@ -69,6 +80,7 @@ If you want to ask a question, report a bug, or suggest a feature feel free to o
 ChemTorch is in active development and the public CLI/configuration API may change between releases.
 To detect breaking changes early and safeguard your workflows:
 - Track upcoming changes in the changelog (coming soon).
+- Track upcoming changes in the [CHANGELOG](CHANGELOG.md).
 - Add and run [Integrity & Reproducibility tests](https://heid-lab.github.io/chemtorch/advanced_guide/integration_tests.html) for your experiments to ensure reproducibility of past results with newer releases.
 
 ### Supported environments (summary)
