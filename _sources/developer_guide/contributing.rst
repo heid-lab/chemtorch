@@ -1,7 +1,7 @@
 .. _contributing:
 
 ============
-Contribution
+Contributing
 ============
 
-Coming soon...
+Please refer to the repository's ``CONTRIBUTING.md``.

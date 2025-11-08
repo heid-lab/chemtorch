@@ -138,7 +138,7 @@
       
     
     
-    <img src="../_static/chemtorch_logo_light.svg" class="logo__image only-light" alt="ChemTorch documentation - Home"/>
+    <img src="../_static/chemtorch_logo_dark_lightbackground.png" class="logo__image only-light" alt="ChemTorch documentation - Home"/>
     <script>document.write(`<img src="../_static/chemtorch_logo_dark_lightbackground.png" class="logo__image only-dark" alt="ChemTorch documentation - Home"/>`);</script>
   
   
@@ -186,7 +186,7 @@
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Developer Guide</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../developer_guide/contributing.html">Contribution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer_guide/contributing.html">Contributing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../developer_guide/framework_structure.html">Framework Structure</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../developer_guide/testing.html">Testing</a></li>
 </ul>
@@ -353,7 +353,7 @@ document.write(`
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#installation">Installation</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#via-uv">Via <code class="code docutils literal notranslate"><span class="pre">uv</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#via-uv-recommended">Via <code class="code docutils literal notranslate"><span class="pre">uv</span></code> (recommended)</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#via-conda">Via <code class="code docutils literal notranslate"><span class="pre">conda</span></code></a></li>
 </ul>
 </li>
@@ -380,36 +380,27 @@ document.write(`
 cd<span class="w"> </span>chemtorch
 </pre></div>
 </div>
-<p>Next, you can install ChemTorch either via <code class="code docutils literal notranslate"><span class="pre">conda</span></code> or <code class="code docutils literal notranslate"><span class="pre">uv</span></code>.
+<p>Next, you can install ChemTorch either via <code class="code docutils literal notranslate"><span class="pre">uv</span></code> (recommended) or <code class="code docutils literal notranslate"><span class="pre">conda</span></code>.
 We recommend using <code class="code docutils literal notranslate"><span class="pre">uv</span></code> for a seamless, fast, and lightweight installation.</p>
-<section id="via-uv">
-<h3>Via <code class="code docutils literal notranslate"><span class="pre">uv</span></code><a class="headerlink" href="#via-uv" title="Link to this heading">#</a></h3>
+<section id="via-uv-recommended">
+<h3>Via <code class="code docutils literal notranslate"><span class="pre">uv</span></code> (recommended)<a class="headerlink" href="#via-uv-recommended" title="Link to this heading">#</a></h3>
 <div class="highlight-install notranslate"><div class="highlight"><pre><span></span><span class="nb">uv</span><span class="w"> </span>sync
-<span class="nb">uv</span><span class="w"> </span><span class="nb">pip</span><span class="w"> </span>install<span class="w"> </span>torch_scatter<span class="w"> </span>torch_sparse<span class="w"> </span>torch_cluster<span class="w"> </span>torch_spline_conv<span class="w"> </span>torch_geometric<span class="w">  </span>--no-build-isolation
+<span class="nb">uv</span><span class="w"> </span><span class="nb">pip</span><span class="w"> </span>install<span class="w"> </span>torch_scatter<span class="w"> </span>torch_sparse<span class="w"> </span>torch_cluster<span class="w"> </span>torch_spline_conv<span class="w"> </span>torch_geometric<span class="w"> </span>--no-build-isolation
 </pre></div>
 </div>
+<p>To also install development and documentation dependencies add the <cite>–groups</cite> option followed by <cite>dev</cite> or <cite>docs</cite>.
+Alternatively, you can also use <cite>–all-groups</cite> to install both.</p>
 </section>
 <section id="via-conda">
 <h3>Via <code class="code docutils literal notranslate"><span class="pre">conda</span></code><a class="headerlink" href="#via-conda" title="Link to this heading">#</a></h3>
-<div class="highlight-install notranslate"><div class="highlight"><pre><span></span><span class="nb">conda</span><span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </span>chemtorch<span class="w"> </span>python=3.10<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>\
-<span class="nb">conda</span><span class="w"> </span>activate<span class="w"> </span>chemtorch<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>\
-<span class="nb">pip</span><span class="w"> </span>install<span class="w"> </span>rdkit<span class="w"> </span>numpy==1.26.4<span class="w"> </span>scikit-learn<span class="w"> </span>pandas<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>\
-<span class="nb">pip</span><span class="w"> </span>install<span class="w"> </span>torch<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>\
-<span class="nb">pip</span><span class="w"> </span>install<span class="w"> </span>hydra-core<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>\
-<span class="nb">pip</span><span class="w"> </span>install<span class="w"> </span>torch_geometric<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>\
-<span class="nb">pip</span><span class="w"> </span>install<span class="w"> </span>torch_scatter<span class="w"> </span>torch_sparse<span class="w"> </span>torch_cluster<span class="w"> </span>torch_spline_conv<span class="w"> </span>-f<span class="w"> </span><span class="sx">https://data.pyg.org/whl/torch-2.5.0+cpu.html</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>\
-<span class="nb">pip</span><span class="w"> </span>install<span class="w"> </span>wandb<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>\
-<span class="nb">pip</span><span class="w"> </span>install<span class="w"> </span>ipykernel<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>\
-<span class="nb">pip</span><span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="p">.</span>
+<p>If you prefer using <code class="code docutils literal notranslate"><span class="pre">conda</span></code> to manage the base interpreter, create a minimal environment and then let <code class="code docutils literal notranslate"><span class="pre">uv</span></code> install all Python dependencies from <code class="code docutils literal notranslate"><span class="pre">pyproject.toml</span></code> and <code class="code docutils literal notranslate"><span class="pre">uv.lock</span></code>:</p>
+<div class="highlight-install notranslate"><div class="highlight"><pre><span></span><span class="nb">conda</span><span class="w"> </span>env<span class="w"> </span>create<span class="w"> </span>-f<span class="w"> </span>env/environment.yml
+<span class="nb">conda</span><span class="w"> </span>activate<span class="w"> </span>chemtorch
+<span class="nb">uv</span><span class="w"> </span>sync
+<span class="nb">uv</span><span class="w"> </span><span class="nb">pip</span><span class="w"> </span>install<span class="w"> </span>torch_scatter<span class="w"> </span>torch_sparse<span class="w"> </span>torch_cluster<span class="w"> </span>torch_spline_conv<span class="w"> </span>torch_geometric<span class="w"> </span>--no-build-isolation
 </pre></div>
 </div>
-<p>If you have a GPU, follow the <a class="reference external" href="https://pytorch.org/get-started/locally/">official PyTorch installation instructions</a> to install
-the appropriate <code class="code docutils literal notranslate"><span class="pre">torch</span></code> version for your CUDA setup and then install the corresponding <code class="code docutils literal notranslate"><span class="pre">torch-scatter</span></code> and <code class="code docutils literal notranslate"><span class="pre">torch-sparse</span></code>
-versions:</p>
-<div class="highlight-install notranslate"><div class="highlight"><pre><span></span><span class="nb">pip</span><span class="w"> </span>install<span class="w"> </span>torch-scatter<span class="w"> </span>torch-sparse<span class="w"> </span>-f<span class="w"> </span><span class="sx">https://data.pyg.org/whl/torch-${TORCH}+${CUDA}.html</span>
-</pre></div>
-</div>
-<p>where <code class="code docutils literal notranslate"><span class="pre">TORCH</span></code> is your installed torch version (e.g. <code class="code docutils literal notranslate"><span class="pre">2.5.0+cu121</span></code>) and <code class="code docutils literal notranslate"><span class="pre">CUDA</span></code> is your CUDA version (e.g. <code class="code docutils literal notranslate"><span class="pre">cu121</span></code>).</p>
+<p>This keeps a single source of truth for Python packages (uv) while still letting you use conda to manage the environment itself.</p>
 </section>
 </section>
 <section id="import-data">
@@ -480,7 +471,7 @@ Congratulations, you have successfully run your first experiment with ChemTorch!
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#installation">Installation</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#via-uv">Via <code class="code docutils literal notranslate"><span class="pre">uv</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#via-uv-recommended">Via <code class="code docutils literal notranslate"><span class="pre">uv</span></code> (recommended)</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#via-conda">Via <code class="code docutils literal notranslate"><span class="pre">conda</span></code></a></li>
 </ul>
 </li>
@@ -500,7 +491,7 @@ Congratulations, you have successfully run your first experiment with ChemTorch!
   <div class="footer-item">
     
 <p class="component-author">
-By Jasper De Landsheere, Anton Zamyatin, Esther Heid
+By Anton Zamyatin, Jasper De Landsheere, Esther Heid
 </p>
 
   </div>
