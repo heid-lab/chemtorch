@@ -4,4 +4,4 @@
 Contributing
 ============
 
-Please refer to the the repository's ``CONTRIBUTING.md``.
+Please refer to the repository's ``CONTRIBUTING.md``.

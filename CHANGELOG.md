@@ -9,7 +9,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com) and this proje
 - Initial changelog scaffold.
 - Issue templates for bug reports, feature requests, and documentation improvements.
 - Expanded contributor guide (`CONTRIBUTING.md`).
-- Release drafter congfig and GitHub Actions workflow
+- Release drafter config and GitHub Actions workflow
 - Dependabot and Renovate config for (semi-)automatic dependency management via PRs
 - CODEOWNERS file
 
