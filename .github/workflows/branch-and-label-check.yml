@@ -1,11 +1,10 @@
-name: Branch & Label Policy
+name: pr-policy
 on:
   pull_request:
     types: [opened, edited, synchronize, labeled]
 
 jobs:
   branch-name:
-    name: Validate branch naming convention
     runs-on: ubuntu-latest
     steps:
       - name: Check branch
@@ -19,8 +18,7 @@ jobs:
           else
             echo "::error ::Branch name '$BRANCH' does not match required pattern (feature|bugfix|hotfix|refactor|docs|chore|ci|tests|perf|build)/kebab-case"; exit 1
           fi
-  labels:
-    name: Ensure at least one required PR label
+  pr-labels:
     runs-on: ubuntu-latest
     steps:
       - name: Check labels
