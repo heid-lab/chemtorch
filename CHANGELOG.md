@@ -6,6 +6,25 @@ The format follows [Keep a Changelog](https://keepachangelog.com) and this proje
 
 ## [Unreleased]
 ### Added
+- (None)
+
+### Changed
+- (None)
+
+### Fixed
+- (None)
+
+### Deprecated
+- (None)
+
+### Removed
+- (None)
+
+### Security
+- (None)
+
+## [0.3.0] - 2025.11.08
+### Added
 - Initial changelog scaffold.
 - Issue templates for bug reports, feature requests, and documentation improvements.
 - Expanded contributor guide (`CONTRIBUTING.md`).
@@ -31,7 +50,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com) and this proje
 ### Security
 - (None)
 
-## [0.1.0] - YYYY-MM-DD
+<!-- ## [0.1.0] - YYYY-MM-DD
 > Placeholder for first tagged release. Populate once you cut the release.
 
 ### Added
@@ -46,7 +65,9 @@ The format follows [Keep a Changelog](https://keepachangelog.com) and this proje
 - N/A (initial release).
 
 ### Security
-- N/A
+- N/A -->
 
-[Unreleased]: https://github.com/heid-lab/chemtorch/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/heid-lab/chemtorch/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/heid-lab/chemtorch/releases/tag/v0.3.0
+[0.2.0]: https://github.com/heid-lab/chemtorch/releases/tag/v0.2.0
 [0.1.0]: https://github.com/heid-lab/chemtorch/releases/tag/v0.1.0
