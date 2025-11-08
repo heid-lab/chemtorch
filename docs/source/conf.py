@@ -20,7 +20,7 @@ sys.path.insert(0, os.path.join(conf_dir, "_extensions"))
 
 project = "ChemTorch"
 copyright = f"{datetime.now().year} Esther Heid"
-author = "Jasper De Landsheere, Anton Zamyatin, Esther Heid"
+author = "Anton Zamyatin, Jasper De Landsheere, Esther Heid"
 release = "0.1.1"
 
 # -- General configuration ---------------------------------------------------
@@ -30,8 +30,8 @@ release = "0.1.1"
 templates_path = ["_templates"]
 exclude_patterns = []
 extensions = [
-    'sphinx.ext.autodoc',   # Core Sphinx autodoc extension
-    'sphinx.ext.napoleon',  # For Google-style docstrings
+    'sphinx.ext.autodoc',       # Core Sphinx autodoc extension
+    'sphinx.ext.napoleon',      # For Google-style docstrings
     'sphinx.ext.viewcode',      # Add source code links
     'sphinx.ext.intersphinx',   # Cross-reference other projects
     'sphinx.ext.autosummary',   # Generate summary tables
@@ -75,7 +75,7 @@ html_theme_options = {
     "use_repository_button": True,
     "logo": {
         "alt_text": "ChemTorch documentation - Home",
-        "image_light": "_static/chemtorch_logo_light.svg",
+        "image_light": "_static/chemtorch_logo_dark_lightbackground.png",
         "image_dark": "_static/chemtorch_logo_dark_lightbackground.png",
     },
 }

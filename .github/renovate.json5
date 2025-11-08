@@ -1,0 +1,96 @@
+{
+  // Renovate configuration for uv-managed Python project.
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:base",
+    ":semanticCommits",
+    ":disableRateLimiting"
+  ],
+  "timezone": "UTC",
+  // Biweekly schedule: runs early Monday every 2 weeks.
+  "schedule": ["before 06:00 on Monday every 2 weeks"],
+  "labels": ["dependencies"],
+  "prConcurrentLimit": 10,
+  "branchConcurrentLimit": 10,
+  "platformAutomerge": false,
+  "dependencyDashboard": true,
+
+  // Managers: Python (pyproject) and GitHub Actions. uv.lock is regenerated via post-upgrade task below.
+  "enabledManagers": ["pip", "github-actions"],
+  "pip": {
+    // Keep broader constraints when appropriate and rely on uv.lock for exact reproducibility.
+    "rangeStrategy": "auto"
+  },
+
+  // After updating pyproject, refresh uv.lock so PRs are self-contained.
+  "postUpgradeTasks": {
+    "commands": ["uv lock"],
+    "fileFilters": ["pyproject.toml", "uv.lock"],
+    "executionMode": "update"
+  },
+  "packageRules": [
+    {
+      "matchPackageNames": ["numpy"],
+      "separateMinorPatch": true,
+      "stabilityDays": 3,
+      "labels": ["dependencies", "numpy"],
+      "automerge": false
+    },
+    {
+      "matchPackageNames": ["torch"],
+      "separateMinorPatch": true,
+      "stabilityDays": 7,
+      "labels": ["dependencies", "requires-wheels-check"],
+      "automerge": false
+    },
+    {
+      "matchPackagePatterns": ["^sphinx", "myst-parser", "pydata-sphinx-theme", "sphinx-.*"],
+      "groupName": "docs-stack",
+      "labels": ["dependencies", "docs"],
+      "stabilityDays": 3,
+      "automerge": false
+    },
+    {
+      "matchPackagePatterns": ["^sphinx", "myst-parser", "pydata-sphinx-theme", "sphinx-.*"],
+      "matchUpdateTypes": ["patch"],
+      "automerge": true
+    },
+    {
+      "matchPackagePatterns": ["^pytest", "coverage", "pytest-.*"],
+      "groupName": "test-stack",
+      "labels": ["dependencies", "tests"],
+      "stabilityDays": 3,
+      "automerge": false
+    },
+    {
+      "matchPackagePatterns": ["^pytest", "coverage", "pytest-.*"],
+      "matchUpdateTypes": ["patch"],
+      "automerge": true
+    },
+    {
+      "matchPackagePatterns": ["^lightning$", "pytorch-lightning"],
+      "groupName": "lightning-stack",
+      "labels": ["dependencies"],
+      "automerge": false
+    },
+    {
+      "matchManagers": ["github-actions"],
+      "groupName": "github-actions",
+      "labels": ["dependencies", "ci"],
+      "schedule": ["before 06:00 on Monday every 4 weeks"],
+      "automerge": false
+    }
+  ],
+
+  // Reviewer assignment
+  "reviewers": ["heid-lab/chemtorch-maintainers"],
+  "assignees": ["heid-lab/chemtorch-maintainers"],
+
+  // Commit message convention (+emoji). Defaults to upgrade arrow; special cases below.
+  "commitMessagePrefix": ":arrow_up: deps:",
+  "commitMessageAction": "update",
+  "commitMessageTopic": "{{depName}}",
+
+  // PR body template (short; release notes are appended automatically)
+  "prBodyTemplate": "This PR updates dependencies managed by Renovate.\n\n- Group: {{groupName}}\n- Package: {{depName}}\n- From: {{currentVersion}} -> To: {{newVersion}}\n\nChecklist:\n- [ ] uv lock regenerated (CI or manual)\n- [ ] Tests & docs build pass\n- [ ] (If lightning/torch) Verify PyTorch Geometric extension compatibility.\n\n---\n",
+}

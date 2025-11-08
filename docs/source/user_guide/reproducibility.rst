@@ -31,7 +31,7 @@ This tutorial assumes that you have already :ref:`setup logging with W&B <loggin
 
 Reproducing The ChemTorch Benchmarks
 ====================================
-The `ChemTorch white paper <https://chemrxiv.org/engage/chemrxiv/article-details/687556a4fc5f0acb52358b65>`__ includes a set of benchmark experiments that can be easily reproduced using the steps outlined above.
+The `ChemTorch white paper <https://chemrxiv.org/engage/chemrxiv/article-details/690357d9a482cba122e366b6>`__ includes a set of benchmark experiments that can be easily reproduced using the steps outlined above.
 The configs for these experiments are available in the ``conf/saved_configs/chemtorch_benchmarks/`` folder:
 
 .. code-block:: text

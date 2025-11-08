@@ -1,0 +1,56 @@
+name: Feature request
+description: Suggest a new capability, component, or workflow improvement.
+labels:
+  - enhancement
+  - needs-triage
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Shape the ChemTorch roadmap
+        Tell us what you would like to build or see us support.
+  - type: input
+    id: summary
+    attributes:
+      label: Summary
+      description: What is the high-level idea?
+      placeholder: e.g. "Add a pretrained reaction classification model".
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem does this solve?
+      description: Explain the research or workflow gap the feature addresses.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: Outline how you imagine this feature working. Include CLI commands, configuration options, or API sketches if relevant.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Have you tried anything else? Why is it insufficient?
+  - type: textarea
+    id: data
+    attributes:
+      label: Related datasets or benchmarks
+      description: Link to datasets, reaction families, or evaluation protocols this feature should support.
+  - type: textarea
+    id: references
+    attributes:
+      label: References & supporting material
+      description: Link to papers, blog posts, or code that inform this request.
+  - type: checkboxes
+    id: involvement
+    attributes:
+      label: How can you help?
+      options:
+        - label: I am willing to contribute implementation work (code, configs, or docs).
+        - label: I can help validate the feature on my data / benchmarks.
+        - label: I am only proposing the idea.

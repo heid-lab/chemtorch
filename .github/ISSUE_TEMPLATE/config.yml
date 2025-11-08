@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: ChemTorch Documentation
+    url: https://heid-lab.github.io/chemtorch
+    about: Browse the guides and API reference for tutorials and troubleshooting.
+  - name: ChemTorch White Paper (ChemRxiv)
+    url: https://chemrxiv.org/engage/chemrxiv/article-details/690357d9a482cba122e366b6
+    about: Read the research paper for methodology details and benchmark results.

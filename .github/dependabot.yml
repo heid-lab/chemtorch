@@ -1,0 +1,17 @@
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "monthly" # Keep actions noise low; Renovate will manage Python deps biweekly
+    target-branch: "main"
+    labels:
+      - "dependencies"
+      - "ci"
+    open-pull-requests-limit: 5
+    reviewers:
+      - "heid-lab/chemtorch-maintainers"
+
+# Note:
+# - We use Renovate (see .github/renovate.json5) for Python/uv dependency updates on a biweekly cadence.
+# - Dependabot remains enabled for GitHub Actions only. Security alerts for Python are still surfaced via GitHub Advisories.

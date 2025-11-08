@@ -1,89 +1,98 @@
 <div align="center">
 
-![ChemTorch](docs/source/_static/chemtorch_logo_light.png#gh-light-mode-only)
-![ChemTorch](docs/source/_static/chemtorch_logo_dark_lightbackground.png#gh-dark-mode-only)
+![ChemTorch](docs/source/_static/chemtorch_logo_dark_lightbackground.png)
+
+<h3>ChemTorch · Modular Deep Learning for Reactive Chemistry</h3>
 
 [![tests](https://github.com/heid-lab/chemtorch/actions/workflows/pytest.yml/badge.svg)](https://github.com/heid-lab/chemtorch/actions)
+[![Docs](https://img.shields.io/badge/docs-online-brightgreen.svg)](https://heid-lab.github.io/chemtorch)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Python](https://img.shields.io/badge/dynamic/toml?url=https://raw.githubusercontent.com/heid-lab/chemtorch/main/pyproject.toml&query=$.project.requires-python&label=python&color=blue)](#)
-<!--
+<!-- 
 When chemtorch is on PyPI uncomment this ^^
 [![PyPI version](https://img.shields.io/pypi/v/chemtorch.svg)](https://pypi.org/project/chemtorch)
 [![Python versions](https://img.shields.io/pypi/pyversions/chemtorch.svg)](https://pypi.org/project/chemtorch)
-[![Downloads](https://img.shields.io/github/downloads/heid-lab/chemtorch/total.svg)](https://github.com/heid-lab/chemtorch/releases)
--->
+[![Downloads](https://img.shields.io/github/downloads/heid-lab/chemtorch/total.svg)](https://github.com/heid-lab/chemtorch/releases) -->
 
-[![Docs](https://img.shields.io/badge/docs-online-brightgreen.svg)](https://heid-lab.github.io/chemtorch)
-
-[Installation](#installation) | [Data](#data) | [Usage](#usage) | [Citation](#citation)
+[Quick Start](#🐎-quick-start) |
+[Documentation](https://heid-lab.github.io/chemtorch) |
+[Contributing](#🤝-contributing) |
+[White Paper](#📄-read-the-white-paper) |
+[Citation](#❤️-citation)
 
 </div>
 
-## Introduction
+ChemTorch is a modular research framework for deep learning of chemical reactions.
 
-ChemTorch is a modular framework for developing and benchmarking deep learning models on chemical reaction data. The framework supports multiple families of reaction representations, neural network architectures, and downstream tasks.
+- 🚀 **Streamline your research workflow**: seamlessly assemble modular deep learning pipelines, track experiments, conduct hyperparameter sweeps, and run benchmarks.
+- 💡 **Multiple reaction representations** with baseline implementations including SMILES tokenizations, molecular graphs, 3D geometries, and fingerprint descriptors.
+- ⚙️ **Preconfigured data pipelines** for common benchmark datasets including RDB7, cycloadditions, USPTO-1k, and more.
+- 🔬 **OOD evaluation** via chemically informed data splitters (size, target, scaffold, reaction core, ...).
+- 🗂️ **Extensible component library** (growing) for all parts of the ChemTorch pipeline.
+- 🔄 **Reproducibility by design** with Weights & Biases experiment tracking and a guide for setting up reproducibility smoke tests.
 
-The code is provided under MIT license, making it freely available for both academic and commercial use.
-
-The detailed ChemTorch documentation is available at: https://heid-lab.github.io/chemtorch
-
-## Installation
-
-First clone this repo and navigate to it:
+## 🐎 Quick Start
+### 1. Installation
+First, clone this repo and navigate to it:
 ```bash
 git clone https://github.com/heid-lab/chemtorch.git
 cd chemtorch
 ```
-Then follow the instructions below to install ChemTorch's dependencies using you package manager of choice.
-
-### Via conda
-
-```bash
-conda create -n chemtorch python=3.10 && \
-conda activate chemtorch && \
-pip install rdkit numpy==1.26.4 scikit-learn pandas && \
-pip install torch && \
-pip install hydra-core && \
-pip install wandb && \
-pip install ipykernel && \
-pip install torch_geometric torch_scatter torch_sparse torch_cluster torch_spline_conv -f https://data.pyg.org/whl/torch-2.5.0+cpu.html && \
-pip install -e . && \
-```
-
-For GPU usage
-```bash
-pip install torch-scatter torch-sparse -f https://data.pyg.org/whl/torch-${TORCH}+${CUDA}.html
-```
-
-### Via uv
-First install `uv` following the [official installation instructions](https://docs.astral.sh/uv/).
-Then run:
+Then, install the required dependencies. 
+We recommend the [uv package manager](https://docs.astral.sh/uv/#installation) for a quick and easy setup:
 ```bash
 uv sync
-uv pip install torch_scatter torch_sparse torch_cluster torch_spline_conv torch_geometric  --no-build-isolation
+uv pip install torch_scatter torch_sparse torch_cluster torch_spline_conv torch_geometric --no-build-isolation
 ```
 
-To also install development and documentation dependencies add the `--groups` option followed by `dev` or `docs`.
-Alternatively, you can also use `--all-groups` to install both.
+You can still use `conda` for you Python environment and just use `uv` to install all Python packages (similar to `pip`):
+```bash
+conda env create -f env/environment.yml  # creates 'chemtorch'
+conda activate chemtorch
+uv sync
+uv pip install torch_scatter torch_sparse torch_cluster torch_spline_conv torch_geometric --no-build-isolation
+```
 
-## Get help / Report issues
+### 2. Import Data
+Add your data to the `data/` folder.
+For example, you can download our [Heid Lab reaction database](https://github.com/heid-lab/reaction_database) which contains a few lightweight benchmark datasets that we also use.
 
-If you encounter bugs, unexpected behaviour, or would like to request a feature, please open an issue on the GitHub issue tracker: https://github.com/heid-lab/chemtorch/issues
+```bash
+git clone https://github.com/heid-lab/reaction_database.git data
+```
+### 3. Launch Your First Experiment
+Now you can launch experiments conveniently from the ChemTorch CLI:
+```bash
+chemtorch +experiment=graph data_module.subsample=0.05 log=false
+```
+The experiment will use the default graph learning pipeline to train and evaluate a directed message passing neural network (D-MPNN) on a random subset of the RDB7 dataset (no GPU required).
 
-Contributions and help are very welcome. If you'd like to contribute a larger change, please open an issue first so we can discuss the best approach.
+Looking for more? Check out the [docs](https://heid-lab.github.io/chemtorch)!
 
-## Data
+## 📄 Read the white paper
+For a few examples of what you can already do with ChemTorch read our [white paper](https://chemrxiv.org/engage/chemrxiv/article-details/690357d9a482cba122e366b6) on ChemRxiv.
 
-Get the data from https://github.com/heid-lab/reaction_database and add it to the `data` folder.
-
-<!-- TODO: Add the following sections:
-## ✨ Highlights/Features
-## 🤝 Contributing
 ## 💬 Support
-## 🚀 Roadmap
--->
+If you want to ask a question, report a bug, or suggest a feature feel free to open an issue on our [issue tracker](https://github.com/heid-lab/chemtorch/issues) and we will get back to you :)
+<!-- TODO: add Discord -->
 
-## Citation
+## 🧭 Stability & Roadmap
+ChemTorch is in active development and the public CLI/configuration API may change between releases.
+To detect breaking changes early and safeguard your workflows:
+- Track upcoming changes in the changelog (coming soon).
+- Track upcoming changes in the [CHANGELOG](CHANGELOG.md).
+- Add and run [Integrity & Reproducibility tests](https://heid-lab.github.io/chemtorch/advanced_guide/integration_tests.html) for your experiments to ensure reproducibility of past results with newer releases.
+
+### Supported environments (summary)
+- Python: 3.10+
+- PyTorch: 2.5.x (see PyTorch Geometric compatibility matrix for scatter/sparse wheels)
+- OS: Linux (primary); other OSes may work with compatible wheels
+
+## 🤝 Contributing
+We welcome contributions.
+Please read the [contribution guide](CONTRIBUTING.md) before opening issues or PRs.
+
+## ❤️ Citation
 If you use this code in your research, please cite the following paper:
 
 ```
@@ -96,7 +105,15 @@ If you use this code in your research, please cite the following paper:
 }
 ```
 
-This framework was inspired by:
-- [GraphGPS](https://github.com/rampasek/GraphGPS/tree/main)
-- [GraphGym](https://github.com/snap-stanford/GraphGym)
-- [lightning-hydra-template](https://github.com/ashleve/lightning-hydra-template)
+## 📋 License
+This project is licensed under the [MIT License](LICENSE).
+
+## Thanks & inspiration
+
+ChemTorch builds on and was inspired by many excellent open-source projects and community work — thank you to the authors and maintainers <3
+
+- [Hydra](https://hydra.cc/) — flexible configuration and experiment management
+- [PyTorch Lightning](https://www.pytorchlightning.ai/) — cleaner training loops and logging
+- [Weights & Biases](https://wandb.ai/site/models/) — experiment tracking and visualization in one place
+- [GraphGPS](https://github.com/rampasek/GraphGPS) and [GraphGym](https://github.com/snap-stanford/GraphGym) — modular GNN repos which inspired this framework 
+- [lightning-hydra-template](https://github.com/ashleve/lightning-hydra-template) — project structure and integration patterns
