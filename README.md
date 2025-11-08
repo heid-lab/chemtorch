@@ -50,7 +50,7 @@ For example, you can download our [Heid Lab reaction database](https://github.co
 git clone https://github.com/heid-lab/reaction_database.git data
 ```
 ### 3. Launch Your First Experiment
-Now you can launch experiments conveniently from the ChemTroch CLI:
+Now you can launch experiments conveniently from the ChemTorch CLI:
 ```bash
 chemtorch +experiment=graph data_module.subsample=0.05 log=false
 ```
@@ -69,7 +69,7 @@ If you want to ask a question, report a bug, or suggest a feature feel free to o
 ChemTorch is in active development and the public CLI/configuration API may change between releases.
 To detect breaking changes early and safeguard your workflows:
 - Track upcoming changes in the changelog (coming soon).
-- Add and run [Integrity & Reproducibility tests](https://heid-lab.github.io/chemtorch/advanced_guide/integration_tests.html) for your experiments to ensure reproducability of past results with newer releases.
+- Add and run [Integrity & Reproducibility tests](https://heid-lab.github.io/chemtorch/advanced_guide/integration_tests.html) for your experiments to ensure reproducibility of past results with newer releases.
 
 ### Supported environments (summary)
 - Python: 3.10+
@@ -102,6 +102,6 @@ ChemTorch builds on and was inspired by many excellent open-source projects and 
 
 - [Hydra](https://hydra.cc/) — flexible configuration and experiment management
 - [PyTorch Lightning](https://www.pytorchlightning.ai/) — cleaner training loops and logging
-- [Weights & Biase](https://wandb.ai/site/models/) — experiment tracking and visualization in one place
+- [Weights & Biases](https://wandb.ai/site/models/) — experiment tracking and visualization in one place
 - [GraphGPS](https://github.com/rampasek/GraphGPS) and [GraphGym](https://github.com/snap-stanford/GraphGym) — modular GNN repos which inspired this framework 
 - [lightning-hydra-template](https://github.com/ashleve/lightning-hydra-template) — project structure and integration patterns
