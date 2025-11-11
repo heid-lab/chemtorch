@@ -36,6 +36,7 @@ For a few examples of what you can already do with ChemTorch read the `white pap
    user_guide/cli_usage
    user_guide/config_ref
    user_guide/reproducibility
+   user_guide/inference
    user_guide/pipeline_overview
    user_guide/custom_data
    user_guide/custom_components

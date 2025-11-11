@@ -37,7 +37,14 @@ Controls which stages of the pipeline to execute.
 * ``fit``: Training and validation
 * ``test``: Evaluate on test set(s)
 * ``validate``: Evaluate on validation set only
-* ``predict``: Run inference without training (see :ref:`inference`)
+* ``predict``: Run inference without training (see :ref:`inference`).
+
+The ``predict`` task runs inference only (no training).
+Before using it, you must already have a trained model checkpoint — first run ``fit`` to produce one, then set ``load_model: true`` together with ``ckpt_path`` (see :ref:`model-loading`).
+For ``predict`` the data pipeline must not perform any splitting (set the data splitter to ``null``) and the column mapper must omit the label/target column if it exists. ChemTorch will enforce these automatically for a predict-only run, but declaring them explicitly can make configs clearer and easier to audit.
+
+To persist outputs from a predict-only run, use the keys described under :ref:`prediction-saving`: ``predictions_save_path`` for a single partition (``tasks: [predict]``) or ``save_predictions_for`` plus ``predictions_save_dir`` when multiple partitions are available.
+If instead you want to capture predictions for just one of the ``train``, ``val``, or ``test`` partitions during/after training (without a separate predict-only task), configure the same :ref:`prediction-saving` keys as explained in that section.
 
 Note that to specify a single task you also need to use the list syntax.
 
@@ -136,6 +143,8 @@ W&B run name for identifying individual runs.
     chemtorch +experiment=graph run_name="baseline run"
 
 
+.. _model-loading:
+
 Model Loading
 -------------
 
@@ -163,6 +172,8 @@ Path to the checkpoint file to load.
 .. code-block:: chemtorch
 
     chemtorch +experiment=graph load_model=true ckpt_path=path/to/checkpoint.ckpt
+
+.. _prediction-saving:
 
 Prediction Saving
 -----------------

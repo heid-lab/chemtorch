@@ -55,13 +55,22 @@ def main(cfg: DictConfig):
     if "predict" in cfg.tasks:
         # Remove label from column mapper since it should not be specified for inference (error will be
         # raised if it is specified)
-        if cfg.data_pipeline.column_mapper.label is not None:
+        if cfg.data_module.data_pipeline.column_mapper.label is not None:
             OmegaConf.update(
                 cfg=cfg,
-                key="data_pipeline.column_mapper.label",
+                key="data_module.data_pipeline.column_mapper.label",
                 value=None,
                 merge=True,
             )
+
+        if cfg.data_module.data_pipeline.data_splitter is not None:
+            OmegaConf.update(
+                cfg=cfg,
+                key="data_module.data_pipeline.data_splitter",
+                value=None,
+                merge=True,
+            )
+
         # Set the standardizer of regression routine to None since it should be loaded from the checkpoint
         # and not created anew for inference.
         if cfg.routine.standardizer is not None:
