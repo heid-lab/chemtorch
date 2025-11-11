@@ -23,6 +23,13 @@ The format follows [Keep a Changelog](https://keepachangelog.com) and this proje
 ### Security
 - (None)
 
+## [0.3.1] - 2025.11.11
+### Added
+- Document use of `predict` task in web documentation
+
+### Fixed
+- Prediction pipeline and automatic removal of incompatible components
+
 ## [0.3.0] - 2025.11.08
 ### Added
 - Initial changelog scaffold.
@@ -68,6 +75,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com) and this proje
 - N/A -->
 
 [Unreleased]: https://github.com/heid-lab/chemtorch/compare/v0.3.0...HEAD
+[0.3.1]: https://github.com/heid-lab/chemtorch/releases/tag/v0.3.1
 [0.3.0]: https://github.com/heid-lab/chemtorch/releases/tag/v0.3.0
 [0.2.0]: https://github.com/heid-lab/chemtorch/releases/tag/v0.2.0
 [0.1.0]: https://github.com/heid-lab/chemtorch/releases/tag/v0.1.0
