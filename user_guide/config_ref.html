@@ -168,6 +168,7 @@
 <li class="toctree-l1"><a class="reference internal" href="cli_usage.html">CLI Usage</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Config Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="reproducibility.html">Reproducing Experiments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="inference.html">Inference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pipeline_overview.html">Components Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="custom_data.html">Using Your Own Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="custom_components.html">Defining Custom Components</a></li>
@@ -404,8 +405,13 @@ Just know that you can still set all options listed below in your experiment con
 <li><p><code class="docutils literal notranslate"><span class="pre">fit</span></code>: Training and validation</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">test</span></code>: Evaluate on test set(s)</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">validate</span></code>: Evaluate on validation set only</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">predict</span></code>: Run inference without training (see <span class="xref std std-ref">inference</span>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">predict</span></code>: Run inference without training (see <a class="reference internal" href="inference.html#inference"><span class="std std-ref">Inference</span></a>).</p></li>
 </ul>
+<p>The <code class="docutils literal notranslate"><span class="pre">predict</span></code> task runs inference only (no training).
+Before using it, you must already have a trained model checkpoint — first run <code class="docutils literal notranslate"><span class="pre">fit</span></code> to produce one, then set <code class="docutils literal notranslate"><span class="pre">load_model:</span> <span class="pre">true</span></code> together with <code class="docutils literal notranslate"><span class="pre">ckpt_path</span></code> (see <a class="reference internal" href="#model-loading"><span class="std std-ref">Model Loading</span></a>).
+For <code class="docutils literal notranslate"><span class="pre">predict</span></code> the data pipeline must not perform any splitting (set the data splitter to <code class="docutils literal notranslate"><span class="pre">null</span></code>) and the column mapper must omit the label/target column if it exists. ChemTorch will enforce these automatically for a predict-only run, but declaring them explicitly can make configs clearer and easier to audit.</p>
+<p>To persist outputs from a predict-only run, use the keys described under <a class="reference internal" href="#prediction-saving"><span class="std std-ref">Prediction Saving</span></a>: <code class="docutils literal notranslate"><span class="pre">predictions_save_path</span></code> for a single partition (<code class="docutils literal notranslate"><span class="pre">tasks:</span> <span class="pre">[predict]</span></code>) or <code class="docutils literal notranslate"><span class="pre">save_predictions_for</span></code> plus <code class="docutils literal notranslate"><span class="pre">predictions_save_dir</span></code> when multiple partitions are available.
+If instead you want to capture predictions for just one of the <code class="docutils literal notranslate"><span class="pre">train</span></code>, <code class="docutils literal notranslate"><span class="pre">val</span></code>, or <code class="docutils literal notranslate"><span class="pre">test</span></code> partitions during/after training (without a separate predict-only task), configure the same <a class="reference internal" href="#prediction-saving"><span class="std std-ref">Prediction Saving</span></a> keys as explained in that section.</p>
 <p>Note that to specify a single task you also need to use the list syntax.</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">tasks</span><span class="p">:</span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">predict</span>
@@ -480,7 +486,7 @@ Just know that you can still set all options listed below in your experiment con
 </div>
 </section>
 <section id="model-loading">
-<h2>Model Loading<a class="headerlink" href="#model-loading" title="Link to this heading">#</a></h2>
+<span id="id1"></span><h2>Model Loading<a class="headerlink" href="#model-loading" title="Link to this heading">#</a></h2>
 <p><strong>load_model</strong></p>
 <p>Load a pre-trained model from a checkpoint.</p>
 <ul class="simple">
@@ -504,7 +510,7 @@ Just know that you can still set all options listed below in your experiment con
 </div>
 </section>
 <section id="prediction-saving">
-<h2>Prediction Saving<a class="headerlink" href="#prediction-saving" title="Link to this heading">#</a></h2>
+<span id="id2"></span><h2>Prediction Saving<a class="headerlink" href="#prediction-saving" title="Link to this heading">#</a></h2>
 <p><strong>save_predictions_for</strong></p>
 <p>Specify which dataset partitions to save predictions for.</p>
 <ul class="simple">
