@@ -1,8 +1,8 @@
-.. _integration-tests:
+.. _reproducibility-tests:
 
-=================================
-Reproducibility Regression Checks
-=================================
+=====================
+Reproducibility Tests
+=====================
 
 ChemTorch ships with a configurable, registry-driven integration test suite focused on catching reproducibility regressions early. It verifies:
 

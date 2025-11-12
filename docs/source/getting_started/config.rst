@@ -56,7 +56,7 @@ Here's what each part does:
 * ``base.yaml``: Top-level defaults loaded automatically
 * ``data_module/``, ``model/``, ``routine/``, ``trainer/``: Component building blocks
 * ``experiment/``: Your experiment configurations (see :ref:`experiments`)
-* ``saved_configs/``: Saved configs for reproducibility (see :ref:`reproducability`)
+* ``saved_configs/``: Saved configs for reproducibility (see :ref:`reproducing-experiments`)
 * ``props/``: Runtime-computed properties (see :ref:`props`)
 
 

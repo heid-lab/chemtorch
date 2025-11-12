@@ -24,13 +24,13 @@ Layers of testing
 
 3. Reproducibility checks (saved configs)
 	- Validate that saved configs still reproduce baseline validation loss and predictions
-	- Documented for experimentalists in :ref:`integration_tests`
+	- Documented for experimentalists in :ref:`reproducibility-tests`
 
 
 Integration tests for experiment configs (CI/CD)
 ===============================================
 ChemTorch runs smoke tests on experiment configs in CI to catch breaking changes (e.g., API changes or runtime errors).
-This tutorial assumes that you are already familiar with the structure and usage of the integration test suite as documented in :ref:`integration_tests`.
+This tutorial assumes that you are already familiar with the structure and usage of the integration test suite as documented in :ref:`reproducibility-tests`.
 
 Register the CI test set
 ------------------------
@@ -95,7 +95,7 @@ Three-epoch "extended" tests are gated by the environment variable ``RUN_EXTENDE
 
 	RUN_EXTENDED_TESTS=true pytest test/test_integration/test_integration.py::test_extended -k "experiment_configs" -v
 
-For reproducibility checks on saved configs (including baselines and reference predictions), see :ref:`integration_tests`.
+For reproducibility checks on saved configs (including baselines and reference predictions), see :ref:`reproducibility-tests`.
 
 .. _dev-config-overrides:
 

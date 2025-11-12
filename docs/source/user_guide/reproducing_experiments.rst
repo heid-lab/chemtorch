@@ -1,4 +1,4 @@
-.. _reproducability:
+.. _reproducing-experiments:
 =======================
 Reproducing Experiments
 =======================
