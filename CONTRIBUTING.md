@@ -40,6 +40,10 @@ Discouraged prefixes (use a draft PR or work in a fork instead): `wip/`, `tmp/`,
 
 Automated check: A CI job validates branch names on pull requests; nonconforming names will fail the check.
 
+### Commit message policy
+We prefix the commit message with a [git commit emoji](https://gist.github.com/parmentf/035de27d6ed1dce0b36a) to capture at a glance what the commit is about.
+
+
 ## Development environment
 
 ### Prerequisites
@@ -76,27 +80,19 @@ Refer to the [Integrity & Reproducibility guide](https://heid-lab.github.io/chem
 - For figures or diagrams, place source assets under `docs/source/_static/` when possible.
 
 ## Pull request checklist
-- Keep changes focused; unrelated fixes should be in separate PRs.
-- Update or add tests covering new behavior.
-- Update configuration defaults, changelog entries (once available), and documentation where relevant.
-- Ensure all tests pass. If you introduce a new dependency, explain the motivation in the PR description.
-- Provide a clear summary of the problem, the solution, and any follow-up work.
+- Keep changes focused; unrelated changes should be in separate PRs.
+- Give the PR a clear but concise title. The title will appear in the automaitcally generated release notes.
+- Provide a short summary of the problem, the solution, and any follow-up work.
+- Add suitable label(s). To keep release notes accurate, pull requests must include at least one category label (e.g., `feature`, `bug`, `documentation`, `maintenance`, `tests`, `ci`) and add `breaking-change` when applicable.
+- Update or add tests covering new behavior and ensure ALL tests pass.
+- Update configuration defaults where relevant.
+- Update/add documentation if applicable.
+- If you introduce a new dependency, explain the motivation in the PR description.
 
 Maintainers may request additional context, benchmarks, or documentation updates before merging.
 
-### Changelog & releases
-We follow Semantic Versioning (`MAJOR.MINOR.PATCH`). Mark breaking changes with the `breaking-change` label and include a brief migration note (CLI before/after or config diff) in the PR description.
-
-The maintainers curate `CHANGELOG.md` and handle tagging and publishing releases internally. You do not need to perform release steps; just ensure your PR title and labels are descriptive.
-
-### PR labels policy
-To keep release notes accurate, pull requests must include at least one category label (e.g., `feature`, `bug`, `documentation`, `maintenance`, `tests`, `ci`) and add `breaking-change` when applicable. A CI job enforces the presence of at least one required label; otherwise, the PR check fails.
-
 ### Review routing
 GitHub automatically requests maintainers for changes in core paths. If your PR touches unfamiliar areas, add additional reviewers for faster feedback.
-
-### Release cadence
-Early development: ad-hoc MINOR releases as features stabilize (aim for 2–6 weeks). PATCH releases for urgent bug fixes. Reserve MAJOR for substantial API redesigns or large-scale refactors.
 
 ### Merging policy
 Merges into `main` are performed by maintainers. "Rebase and merge" is disabled on `main`; maintainers choose between squash and merge commits per the internal policy (see `MAINTAINERS.md`). As a contributor, you only need to prepare your branch:
