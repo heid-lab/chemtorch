@@ -13,6 +13,8 @@ If you look for guidance on designing configuration files, see :ref:`hydra` whic
     Just know that you can still set all options listed below in your experiment config or add them in the CLI via ``+key``.
 
 
+.. _tasks-exec-control:
+
 Execution Control
 -----------------
 

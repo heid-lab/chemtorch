@@ -1,8 +1,8 @@
-.. _integration_tests:
+.. _reproducibility-tests:
 
-=================================
-Reproducibility Regression Checks
-=================================
+=====================
+Reproducibility Tests
+=====================
 
 ChemTorch ships with a configurable, registry-driven integration test suite focused on catching reproducibility regressions early. It verifies:
 
@@ -107,6 +107,7 @@ Fields
 - ``fixtures_path``: path to ``baselines.yaml`` and ``ref_preds/`` (required only for reproducability tests)
 - ``skip_configs`` (optional): list of config names (or paths for experiment sets) to temporarily exclude
 - ``force_debug_log`` (optional): save detailed CSVs when prediction comparisons fail
+- ``overrides`` (optional): mapping of config identifiers to lists of Hydra overrides appended at runtime; see :ref:`dev-config-overrides` in the Developer Guide for details and examples.
 
 Example (saved configs)
 -----------------------
@@ -127,6 +128,9 @@ Example (saved configs)
 
 .. note::
    CI/CD smoke testing for experiment configs (``experiment_configs``) is covered in the Developer Guide. See :ref:`testing`.
+
+.. note::
+   For how to use per‑config overrides in integration tests (including ordering with default removals and practical examples), see :ref:`dev-config-overrides` in the Developer Guide.
 
 
 Saved Configs with Baseline Validation

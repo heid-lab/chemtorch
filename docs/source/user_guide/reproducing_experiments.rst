@@ -1,4 +1,4 @@
-.. _reproducability:
+.. _reproducing-experiments:
 =======================
 Reproducing Experiments
 =======================
@@ -59,4 +59,4 @@ For example, run the following command to reproduce the CGR/D-MPNN experiment wi
 
     chemtorch -m -cd=conf/saved_configs/chemtorch_benchmarks/optimal_model_configs -cn=cgr_dmpnn +experiment=chemtorch_benchmarks seed=0,1,2,3,4,5,6,7,8,9
 
-The multirun (``-m``) flag will run the experiment with all the specified seeds in sequence (see :ref:`cli_usage`).
+The multirun (``-m``) flag will run the experiment with all the specified seeds in sequence (see :ref:`cli-usage`).

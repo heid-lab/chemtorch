@@ -27,9 +27,10 @@ tasks:
   - test
 
 # Override the data source from which to create the training, validation and test sets to the filtered RGD1 dataset
-data_pipeline:
-  data_source:
-    data_path: "../QM_data_precomputed.csv"
+data_module:
+  data_pipeline:
+    data_source:
+      data_path: "../QM_data_precomputed.csv"
 
 # Save model checkpoints
 trainer.enable_checkpointing: true

@@ -11,7 +11,7 @@ can be loaded and executed correctly. It supports two types of tests:
 import os
 import sys
 from pathlib import Path
-from typing import List
+from typing import Any, Dict, List
 
 import pytest
 from hydra import compose, initialize_config_dir
@@ -187,6 +187,13 @@ def _should_skip(request: pytest.FixtureRequest, test_id: str, skip_list: List[s
     return config_identifier in skip_list or test_id.split("-")[-1] in skip_list
 
 
+def _get_config_overrides(test_set_data: Dict[str, Any], test_id: str) -> List[str]:
+    """Fetch test-set specific overrides for a config, if any."""
+    overrides_map = test_set_data.get("overrides", {})
+    config_identifier = test_id.split("-", 1)[1]
+    return overrides_map.get(config_identifier, [])
+
+
 def _run_smoke_test(config_info, tester: UnifiedConfigTester, request: pytest.FixtureRequest):
     """Helper to run a 1-epoch smoke test."""
     test_id, test_set_data, rel_config_path, config_name = config_info
@@ -195,10 +202,13 @@ def _run_smoke_test(config_info, tester: UnifiedConfigTester, request: pytest.Fi
     if _should_skip(request, test_id, skip_list):
         pytest.skip(f"Config '{test_id}' temporarily excluded from CI/CD")
 
+    extra_overrides = _get_config_overrides(test_set_data, test_id)
+
     tester.test_config(
         rel_config_path=rel_config_path,
         config_name=config_name,
         remove_keys=SMOKE_KEYS_TO_REMOVE,
+        extra_overrides=extra_overrides,
     )
 
 
@@ -226,6 +236,7 @@ def _run_baseline_test(config_info, tester: UnifiedConfigTester, num_epochs: int
 
     timeout = model.calculate_timeout(num_epochs)
     extra_overrides = PREDICTION_OVERRIDES + [f"trainer.max_epochs={num_epochs}"]
+    extra_overrides.extend(_get_config_overrides(test_set_data, test_id))
 
     if TEST_PREDS_SAVE_PATH.exists():
         TEST_PREDS_SAVE_PATH.unlink()
