@@ -87,7 +87,6 @@ Refer to the [Integrity & Reproducibility guide](https://heid-lab.github.io/chem
 - Update or add tests covering new behavior and ensure ALL tests pass.
 - Update configuration defaults where relevant.
 - Update/add documentation if applicable.
-- If you introduce a new dependency, explain the motivation in the PR description.
 
 Maintainers may request additional context, benchmarks, or documentation updates before merging.
 
