@@ -198,4 +198,4 @@ def get_num_workers(slurm_env: str = 'SLURM_CPUS_PER_TASK', leave_free: int = 1)
     else:
         workers = cpu_count - leave_free
 
-    return max(0, int(workers))
+    return max(0, workers)
