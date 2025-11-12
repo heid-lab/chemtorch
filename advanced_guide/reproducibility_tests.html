@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Reproducibility Regression Checks &#8212; ChemTorch</title>
+    <title>Reproducibility Tests &#8212; ChemTorch</title>
   
   
   
@@ -41,7 +41,7 @@
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'advanced_guide/integration_tests';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'advanced_guide/reproducibility_tests';</script>
     <link rel="icon" href="../_static/chemtorch_favicon.png"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -167,7 +167,7 @@
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../user_guide/cli_usage.html">CLI Usage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_guide/config_ref.html">Config Reference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../user_guide/reproducibility.html">Reproducing Experiments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/reproducing_experiments.html">Reproducing Experiments</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_guide/inference.html">Inference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_guide/pipeline_overview.html">Components Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_guide/custom_data.html">Using Your Own Data</a></li>
@@ -176,7 +176,7 @@
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Advanced Guide</span></p>
 <ul class="current nav bd-sidenav">
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Reproducibility Regression Checks</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Reproducibility Tests</a></li>
 <li class="toctree-l1"><a class="reference internal" href="hydra.html">Hydra Config Design</a></li>
 <li class="toctree-l1"><a class="reference internal" href="props.html">Runtime Properties</a></li>
 </ul>
@@ -259,7 +259,7 @@
       
       
       
-      <li><a href="../_sources/advanced_guide/integration_tests.rst" target="_blank"
+      <li><a href="../_sources/advanced_guide/reproducibility_tests.rst" target="_blank"
    class="btn btn-sm btn-download-source-button dropdown-item"
    title="Download source file"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -343,7 +343,7 @@ document.write(`
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>Reproducibility Regression Checks</h1>
+    <h1>Reproducibility Tests</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -395,8 +395,8 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="reproducibility-regression-checks">
-<span id="integration-tests"></span><h1>Reproducibility Regression Checks<a class="headerlink" href="#reproducibility-regression-checks" title="Link to this heading">#</a></h1>
+  <section id="reproducibility-tests">
+<span id="id1"></span><h1>Reproducibility Tests<a class="headerlink" href="#reproducibility-tests" title="Link to this heading">#</a></h1>
 <p>ChemTorch ships with a configurable, registry-driven integration test suite focused on catching reproducibility regressions early. It verifies:</p>
 <ul class="simple">
 <li><p>Configs can be instantiated without errors</p></li>
@@ -498,6 +498,7 @@ pytest<span class="w"> </span>test/test_integration/test_integration.py::test_ba
 <li><p><code class="docutils literal notranslate"><span class="pre">fixtures_path</span></code>: path to <code class="docutils literal notranslate"><span class="pre">baselines.yaml</span></code> and <code class="docutils literal notranslate"><span class="pre">ref_preds/</span></code> (required only for reproducability tests)</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">skip_configs</span></code> (optional): list of config names (or paths for experiment sets) to temporarily exclude</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">force_debug_log</span></code> (optional): save detailed CSVs when prediction comparisons fail</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">overrides</span></code> (optional): mapping of config identifiers to lists of Hydra overrides appended at runtime; see <a class="reference internal" href="../developer_guide/testing.html#dev-config-overrides"><span class="std std-ref">Config-specific overrides for integration tests</span></a> in the Developer Guide for details and examples.</p></li>
 </ul>
 </section>
 <section id="example-saved-configs">
@@ -518,6 +519,10 @@ pytest<span class="w"> </span>test/test_integration/test_integration.py::test_ba
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>CI/CD smoke testing for experiment configs (<code class="docutils literal notranslate"><span class="pre">experiment_configs</span></code>) is covered in the Developer Guide. See <span class="xref std std-ref">testing</span>.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>For how to use per‑config overrides in integration tests (including ordering with default removals and practical examples), see <a class="reference internal" href="../developer_guide/testing.html#dev-config-overrides"><span class="std std-ref">Config-specific overrides for integration tests</span></a> in the Developer Guide.</p>
 </div>
 </section>
 </section>

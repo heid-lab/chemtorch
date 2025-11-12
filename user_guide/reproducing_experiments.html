@@ -41,7 +41,7 @@
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'user_guide/reproducibility';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'user_guide/reproducing_experiments';</script>
     <link rel="icon" href="../_static/chemtorch_favicon.png"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -176,7 +176,7 @@
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Advanced Guide</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../advanced_guide/integration_tests.html">Reproducibility Regression Checks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../advanced_guide/reproducibility_tests.html">Reproducibility Tests</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../advanced_guide/hydra.html">Hydra Config Design</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../advanced_guide/props.html">Runtime Properties</a></li>
 </ul>
@@ -259,7 +259,7 @@
       
       
       
-      <li><a href="../_sources/user_guide/reproducibility.rst" target="_blank"
+      <li><a href="../_sources/user_guide/reproducing_experiments.rst" target="_blank"
    class="btn btn-sm btn-download-source-button dropdown-item"
    title="Download source file"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -366,7 +366,7 @@ document.write(`
                 <article class="bd-article">
                   
   <section id="reproducing-experiments">
-<span id="reproducability"></span><h1>Reproducing Experiments<a class="headerlink" href="#reproducing-experiments" title="Link to this heading">#</a></h1>
+<span id="id1"></span><h1>Reproducing Experiments<a class="headerlink" href="#reproducing-experiments" title="Link to this heading">#</a></h1>
 <p>In this tutorial you will learn how to seamlessly reproduce experiments run with ChemTorch.
 This tutorial assumes that you have already <a class="reference internal" href="../getting_started/logging.html#logging"><span class="std std-ref">setup logging with W&amp;B</span></a>.</p>
 <ol class="arabic">
@@ -378,8 +378,8 @@ This tutorial assumes that you have already <a class="reference internal" href="
 </li>
 <li><p>The W&amp;B config format is slightly different from that used by Hydra.
 So you first need to parse the config to Hydra format using the <code class="docutils literal notranslate"><span class="pre">wandb_to_hydra.py</span></code> script located in the <code class="docutils literal notranslate"><span class="pre">scripts/</span></code> folder of ChemTorch.</p>
-<div class="literal-block-wrapper docutils container" id="id1">
-<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">wandb_to_hydra.py</span></code> usage</span><a class="headerlink" href="#id1" title="Link to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id2">
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">wandb_to_hydra.py</span></code> usage</span><a class="headerlink" href="#id2" title="Link to this code">#</a></div>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>usage: wandb_to_hydra.py [-h] --run-id RUN_ID --output-path OUTPUT_PATH
                          [--wandb-dir WANDB_DIR]
 
@@ -434,7 +434,7 @@ The data split benchmark configs use the same hyper-parameters as the optimal mo
 <div class="highlight-chemtorch notranslate"><div class="highlight"><pre><span></span><span class="ne">chemtorch</span><span class="w"> </span>-m<span class="w"> </span>-cd=conf/saved_configs/chemtorch_benchmarks/optimal_model_configs<span class="w"> </span>-cn<span class="o">=</span>cgr_dmpnn<span class="w"> </span><span class="gi">+experiment</span><span class="o">=</span>chemtorch_benchmarks<span class="w"> </span><span class="gi">seed</span><span class="o">=</span>0,1,2,3,4,5,6,7,8,9
 </pre></div>
 </div>
-<p>The multirun (<code class="docutils literal notranslate"><span class="pre">-m</span></code>) flag will run the experiment with all the specified seeds in sequence (see <span class="xref std std-ref">cli_usage</span>).</p>
+<p>The multirun (<code class="docutils literal notranslate"><span class="pre">-m</span></code>) flag will run the experiment with all the specified seeds in sequence (see <a class="reference internal" href="cli_usage.html#cli-usage"><span class="std std-ref">CLI Usage</span></a>).</p>
 </section>
 </section>
 

@@ -35,7 +35,7 @@ For a few examples of what you can already do with ChemTorch read the `white pap
 
    user_guide/cli_usage
    user_guide/config_ref
-   user_guide/reproducibility
+   user_guide/reproducing_experiments
    user_guide/inference
    user_guide/pipeline_overview
    user_guide/custom_data
@@ -47,7 +47,7 @@ For a few examples of what you can already do with ChemTorch read the `white pap
    :caption: Advanced Guide
    :hidden:
    
-   advanced_guide/integration_tests
+   advanced_guide/reproducibility_tests
    advanced_guide/hydra
    advanced_guide/props
 

@@ -24,13 +24,13 @@ Layers of testing
 
 3. Reproducibility checks (saved configs)
 	- Validate that saved configs still reproduce baseline validation loss and predictions
-	- Documented for experimentalists in :ref:`integration_tests`
+	- Documented for experimentalists in :ref:`reproducibility-tests`
 
 
 Integration tests for experiment configs (CI/CD)
 ===============================================
 ChemTorch runs smoke tests on experiment configs in CI to catch breaking changes (e.g., API changes or runtime errors).
-This tutorial assumes that you are already familiar with the structure and usage of the integration test suite as documented in :ref:`integration_tests`.
+This tutorial assumes that you are already familiar with the structure and usage of the integration test suite as documented in :ref:`reproducibility-tests`.
 
 Register the CI test set
 ------------------------
@@ -95,4 +95,39 @@ Three-epoch "extended" tests are gated by the environment variable ``RUN_EXTENDE
 
 	RUN_EXTENDED_TESTS=true pytest test/test_integration/test_integration.py::test_extended -k "experiment_configs" -v
 
-For reproducibility checks on saved configs (including baselines and reference predictions), see :ref:`integration_tests`.
+For reproducibility checks on saved configs (including baselines and reference predictions), see :ref:`reproducibility-tests`.
+
+.. _dev-config-overrides:
+
+Config-specific overrides for integration tests
+===============================================
+
+Some configurations cannot run in CI unchanged because they rely on external artifacts (for example, training checkpoints) or require mandatory runtime settings (for example, an explicit predictions output path in inference mode).
+
+Problem examples
+----------------
+
+- Inference runs (``tasks='[predict]'``, see :ref:`tasks-exec-control`) must set either ``predictions_save_path`` or ``predictions_save_dir``.
+- Inference configs commonly set ``load_model=true`` and reference a checkpoint via ``ckpt_path`` that will not be present on CI workers.
+- Tutorials or examples may point to datasets that are not committed to the repository.
+
+Solution: patch the test invocation
+-----------------------------------
+
+Do not change production configs to satisfy CI. Instead, declare per‑config overrides in ``test/test_integration/test_registry.yaml``. The integration test runner applies its suite‑wide removals first (e.g. ``SMOKE_KEYS_TO_REMOVE``) and then appends your overrides. That ordering lets you reintroduce removed keys with safe values and redirect paths to lightweight fixtures.
+
+Example
+-------
+
+.. code-block:: yaml
+
+	 test_sets:
+		 experiment_configs:
+			 overrides:
+				 prediction_pipeline/inference:
+					 - ++data_module.data_pipeline.data_source.data_path=test/test_integration/fixtures/prediction_pipeline/inference.csv
+					 - ++load_model=false
+					 - ~ckpt_path
+					 - ++predictions_save_path=/tmp/chemtorch_test_preds.csv
+
+In this setup, the smoke test runs on a tiny CSV fixture and writes predictions to a temporary file while bypassing checkpoint loading. Overrides apply to all test cases that execute the config; ``init`` only composes the config, so runtime‑only overrides have no effect there.

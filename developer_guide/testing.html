@@ -166,7 +166,7 @@
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../user_guide/cli_usage.html">CLI Usage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_guide/config_ref.html">Config Reference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../user_guide/reproducibility.html">Reproducing Experiments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/reproducing_experiments.html">Reproducing Experiments</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_guide/inference.html">Inference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_guide/pipeline_overview.html">Components Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_guide/custom_data.html">Using Your Own Data</a></li>
@@ -175,7 +175,7 @@
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Advanced Guide</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../advanced_guide/integration_tests.html">Reproducibility Regression Checks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../advanced_guide/reproducibility_tests.html">Reproducibility Tests</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../advanced_guide/hydra.html">Hydra Config Design</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../advanced_guide/props.html">Runtime Properties</a></li>
 </ul>
@@ -361,6 +361,12 @@ document.write(`
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#extended-tests">Extended tests</a></li>
 </ul>
 </li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#config-specific-overrides-for-integration-tests">Config-specific overrides for integration tests</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#problem-examples">Problem examples</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#solution-patch-the-test-invocation">Solution: patch the test invocation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#example">Example</a></li>
+</ul>
+</li>
 </ul>
             </nav>
         </div>
@@ -398,7 +404,7 @@ document.write(`
 <li><dl class="simple">
 <dt>Reproducibility checks (saved configs)</dt><dd><ul class="simple">
 <li><p>Validate that saved configs still reproduce baseline validation loss and predictions</p></li>
-<li><p>Documented for experimentalists in <a class="reference internal" href="../advanced_guide/integration_tests.html#integration-tests"><span class="std std-ref">Reproducibility Regression Checks</span></a></p></li>
+<li><p>Documented for experimentalists in <a class="reference internal" href="../advanced_guide/reproducibility_tests.html#reproducibility-tests"><span class="std std-ref">Reproducibility Tests</span></a></p></li>
 </ul>
 </dd>
 </dl>
@@ -408,7 +414,7 @@ document.write(`
 <section id="integration-tests-for-experiment-configs-ci-cd">
 <h2>Integration tests for experiment configs (CI/CD)<a class="headerlink" href="#integration-tests-for-experiment-configs-ci-cd" title="Link to this heading">#</a></h2>
 <p>ChemTorch runs smoke tests on experiment configs in CI to catch breaking changes (e.g., API changes or runtime errors).
-This tutorial assumes that you are already familiar with the structure and usage of the integration test suite as documented in <a class="reference internal" href="../advanced_guide/integration_tests.html#integration-tests"><span class="std std-ref">Reproducibility Regression Checks</span></a>.</p>
+This tutorial assumes that you are already familiar with the structure and usage of the integration test suite as documented in <a class="reference internal" href="../advanced_guide/reproducibility_tests.html#reproducibility-tests"><span class="std std-ref">Reproducibility Tests</span></a>.</p>
 <section id="register-the-ci-test-set">
 <h3>Register the CI test set<a class="headerlink" href="#register-the-ci-test-set" title="Link to this heading">#</a></h3>
 <p>Add (or keep) the following entry in <code class="docutils literal notranslate"><span class="pre">test/test_integration/test_registry.yaml</span></code>:</p>
@@ -460,7 +466,37 @@ pytest<span class="w"> </span>test/test_integration/test_integration.py::test_co
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">RUN_EXTENDED_TESTS</span><span class="o">=</span><span class="nb">true</span><span class="w"> </span>pytest<span class="w"> </span>test/test_integration/test_integration.py::test_extended<span class="w"> </span>-k<span class="w"> </span><span class="s2">&quot;experiment_configs&quot;</span><span class="w"> </span>-v
 </pre></div>
 </div>
-<p>For reproducibility checks on saved configs (including baselines and reference predictions), see <a class="reference internal" href="../advanced_guide/integration_tests.html#integration-tests"><span class="std std-ref">Reproducibility Regression Checks</span></a>.</p>
+<p>For reproducibility checks on saved configs (including baselines and reference predictions), see <a class="reference internal" href="../advanced_guide/reproducibility_tests.html#reproducibility-tests"><span class="std std-ref">Reproducibility Tests</span></a>.</p>
+</section>
+</section>
+<section id="config-specific-overrides-for-integration-tests">
+<span id="dev-config-overrides"></span><h2>Config-specific overrides for integration tests<a class="headerlink" href="#config-specific-overrides-for-integration-tests" title="Link to this heading">#</a></h2>
+<p>Some configurations cannot run in CI unchanged because they rely on external artifacts (for example, training checkpoints) or require mandatory runtime settings (for example, an explicit predictions output path in inference mode).</p>
+<section id="problem-examples">
+<h3>Problem examples<a class="headerlink" href="#problem-examples" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Inference runs (<code class="docutils literal notranslate"><span class="pre">tasks='[predict]'</span></code>, see <a class="reference internal" href="../user_guide/config_ref.html#tasks-exec-control"><span class="std std-ref">Execution Control</span></a>) must set either <code class="docutils literal notranslate"><span class="pre">predictions_save_path</span></code> or <code class="docutils literal notranslate"><span class="pre">predictions_save_dir</span></code>.</p></li>
+<li><p>Inference configs commonly set <code class="docutils literal notranslate"><span class="pre">load_model=true</span></code> and reference a checkpoint via <code class="docutils literal notranslate"><span class="pre">ckpt_path</span></code> that will not be present on CI workers.</p></li>
+<li><p>Tutorials or examples may point to datasets that are not committed to the repository.</p></li>
+</ul>
+</section>
+<section id="solution-patch-the-test-invocation">
+<h3>Solution: patch the test invocation<a class="headerlink" href="#solution-patch-the-test-invocation" title="Link to this heading">#</a></h3>
+<p>Do not change production configs to satisfy CI. Instead, declare per‑config overrides in <code class="docutils literal notranslate"><span class="pre">test/test_integration/test_registry.yaml</span></code>. The integration test runner applies its suite‑wide removals first (e.g. <code class="docutils literal notranslate"><span class="pre">SMOKE_KEYS_TO_REMOVE</span></code>) and then appends your overrides. That ordering lets you reintroduce removed keys with safe values and redirect paths to lightweight fixtures.</p>
+</section>
+<section id="example">
+<h3>Example<a class="headerlink" href="#example" title="Link to this heading">#</a></h3>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">test_sets</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">experiment_configs</span><span class="p">:</span>
+<span class="w">                </span><span class="nt">overrides</span><span class="p">:</span>
+<span class="w">                        </span><span class="nt">prediction_pipeline/inference</span><span class="p">:</span>
+<span class="w">                                </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">++data_module.data_pipeline.data_source.data_path=test/test_integration/fixtures/prediction_pipeline/inference.csv</span>
+<span class="w">                                </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">++load_model=false</span>
+<span class="w">                                </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">~ckpt_path</span>
+<span class="w">                                </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">++predictions_save_path=/tmp/chemtorch_test_preds.csv</span>
+</pre></div>
+</div>
+<p>In this setup, the smoke test runs on a tiny CSV fixture and writes predictions to a temporary file while bypassing checkpoint loading. Overrides apply to all test cases that execute the config; <code class="docutils literal notranslate"><span class="pre">init</span></code> only composes the config, so runtime‑only overrides have no effect there.</p>
 </section>
 </section>
 </section>
@@ -508,6 +544,12 @@ pytest<span class="w"> </span>test/test_integration/test_integration.py::test_co
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#target-specific-configs">Target specific configs</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#temporary-exclusions">Temporary exclusions</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#extended-tests">Extended tests</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#config-specific-overrides-for-integration-tests">Config-specific overrides for integration tests</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#problem-examples">Problem examples</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#solution-patch-the-test-invocation">Solution: patch the test invocation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#example">Example</a></li>
 </ul>
 </li>
 </ul>
