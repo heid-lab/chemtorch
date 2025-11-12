@@ -16,7 +16,13 @@ test_sets:
     invocation_mode: "experiment"
     test_cases: ["init", "smoke"]  # Available: init, smoke, baseline, extended
     skip_configs:
-      - "opi_tutorial/training"
-      - "opi_tutorial/inference"
       - "fingerprint"
       - "example/fingerprint"
+    overrides:
+      opi_tutorial/training:
+        - ++data_module.data_pipeline.data_source.data_path=test/test_integration/fixtures/opi_tutorial/training.csv
+      opi_tutorial/inference:
+        - ++data_module.data_pipeline.data_source.data_path=test/test_integration/fixtures/opi_tutorial/inference.csv
+        - ++load_model=false
+        - ~ckpt_path
+        - ++predictions_save_path=/tmp/chemtorch_test_preds.csv
