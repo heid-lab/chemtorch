@@ -78,7 +78,8 @@ jobs:
 
     - name: Install project deps
       run: |
-        uv sync --locked --all-extras --dev
+        uv sync --locked --extra cpu --group test
+        uv run scripts/install_pyg_deps.py --run
 
     - name: Install PyTorch Geometric
       run: |
