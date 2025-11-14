@@ -40,9 +40,15 @@ For this quick start guide, we will use our reaction database which you can down
 
 Launch Your First Experiment
 =====================
-Finally, you are ready to run your first experiment with ChemTorch.
+Now you are ready to run your first experiment with ChemTorch.
 You can do so conveniently via the command line interface (CLI).
-To launch a simple experiment, run the following command from the root directory of the repository:
+First, make sure you are in the root directory of the ChemTorch repository and activate the ``uv``-managed virtual environment:
+
+.. code-block:: install
+
+   source .venv/bin/activate
+
+Then run the following command to launch a simple experiment:
 
 .. code-block:: chemtorch
 
