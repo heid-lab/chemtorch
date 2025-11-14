@@ -83,6 +83,15 @@ def main(argv: list[str] | None = None) -> int:
             print("PyG wheel installation finished.")
         except subprocess.CalledProcessError as e:
             print("pip install failed with exit code", e.returncode, file=sys.stderr)
+            print(
+                "If the wheel index does not have binaries for your torch build,"
+                " install PyG manually by following the official instructions:",
+                file=sys.stderr,
+            )
+            print(
+                "  https://pytorch-geometric.readthedocs.io/en/latest/install/installation.html#installation-from-wheels",
+                file=sys.stderr,
+            )
             return e.returncode
     else:
         print("Dry-run: re-run with --run or -y to execute the command.")
