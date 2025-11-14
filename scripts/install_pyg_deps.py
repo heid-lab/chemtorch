@@ -12,11 +12,12 @@ Usage:
 from __future__ import annotations
 import argparse
 import re
-import shlex
 import subprocess
 import sys
+import shlex
 
 PKGS = "pyg_lib torch_scatter torch_sparse torch_cluster torch_spline_conv"
+DOC_URL = "https://heid-lab.github.io/chemtorch/getting_started/quick_start.html#pyg-installation"
 
 def detect_torch() -> tuple[str, str]:
     try:
@@ -34,20 +35,28 @@ def detect_torch() -> tuple[str, str]:
     # torch.version.cuda is the build-time cuda string (e.g. "11.8", "12.4") or None
     build_cuda = getattr(torch.version, "cuda", None)
     if build_cuda is None:
-        cuda_tag = "cpu"
+        backend_tag = "cpu"
     else:
         # convert "11.8" -> "cu118", "12.4" -> "cu124", "13.0" -> "cu130"
         parts = re.findall(r"\d+", build_cuda)
         if not parts:
-            cuda_tag = "cpu"
+            backend_tag = "cpu"
         else:
-            cuda_tag = "cu" + "".join(parts)
+            backend_tag = "cu" + "".join(parts)
 
-    return base_version, cuda_tag
+    return base_version, backend_tag
 
-def make_pip_cmd(torch_ver: str, cuda_tag: str) -> str:
-    wheel_index = f"https://data.pyg.org/whl/torch-{torch_ver}+{cuda_tag}.html"
-    return f"pip install {PKGS} -f {shlex.quote(wheel_index)}"
+def normalize_torch_version(torch_ver: str) -> str:
+    match = re.match(r"^(\d+)\.(\d+)(?:\.(\d+))?$", torch_ver)
+    if not match:
+        return torch_ver
+    major, minor, _patch = match.groups()
+    return f"{major}.{minor}.0"
+
+def make_pip_cmd(torch_ver: str, backend_tag: str) -> tuple[str, str]:
+    wheel_version = normalize_torch_version(torch_ver)
+    wheel_index = f"https://data.pyg.org/whl/torch-{wheel_version}+{backend_tag}.html"
+    return f"uv pip install {PKGS} -f {shlex.quote(wheel_index)}", wheel_version
 
 def main(argv: list[str] | None = None) -> int:
     argv = sys.argv[1:] if argv is None else argv
@@ -56,17 +65,19 @@ def main(argv: list[str] | None = None) -> int:
     args = ap.parse_args(argv)
 
     try:
-        torch_ver, cuda_tag = detect_torch()
+        torch_ver, backend_tag = detect_torch()
     except Exception as e:
         print("ERROR:", e, file=sys.stderr)
         print("Activate the Python environment that has torch installed and re-run this script.", file=sys.stderr)
         return 2
 
-    pip_cmd = make_pip_cmd(torch_ver, cuda_tag)
+    pip_cmd, wheel_version = make_pip_cmd(torch_ver, backend_tag)
 
     print("Detected PyTorch build:")
     print(f"  torch=={torch_ver}")
-    print(f"  PyTorch build CUDA tag: {cuda_tag}")
+    print(f"  PyTorch backend: {backend_tag}")
+    if wheel_version != torch_ver:
+        print(f"  PyG wheel lookup: torch=={wheel_version}")
     print()
     print("Recommended command to install PyG optional wheels:")
     print()
@@ -81,17 +92,16 @@ def main(argv: list[str] | None = None) -> int:
             subprocess.check_call(tokens)
             print("PyG wheel installation finished.")
         except subprocess.CalledProcessError as e:
-            print("pip install failed with exit code", e.returncode, file=sys.stderr)
-            print(
-                "If the wheel index does not have binaries for your torch build,"
-                " install PyG manually by following the official instructions:",
-                file=sys.stderr,
-            )
-            print(
-                "  https://pytorch-geometric.readthedocs.io/en/latest/install/installation.html#installation-from-wheels",
-                file=sys.stderr,
-            )
-            return e.returncode
+            if e.returncode == 2:
+                print(
+                    (
+                        f"\nOoops! PyTorch Geometric has not published a wheel for your PyTorch version yet: torch=={torch_ver} ({backend_tag}).\n"
+                        f"Please follow our PyG troubleshooting guide for next steps: {DOC_URL}"
+                    ),
+                    file=sys.stderr,
+                )
+            else:
+                raise e
     else:
         print("Dry-run: re-run with --run or -y to execute the command.")
     return 0
