@@ -76,9 +76,8 @@ def main(argv: list[str] | None = None) -> int:
     if args.run:
         print("Running:", pip_cmd)
         try:
-            # Use shell=False with simple tokenization to be safer across platforms
-            # We purposely call pip as a subprocess which will use the active environment's pip.
-            tokens = ["pip"] + pip_cmd.split()[2:]  # drop the leading 'pip' then reuse args
+            # Tokenize the command safely so quoted URLs remain intact.
+            tokens = shlex.split(pip_cmd)
             subprocess.check_call(tokens)
             print("PyG wheel installation finished.")
         except subprocess.CalledProcessError as e:
