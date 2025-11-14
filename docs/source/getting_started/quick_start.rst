@@ -14,7 +14,7 @@ First clone this repo and navigate to it:
 .. code-block:: install
 
     git clone https://github.com/heid-lab/chemtorch.git
-    cd chemtorch   
+    cd chemtorch
 
 Next, you can install ChemTorch either via :code:`uv` (recommended) or :code:`conda`.
 We recommend using :code:`uv` for a seamless, fast, and lightweight installation.
@@ -22,10 +22,25 @@ We recommend using :code:`uv` for a seamless, fast, and lightweight installation
 Via :code:`uv` (recommended)
 ----------------------------
 
-.. code-block:: install
+1. Sync locked dependencies:
 
-    uv sync
-    uv scripts/install_pyg_deps.py
+    .. code-block:: install
+
+        uv sync
+
+2. Install PyTorch manually using the wheel that matches your platform / accelerator. Use the `Install PyTorch` selector at `https://pytorch.org/get-started/locally/` to generate the right command, then swap `pip` for ``uv pip``. Example for CUDA 12.4:
+
+    .. code-block:: install
+
+        uv pip install "torch==2.5.1+cu124" --index-url https://download.pytorch.org/whl/cu124
+
+    Re-run this step after every ``uv sync`` so your chosen wheel is preserved.
+
+3. Install the PyTorch Geometric extras:
+
+    .. code-block:: install
+
+        uv run scripts/install_pyg_deps.py
 
 To also install development and documentation dependencies add the `--groups` option followed by `dev` or `docs`.
 Alternatively, you can also use `--all-groups` to install both.
@@ -37,11 +52,9 @@ If you prefer using :code:`conda` to manage the base interpreter, create a minim
 
 .. code-block:: install
 
-    conda env create -f env/environment.yml
+    conda env create -f environment.yml
     conda activate chemtorch
     # now run uv installation commands from above
-
-This keeps a single source of truth for Python packages (uv) while still letting you use conda to manage the environment itself.
 
 
 Import Data
