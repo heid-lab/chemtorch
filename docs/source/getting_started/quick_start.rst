@@ -103,10 +103,10 @@ Append optional groups to the ``uv sync`` command when you need tooling for docu
 
 .. code-block:: install
 
-    uv sync --extra <backend> [--groups {test,docs}|--all-groups]
+    uv sync --extra <backend> [--group {test,docs}|--all-groups]
 
-- ``--groups docs`` installs the documentation toolchain.
-- ``--groups test`` installs everything required to run the test suite.
+- ``--group docs`` installs the documentation toolchain.
+- ``--group test`` installs everything required to run the test suite.
 - ``--all-groups`` installs both sets at once.
 
 .. _pyg-installation:
