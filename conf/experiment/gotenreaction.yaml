@@ -1,0 +1,26 @@
+# @package _global_
+defaults:
+  - /data_module/data_pipeline: rdb7_fwd_xyz
+  - /data_module/representation: reaction_3d_graph
+  - /data_module/dataloader_factory: pyg_dataloader
+  - /model: gotenreaction
+  - /routine: regression
+  - /props/label_mean@props.label_mean
+  - /props/label_std@props.label_std
+  - _self_
+
+# LOGGING (Weight and Biases)
+log: true
+project_name: chemtorch
+group_name: gotenreaction
+run_name: null
+
+# INITIALIZATION
+seed: 0
+
+tasks:
+  - fit
+  - test
+
+trainer:
+  max_epochs: 100
