@@ -36,26 +36,10 @@ Allowed prefixes:
 
 Exceptions: automated branches like `dependabot/**` and short-lived `release/**` freeze branches.
 
-Discouraged prefixes (use a draft PR or work in a fork instead): `wip/`, `tmp/`, `spike/`, `experiment/`.
-
-Automated check: A CI job validates branch names on pull requests; nonconforming names will fail the check.
+A CI job validates branch names on pull requests; nonconforming names will fail the check.
 
 ## Development environment
-
-### Prerequisites
-- Python 3.10+
-- [uv](https://docs.astral.sh/uv/) (recommended) or an alternative virtual environment manager
-- Git and a supported compiler toolchain (for optional PyTorch Geometric extensions)
-
-### Clone and install dependencies
-```bash
-git clone https://github.com/heid-lab/chemtorch.git
-cd chemtorch
-uv sync --all-groups
-uv pip install torch_scatter torch_sparse torch_cluster torch_spline_conv torch_geometric --no-build-isolation
-```
-
-The `--all-groups` flag installs both `dev` and `docs` dependency groups as defined in `pyproject.toml`. If you only need the runtime dependencies, omit `--all-groups`.
+Follow the [official ChemTorch installation instructions](https://heid-lab.github.io/chemtorch/getting_started/quick_start.html) and see the detailed installation instructions for installing additional developer dependencies.
 
 ### Optional: dataset checkout
 To run the quick-start experiments locally, clone the [reaction database](https://github.com/heid-lab/reaction_database) into `data/`:

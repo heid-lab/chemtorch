@@ -36,6 +36,7 @@ ChemTorch is a modular research framework for deep learning of chemical reaction
 ## 🐎 Quick Start
 Follow the [Quick Start guide](https://heid-lab.github.io/chemtorch/getting_started/quick_start.html) to install all dependencies, download some data, and run your first experiment!
 For more, checkout the [official ChemTorch documentation](https://heid-lab.github.io/chemtorch)!
+
 ## 📄 Read the white paper
 For a few examples of what you can already do with ChemTorch read our [white paper](https://chemrxiv.org/engage/chemrxiv/article-details/690357d9a482cba122e366b6) on ChemRxiv.
 
