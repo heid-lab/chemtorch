@@ -1,0 +1,11 @@
+name: chemtorch
+channels:
+  - conda-forge
+dependencies:
+  - python>=3.10
+  - pip
+  - git
+  # Optional but handy for local docs builds
+  - make
+  - pip:
+      - uv>=0.4.0

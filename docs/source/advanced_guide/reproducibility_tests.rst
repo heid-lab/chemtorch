@@ -4,17 +4,21 @@
 Reproducibility Tests
 =====================
 
-ChemTorch ships with a configurable, registry-driven integration test suite focused on catching reproducibility regressions early. It verifies:
+This page explains how to:
+
+#. set up reproducibility checks for saved configs using the integration test registry,
+#. add baseline reference values against which to test, and 
+#. run and debug these checks locally or in CI.
+
+ChemTorch ships with a configurable, registry-driven integration test suite focused on catching reproducibility regressions early.
+It verifies:
 
 - Configs can be instantiated without errors
 - Training runs for at least one epoch per dataloader
 - Saved configs still reproduce reference results (validation loss and predictions)
 
-This page is written for experimentalists. It explains how to:
-
-#. set up reproducibility checks for saved configs using the integration test registry,
-#. add baseline reference values against which to test, and 
-#. run and debug these checks locally or in CI.
+.. note::
+  Before you continue, make sure the :ref:`testing dependencies<dev-deps>` are installed.
 
 
 Overview
