@@ -79,7 +79,7 @@ If you want to ask a question, report a bug, or suggest a feature feel free to o
 ## 🧭 Stability & Roadmap
 ChemTorch is in active development and the public CLI/configuration API may change between releases.
 To detect breaking changes early and safeguard your workflows:
-- Track upcoming changes in the [CHANGELOG](CHANGELOG.md).
+- Check the [release notes](https://github.com/heid-lab/chemtorch/releases).
 - Add and run [Integrity & Reproducibility tests](https://heid-lab.github.io/chemtorch/advanced_guide/integration_tests.html) for your experiments to ensure reproducibility of past results with newer releases.
 
 ### Supported environments (summary)
