@@ -42,15 +42,14 @@ Then, install the required dependencies.
 We recommend the [uv package manager](https://docs.astral.sh/uv/#installation) for a quick and easy setup:
 ```bash
 uv sync
-uv pip install torch_scatter torch_sparse torch_cluster torch_spline_conv torch_geometric --no-build-isolation
+uv scripts/install_pyg_deps.py
 ```
 
 You can still use `conda` for you Python environment and just use `uv` to install all Python packages (similar to `pip`):
 ```bash
 conda env create -f env/environment.yml  # creates 'chemtorch'
 conda activate chemtorch
-uv sync
-uv pip install torch_scatter torch_sparse torch_cluster torch_spline_conv torch_geometric --no-build-isolation
+# now run uv installation commands from above
 ```
 
 ### 2. Import Data

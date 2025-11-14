@@ -25,7 +25,7 @@ Via :code:`uv` (recommended)
 .. code-block:: install
 
     uv sync
-    uv pip install torch_scatter torch_sparse torch_cluster torch_spline_conv torch_geometric --no-build-isolation
+    uv scripts/install_pyg_deps.py
 
 To also install development and documentation dependencies add the `--groups` option followed by `dev` or `docs`.
 Alternatively, you can also use `--all-groups` to install both.
@@ -39,8 +39,7 @@ If you prefer using :code:`conda` to manage the base interpreter, create a minim
 
     conda env create -f env/environment.yml
     conda activate chemtorch
-    uv sync
-    uv pip install torch_scatter torch_sparse torch_cluster torch_spline_conv torch_geometric --no-build-isolation
+    # now run uv installation commands from above
 
 This keeps a single source of truth for Python packages (uv) while still letting you use conda to manage the environment itself.
 
