@@ -5,9 +5,6 @@ on: [push, pull_request]
 jobs:
   unit-tests:
     runs-on: ubuntu-latest
-    env:
-      TORCH: 2.5.0
-      CUDA: cpu       # or cu118, cu124, etc.
 
     steps:
     - uses: actions/checkout@v4
@@ -24,13 +21,8 @@ jobs:
 
     - name: Install project deps
       run: |
-        uv sync --locked --all-extras --dev
-
-    - name: Install PyTorch Geometric
-      run: |
-        uv pip install torch_geometric \
-          pyg_lib torch_scatter torch_sparse torch_cluster torch_spline_conv \
-          -f https://data.pyg.org/whl/torch-${{ env.TORCH }}+${{ env.CUDA }}.html
+        uv sync --locked --extra cpu --group test
+        uv run scripts/install_pyg_deps.py --run
     
     - name: Run unit tests with coverage
       run: |
@@ -86,7 +78,8 @@ jobs:
 
     - name: Install project deps
       run: |
-        uv sync --locked --all-extras --dev
+        uv sync --locked --extra cpu --group test
+        uv run scripts/install_pyg_deps.py --run
 
     - name: Install PyTorch Geometric
       run: |

@@ -10,6 +10,9 @@ Testing
 
 This page summarizes ChemTorch's testing strategy and how to run tests locally and in CI.
 
+.. note::
+  Before you continue, make sure the :ref:`testing dependencies<dev-deps>` are installed.
+
 Layers of testing
 =================
 

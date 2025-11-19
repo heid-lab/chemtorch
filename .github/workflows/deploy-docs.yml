@@ -28,7 +28,7 @@ jobs:
     - name: Install project deps
       run: |
         # default deps + docs group
-        uv sync --locked --group docs
+        uv sync --locked --extra cpu --group docs
 
     - name: Build docs 
       run: |

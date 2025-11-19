@@ -29,45 +29,13 @@ ChemTorch is a modular research framework for deep learning of chemical reaction
 - ⚙️ **Preconfigured data pipelines** for common benchmark datasets including RDB7, cycloadditions, USPTO-1k, and more.
 - 🔬 **OOD evaluation** via chemically informed data splitters (size, target, scaffold, reaction core, ...).
 - 🗂️ **Extensible component library** (growing) for all parts of the ChemTorch pipeline.
-- 🔄 **Reproducibility by design** with Weights & Biases experiment tracking and a guide for setting up reproducibility smoke tests.
+- 🔄 **Reproducibility by design** with Weights & Biases experiment tracking and a guide for setting up reproducibility tests.
+
+<!-- TODO: link to hosted GIF/mp4 of the ChemTorch CLI in action -->
 
 ## 🐎 Quick Start
-### 1. Installation
-First, clone this repo and navigate to it:
-```bash
-git clone https://github.com/heid-lab/chemtorch.git
-cd chemtorch
-```
-Then, install the required dependencies. 
-We recommend the [uv package manager](https://docs.astral.sh/uv/#installation) for a quick and easy setup:
-```bash
-uv sync
-uv pip install torch_scatter torch_sparse torch_cluster torch_spline_conv torch_geometric --no-build-isolation
-```
-
-You can still use `conda` for you Python environment and just use `uv` to install all Python packages (similar to `pip`):
-```bash
-conda env create -f env/environment.yml  # creates 'chemtorch'
-conda activate chemtorch
-uv sync
-uv pip install torch_scatter torch_sparse torch_cluster torch_spline_conv torch_geometric --no-build-isolation
-```
-
-### 2. Import Data
-Add your data to the `data/` folder.
-For example, you can download our [Heid Lab reaction database](https://github.com/heid-lab/reaction_database) which contains a few lightweight benchmark datasets that we also use.
-
-```bash
-git clone https://github.com/heid-lab/reaction_database.git data
-```
-### 3. Launch Your First Experiment
-Now you can launch experiments conveniently from the ChemTorch CLI:
-```bash
-chemtorch +experiment=graph data_module.subsample=0.05 log=false
-```
-The experiment will use the default graph learning pipeline to train and evaluate a directed message passing neural network (D-MPNN) on a random subset of the RDB7 dataset (no GPU required).
-
-Looking for more? Check out the [docs](https://heid-lab.github.io/chemtorch)!
+Follow the [Quick Start guide](https://heid-lab.github.io/chemtorch/getting_started/quick_start.html) to install all dependencies, download some data, and run your first experiment!
+For more, checkout the [official ChemTorch documentation](https://heid-lab.github.io/chemtorch)!
 
 ## 📄 Read the white paper
 For a few examples of what you can already do with ChemTorch read our [white paper](https://chemrxiv.org/engage/chemrxiv/article-details/690357d9a482cba122e366b6) on ChemRxiv.
@@ -81,11 +49,6 @@ ChemTorch is in active development and the public CLI/configuration API may chan
 To detect breaking changes early and safeguard your workflows:
 - Check the [release notes](https://github.com/heid-lab/chemtorch/releases).
 - Add and run [Integrity & Reproducibility tests](https://heid-lab.github.io/chemtorch/advanced_guide/integration_tests.html) for your experiments to ensure reproducibility of past results with newer releases.
-
-### Supported environments (summary)
-- Python: 3.10+
-- PyTorch: 2.5.x (see PyTorch Geometric compatibility matrix for scatter/sparse wheels)
-- OS: Linux (primary); other OSes may work with compatible wheels
 
 ## 🤝 Contributing
 We welcome contributions.
