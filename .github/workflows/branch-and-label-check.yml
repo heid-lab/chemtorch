@@ -28,10 +28,10 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            const required = ["feature","enhancement","bug","fix","documentation","docs","maintenance","refactor","tests","ci","breaking-change"];
+            const required = ["feature","enhancement","bug","fix","documentation","maintenance","release","refactor","tests","ci","breaking-change"];
             const pr = context.payload.pull_request;
             const labels = pr.labels.map(l => l.name);
             core.info(`PR labels: ${labels.join(', ')}`);
             if (!labels.some(l => required.includes(l))) {
-              core.setFailed("At least one category label (feature|bug|fix|documentation|maintenance|tests|ci|breaking-change) is required.");
+              core.setFailed("At least one category label (feature|bug|fix|documentation|maintenance|release|refactor|tests|ci|breaking-change) is required.");
             }
