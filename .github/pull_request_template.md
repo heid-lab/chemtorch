@@ -1,5 +1,5 @@
 # Summary
-A brief description of the change. What problem does this PR solve, and what is the user-visible outcome?
+What *problem* does this PR solve, and what is the *user-visible outcome*?
 
 Fixes #<issue-number> (optional)
 
@@ -14,7 +14,7 @@ Fixes #<issue-number> (optional)
 
 ## Changes
 - Bullet the key changes (1–5 bullets)
-- Keep it concise but specific
+- Keep it concise but specificg
 
 ## Breaking changes
 - [ ] None
@@ -27,11 +27,16 @@ Fixes #<issue-number> (optional)
 - [ ] Manual verification (brief steps):
 
 ## Checklist
+Before PR:
 - [ ] Branch name follows policy (feature/bugfix/hotfix/docs/chore/ci/tests/perf/build)
-- [ ] This pull request has a clear but concise title (prefixed with a [git commit emoji](https://gist.github.com/parmentf/035de27d6ed1dce0b36a) using `:emoji_name:`)
-- [ ] Relevant labels added (e.g., feature/bug/documentation/maintenance/tests/ci) and `breaking-change` for breaking changes
-- [ ] Updated or added tests covering new behavior (if applicable) and ensure ALL tests pass
+- [ ] Ran test locally and ALL tests pass
+- [ ] Updated or added tests covering new behavior (if applicable)
 - [ ] Updated configuration defaults (if applicable).
+
+PR:
+- [ ] This pull request has a clear but concise title (prefixed with a [git commit emoji](https://gist.github.com/parmentf/035de27d6ed1dce0b36a), use`:emoji_name:` to select an emoji)
+- [ ] Relevant labels added
+- [ ] If this PR introduces breaking changes it is labelled with `breaking-change` and provides a migration guide
 
 ## Reviewer notes (optional)
 Anything that would help reviewers focus (areas of risk, follow-ups, docs to check).
