@@ -397,18 +397,23 @@ document.write(`
                   
   <section id="reproducibility-tests">
 <span id="id1"></span><h1>Reproducibility Tests<a class="headerlink" href="#reproducibility-tests" title="Link to this heading">#</a></h1>
-<p>ChemTorch ships with a configurable, registry-driven integration test suite focused on catching reproducibility regressions early. It verifies:</p>
-<ul class="simple">
-<li><p>Configs can be instantiated without errors</p></li>
-<li><p>Training runs for at least one epoch per dataloader</p></li>
-<li><p>Saved configs still reproduce reference results (validation loss and predictions)</p></li>
-</ul>
-<p>This page is written for experimentalists. It explains how to:</p>
+<p>This page explains how to:</p>
 <ol class="arabic simple">
 <li><p>set up reproducibility checks for saved configs using the integration test registry,</p></li>
 <li><p>add baseline reference values against which to test, and</p></li>
 <li><p>run and debug these checks locally or in CI.</p></li>
 </ol>
+<p>ChemTorch ships with a configurable, registry-driven integration test suite focused on catching reproducibility regressions early.
+It verifies:</p>
+<ul class="simple">
+<li><p>Configs can be instantiated without errors</p></li>
+<li><p>Training runs for at least one epoch per dataloader</p></li>
+<li><p>Saved configs still reproduce reference results (validation loss and predictions)</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Before you continue, make sure the <a class="reference internal" href="../getting_started/quick_start.html#dev-deps"><span class="std std-ref">testing dependencies</span></a> are installed.</p>
+</div>
 <section id="overview">
 <h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">#</a></h2>
 <p>Integration tests are defined in <code class="docutils literal notranslate"><span class="pre">test/test_integration/</span></code> and driven by a single registry file, <code class="docutils literal notranslate"><span class="pre">test_registry.yaml</span></code>. Each entry in the registry declares a “test set” (for example, all experiment configs, or a curated set of saved configs) and which test cases to run for that set.</p>

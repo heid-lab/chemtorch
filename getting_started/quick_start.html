@@ -353,13 +353,19 @@ document.write(`
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#installation">Installation</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#via-uv-recommended">Via <code class="code docutils literal notranslate"><span class="pre">uv</span></code> (recommended)</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#via-conda">Via <code class="code docutils literal notranslate"><span class="pre">conda</span></code></a></li>
-</ul>
-</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#installation">Installation</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#import-data">Import Data</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#launch-your-first-experiment">Launch Your First Experiment</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#detailed-installation-reference">Detailed Installation Reference</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#backend-matrix">Backend matrix</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alternative-base-interpreter-via-conda">Alternative base interpreter via <code class="docutils literal notranslate"><span class="pre">conda</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#developer-dependency-groups">Developer dependency groups</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyg-installation">PyG Installation</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#trouble-shooting">Trouble Shooting</a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
             </nav>
         </div>
@@ -381,28 +387,12 @@ document.write(`
 cd<span class="w"> </span>chemtorch
 </pre></div>
 </div>
-<p>Next, you can install ChemTorch either via <code class="code docutils literal notranslate"><span class="pre">uv</span></code> (recommended) or <code class="code docutils literal notranslate"><span class="pre">conda</span></code>.
-We recommend using <code class="code docutils literal notranslate"><span class="pre">uv</span></code> for a seamless, fast, and lightweight installation.</p>
-<section id="via-uv-recommended">
-<h3>Via <code class="code docutils literal notranslate"><span class="pre">uv</span></code> (recommended)<a class="headerlink" href="#via-uv-recommended" title="Link to this heading">#</a></h3>
-<div class="highlight-install notranslate"><div class="highlight"><pre><span></span><span class="nb">uv</span><span class="w"> </span>sync
-<span class="nb">uv</span><span class="w"> </span><span class="nb">pip</span><span class="w"> </span>install<span class="w"> </span>torch_scatter<span class="w"> </span>torch_sparse<span class="w"> </span>torch_cluster<span class="w"> </span>torch_spline_conv<span class="w"> </span>torch_geometric<span class="w"> </span>--no-build-isolation
+<p>We recommend using <a class="reference external" href="https://docs.astral.sh/uv/#installation">uv</a> for a quick and easy installation:</p>
+<div class="highlight-install notranslate"><div class="highlight"><pre><span></span><span class="nb">uv</span><span class="w"> </span>sync<span class="w"> </span>--extra<span class="w"> </span>&lt;backend&gt;<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">uv</span><span class="w"> </span>run<span class="w"> </span>scripts/install_pyg_deps.py<span class="w"> </span>--run
 </pre></div>
 </div>
-<p>To also install development and documentation dependencies add the <cite>–groups</cite> option followed by <cite>dev</cite> or <cite>docs</cite>.
-Alternatively, you can also use <cite>–all-groups</cite> to install both.</p>
-</section>
-<section id="via-conda">
-<h3>Via <code class="code docutils literal notranslate"><span class="pre">conda</span></code><a class="headerlink" href="#via-conda" title="Link to this heading">#</a></h3>
-<p>If you prefer using <code class="code docutils literal notranslate"><span class="pre">conda</span></code> to manage the base interpreter, create a minimal environment and then let <code class="code docutils literal notranslate"><span class="pre">uv</span></code> install all Python dependencies from <code class="code docutils literal notranslate"><span class="pre">pyproject.toml</span></code> and <code class="code docutils literal notranslate"><span class="pre">uv.lock</span></code>:</p>
-<div class="highlight-install notranslate"><div class="highlight"><pre><span></span><span class="nb">conda</span><span class="w"> </span>env<span class="w"> </span>create<span class="w"> </span>-f<span class="w"> </span>env/environment.yml
-<span class="nb">conda</span><span class="w"> </span>activate<span class="w"> </span>chemtorch
-<span class="nb">uv</span><span class="w"> </span>sync
-<span class="nb">uv</span><span class="w"> </span><span class="nb">pip</span><span class="w"> </span>install<span class="w"> </span>torch_scatter<span class="w"> </span>torch_sparse<span class="w"> </span>torch_cluster<span class="w"> </span>torch_spline_conv<span class="w"> </span>torch_geometric<span class="w"> </span>--no-build-isolation
-</pre></div>
-</div>
-<p>This keeps a single source of truth for Python packages (uv) while still letting you use conda to manage the environment itself.</p>
-</section>
+<p>Replace <code class="docutils literal notranslate"><span class="pre">&lt;backend&gt;</span></code> with the accelerator you plan to use (e.g. <code class="docutils literal notranslate"><span class="pre">cpu</span></code>, <code class="docutils literal notranslate"><span class="pre">macos</span></code>, <code class="docutils literal notranslate"><span class="pre">cu128</span></code>).</p>
+<p>Please refer to the <a class="reference internal" href="#install-details"><span class="std std-ref">detailed installation reference</span></a> for installation using <code class="docutils literal notranslate"><span class="pre">conda</span></code>, the full list of supported backends, and additional dependencies for developers. PyTorch Geometric-specific notes live in <a class="reference internal" href="#pyg-installation"><span class="std std-ref">PyG Installation</span></a>.</p>
 </section>
 <section id="import-data">
 <h2>Import Data<a class="headerlink" href="#import-data" title="Link to this heading">#</a></h2>
@@ -414,15 +404,84 @@ For this quick start guide, we will use our reaction database which you can down
 </section>
 <section id="launch-your-first-experiment">
 <h2>Launch Your First Experiment<a class="headerlink" href="#launch-your-first-experiment" title="Link to this heading">#</a></h2>
-<p>Finally, you are ready to run your first experiment with ChemTorch.
+<p>Now you are ready to run your first experiment with ChemTorch.
 You can do so conveniently via the command line interface (CLI).
-To launch a simple experiment, run the following command from the root directory of the repository:</p>
+First, make sure you are in the root directory of the ChemTorch repository and activate the <code class="docutils literal notranslate"><span class="pre">uv</span></code>-managed virtual environment:</p>
+<div class="highlight-install notranslate"><div class="highlight"><pre><span></span>source<span class="w"> </span><span class="p">.</span>venv/bin/activate
+</pre></div>
+</div>
+<p>Then run the following command to launch a simple experiment:</p>
 <div class="highlight-chemtorch notranslate"><div class="highlight"><pre><span></span><span class="ne">chemtorch</span><span class="w"> </span><span class="gi">+experiment</span><span class="o">=</span>graph<span class="w"> </span><span class="gi">data_module.subsample</span><span class="o">=</span>0.05<span class="w"> </span><span class="gi">log</span><span class="o">=</span>false
 </pre></div>
 </div>
 <p>The experiment will use the default graph learning pipeline to train and evaluate a directed message passing neural network (D-MPNN) on a random subset of the RDB7 dataset.
 The output will display the run details, training progress, and final evaluation metrics.
 Congratulations, you have successfully run your first experiment with ChemTorch!🎉</p>
+</section>
+<section id="detailed-installation-reference">
+<span id="install-details"></span><h2>Detailed Installation Reference<a class="headerlink" href="#detailed-installation-reference" title="Link to this heading">#</a></h2>
+<p>The quick command above installs everything most users need.
+Use the reference below when you want to double-check backend options, tweak dependency groups, or follow an alternative setup path.</p>
+<section id="backend-matrix">
+<h3>Backend matrix<a class="headerlink" href="#backend-matrix" title="Link to this heading">#</a></h3>
+<p>Use the <code class="docutils literal notranslate"><span class="pre">--extra</span></code> flag to pick a PyTorch wheel matching your hardware.
+If you skip the extra, the CPU build is installed by default.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">cpu</span></code> — PyTorch 2.5.x through 2.8.x CPU wheels (Linux)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">macos</span></code> — PyTorch 2.5.x–2.8.x universal2 wheels (CPU/MPS)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">cu118</span></code> — PyTorch 2.5.x–2.7.x with CUDA 11.8</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">cu121</span></code> — PyTorch 2.5.x–2.7.x with CUDA 12.1</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">cu124</span></code> — PyTorch 2.5.x–2.7.x with CUDA 12.4</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">cu126</span></code> — PyTorch 2.6.x with CUDA 12.6</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">cu128</span></code> — PyTorch 2.7.x–2.8.x with CUDA 12.8</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">cu129</span></code> — PyTorch 2.8.x with CUDA 12.9</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">cu130</span></code> — PyTorch 2.9.x with CUDA 13.0 (PyG wheels pending; see <a class="reference internal" href="#pyg-installation"><span class="std std-ref">PyG Installation</span></a>)</p></li>
+</ul>
+<p>Need AMD/ROCm support?
+Reach out on GitHub and we will figure out a ROCm installation path together with you.</p>
+</section>
+<section id="alternative-base-interpreter-via-conda">
+<h3>Alternative base interpreter via <code class="docutils literal notranslate"><span class="pre">conda</span></code><a class="headerlink" href="#alternative-base-interpreter-via-conda" title="Link to this heading">#</a></h3>
+<p>Prefer managing the Python runtime with <code class="docutils literal notranslate"><span class="pre">conda</span></code>?
+Create a lightweight environment, activate it, and then let <code class="docutils literal notranslate"><span class="pre">uv</span></code> handle the project dependencies:</p>
+<div class="highlight-install notranslate"><div class="highlight"><pre><span></span><span class="nb">conda</span><span class="w"> </span>env<span class="w"> </span>create<span class="w"> </span>-f<span class="w"> </span>environment.yml
+<span class="nb">conda</span><span class="w"> </span>activate<span class="w"> </span>chemtorch
+<span class="c"># run uv installation as described above</span>
+</pre></div>
+</div>
+</section>
+<section id="developer-dependency-groups">
+<span id="dev-deps"></span><h3>Developer dependency groups<a class="headerlink" href="#developer-dependency-groups" title="Link to this heading">#</a></h3>
+<p>Append optional groups to the <code class="docutils literal notranslate"><span class="pre">uv</span> <span class="pre">sync</span></code> command when you need tooling for documentation or testing:</p>
+<div class="highlight-install notranslate"><div class="highlight"><pre><span></span><span class="nb">uv</span><span class="w"> </span>sync<span class="w"> </span>--extra<span class="w"> </span>&lt;backend&gt;<span class="w"> </span>[--group<span class="w"> </span><span class="o">{</span>test,docs}|--all-groups]
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">--group</span> <span class="pre">docs</span></code> installs the documentation toolchain.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--group</span> <span class="pre">test</span></code> installs everything required to run the test suite.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--all-groups</span></code> installs both sets at once.</p></li>
+</ul>
+</section>
+<section id="pyg-installation">
+<span id="id2"></span><h3>PyG Installation<a class="headerlink" href="#pyg-installation" title="Link to this heading">#</a></h3>
+<p>ChemTorch relies on PyTorch Geometric (PyG) and its companion wheels for graph learning.
+The installation script <code class="docutils literal notranslate"><span class="pre">scripts/install_pyg_deps.py</span></code> inspects the installed PyTorch distribution, prints the matching PyG install command, and executes it when you pass <code class="docutils literal notranslate"><span class="pre">--run</span></code> (or <code class="docutils literal notranslate"><span class="pre">-y</span></code>).
+Rerun it after every <code class="docutils literal notranslate"><span class="pre">uv</span> <span class="pre">sync</span></code> so your PyG wheels stay aligned.</p>
+<section id="trouble-shooting">
+<h4>Trouble Shooting<a class="headerlink" href="#trouble-shooting" title="Link to this heading">#</a></h4>
+<p>No wheel PyG wheel available for your installation?
+PyG releases often trail the newest PyTorch wheels.
+If PyG does not offer a wheel for you PyTorch build yet you have three options:
+1. Simply skip the PyG installation step and just run <code class="docutils literal notranslate"><span class="pre">uv</span> <span class="pre">sync</span></code> if you don’t plan to run graph workloads.
+2. Downgrade to a supported hardware driver if you can (e.g. CUDA 12.9 instead of 13.0) and rerun installation.</p>
+<blockquote>
+<div><p>Check the <a class="reference external" href="https://pytorch-geometric.readthedocs.io/en/latest/install/installation.html">PyG installation selector</a> lists the combinations that are officially supported and will be updated once newer wheels become available.</p>
+</div></blockquote>
+<ol class="arabic simple" start="3">
+<li><p>Need to stay on an unsupported combination? Build the PyG wheels from source instead: <a class="reference external" href="https://pytorch-geometric.readthedocs.io/en/latest/install/installation.html#installation-from-source">PyG source install guide</a>.</p></li>
+</ol>
+</section>
+</section>
 </section>
 </section>
 
@@ -471,13 +530,19 @@ Congratulations, you have successfully run your first experiment with ChemTorch!
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#installation">Installation</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#via-uv-recommended">Via <code class="code docutils literal notranslate"><span class="pre">uv</span></code> (recommended)</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#via-conda">Via <code class="code docutils literal notranslate"><span class="pre">conda</span></code></a></li>
-</ul>
-</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#installation">Installation</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#import-data">Import Data</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#launch-your-first-experiment">Launch Your First Experiment</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#detailed-installation-reference">Detailed Installation Reference</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#backend-matrix">Backend matrix</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alternative-base-interpreter-via-conda">Alternative base interpreter via <code class="docutils literal notranslate"><span class="pre">conda</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#developer-dependency-groups">Developer dependency groups</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pyg-installation">PyG Installation</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#trouble-shooting">Trouble Shooting</a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
   </nav></div>
 

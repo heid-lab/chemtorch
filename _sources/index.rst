@@ -13,7 +13,7 @@ ChemTorch is a modular open-source research framework for deep learning of chemi
 - ⚙️ **Preconfigured data pipelines** for common benchmark datasets including RDB7, cycloadditions, USPTO-1k, and more.
 - 🔬 **OOD evaluation** via chemically informed data splitters (size, target, scaffold, reaction core, ...).
 - 🗂️ **Extensible component library** (growing) for all parts of the ChemTorch pipeline.
-- 🔄 **Reproducibility by design** with Weights & Biases experiment tracking and a guide for setting up reproducibility smoke tests.
+- 🔄 **Reproducibility by design** with Weights & Biases experiment tracking and a guide for setting up reproducibility tests.
 
 Ready? Start with the :ref:`quick-start`.
 For a few examples of what you can already do with ChemTorch read the `white paper <https://chemrxiv.org/engage/chemrxiv/article-details/690357d9a482cba122e366b6>`__ on ChemRxiv.
