@@ -131,10 +131,10 @@ trainer:
   logger:
     _target_: lightning.pytorch.loggers.WandbLogger
   max_epochs: 100
-  enable_checkpointing: true
+  enable_checkpointing: false
   checkpoint_callback:
     _target_: lightning.pytorch.callbacks.ModelCheckpoint
-    dirpath: ${trainer.default_root_dir}/chemtorch_paper/rdb7_data_split_benchmark/reactant_scaffold/seed_${seed}_${now:%Y-%m-%d_%H-%M-%S}/checkpoints
+    dirpath: ${trainer.default_root_dir}/chemtorch_paper/rdb7_data_split_benchmark/size_asc/seed_${seed}_${now:%Y-%m-%d_%H-%M-%S}/checkpoints
     monitor: val_loss
     save_top_k: 1
     save_last: true
@@ -157,11 +157,9 @@ data_module:
       _target_: chemtorch.components.data_pipeline.data_source.SingleCSVSource
       data_path: data/rdb7/barriers/forward/data.csv
     data_splitter:
-      _target_: chemtorch.components.data_pipeline.data_splitter.ScaffoldSplitter
-      include_chirality: false
-      mol_idx: 0
+      _target_: chemtorch.components.data_pipeline.data_splitter.SizeSplitter
       save_path: null
-      split_on: reactant
+      sort_order: ascending
       test_ratio: 0.1
       train_ratio: 0.8
       val_ratio: 0.1
@@ -193,7 +191,7 @@ data_module:
       - _target_: chemtorch.components.representation.graph.featurizer.BondInRingFeaturizer
     in_channel_multiplier: 2
   subsample: null
-predictions_save_dir: predictions/chemtorch_paper/rdb7_data_split_benchmark/reactant_scaffold/seed_${seed}_${now:%Y-%m-%d_%H-%M-%S}
+predictions_save_dir: predictions/chemtorch_paper/rdb7_data_split_benchmark/size_asc/seed_${seed}_${now:%Y-%m-%d_%H-%M-%S}
 save_predictions_for:
 - train
 - test
