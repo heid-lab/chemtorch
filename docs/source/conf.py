@@ -75,8 +75,8 @@ html_theme_options = {
     "use_repository_button": True,
     "logo": {
         "alt_text": "ChemTorch documentation - Home",
-        "image_light": "_static/chemtorch_logo_dark_lightbackground.png",
-        "image_dark": "_static/chemtorch_logo_dark_lightbackground.png",
+        "image_light": "_static/chemtorch_logo_light.svg",
+        "image_dark": "_static/chemtorch_logo_dark.svg",
     },
 }
 html_title = "ChemTorch"
