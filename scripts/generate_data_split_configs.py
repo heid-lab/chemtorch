@@ -17,15 +17,17 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 # Source configs are expected to be named <model>.yaml. To support other schemes,
 SOURCE_MODEL_CONFIG_DIR = REPO_ROOT / "conf" / "saved_configs" / "chemtorch_benchmark" / "optimal_model_configs"
 OOD_CONFIG_OUTPUT_DIR = REPO_ROOT / "conf" / "saved_configs" / "chemtorch_benchmark" / "ood_benchmark"
-SEED_DIR_TEMPLATE = "seed_${seed}_${now:%Y-%m-%d_%H-%M-%S}"
-PREDICTION_BASE = "predictions/chemtorch_paper/rdb7_data_split_benchmark"
-CHECKPOINT_BASE = "${trainer.default_root_dir}/chemtorch_paper/rdb7_data_split_benchmark"
+PREDICTION_BASE = "predictions/chemtorch_paper/ood_benchmark"
+CHECKPOINT_BASE = "${trainer.default_root_dir}/chemtorch_paper/ood_benchmark"
 GROUP_NAME = "chemtorch_data_split_benchmark"
 ENABLE_CHECKPOINTING = False
 SAVE_PREDICTIONS_FOR = ["train", "test"]
 TRAIN_RATIO = 0.8
 VAL_RATIO = 0.1
 TEST_RATIO = 0.1
+
+# lowest level file/folder will be named "seed_<seed>_<time stamp>"
+SEED_DIR_TEMPLATE = "seed_${seed}_${now:%Y-%m-%d_%H-%M-%S}"
 
 SPLIT_RATIO_DEFAULTS = {
     "train_ratio": TRAIN_RATIO,
