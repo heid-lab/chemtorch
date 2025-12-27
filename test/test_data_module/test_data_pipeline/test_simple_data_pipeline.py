@@ -4,7 +4,7 @@ from torch import nn
 
 from chemtorch.components.data_pipeline.column_mapper import ColumnFilterAndRename
 from chemtorch.components.data_pipeline.data_source import (
-    DataSource,
+    AbstractDataSource,
     PreSplitCSVSource,
     SingleCSVSource,
 )
@@ -16,7 +16,7 @@ from chemtorch.components.data_pipeline.simple_data_pipeline import SimpleDataPi
 from chemtorch.utils import CallableCompose, DataSplit
 
 
-class NoOpMockSource(DataSource):
+class NoOpMockSource(AbstractDataSource):
     def load(self):
         return None  # Return invalid data
 
