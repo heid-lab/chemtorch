@@ -36,7 +36,8 @@ For a few examples of what you can already do with ChemTorch read the `white pap
 
    user_guide/cli_usage
    user_guide/custom_data
-   user_guide/custom_components
+   .. TODO: add tutorial on metric tracking
+
    user_guide/sweeps
    user_guide/reproducing_experiments
    user_guide/reproducibility_tests
