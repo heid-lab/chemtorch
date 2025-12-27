@@ -25,6 +25,7 @@ For a few examples of what you can already do with ChemTorch read the `white pap
 
    getting_started/quick_start
    getting_started/logging
+   getting_started/overview
    getting_started/config
    getting_started/experiments
 
