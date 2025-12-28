@@ -34,7 +34,7 @@ Adjust ``group_name`` as you like (useful for W&B grouping).
 
 Below is a minimal shell script that runs a systematically sweeps over all models in ``conf/saved_configs/chemtorch_benchmark/optimal_model_configs`` and all training set sizes.
 
-.. code-block:: bash
+.. code-block:: chemtorch
 
     #!/usr/bin/env bash
     set -euo pipefail

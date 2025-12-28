@@ -58,8 +58,8 @@ For a few examples of what you can already do with ChemTorch read the `white pap
 
    developer_guide/custom_components
    developer_guide/props
-   developer_guide/testing
    developer_guide/hydra
+   developer_guide/testing
    developer_guide/contributing
 
 .. toctree::
