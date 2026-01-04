@@ -1,0 +1,632 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>chemtorch.core.property_system &#8212; ChemTorch</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/custom_syntax.css?v=9e2307e4" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../../../_static/documentation_options.js?v=1a9ffd16"></script>
+    <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/chemtorch/core/property_system';</script>
+    <link rel="icon" href="../../../_static/chemtorch_favicon.png"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../_static/chemtorch_logo_light.svg" class="logo__image only-light" alt="ChemTorch documentation - Home"/>
+    <script>document.write(`<img src="../../../_static/chemtorch_logo_dark.svg" class="logo__image only-dark" alt="ChemTorch documentation - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/quick_start.html">Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/logging.html">Setup Logging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/overview.html">ChemTorch Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/config.html">Understanding Configs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/experiments.html">Creating Experiments</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../user_guide/cli_usage.html">CLI Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_guide/custom_data.html">Using Your Own Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_guide/sweeps.html">Hyperparameter Sweeps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_guide/reproducing_experiments.html">Reproducing Experiments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_guide/reproducibility_tests.html">Reproducibility Tests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_guide/config_ref.html">Config Reference</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Examples</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../examples/training_curves.html">Performance Curves</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples/ood_benchmarking.html">OOD benchmarking</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Developer Guide</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../developer_guide/custom_components.html">Defining Custom Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../developer_guide/props.html">Runtime Properties</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../developer_guide/hydra.html">Hydra Config Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../developer_guide/testing.html">Testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../developer_guide/contributing.html">Contributing</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../api_autodoc/index.html">API Reference</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../api_autodoc/components.html">Components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api_autodoc/core.html">Core</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api_autodoc/utils.html">Utilities</a></li>
+</ul>
+</details></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+<a href="https://github.com/heid-lab/chemtorch" target="_blank"
+   class="btn btn-sm btn-source-repository-button"
+   title="Source repository"
+   data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+
+</a>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1></h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for chemtorch.core.property_system</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Simplified dataset property calculation system.</span>
+
+<span class="sd">This module provides a clean way to compute properties needed for model configuration</span>
+<span class="sd">at runtime, with proper handling of partition-dependent vs partition-independent properties.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">cast</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch_geometric.data</span><span class="w"> </span><span class="kn">import</span> <span class="n">Data</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch_geometric.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">degree</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">chemtorch.components.representation.token.abstract_token_representation</span><span class="w"> </span><span class="kn">import</span> <span class="n">AbstractTokenRepresentation</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">chemtorch.core.dataset_base</span><span class="w"> </span><span class="kn">import</span> <span class="n">DatasetBase</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">chemtorch.utils.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">DatasetKey</span><span class="p">,</span> <span class="n">LightningTask</span><span class="p">,</span> <span class="n">PropertySource</span>
+
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="compute_property_with_dataset_handling">
+<a class="viewcode-back" href="../../../api_autodoc/core.html#chemtorch.core.property_system.compute_property_with_dataset_handling">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">compute_property_with_dataset_handling</span><span class="p">(</span>
+    <span class="n">property_instance</span><span class="p">:</span> <span class="s1">&#39;DatasetProperty&#39;</span><span class="p">,</span> 
+    <span class="n">dataset</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">DatasetBase</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">DatasetBase</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="n">DatasetBase</span><span class="p">]]</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute a property while handling edge cases where dataset might be a dict or list.</span>
+<span class="sd">    </span>
+<span class="sd">    For dict datasets (multiple named test datasets), computes the property for the first dataset.</span>
+<span class="sd">    For list datasets (multiple test datasets), computes the property for the first dataset.</span>
+<span class="sd">    For single datasets, computes the property directly.</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        property_instance: The property to compute</span>
+<span class="sd">        dataset: The dataset(s) to compute the property for</span>
+<span class="sd">        </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        The computed property value</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="c1"># For dict of datasets, use the first one (usually the base &quot;test&quot; dataset)</span>
+        <span class="n">first_dataset</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">dataset</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
+        <span class="k">return</span> <span class="n">property_instance</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span><span class="n">first_dataset</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+        <span class="c1"># For list of datasets, use the first one (usually the base dataset without transforms)</span>
+        <span class="k">return</span> <span class="n">property_instance</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span><span class="n">dataset</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># Single dataset case</span>
+        <span class="k">return</span> <span class="n">property_instance</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="resolve_sources">
+<a class="viewcode-back" href="../../../api_autodoc/core.html#chemtorch.core.property_system.resolve_sources">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">resolve_sources</span><span class="p">(</span><span class="n">source</span><span class="p">:</span> <span class="n">PropertySource</span><span class="p">,</span> <span class="n">tasks</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">LightningTask</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">DatasetKey</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Resolve a PropertySource into a list of DatasetKeys.&quot;&quot;&quot;</span>
+    <span class="n">existing_sources</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">DatasetKey</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">if</span> <span class="s2">&quot;fit&quot;</span> <span class="ow">in</span> <span class="n">tasks</span><span class="p">:</span>
+        <span class="n">existing_sources</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;train&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="s2">&quot;validate&quot;</span> <span class="ow">in</span> <span class="n">tasks</span><span class="p">:</span>
+        <span class="n">existing_sources</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;val&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="s2">&quot;test&quot;</span> <span class="ow">in</span> <span class="n">tasks</span><span class="p">:</span>
+        <span class="n">existing_sources</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;test&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="s2">&quot;predict&quot;</span> <span class="ow">in</span> <span class="n">tasks</span><span class="p">:</span>
+        <span class="n">existing_sources</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;predict&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">source</span> <span class="o">==</span> <span class="s2">&quot;all&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">existing_sources</span>
+    <span class="k">elif</span> <span class="n">source</span> <span class="o">==</span> <span class="s2">&quot;any&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">existing_sources</span><span class="p">[:</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="n">existing_sources</span> <span class="k">else</span> <span class="p">[]</span>
+    <span class="k">elif</span> <span class="n">source</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;train&quot;</span><span class="p">,</span> <span class="s2">&quot;val&quot;</span><span class="p">,</span> <span class="s2">&quot;test&quot;</span><span class="p">,</span> <span class="s2">&quot;predict&quot;</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">source</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown PropertySource: </span><span class="si">{</span><span class="n">source</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="DatasetProperty">
+<a class="viewcode-back" href="../../../api_autodoc/core.html#chemtorch.core.property_system.DatasetProperty">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">DatasetProperty</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Base class for dataset properties that can be computed at runtime.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="DatasetProperty.__init__">
+<a class="viewcode-back" href="../../../api_autodoc/core.html#chemtorch.core.property_system.DatasetProperty.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">source</span><span class="p">:</span> <span class="n">PropertySource</span><span class="p">,</span> <span class="n">log</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">add_to_cfg</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">source</span> <span class="o">=</span> <span class="n">source</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="o">=</span> <span class="n">log</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_to_cfg</span> <span class="o">=</span> <span class="n">add_to_cfg</span></div>
+
+
+<div class="viewcode-block" id="DatasetProperty.compute">
+<a class="viewcode-back" href="../../../api_autodoc/core.html#chemtorch.core.property_system.DatasetProperty.compute">[docs]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">:</span> <span class="n">DatasetBase</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute the property value from the dataset.&quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+</div>
+
+
+<div class="viewcode-block" id="PrecomputeTime">
+<a class="viewcode-back" href="../../../api_autodoc/core.html#chemtorch.core.property_system.PrecomputeTime">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">PrecomputeTime</span><span class="p">(</span><span class="n">DatasetProperty</span><span class="p">):</span>
+<div class="viewcode-block" id="PrecomputeTime.compute">
+<a class="viewcode-back" href="../../../api_autodoc/core.html#chemtorch.core.property_system.PrecomputeTime.compute">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">:</span> <span class="n">DatasetBase</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">dataset</span><span class="o">.</span><span class="n">precompute_all</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Dataset must be precomputed to compute precompute_time&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">dataset</span><span class="o">.</span><span class="n">precompute_time</span> <span class="k">if</span> <span class="n">dataset</span><span class="o">.</span><span class="n">precompute_time</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="mf">0.0</span><span class="p">)</span></div>
+</div>
+
+
+<span class="c1"># Concrete implementations</span>
+<div class="viewcode-block" id="NumNodeFeatures">
+<a class="viewcode-back" href="../../../api_autodoc/core.html#chemtorch.core.property_system.NumNodeFeatures">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">NumNodeFeatures</span><span class="p">(</span><span class="n">DatasetProperty</span><span class="p">):</span>
+<div class="viewcode-block" id="NumNodeFeatures.compute">
+<a class="viewcode-back" href="../../../api_autodoc/core.html#chemtorch.core.property_system.NumNodeFeatures.compute">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">:</span> <span class="n">DatasetBase</span><span class="p">[</span><span class="n">Data</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">0</span>
+        <span class="n">first_item</span> <span class="o">=</span> <span class="n">dataset</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">first_item</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">first_item</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="k">else</span> <span class="n">first_item</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">Data</span><span class="p">)</span> <span class="ow">and</span> <span class="n">data</span><span class="o">.</span><span class="n">x</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">data</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="mi">0</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="NumEdgeFeatures">
+<a class="viewcode-back" href="../../../api_autodoc/core.html#chemtorch.core.property_system.NumEdgeFeatures">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">NumEdgeFeatures</span><span class="p">(</span><span class="n">DatasetProperty</span><span class="p">):</span>
+<div class="viewcode-block" id="NumEdgeFeatures.compute">
+<a class="viewcode-back" href="../../../api_autodoc/core.html#chemtorch.core.property_system.NumEdgeFeatures.compute">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">:</span> <span class="n">DatasetBase</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">0</span>
+        <span class="n">first_item</span> <span class="o">=</span> <span class="n">dataset</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> 
+        <span class="n">data</span> <span class="o">=</span> <span class="n">first_item</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">first_item</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="k">else</span> <span class="n">first_item</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">Data</span><span class="p">)</span> <span class="ow">and</span> <span class="n">data</span><span class="o">.</span><span class="n">edge_attr</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">data</span><span class="o">.</span><span class="n">edge_attr</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="mi">0</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="FingerprintLength">
+<a class="viewcode-back" href="../../../api_autodoc/core.html#chemtorch.core.property_system.FingerprintLength">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">FingerprintLength</span><span class="p">(</span><span class="n">DatasetProperty</span><span class="p">):</span>
+<div class="viewcode-block" id="FingerprintLength.compute">
+<a class="viewcode-back" href="../../../api_autodoc/core.html#chemtorch.core.property_system.FingerprintLength.compute">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">:</span> <span class="n">DatasetBase</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">0</span>
+        <span class="n">first_item</span> <span class="o">=</span> <span class="n">dataset</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">first_item</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">first_item</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="k">else</span> <span class="n">first_item</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">return</span> <span class="mi">0</span></div>
+</div>
+
+    
+<div class="viewcode-block" id="VocabSize">
+<a class="viewcode-back" href="../../../api_autodoc/core.html#chemtorch.core.property_system.VocabSize">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">VocabSize</span><span class="p">(</span><span class="n">DatasetProperty</span><span class="p">):</span>
+<div class="viewcode-block" id="VocabSize.compute">
+<a class="viewcode-back" href="../../../api_autodoc/core.html#chemtorch.core.property_system.VocabSize.compute">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">:</span> <span class="n">DatasetBase</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">AbstractTokenRepresentation</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="c1"># Try dataset.representation.vocab_size</span>
+        <span class="k">if</span> <span class="n">dataset</span><span class="o">.</span><span class="n">representation</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">dataset</span><span class="o">.</span><span class="n">representation</span><span class="p">,</span> <span class="s1">&#39;vocab_size&#39;</span><span class="p">):</span>
+            <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">dataset</span><span class="o">.</span><span class="n">representation</span><span class="o">.</span><span class="n">vocab_size</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Dataset representation does not have &#39;vocab_size&#39; attribute&quot;</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="LabelMean">
+<a class="viewcode-back" href="../../../api_autodoc/core.html#chemtorch.core.property_system.LabelMean">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">LabelMean</span><span class="p">(</span><span class="n">DatasetProperty</span><span class="p">):</span>
+<div class="viewcode-block" id="LabelMean.compute">
+<a class="viewcode-back" href="../../../api_autodoc/core.html#chemtorch.core.property_system.LabelMean.compute">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">:</span> <span class="n">DatasetBase</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">dataset</span><span class="o">.</span><span class="n">has_labels</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Dataset must have labels to compute mean&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">dataset</span><span class="o">.</span><span class="n">dataframe</span><span class="p">[</span><span class="s1">&#39;label&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="LabelStd">
+<a class="viewcode-back" href="../../../api_autodoc/core.html#chemtorch.core.property_system.LabelStd">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">LabelStd</span><span class="p">(</span><span class="n">DatasetProperty</span><span class="p">):</span>
+<div class="viewcode-block" id="LabelStd.compute">
+<a class="viewcode-back" href="../../../api_autodoc/core.html#chemtorch.core.property_system.LabelStd.compute">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">:</span> <span class="n">DatasetBase</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">dataset</span><span class="o">.</span><span class="n">has_labels</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Dataset must have labels to compute std&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">dataset</span><span class="o">.</span><span class="n">dataframe</span><span class="p">[</span><span class="s1">&#39;label&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">std</span><span class="p">())</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="DegreeStatistics">
+<a class="viewcode-back" href="../../../api_autodoc/core.html#chemtorch.core.property_system.DegreeStatistics">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">DegreeStatistics</span><span class="p">(</span><span class="n">DatasetProperty</span><span class="p">):</span>
+<div class="viewcode-block" id="DegreeStatistics.compute">
+<a class="viewcode-back" href="../../../api_autodoc/core.html#chemtorch.core.property_system.DegreeStatistics.compute">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">:</span> <span class="n">DatasetBase</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]]:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">dataset</span><span class="o">.</span><span class="n">precompute_all</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Dataset must be precomputed to compute degree statistics&quot;</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;max_degree&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;degree_histogram&quot;</span><span class="p">:</span> <span class="p">[]}</span>
+        
+        <span class="n">max_degree</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="n">degree_histogram</span> <span class="o">=</span> <span class="kc">None</span>
+        
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">dataset</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">item</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="k">else</span> <span class="n">item</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">Data</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Expected PyTorch Geometric Data, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">data</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            
+            <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">edge_index</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">continue</span>  <span class="c1"># Skip graphs with no edges</span>
+                
+            <span class="n">d</span> <span class="o">=</span> <span class="n">degree</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">edge_index</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">num_nodes</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">num_nodes</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">long</span><span class="p">)</span>
+            <span class="n">max_degree</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">max_degree</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">max</span><span class="p">()))</span>
+            
+            <span class="k">if</span> <span class="n">degree_histogram</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">degree_histogram</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">max_degree</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">long</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">max_degree</span> <span class="o">&gt;=</span> <span class="n">degree_histogram</span><span class="o">.</span><span class="n">numel</span><span class="p">():</span>
+                <span class="n">new_size</span> <span class="o">=</span> <span class="n">max_degree</span> <span class="o">+</span> <span class="mi">1</span>
+                <span class="n">resized_histogram</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">new_size</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">long</span><span class="p">)</span>
+                <span class="n">resized_histogram</span><span class="p">[:</span><span class="n">degree_histogram</span><span class="o">.</span><span class="n">numel</span><span class="p">()]</span> <span class="o">=</span> <span class="n">degree_histogram</span>
+                <span class="n">degree_histogram</span> <span class="o">=</span> <span class="n">resized_histogram</span>
+            
+            <span class="n">degree_histogram</span> <span class="o">+=</span> <span class="n">torch</span><span class="o">.</span><span class="n">bincount</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">minlength</span><span class="o">=</span><span class="n">degree_histogram</span><span class="o">.</span><span class="n">numel</span><span class="p">())</span>
+        
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;max_degree&quot;</span><span class="p">:</span> <span class="n">max_degree</span><span class="p">,</span>
+            <span class="s2">&quot;degree_histogram&quot;</span><span class="p">:</span> <span class="n">degree_histogram</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span> <span class="k">if</span> <span class="n">degree_histogram</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">[],</span>
+        <span class="p">}</span></div>
+</div>
+
+</pre></div>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Anton Zamyatin, Jasper De Landsheere, Esther Heid
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2026 Esther Heid.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

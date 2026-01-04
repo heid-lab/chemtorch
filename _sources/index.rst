@@ -25,31 +25,22 @@ For a few examples of what you can already do with ChemTorch read the `white pap
 
    getting_started/quick_start
    getting_started/logging
+   getting_started/overview
    getting_started/config
    getting_started/experiments
 
+   .. TODO: add tutorial on metric tracking
 .. toctree::
    :maxdepth: 1
    :caption: User Guide
    :hidden:
 
    user_guide/cli_usage
-   user_guide/config_ref
-   user_guide/reproducing_experiments
-   user_guide/inference
-   user_guide/pipeline_overview
    user_guide/custom_data
-   user_guide/custom_components
    user_guide/sweeps
-
-.. toctree::
-   :maxdepth: 1
-   :caption: Advanced Guide
-   :hidden:
-   
-   advanced_guide/reproducibility_tests
-   advanced_guide/hydra
-   advanced_guide/props
+   user_guide/reproducing_experiments
+   user_guide/reproducibility_tests
+   user_guide/config_ref
 
 .. toctree::
    :maxdepth: 1
@@ -64,6 +55,15 @@ For a few examples of what you can already do with ChemTorch read the `white pap
    :caption: Developer Guide
    :hidden:
 
-   developer_guide/contributing
-   developer_guide/framework_structure
+   developer_guide/custom_components
+   developer_guide/props
+   developer_guide/hydra
    developer_guide/testing
+   developer_guide/contributing
+
+.. toctree::
+   :maxdepth: 4
+   :caption: API Reference
+   :hidden:
+
+   api_autodoc/index

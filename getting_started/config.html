@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Understand Configs &#8212; ChemTorch</title>
+    <title>Understanding Configs &#8212; ChemTorch</title>
   
   
   
@@ -45,8 +45,8 @@
     <link rel="icon" href="../_static/chemtorch_favicon.png"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Create Experiments" href="experiments.html" />
-    <link rel="prev" title="Setup Logging" href="logging.html" />
+    <link rel="next" title="Creating Experiments" href="experiments.html" />
+    <link rel="prev" title="ChemTorch Overview" href="overview.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -138,8 +138,8 @@
       
     
     
-    <img src="../_static/chemtorch_logo_dark_lightbackground.png" class="logo__image only-light" alt="ChemTorch documentation - Home"/>
-    <script>document.write(`<img src="../_static/chemtorch_logo_dark_lightbackground.png" class="logo__image only-dark" alt="ChemTorch documentation - Home"/>`);</script>
+    <img src="../_static/chemtorch_logo_light.svg" class="logo__image only-light" alt="ChemTorch documentation - Home"/>
+    <script>document.write(`<img src="../_static/chemtorch_logo_dark.svg" class="logo__image only-dark" alt="ChemTorch documentation - Home"/>`);</script>
   
   
 </a></div>
@@ -160,36 +160,40 @@
 <ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="quick_start.html">Quick Start</a></li>
 <li class="toctree-l1"><a class="reference internal" href="logging.html">Setup Logging</a></li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Understand Configs</a></li>
-<li class="toctree-l1"><a class="reference internal" href="experiments.html">Create Experiments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="overview.html">ChemTorch Overview</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Understanding Configs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="experiments.html">Creating Experiments</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">User Guide</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../user_guide/cli_usage.html">CLI Usage</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../user_guide/config_ref.html">Config Reference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../user_guide/reproducing_experiments.html">Reproducing Experiments</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../user_guide/inference.html">Inference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../user_guide/pipeline_overview.html">Components Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_guide/custom_data.html">Using Your Own Data</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../user_guide/custom_components.html">Defining Custom Components</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_guide/sweeps.html">Hyperparameter Sweeps</a></li>
-</ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Advanced Guide</span></p>
-<ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../advanced_guide/reproducibility_tests.html">Reproducibility Tests</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../advanced_guide/hydra.html">Hydra Config Design</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../advanced_guide/props.html">Runtime Properties</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/reproducing_experiments.html">Reproducing Experiments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/reproducibility_tests.html">Reproducibility Tests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/config_ref.html">Config Reference</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Examples</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../examples/training_curves.html">Training Curves</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/training_curves.html">Performance Curves</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../examples/ood_benchmarking.html">OOD benchmarking</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Developer Guide</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../developer_guide/contributing.html">Contributing</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../developer_guide/framework_structure.html">Framework Structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer_guide/custom_components.html">Defining Custom Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer_guide/props.html">Runtime Properties</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer_guide/hydra.html">Hydra Config Design</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../developer_guide/testing.html">Testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer_guide/contributing.html">Contributing</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api_autodoc/index.html">API Reference</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api_autodoc/components.html">Components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_autodoc/core.html">Core</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_autodoc/utils.html">Utilities</a></li>
+</ul>
+</details></li>
 </ul>
 
     </div>
@@ -343,7 +347,7 @@ document.write(`
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>Understand Configs</h1>
+    <h1>Understanding Configs</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -379,16 +383,20 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="understand-configs">
-<span id="config"></span><h1>Understand Configs<a class="headerlink" href="#understand-configs" title="Link to this heading">#</a></h1>
+  <section id="understanding-configs">
+<span id="config"></span><h1>Understanding Configs<a class="headerlink" href="#understanding-configs" title="Link to this heading">#</a></h1>
 <p>In the <a class="reference internal" href="quick_start.html#quick-start"><span class="std std-ref">Quick Start</span></a>, you launched an experiment using the command line.
 Behind the scenes, ChemTorch used configuration files to set up your entire machine learning pipeline.
 This page explains the core concepts of ChemTorch’s configuration system.</p>
 <section id="what-is-configuration">
 <h2>What is Configuration?<a class="headerlink" href="#what-is-configuration" title="Link to this heading">#</a></h2>
-<p>Configuration files define <em>what</em> your experiment does without changing the source code.
-They specify which model to use, how to process your data, which optimizer to use, and many other settings.</p>
-<p>ChemTorch uses <strong>YAML files</strong> for configuration. If you’re new to YAML, here’s a quick primer:</p>
+<p>In <a class="reference internal" href="overview.html#overview"><span class="std std-ref">ChemTorch Overview</span></a>, you saw how ChemTorch assembles a pipeline from modular components:</p>
+<blockquote>
+<div><p><strong>data pipeline</strong> → <strong>representation</strong> → <strong>transform</strong> → <strong>model</strong> → <strong>routine</strong> → <strong>trainer</strong></p>
+</div></blockquote>
+<p>Configuration lets you compose and customize these components <em>declaratively</em> using <strong>YAML files</strong>, without writing Python code.
+Instead of instantiating classes in Python, you specify which components to use and their parameters in config files.
+If you’re new to YAML, here’s a quick primer:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># This is a comment</span>
 <span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">value</span>
 <span class="nt">number</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">42</span>
@@ -422,11 +430,13 @@ They specify which model to use, how to process your data, which optimizer to us
 <p>Here’s what each part does:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">base.yaml</span></code>: Top-level defaults loaded automatically</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">data_module/</span></code>, <code class="docutils literal notranslate"><span class="pre">model/</span></code>, <code class="docutils literal notranslate"><span class="pre">routine/</span></code>, <code class="docutils literal notranslate"><span class="pre">trainer/</span></code>: Component building blocks</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">experiment/</span></code>: Your experiment configurations (see <a class="reference internal" href="experiments.html#experiments"><span class="std std-ref">Create Experiments</span></a>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">data_module/</span></code>, <code class="docutils literal notranslate"><span class="pre">model/</span></code>, <code class="docutils literal notranslate"><span class="pre">routine/</span></code>, <code class="docutils literal notranslate"><span class="pre">trainer/</span></code>: Component configs matching the pipeline from <a class="reference internal" href="overview.html#overview"><span class="std std-ref">ChemTorch Overview</span></a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">experiment/</span></code>: Your experiment configurations (see <a class="reference internal" href="experiments.html#experiments"><span class="std std-ref">Creating Experiments</span></a>)</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">saved_configs/</span></code>: Saved configs for reproducibility (see <a class="reference internal" href="../user_guide/reproducing_experiments.html#reproducing-experiments"><span class="std std-ref">Reproducing Experiments</span></a>)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">props/</span></code>: Runtime-computed properties (see <a class="reference internal" href="../advanced_guide/props.html#props"><span class="std std-ref">Runtime Properties</span></a>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">props/</span></code>: Runtime-computed properties (see <a class="reference internal" href="../developer_guide/props.html#props"><span class="std std-ref">Runtime Properties</span></a>)</p></li>
 </ul>
+<p>Each component folder (<code class="docutils literal notranslate"><span class="pre">data_module/</span></code>, <code class="docutils literal notranslate"><span class="pre">model/</span></code>, etc.) contains interchangeable configs for that pipeline stage.
+For example, <code class="docutils literal notranslate"><span class="pre">model/</span></code> has configs for DMPNN, GCN, GAT, and other architectures—all implementing the same interface but with different internal structure.</p>
 </section>
 <section id="hierarchical-configuration-with-hydra">
 <h2>Hierarchical Configuration with Hydra<a class="headerlink" href="#hierarchical-configuration-with-hydra" title="Link to this heading">#</a></h2>
@@ -555,7 +565,7 @@ For example, you could open <code class="docutils literal notranslate"><span cla
 </div>
 <p>Then run: <code class="docutils literal notranslate"><span class="pre">chemtorch</span> <span class="pre">+experiment=my_experiment</span></code></p>
 <p>This approach keeps your experiments organized and component configs reusable.
-Learn more in <a class="reference internal" href="experiments.html#experiments"><span class="std std-ref">Create Experiments</span></a>.</p>
+Learn more in <a class="reference internal" href="experiments.html#experiments"><span class="std std-ref">Creating Experiments</span></a>.</p>
 </section>
 </section>
 <section id="how-values-get-resolved">
@@ -583,12 +593,12 @@ Learn more in <a class="reference internal" href="experiments.html#experiments">
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="logging.html"
+       href="overview.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Setup Logging</p>
+        <p class="prev-next-title">ChemTorch Overview</p>
       </div>
     </a>
     <a class="right-next"
@@ -596,7 +606,7 @@ Learn more in <a class="reference internal" href="experiments.html#experiments">
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Create Experiments</p>
+        <p class="prev-next-title">Creating Experiments</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -655,7 +665,7 @@ By Anton Zamyatin, Jasper De Landsheere, Esther Heid
 
   <p class="copyright">
     
-      © Copyright 2025 Esther Heid.
+      © Copyright 2026 Esther Heid.
       <br/>
     
   </p>

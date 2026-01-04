@@ -1,0 +1,1387 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Utilities &#8212; ChemTorch</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom_syntax.css?v=9e2307e4" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../_static/documentation_options.js?v=1a9ffd16"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'api_autodoc/utils';</script>
+    <link rel="icon" href="../_static/chemtorch_favicon.png"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="Core" href="core.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/chemtorch_logo_light.svg" class="logo__image only-light" alt="ChemTorch documentation - Home"/>
+    <script>document.write(`<img src="../_static/chemtorch_logo_dark.svg" class="logo__image only-dark" alt="ChemTorch documentation - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/quick_start.html">Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/logging.html">Setup Logging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/overview.html">ChemTorch Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/config.html">Understanding Configs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/experiments.html">Creating Experiments</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/cli_usage.html">CLI Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/custom_data.html">Using Your Own Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/sweeps.html">Hyperparameter Sweeps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/reproducing_experiments.html">Reproducing Experiments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/reproducibility_tests.html">Reproducibility Tests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/config_ref.html">Config Reference</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Examples</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../examples/training_curves.html">Performance Curves</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/ood_benchmarking.html">OOD benchmarking</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Developer Guide</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../developer_guide/custom_components.html">Defining Custom Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer_guide/props.html">Runtime Properties</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer_guide/hydra.html">Hydra Config Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer_guide/testing.html">Testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer_guide/contributing.html">Contributing</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">API Reference</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="components.html">Components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="core.html">Core</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Utilities</a></li>
+</ul>
+</details></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+<a href="https://github.com/heid-lab/chemtorch" target="_blank"
+   class="btn btn-sm btn-source-repository-button"
+   title="Source repository"
+   data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+
+</a>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/api_autodoc/utils.rst" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.rst</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Utilities</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-chemtorch.utils.types">Types</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#chemtorch.utils.types.DataLoaderFactoryProtocol"><code class="docutils literal notranslate"><span class="pre">DataLoaderFactoryProtocol</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#chemtorch.utils.types.DataLoaderFactoryProtocol.__init__"><code class="docutils literal notranslate"><span class="pre">DataLoaderFactoryProtocol.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#chemtorch.utils.types.RoutineFactoryProtocol"><code class="docutils literal notranslate"><span class="pre">RoutineFactoryProtocol</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#chemtorch.utils.types.RoutineFactoryProtocol.__init__"><code class="docutils literal notranslate"><span class="pre">RoutineFactoryProtocol.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#chemtorch.utils.types.DataSplit"><code class="docutils literal notranslate"><span class="pre">DataSplit</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#chemtorch.utils.types.DataSplit.__init__"><code class="docutils literal notranslate"><span class="pre">DataSplit.__init__()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#chemtorch.utils.types.DataSplit.to_dict"><code class="docutils literal notranslate"><span class="pre">DataSplit.to_dict()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-chemtorch.utils.hydra">Hydra Utilities</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#chemtorch.utils.hydra.resolve_target"><code class="docutils literal notranslate"><span class="pre">resolve_target()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#chemtorch.utils.hydra.order_config_by_signature"><code class="docutils literal notranslate"><span class="pre">order_config_by_signature()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#chemtorch.utils.hydra.filter_config_by_signature"><code class="docutils literal notranslate"><span class="pre">filter_config_by_signature()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#chemtorch.utils.hydra.safe_instantiate"><code class="docutils literal notranslate"><span class="pre">safe_instantiate()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#chemtorch.utils.hydra.get_num_workers"><code class="docutils literal notranslate"><span class="pre">get_num_workers()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-chemtorch.utils.cli">CLI Utilities</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#chemtorch.utils.cli.cli_chemtorch_logo"><code class="docutils literal notranslate"><span class="pre">cli_chemtorch_logo()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-chemtorch.utils.standardizer">Standardizer</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#chemtorch.utils.standardizer.Standardizer"><code class="docutils literal notranslate"><span class="pre">Standardizer</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#chemtorch.utils.standardizer.Standardizer.__init__"><code class="docutils literal notranslate"><span class="pre">Standardizer.__init__()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#chemtorch.utils.standardizer.Standardizer.standardize"><code class="docutils literal notranslate"><span class="pre">Standardizer.standardize()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#chemtorch.utils.standardizer.Standardizer.destandardize"><code class="docutils literal notranslate"><span class="pre">Standardizer.destandardize()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#chemtorch.utils.standardizer.Standardizer.validate"><code class="docutils literal notranslate"><span class="pre">Standardizer.validate()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-chemtorch.utils.reaction_utils">Reaction Utilities</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#chemtorch.utils.reaction_utils.get_atom_index_by_mapnum"><code class="docutils literal notranslate"><span class="pre">get_atom_index_by_mapnum()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#chemtorch.utils.reaction_utils.unmap_smarts"><code class="docutils literal notranslate"><span class="pre">unmap_smarts()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#chemtorch.utils.reaction_utils.unmap_smiles"><code class="docutils literal notranslate"><span class="pre">unmap_smiles()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#chemtorch.utils.reaction_utils.smarts2smarts"><code class="docutils literal notranslate"><span class="pre">smarts2smarts()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#chemtorch.utils.reaction_utils.smiles2smiles"><code class="docutils literal notranslate"><span class="pre">smiles2smiles()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#chemtorch.utils.reaction_utils.bondtypes"><code class="docutils literal notranslate"><span class="pre">bondtypes()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#chemtorch.utils.reaction_utils.neighbors"><code class="docutils literal notranslate"><span class="pre">neighbors()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#chemtorch.utils.reaction_utils.neighbors_and_bondtypes"><code class="docutils literal notranslate"><span class="pre">neighbors_and_bondtypes()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#chemtorch.utils.reaction_utils.remove_atoms_from_rxn"><code class="docutils literal notranslate"><span class="pre">remove_atoms_from_rxn()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#chemtorch.utils.reaction_utils.get_reaction_core"><code class="docutils literal notranslate"><span class="pre">get_reaction_core()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-chemtorch.utils.atom_mapping">Atom Mapping</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#chemtorch.utils.atom_mapping.AtomOriginType"><code class="docutils literal notranslate"><span class="pre">AtomOriginType</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#chemtorch.utils.atom_mapping.AtomOriginType.REACTANT"><code class="docutils literal notranslate"><span class="pre">AtomOriginType.REACTANT</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#chemtorch.utils.atom_mapping.AtomOriginType.PRODUCT"><code class="docutils literal notranslate"><span class="pre">AtomOriginType.PRODUCT</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#chemtorch.utils.atom_mapping.AtomOriginType.DUMMY"><code class="docutils literal notranslate"><span class="pre">AtomOriginType.DUMMY</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#chemtorch.utils.atom_mapping.AtomOriginType.REACTANT_PRODUCT"><code class="docutils literal notranslate"><span class="pre">AtomOriginType.REACTANT_PRODUCT</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#chemtorch.utils.atom_mapping.EdgeOriginType"><code class="docutils literal notranslate"><span class="pre">EdgeOriginType</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#chemtorch.utils.atom_mapping.EdgeOriginType.REACTANT"><code class="docutils literal notranslate"><span class="pre">EdgeOriginType.REACTANT</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#chemtorch.utils.atom_mapping.EdgeOriginType.PRODUCT"><code class="docutils literal notranslate"><span class="pre">EdgeOriginType.PRODUCT</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#chemtorch.utils.atom_mapping.EdgeOriginType.DUMMY"><code class="docutils literal notranslate"><span class="pre">EdgeOriginType.DUMMY</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#chemtorch.utils.atom_mapping.EdgeOriginType.REACTANT_PRODUCT"><code class="docutils literal notranslate"><span class="pre">EdgeOriginType.REACTANT_PRODUCT</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#chemtorch.utils.atom_mapping.make_mol"><code class="docutils literal notranslate"><span class="pre">make_mol()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#chemtorch.utils.atom_mapping.map_reac_to_prod"><code class="docutils literal notranslate"><span class="pre">map_reac_to_prod()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#chemtorch.utils.atom_mapping.remove_atom_mapping"><code class="docutils literal notranslate"><span class="pre">remove_atom_mapping()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-chemtorch.utils.callable_compose">Callable Composition</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#chemtorch.utils.callable_compose.CallableCompose"><code class="docutils literal notranslate"><span class="pre">CallableCompose</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#chemtorch.utils.callable_compose.CallableCompose.__init__"><code class="docutils literal notranslate"><span class="pre">CallableCompose.__init__()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#chemtorch.utils.callable_compose.CallableCompose.compose"><code class="docutils literal notranslate"><span class="pre">CallableCompose.compose()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-chemtorch.utils.misc">Miscellaneous</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#chemtorch.utils.misc.save_predictions"><code class="docutils literal notranslate"><span class="pre">save_predictions()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#chemtorch.utils.misc.handle_prediction_saving"><code class="docutils literal notranslate"><span class="pre">handle_prediction_saving()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-chemtorch.utils.decorators.enforce_base_init">Decorators</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#chemtorch.utils.decorators.enforce_base_init.enforce_base_init"><code class="docutils literal notranslate"><span class="pre">enforce_base_init()</span></code></a></li>
+</ul>
+</li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="utilities">
+<span id="api-autodoc-utils"></span><h1>Utilities<a class="headerlink" href="#utilities" title="Link to this heading">#</a></h1>
+<p>Helper functions and utilities used throughout ChemTorch.</p>
+<section id="module-chemtorch.utils.types">
+<span id="types"></span><h2>Types<a class="headerlink" href="#module-chemtorch.utils.types" title="Link to this heading">#</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="chemtorch.utils.types.DataLoaderFactoryProtocol">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">chemtorch.utils.types.</span></span><span class="sig-name descname"><span class="pre">DataLoaderFactoryProtocol</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chemtorch/utils/types.html#DataLoaderFactoryProtocol"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chemtorch.utils.types.DataLoaderFactoryProtocol" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Protocol</span></code></p>
+<p>Protocol defining the interface for dataloader factory functions.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="chemtorch.utils.types.DataLoaderFactoryProtocol.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#chemtorch.utils.types.DataLoaderFactoryProtocol.__init__" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="chemtorch.utils.types.RoutineFactoryProtocol">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">chemtorch.utils.types.</span></span><span class="sig-name descname"><span class="pre">RoutineFactoryProtocol</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chemtorch/utils/types.html#RoutineFactoryProtocol"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chemtorch.utils.types.RoutineFactoryProtocol" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Protocol</span></code></p>
+<p>Protocol defining the interface for routine factory functions.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="chemtorch.utils.types.RoutineFactoryProtocol.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#chemtorch.utils.types.RoutineFactoryProtocol.__init__" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="chemtorch.utils.types.DataSplit">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">chemtorch.utils.types.</span></span><span class="sig-name descname"><span class="pre">DataSplit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">train</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">T</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">val</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">T</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">T</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chemtorch/utils/types.html#DataSplit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chemtorch.utils.types.DataSplit" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Generic" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code></a>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code>]</p>
+<p>A data structure to hold the data splits for training, validation, and testing.
+Provides named tuple-like access with generic typing support.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="chemtorch.utils.types.DataSplit.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">train</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">T</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">val</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">T</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">T</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/chemtorch/utils/types.html#DataSplit.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chemtorch.utils.types.DataSplit.__init__" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chemtorch.utils.types.DataSplit.to_dict">
+<span class="sig-name descname"><span class="pre">to_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/chemtorch/utils/types.html#DataSplit.to_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chemtorch.utils.types.DataSplit.to_dict" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-chemtorch.utils.hydra">
+<span id="hydra-utilities"></span><h2>Hydra Utilities<a class="headerlink" href="#module-chemtorch.utils.hydra" title="Link to this heading">#</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="chemtorch.utils.hydra.resolve_target">
+<span class="sig-prename descclassname"><span class="pre">chemtorch.utils.hydra.</span></span><span class="sig-name descname"><span class="pre">resolve_target</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target_str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chemtorch/utils/hydra.html#resolve_target"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chemtorch.utils.hydra.resolve_target" title="Link to this definition">#</a></dt>
+<dd><p>Resolve a string like ‘module.submodule.ClassName’ to the actual class.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="chemtorch.utils.hydra.order_config_by_signature">
+<span class="sig-prename descclassname"><span class="pre">chemtorch.utils.hydra.</span></span><span class="sig-name descname"><span class="pre">order_config_by_signature</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cfg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chemtorch/utils/hydra.html#order_config_by_signature"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chemtorch.utils.hydra.order_config_by_signature" title="Link to this definition">#</a></dt>
+<dd><p>Recursively reorder configuration dictionaries to match the argument order of their
+specified <cite>_target_</cite> class or function’s constructor signature.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>cfg</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a><em> or </em><em>DictConfig</em>) – The configuration dictionary or OmegaConf DictConfig.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>A reordered configuration dictionary with keys ordered according to the</dt><dd><p>constructor signature of the <cite>_target_</cite> if present, otherwise recursively
+processes child dictionaries.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)">dict</a></p>
+</dd>
+</dl>
+<section id="why-is-this-important">
+<h3>Why is this important?<a class="headerlink" href="#why-is-this-important" title="Link to this heading">#</a></h3>
+<p>By default, Hydra instantiates objects in the order that keys appear in the configuration
+dictionary. However, the order of keys in a YAML or Python dict is not guaranteed to match
+the order of arguments in the target class or function’s constructor. In frameworks like
+PyTorch, the order in which submodules (layers, blocks, etc.) are instantiated directly
+affects the order in which random numbers are consumed for parameter initialization.
+This means that simply reordering keys in the config file can lead to different random
+initializations and thus different results, even if the model architecture and random seed
+remain unchanged.</p>
+<p>This function ensures that the instantiation order of all objects (and their subcomponents)
+is invariant to the order of keys in the configuration file. It does so by reordering
+each config dictionary to match the argument order of the corresponding <a href="#id1"><span class="problematic" id="id2">`</span></a>_target_`s
+constructor. This guarantees reproducible model initialization and results, regardless
+of how the config is written.</p>
+</section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="chemtorch.utils.hydra.filter_config_by_signature">
+<span class="sig-prename descclassname"><span class="pre">chemtorch.utils.hydra.</span></span><span class="sig-name descname"><span class="pre">filter_config_by_signature</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cfg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chemtorch/utils/hydra.html#filter_config_by_signature"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chemtorch.utils.hydra.filter_config_by_signature" title="Link to this definition">#</a></dt>
+<dd><p>Recursively filter configuration dictionaries to only include keys that match the argument
+names of their specified <cite>_target_</cite> class or function’s constructor signature.
+If the signature supports <a href="#id3"><span class="problematic" id="id4">**</span></a>kwargs, do not filter.
+Special Hydra keys (from _Keys) are always preserved.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>cfg</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a><em> or </em><em>DictConfig</em>) – The configuration dictionary or OmegaConf DictConfig.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A filtered configuration dictionary.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)">dict</a></p>
+</dd>
+</dl>
+<section id="id5">
+<h3>Why is this important?<a class="headerlink" href="#id5" title="Link to this heading">#</a></h3>
+<p>This is useful for convenient key interpolation in configs. If multiple lower-level configs
+in the hierarchy depend on a shared value, it is convenient to define it in a higher-level
+config and use a universal interpolation syntax to reference that key, regardless of the
+lower-level config structure (which can differ). For example, the <cite>hidden_channels</cite> argument
+is shared across multiple components of a GNN, such as encoders, convolution layers, and
+higher-level blocks. However, the higher-level GNN class that assembles these components
+might not have a <cite>hidden_channels</cite> argument itself. If you specify a <cite>hidden_channels</cite> key
+in the higher-level config and use top-level interpolation, Hydra will raise a ValueError
+when it tries to instantiate the GNN with the config, since the argument is unexpected.
+The use case for this function is to resolve the config (so all interpolations are applied),
+then filter it so that only valid keys for each <cite>_target_</cite> remain, avoiding instantiation
+errors and enabling flexible, DRY config design.</p>
+</section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="chemtorch.utils.hydra.safe_instantiate">
+<span class="sig-prename descclassname"><span class="pre">chemtorch.utils.hydra.</span></span><span class="sig-name descname"><span class="pre">safe_instantiate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cfg</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chemtorch/utils/hydra.html#safe_instantiate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chemtorch.utils.hydra.safe_instantiate" title="Link to this definition">#</a></dt>
+<dd><p>Safely instantiate an object from a configuration dictionary, ensuring that
+the configuration is ordered and filtered according to the target’s constructor signature.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cfg</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a><em> or </em><em>DictConfig</em>) – The configuration dictionary or OmegaConf DictConfig.</p></li>
+<li><p><strong>*args</strong> – Positional arguments to pass to the target’s constructor.</p></li>
+<li><p><strong>**kwargs</strong> – Keyword arguments to pass to the target’s constructor.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>An instance of the target class specified in the configuration.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)">object</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="chemtorch.utils.hydra.get_num_workers">
+<span class="sig-prename descclassname"><span class="pre">chemtorch.utils.hydra.</span></span><span class="sig-name descname"><span class="pre">get_num_workers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">slurm_env</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'SLURM_CPUS_PER_TASK'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">leave_free</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span></span><a class="reference internal" href="../_modules/chemtorch/utils/hydra.html#get_num_workers"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chemtorch.utils.hydra.get_num_workers" title="Link to this definition">#</a></dt>
+<dd><p>Return a safe number of PyTorch DataLoader workers.</p>
+<p>Behavior:
+- If the SLURM env var (default: <code class="docutils literal notranslate"><span class="pre">SLURM_CPUS_PER_TASK</span></code>) is present and an</p>
+<blockquote>
+<div><p>integer, use min(slurm_value, os.cpu_count()) - leave_free.</p>
+</div></blockquote>
+<ul class="simple">
+<li><p>Otherwise use os.cpu_count() - leave_free.</p></li>
+<li><p>Never return a negative number; result is clamped to 0.</p></li>
+</ul>
+<p>leave_free defaults to 1 to leave one CPU for the main process. This is a
+common pattern but optional depending on your workload.</p>
+</dd></dl>
+
+</section>
+<section id="module-chemtorch.utils.cli">
+<span id="cli-utilities"></span><h2>CLI Utilities<a class="headerlink" href="#module-chemtorch.utils.cli" title="Link to this heading">#</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="chemtorch.utils.cli.cli_chemtorch_logo">
+<span class="sig-prename descclassname"><span class="pre">chemtorch.utils.cli.</span></span><span class="sig-name descname"><span class="pre">cli_chemtorch_logo</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/chemtorch/utils/cli.html#cli_chemtorch_logo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chemtorch.utils.cli.cli_chemtorch_logo" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="module-chemtorch.utils.standardizer">
+<span id="standardizer"></span><h2>Standardizer<a class="headerlink" href="#module-chemtorch.utils.standardizer" title="Link to this heading">#</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="chemtorch.utils.standardizer.Standardizer">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">chemtorch.utils.standardizer.</span></span><span class="sig-name descname"><span class="pre">Standardizer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mean</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.9)"><span class="pre">Tensor</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.9)"><span class="pre">Tensor</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">ndarray</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chemtorch/utils/standardizer.html#Standardizer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chemtorch.utils.standardizer.Standardizer" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="chemtorch.utils.standardizer.Standardizer.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mean</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.9)"><span class="pre">Tensor</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.9)"><span class="pre">Tensor</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">ndarray</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/chemtorch/utils/standardizer.html#Standardizer.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chemtorch.utils.standardizer.Standardizer.__init__" title="Link to this definition">#</a></dt>
+<dd><p>Create a standardizer to standardize sample using the given mean and standard deviation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mean</strong> (<em>Union</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>, </em><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.9)"><em>torch.Tensor</em></a><em>, </em><em>np.ndarray</em><em>]</em>) – Mean value(s) for standardization.</p></li>
+<li><p><strong>std</strong> (<em>Union</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>, </em><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.9)"><em>torch.Tensor</em></a><em>, </em><em>np.ndarray</em><em>]</em>) – Standard deviation value(s) for standardization.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.14)"><strong>TypeError</strong></a> – If mean or std are not of type torch.Tensor or np.ndarray, or if they are not of the same type.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.14)"><strong>ValueError</strong></a> – If mean and std do not have the same shape.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chemtorch.utils.standardizer.Standardizer.standardize">
+<span class="sig-name descname"><span class="pre">standardize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.9)"><span class="pre">Tensor</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.9)"><span class="pre">Tensor</span></a></span></span><a class="reference internal" href="../_modules/chemtorch/utils/standardizer.html#Standardizer.standardize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chemtorch.utils.standardizer.Standardizer.standardize" title="Link to this definition">#</a></dt>
+<dd><p>Standardize the input data by subtracting the mean and dividing by the standard deviation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>x</strong> (<a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.9)"><em>torch.Tensor</em></a>) – Input data to standardize.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Standardized data.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.9)">torch.Tensor</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chemtorch.utils.standardizer.Standardizer.destandardize">
+<span class="sig-name descname"><span class="pre">destandardize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.9)"><span class="pre">Tensor</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.9)"><span class="pre">Tensor</span></a></span></span><a class="reference internal" href="../_modules/chemtorch/utils/standardizer.html#Standardizer.destandardize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chemtorch.utils.standardizer.Standardizer.destandardize" title="Link to this definition">#</a></dt>
+<dd><p>Reverse the standardization of the input data by multiplying by the standard deviation</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>x</strong> (<a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.9)"><em>torch.Tensor</em></a>) – Input data to reverse standardize.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Reverse standardized data.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.9)">torch.Tensor</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chemtorch.utils.standardizer.Standardizer.validate">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">validate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mean</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.9)"><span class="pre">Tensor</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.9)"><span class="pre">Tensor</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">ndarray</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/chemtorch/utils/standardizer.html#Standardizer.validate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chemtorch.utils.standardizer.Standardizer.validate" title="Link to this definition">#</a></dt>
+<dd><p>Validate the mean and standard deviation values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mean</strong> (<em>Union</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>, </em><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.9)"><em>torch.Tensor</em></a><em>, </em><em>np.ndarray</em><em>]</em>) – Mean value(s) for standardization.</p></li>
+<li><p><strong>std</strong> (<em>Union</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>, </em><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.9)"><em>torch.Tensor</em></a><em>, </em><em>np.ndarray</em><em>]</em>) – Standard deviation value(s) for standardization.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.14)"><strong>TypeError</strong></a> – If mean or std are not of type torch.Tensor or np.ndarray, or if they are not of the same type.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.14)"><strong>ValueError</strong></a> – If mean and std do not have the same shape.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-chemtorch.utils.reaction_utils">
+<span id="reaction-utilities"></span><h2>Reaction Utilities<a class="headerlink" href="#module-chemtorch.utils.reaction_utils" title="Link to this heading">#</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="chemtorch.utils.reaction_utils.get_atom_index_by_mapnum">
+<span class="sig-prename descclassname"><span class="pre">chemtorch.utils.reaction_utils.</span></span><span class="sig-name descname"><span class="pre">get_atom_index_by_mapnum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mol</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Mol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mapnum</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/chemtorch/utils/reaction_utils.html#get_atom_index_by_mapnum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chemtorch.utils.reaction_utils.get_atom_index_by_mapnum" title="Link to this definition">#</a></dt>
+<dd><p>Get the atom index for an atom with a specific atom map number.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mol</strong> (<em>Chem.Mol</em>) – The RDKit molecule object to search.</p></li>
+<li><p><strong>mapnum</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – The atom map number to search for.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The atom index if found, None otherwise.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Optional[<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)">int</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="chemtorch.utils.reaction_utils.unmap_smarts">
+<span class="sig-prename descclassname"><span class="pre">chemtorch.utils.reaction_utils.</span></span><span class="sig-name descname"><span class="pre">unmap_smarts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">smarts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/chemtorch/utils/reaction_utils.html#unmap_smarts"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chemtorch.utils.reaction_utils.unmap_smarts" title="Link to this definition">#</a></dt>
+<dd><p>Remove atom map numbers from a SMARTS string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>smarts</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – The input SMARTS string with atom map numbers.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The SMARTS string with atom map numbers removed.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.14)"><strong>ValueError</strong></a> – If the SMARTS string cannot be parsed.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="chemtorch.utils.reaction_utils.unmap_smiles">
+<span class="sig-prename descclassname"><span class="pre">chemtorch.utils.reaction_utils.</span></span><span class="sig-name descname"><span class="pre">unmap_smiles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">smiles</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/chemtorch/utils/reaction_utils.html#unmap_smiles"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chemtorch.utils.reaction_utils.unmap_smiles" title="Link to this definition">#</a></dt>
+<dd><p>Remove atom map numbers from a SMILES string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>smiles</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – The input SMILES string with atom map numbers.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The SMILES string with atom map numbers removed.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.14)"><strong>ValueError</strong></a> – If the SMILES string cannot be parsed.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="chemtorch.utils.reaction_utils.smarts2smarts">
+<span class="sig-prename descclassname"><span class="pre">chemtorch.utils.reaction_utils.</span></span><span class="sig-name descname"><span class="pre">smarts2smarts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">smarts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/chemtorch/utils/reaction_utils.html#smarts2smarts"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chemtorch.utils.reaction_utils.smarts2smarts" title="Link to this definition">#</a></dt>
+<dd><p>Parse and reformat a SMARTS string to ensure proper formatting.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>smarts</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – The input SMARTS string.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The reformatted SMARTS string.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.14)"><strong>ValueError</strong></a> – If the SMARTS string cannot be parsed.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="chemtorch.utils.reaction_utils.smiles2smiles">
+<span class="sig-prename descclassname"><span class="pre">chemtorch.utils.reaction_utils.</span></span><span class="sig-name descname"><span class="pre">smiles2smiles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">smiles_str</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/chemtorch/utils/reaction_utils.html#smiles2smiles"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chemtorch.utils.reaction_utils.smiles2smiles" title="Link to this definition">#</a></dt>
+<dd><p>Parse and reformat a SMILES string to ensure proper formatting.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>smiles_str</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – The input SMILES string.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The reformatted SMILES string.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.14)"><strong>ValueError</strong></a> – If the SMILES string cannot be parsed.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="chemtorch.utils.reaction_utils.bondtypes">
+<span class="sig-prename descclassname"><span class="pre">chemtorch.utils.reaction_utils.</span></span><span class="sig-name descname"><span class="pre">bondtypes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">atom</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Atom</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.14)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><span class="pre">BondType</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/chemtorch/utils/reaction_utils.html#bondtypes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chemtorch.utils.reaction_utils.bondtypes" title="Link to this definition">#</a></dt>
+<dd><p>Get a sorted list of bond types for all bonds connected to an atom.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>atom</strong> (<em>Chem.Atom</em>) – The RDKit atom object.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A sorted list of bond types connected to the atom.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[Chem.BondType]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="chemtorch.utils.reaction_utils.neighbors">
+<span class="sig-prename descclassname"><span class="pre">chemtorch.utils.reaction_utils.</span></span><span class="sig-name descname"><span class="pre">neighbors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">atom</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Atom</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.14)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/chemtorch/utils/reaction_utils.html#neighbors"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chemtorch.utils.reaction_utils.neighbors" title="Link to this definition">#</a></dt>
+<dd><p>Get a sorted list of atom map numbers for all neighboring atoms.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>atom</strong> (<em>Chem.Atom</em>) – The RDKit atom object.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A sorted list of atom map numbers of neighboring atoms.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)">int</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="chemtorch.utils.reaction_utils.neighbors_and_bondtypes">
+<span class="sig-prename descclassname"><span class="pre">chemtorch.utils.reaction_utils.</span></span><span class="sig-name descname"><span class="pre">neighbors_and_bondtypes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">atom</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Atom</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.14)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">BondType</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/chemtorch/utils/reaction_utils.html#neighbors_and_bondtypes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chemtorch.utils.reaction_utils.neighbors_and_bondtypes" title="Link to this definition">#</a></dt>
+<dd><p>Get a combined list of neighboring atom map numbers and bond types.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>atom</strong> (<em>Chem.Atom</em>) – The RDKit atom object.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A combined list containing neighbor map numbers and bond types.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[Union[<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)">int</a>, Chem.BondType]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="chemtorch.utils.reaction_utils.remove_atoms_from_rxn">
+<span class="sig-prename descclassname"><span class="pre">chemtorch.utils.reaction_utils.</span></span><span class="sig-name descname"><span class="pre">remove_atoms_from_rxn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Mol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Mol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">atoms_to_remove</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">ndarray</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.14)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/chemtorch/utils/reaction_utils.html#remove_atoms_from_rxn"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chemtorch.utils.reaction_utils.remove_atoms_from_rxn" title="Link to this definition">#</a></dt>
+<dd><p>Remove specified atoms from reactant and product molecules and return SMILES.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mr</strong> (<em>Chem.Mol</em>) – The reactant molecule.</p></li>
+<li><p><strong>mp</strong> (<em>Chem.Mol</em>) – The product molecule.</p></li>
+<li><p><strong>atoms_to_remove</strong> (<em>np.ndarray</em>) – A 2D numpy array of shape (N, 2) where each row contains
+a pair of atom indices [reactant_idx, product_idx] representing
+corresponding atoms to be removed from the reactant and product
+molecules respectively. The indices are 0-based atom indices
+within each molecule.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A list containing the SMILES strings of the modified reactant and product.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="chemtorch.utils.reaction_utils.get_reaction_core">
+<span class="sig-prename descclassname"><span class="pre">chemtorch.utils.reaction_utils.</span></span><span class="sig-name descname"><span class="pre">get_reaction_core</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r_smiles</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_smiles</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Tuple" title="(in Python v3.14)"><span class="pre">Tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.14)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/chemtorch/utils/reaction_utils.html#get_reaction_core"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chemtorch.utils.reaction_utils.get_reaction_core" title="Link to this definition">#</a></dt>
+<dd><p>Extract the reaction core by removing atoms that don’t change during the reaction.</p>
+<p>This function identifies atoms in the reactant and product that have identical
+neighborhoods (same neighbors and bond types) and removes them to extract
+only the reaction core - the atoms that actually participate in the transformation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>r_smiles</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – The reactant SMILES string.</p></li>
+<li><p><strong>p_smiles</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – The product SMILES string.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>A tuple containing:</dt><dd><ul class="simple">
+<li><p>The reaction SMILES with only the changing atoms (reaction core)</p></li>
+<li><p>A list of atom map numbers that were removed (0-indexed)</p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tuple[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a>, List[<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)">int</a>]]</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.14)"><strong>ValueError</strong></a> – If SMILES cannot be parsed or processed.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-chemtorch.utils.atom_mapping">
+<span id="atom-mapping"></span><h2>Atom Mapping<a class="headerlink" href="#module-chemtorch.utils.atom_mapping" title="Link to this heading">#</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="chemtorch.utils.atom_mapping.AtomOriginType">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">chemtorch.utils.atom_mapping.</span></span><span class="sig-name descname"><span class="pre">AtomOriginType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chemtorch/utils/atom_mapping.html#AtomOriginType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chemtorch.utils.atom_mapping.AtomOriginType" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/enum.html#enum.IntEnum" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">IntEnum</span></code></a></p>
+<p>An enumeration.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="chemtorch.utils.atom_mapping.AtomOriginType.REACTANT">
+<span class="sig-name descname"><span class="pre">REACTANT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#chemtorch.utils.atom_mapping.AtomOriginType.REACTANT" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="chemtorch.utils.atom_mapping.AtomOriginType.PRODUCT">
+<span class="sig-name descname"><span class="pre">PRODUCT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#chemtorch.utils.atom_mapping.AtomOriginType.PRODUCT" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="chemtorch.utils.atom_mapping.AtomOriginType.DUMMY">
+<span class="sig-name descname"><span class="pre">DUMMY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#chemtorch.utils.atom_mapping.AtomOriginType.DUMMY" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="chemtorch.utils.atom_mapping.AtomOriginType.REACTANT_PRODUCT">
+<span class="sig-name descname"><span class="pre">REACTANT_PRODUCT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3</span></em><a class="headerlink" href="#chemtorch.utils.atom_mapping.AtomOriginType.REACTANT_PRODUCT" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="chemtorch.utils.atom_mapping.EdgeOriginType">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">chemtorch.utils.atom_mapping.</span></span><span class="sig-name descname"><span class="pre">EdgeOriginType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chemtorch/utils/atom_mapping.html#EdgeOriginType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chemtorch.utils.atom_mapping.EdgeOriginType" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/enum.html#enum.IntEnum" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">IntEnum</span></code></a></p>
+<p>An enumeration.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="chemtorch.utils.atom_mapping.EdgeOriginType.REACTANT">
+<span class="sig-name descname"><span class="pre">REACTANT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#chemtorch.utils.atom_mapping.EdgeOriginType.REACTANT" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="chemtorch.utils.atom_mapping.EdgeOriginType.PRODUCT">
+<span class="sig-name descname"><span class="pre">PRODUCT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#chemtorch.utils.atom_mapping.EdgeOriginType.PRODUCT" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="chemtorch.utils.atom_mapping.EdgeOriginType.DUMMY">
+<span class="sig-name descname"><span class="pre">DUMMY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#chemtorch.utils.atom_mapping.EdgeOriginType.DUMMY" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="chemtorch.utils.atom_mapping.EdgeOriginType.REACTANT_PRODUCT">
+<span class="sig-name descname"><span class="pre">REACTANT_PRODUCT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3</span></em><a class="headerlink" href="#chemtorch.utils.atom_mapping.EdgeOriginType.REACTANT_PRODUCT" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="chemtorch.utils.atom_mapping.make_mol">
+<span class="sig-prename descclassname"><span class="pre">chemtorch.utils.atom_mapping.</span></span><span class="sig-name descname"><span class="pre">make_mol</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">smi</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Tuple" title="(in Python v3.14)"><span class="pre">Tuple</span></a><span class="p"><span class="pre">[</span></span><span class="pre">Mol</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.14)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/chemtorch/utils/atom_mapping.html#make_mol"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chemtorch.utils.atom_mapping.make_mol" title="Link to this definition">#</a></dt>
+<dd><p>Create RDKit mol with atom mapping.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>smi</strong> – SMILES string</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Tuple containing the RDKit molecule and a list of atom origins</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="chemtorch.utils.atom_mapping.map_reac_to_prod">
+<span class="sig-prename descclassname"><span class="pre">chemtorch.utils.atom_mapping.</span></span><span class="sig-name descname"><span class="pre">map_reac_to_prod</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mol_reac</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Mol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mol_prod</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Mol</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><span class="pre">Dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/chemtorch/utils/atom_mapping.html#map_reac_to_prod"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chemtorch.utils.atom_mapping.map_reac_to_prod" title="Link to this definition">#</a></dt>
+<dd><p>Map reactant atom indices to product atom indices.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mol_reac</strong> – Reactant molecule</p></li>
+<li><p><strong>mol_prod</strong> – Product molecule</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dictionary mapping reactant atom indices to product atom indices</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="chemtorch.utils.atom_mapping.remove_atom_mapping">
+<span class="sig-prename descclassname"><span class="pre">chemtorch.utils.atom_mapping.</span></span><span class="sig-name descname"><span class="pre">remove_atom_mapping</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">smiles</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chemtorch/utils/atom_mapping.html#remove_atom_mapping"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chemtorch.utils.atom_mapping.remove_atom_mapping" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="module-chemtorch.utils.callable_compose">
+<span id="callable-composition"></span><h2>Callable Composition<a class="headerlink" href="#module-chemtorch.utils.callable_compose" title="Link to this heading">#</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="chemtorch.utils.callable_compose.CallableCompose">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">chemtorch.utils.callable_compose.</span></span><span class="sig-name descname"><span class="pre">CallableCompose</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">callables</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Sequence" title="(in Python v3.14)"><span class="pre">Sequence</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.14)"><span class="pre">Callable</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/chemtorch/utils/callable_compose.html#CallableCompose"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chemtorch.utils.callable_compose.CallableCompose" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Generic" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code></a>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">R</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code>]</p>
+<p>CallableCompose composes a sequence of callables into a single callable object.</p>
+<p>This class is generic over input type R and output type T, and allows you to chain
+multiple callables (functions, transforms, etc.) so that the output of each is passed
+as the input to the next. The composed object itself is callable and applies all
+callables in order.</p>
+<p>Typical use cases include composing data transforms, preprocessing steps, or any
+sequence of operations that should be applied in a pipeline fashion.</p>
+<dl class="simple">
+<dt>Type parameters:</dt><dd><p>R: The input type to the first callable.
+T: The output type of the final callable.</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">def</span><span class="w"> </span><span class="nf">double</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="k">return</span> <span class="n">x</span> <span class="o">*</span> <span class="mi">2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span><span class="w"> </span><span class="nf">stringify</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">composed</span> <span class="o">=</span> <span class="n">CallableCompose</span><span class="p">([</span><span class="n">double</span><span class="p">,</span> <span class="n">stringify</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">composed</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="go">&#39;6&#39;</span>
+</pre></div>
+</div>
+<p>You can also use the static method <cite>compose</cite> for a more concise syntax:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">composed</span> <span class="o">=</span> <span class="n">CallableCompose</span><span class="o">.</span><span class="n">compose</span><span class="p">(</span><span class="n">double</span><span class="p">,</span> <span class="n">stringify</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">composed</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+<span class="go">&#39;8&#39;</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="chemtorch.utils.callable_compose.CallableCompose.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">callables</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Sequence" title="(in Python v3.14)"><span class="pre">Sequence</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.14)"><span class="pre">Callable</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/chemtorch/utils/callable_compose.html#CallableCompose.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chemtorch.utils.callable_compose.CallableCompose.__init__" title="Link to this definition">#</a></dt>
+<dd><p>Initializes the CallableCompose.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>callables</strong> (<em>Sequence</em><em>[</em><em>Callable</em><em>]</em>) – A sequence of callables to be composed. Each callable should accept the output
+type of the previous callable (the first should accept type R, the last should return type T).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="chemtorch.utils.callable_compose.CallableCompose.compose">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">compose</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">callables</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.14)"><span class="pre">Callable</span></a><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#chemtorch.utils.callable_compose.CallableCompose" title="chemtorch.utils.callable_compose.CallableCompose"><span class="pre">CallableCompose</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/chemtorch/utils/callable_compose.html#CallableCompose.compose"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chemtorch.utils.callable_compose.CallableCompose.compose" title="Link to this definition">#</a></dt>
+<dd><p>Convenience method to compose multiple callables of the same input/output type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>*callables</strong> – Callables to compose, each of type Callable[[T], T].</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A composed callable applying all in order.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#chemtorch.utils.callable_compose.CallableCompose" title="chemtorch.utils.callable_compose.CallableCompose">CallableCompose</a>[T, T]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-chemtorch.utils.misc">
+<span id="miscellaneous"></span><h2>Miscellaneous<a class="headerlink" href="#module-chemtorch.utils.misc" title="Link to this heading">#</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="chemtorch.utils.misc.save_predictions">
+<span class="sig-prename descclassname"><span class="pre">chemtorch.utils.misc.</span></span><span class="sig-name descname"><span class="pre">save_predictions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">preds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.14)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reference_df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v2.3.3)"><span class="pre">DataFrame</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.14)"><span class="pre">Path</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_func</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.14)"><span class="pre">Callable</span></a><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">root_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.14)"><span class="pre">Path</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v2.3.3)"><span class="pre">DataFrame</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/chemtorch/utils/misc.html#save_predictions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chemtorch.utils.misc.save_predictions" title="Link to this definition">#</a></dt>
+<dd><p>Process predictions and save them to a dataframe with the original data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>preds</strong> – List of predictions from trainer.predict() or trainer.test() (can be tensors or other types)
+Each element in the list is typically a batch of predictions</p></li>
+<li><p><strong>reference_df</strong> – Original dataframe to add predictions to</p></li>
+<li><p><strong>save_path</strong> – Path to save the predictions CSV file (relative to root_dir if provided)</p></li>
+<li><p><strong>log_func</strong> – Optional logging function (e.g., wandb.log)</p></li>
+<li><p><strong>root_dir</strong> – Root directory for resolving relative save_path</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>DataFrame with predictions added, or None if processing failed</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="chemtorch.utils.misc.handle_prediction_saving">
+<span class="sig-prename descclassname"><span class="pre">chemtorch.utils.misc.</span></span><span class="sig-name descname"><span class="pre">handle_prediction_saving</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">get_preds_func</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.14)"><span class="pre">Callable</span></a><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.14)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">get_reference_df_func</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.14)"><span class="pre">Callable</span></a><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v2.3.3)"><span class="pre">DataFrame</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">get_dataset_names_func</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.14)"><span class="pre">Callable</span></a><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.14)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">predictions_save_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">predictions_save_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_predictions_for</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.14)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ListConfig</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tasks</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.14)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ListConfig</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_func</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.14)"><span class="pre">Callable</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">root_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.14)"><span class="pre">Path</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/chemtorch/utils/misc.html#handle_prediction_saving"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chemtorch.utils.misc.handle_prediction_saving" title="Link to this definition">#</a></dt>
+<dd><p>Handle prediction saving logic with configurable prediction and reference data retrieval.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>get_preds_func</strong> – Function that takes a dataset_key and returns predictions</p></li>
+<li><p><strong>get_reference_df_func</strong> – Function that takes a dataset_key and returns reference dataframe</p></li>
+<li><p><strong>get_dataset_names_func</strong> – Function that returns all available dataset names/keys</p></li>
+<li><p><strong>predictions_save_dir</strong> – Directory to save predictions (for multiple partitions)</p></li>
+<li><p><strong>predictions_save_path</strong> – Specific path to save predictions (for single partition)</p></li>
+<li><p><strong>save_predictions_for</strong> – String or list of dataset keys to save predictions for</p></li>
+<li><p><strong>tasks</strong> – List of tasks being executed (used for determining available partitions)</p></li>
+<li><p><strong>log_func</strong> – Optional logging function (e.g., wandb.log)</p></li>
+<li><p><strong>root_dir</strong> – Root directory for relative path resolution</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-chemtorch.utils.decorators.enforce_base_init">
+<span id="decorators"></span><h2>Decorators<a class="headerlink" href="#module-chemtorch.utils.decorators.enforce_base_init" title="Link to this heading">#</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="chemtorch.utils.decorators.enforce_base_init.enforce_base_init">
+<span class="sig-prename descclassname"><span class="pre">chemtorch.utils.decorators.enforce_base_init.</span></span><span class="sig-name descname"><span class="pre">enforce_base_init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_cls</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.14)"><span class="pre">type</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.14)"><span class="pre">Callable</span></a></span></span><a class="reference internal" href="../_modules/chemtorch/utils/decorators/enforce_base_init.html#enforce_base_init"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#chemtorch.utils.decorators.enforce_base_init.enforce_base_init" title="Link to this definition">#</a></dt>
+<dd><p>Decorator to enforce that subclasses of a given base class call the base class’s __init__ method.
+This is useful for ensuring that the base class’s initialization logic is always executed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>base_cls</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.14)"><em>type</em></a>) – The base class whose __init__ method must be called.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A decorator that enforces the base class’s __init__ method call.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Callable</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#RuntimeError" title="(in Python v3.14)"><strong>RuntimeError</strong></a> – If the subclass’s __init__ method does not call the base class’s __init__ method.</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<dl class="simple">
+<dt>class Base:</dt><dd><dl class="simple">
+<dt>def __init__(self):</dt><dd><p>print(“Base init called”)
+self._initialized_by_base = True</p>
+</dd>
+<dt>def __init_subclass__(cls):</dt><dd><p>enforce_base_init(Base)(cls)
+return super().__init_subclass__()</p>
+</dd>
+</dl>
+</dd>
+<dt>class SubClass(Base):</dt><dd><dl class="simple">
+<dt>def __init__(self):</dt><dd><p>print(“SubClass init called”)
+super().__init__()  # Must call base class’s __init__</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p>sub = SubClass()  # This will work</p>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">class</span><span class="w"> </span><span class="nc">Base</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Base init called&quot;</span><span class="p">)</span>
+<span class="gp">... </span>        <span class="bp">self</span><span class="o">.</span><span class="n">_initialized_by_base</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="gp">...</span>
+<span class="gp">... </span>    <span class="k">def</span><span class="w"> </span><span class="nf">__init_subclass__</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="n">enforce_base_init</span><span class="p">(</span><span class="n">Base</span><span class="p">)(</span><span class="bp">cls</span><span class="p">)</span>
+<span class="gp">... </span>        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__init_subclass__</span><span class="p">()</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span><span class="w"> </span><span class="nc">GoodSubClass</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>  <span class="c1"># Must call base class&#39;s __init__</span>
+<span class="gp">... </span>        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;SubClass init called&quot;</span><span class="p">)</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span><span class="w"> </span><span class="nc">BadSubClass</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;OtherSubClass init called&quot;</span><span class="p">)</span>
+<span class="gp">... </span>        <span class="c1"># super().__init__()  # This will raise an error</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sub</span> <span class="o">=</span> <span class="n">GoodSubClass</span><span class="p">()</span>  <span class="c1"># This will work</span>
+<span class="go">Base init called</span>
+<span class="go">GoodSubClass init called</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">other_sub</span> <span class="o">=</span> <span class="n">BadSubClass</span><span class="p">()</span>  <span class="c1"># This will raise an error</span>
+<span class="gt">Traceback (most recent call last):</span>
+<span class="w">    </span><span class="o">...</span>
+<span class="gr">RuntimeError</span>: <span class="n">BadSubClass.__init__() must call super().__init__() from Base</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</section>
+</section>
+
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="core.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Core</p>
+      </div>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-chemtorch.utils.types">Types</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#chemtorch.utils.types.DataLoaderFactoryProtocol"><code class="docutils literal notranslate"><span class="pre">DataLoaderFactoryProtocol</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#chemtorch.utils.types.DataLoaderFactoryProtocol.__init__"><code class="docutils literal notranslate"><span class="pre">DataLoaderFactoryProtocol.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#chemtorch.utils.types.RoutineFactoryProtocol"><code class="docutils literal notranslate"><span class="pre">RoutineFactoryProtocol</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#chemtorch.utils.types.RoutineFactoryProtocol.__init__"><code class="docutils literal notranslate"><span class="pre">RoutineFactoryProtocol.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#chemtorch.utils.types.DataSplit"><code class="docutils literal notranslate"><span class="pre">DataSplit</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#chemtorch.utils.types.DataSplit.__init__"><code class="docutils literal notranslate"><span class="pre">DataSplit.__init__()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#chemtorch.utils.types.DataSplit.to_dict"><code class="docutils literal notranslate"><span class="pre">DataSplit.to_dict()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-chemtorch.utils.hydra">Hydra Utilities</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#chemtorch.utils.hydra.resolve_target"><code class="docutils literal notranslate"><span class="pre">resolve_target()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#chemtorch.utils.hydra.order_config_by_signature"><code class="docutils literal notranslate"><span class="pre">order_config_by_signature()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#chemtorch.utils.hydra.filter_config_by_signature"><code class="docutils literal notranslate"><span class="pre">filter_config_by_signature()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#chemtorch.utils.hydra.safe_instantiate"><code class="docutils literal notranslate"><span class="pre">safe_instantiate()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#chemtorch.utils.hydra.get_num_workers"><code class="docutils literal notranslate"><span class="pre">get_num_workers()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-chemtorch.utils.cli">CLI Utilities</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#chemtorch.utils.cli.cli_chemtorch_logo"><code class="docutils literal notranslate"><span class="pre">cli_chemtorch_logo()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-chemtorch.utils.standardizer">Standardizer</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#chemtorch.utils.standardizer.Standardizer"><code class="docutils literal notranslate"><span class="pre">Standardizer</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#chemtorch.utils.standardizer.Standardizer.__init__"><code class="docutils literal notranslate"><span class="pre">Standardizer.__init__()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#chemtorch.utils.standardizer.Standardizer.standardize"><code class="docutils literal notranslate"><span class="pre">Standardizer.standardize()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#chemtorch.utils.standardizer.Standardizer.destandardize"><code class="docutils literal notranslate"><span class="pre">Standardizer.destandardize()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#chemtorch.utils.standardizer.Standardizer.validate"><code class="docutils literal notranslate"><span class="pre">Standardizer.validate()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-chemtorch.utils.reaction_utils">Reaction Utilities</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#chemtorch.utils.reaction_utils.get_atom_index_by_mapnum"><code class="docutils literal notranslate"><span class="pre">get_atom_index_by_mapnum()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#chemtorch.utils.reaction_utils.unmap_smarts"><code class="docutils literal notranslate"><span class="pre">unmap_smarts()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#chemtorch.utils.reaction_utils.unmap_smiles"><code class="docutils literal notranslate"><span class="pre">unmap_smiles()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#chemtorch.utils.reaction_utils.smarts2smarts"><code class="docutils literal notranslate"><span class="pre">smarts2smarts()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#chemtorch.utils.reaction_utils.smiles2smiles"><code class="docutils literal notranslate"><span class="pre">smiles2smiles()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#chemtorch.utils.reaction_utils.bondtypes"><code class="docutils literal notranslate"><span class="pre">bondtypes()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#chemtorch.utils.reaction_utils.neighbors"><code class="docutils literal notranslate"><span class="pre">neighbors()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#chemtorch.utils.reaction_utils.neighbors_and_bondtypes"><code class="docutils literal notranslate"><span class="pre">neighbors_and_bondtypes()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#chemtorch.utils.reaction_utils.remove_atoms_from_rxn"><code class="docutils literal notranslate"><span class="pre">remove_atoms_from_rxn()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#chemtorch.utils.reaction_utils.get_reaction_core"><code class="docutils literal notranslate"><span class="pre">get_reaction_core()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-chemtorch.utils.atom_mapping">Atom Mapping</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#chemtorch.utils.atom_mapping.AtomOriginType"><code class="docutils literal notranslate"><span class="pre">AtomOriginType</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#chemtorch.utils.atom_mapping.AtomOriginType.REACTANT"><code class="docutils literal notranslate"><span class="pre">AtomOriginType.REACTANT</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#chemtorch.utils.atom_mapping.AtomOriginType.PRODUCT"><code class="docutils literal notranslate"><span class="pre">AtomOriginType.PRODUCT</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#chemtorch.utils.atom_mapping.AtomOriginType.DUMMY"><code class="docutils literal notranslate"><span class="pre">AtomOriginType.DUMMY</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#chemtorch.utils.atom_mapping.AtomOriginType.REACTANT_PRODUCT"><code class="docutils literal notranslate"><span class="pre">AtomOriginType.REACTANT_PRODUCT</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#chemtorch.utils.atom_mapping.EdgeOriginType"><code class="docutils literal notranslate"><span class="pre">EdgeOriginType</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#chemtorch.utils.atom_mapping.EdgeOriginType.REACTANT"><code class="docutils literal notranslate"><span class="pre">EdgeOriginType.REACTANT</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#chemtorch.utils.atom_mapping.EdgeOriginType.PRODUCT"><code class="docutils literal notranslate"><span class="pre">EdgeOriginType.PRODUCT</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#chemtorch.utils.atom_mapping.EdgeOriginType.DUMMY"><code class="docutils literal notranslate"><span class="pre">EdgeOriginType.DUMMY</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#chemtorch.utils.atom_mapping.EdgeOriginType.REACTANT_PRODUCT"><code class="docutils literal notranslate"><span class="pre">EdgeOriginType.REACTANT_PRODUCT</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#chemtorch.utils.atom_mapping.make_mol"><code class="docutils literal notranslate"><span class="pre">make_mol()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#chemtorch.utils.atom_mapping.map_reac_to_prod"><code class="docutils literal notranslate"><span class="pre">map_reac_to_prod()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#chemtorch.utils.atom_mapping.remove_atom_mapping"><code class="docutils literal notranslate"><span class="pre">remove_atom_mapping()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-chemtorch.utils.callable_compose">Callable Composition</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#chemtorch.utils.callable_compose.CallableCompose"><code class="docutils literal notranslate"><span class="pre">CallableCompose</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#chemtorch.utils.callable_compose.CallableCompose.__init__"><code class="docutils literal notranslate"><span class="pre">CallableCompose.__init__()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#chemtorch.utils.callable_compose.CallableCompose.compose"><code class="docutils literal notranslate"><span class="pre">CallableCompose.compose()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-chemtorch.utils.misc">Miscellaneous</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#chemtorch.utils.misc.save_predictions"><code class="docutils literal notranslate"><span class="pre">save_predictions()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#chemtorch.utils.misc.handle_prediction_saving"><code class="docutils literal notranslate"><span class="pre">handle_prediction_saving()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-chemtorch.utils.decorators.enforce_base_init">Decorators</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#chemtorch.utils.decorators.enforce_base_init.enforce_base_init"><code class="docutils literal notranslate"><span class="pre">enforce_base_init()</span></code></a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Anton Zamyatin, Jasper De Landsheere, Esther Heid
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2026 Esther Heid.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

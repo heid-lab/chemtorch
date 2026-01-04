@@ -45,8 +45,8 @@
     <link rel="icon" href="../_static/chemtorch_favicon.png"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Contributing" href="../developer_guide/contributing.html" />
-    <link rel="prev" title="Training Curves" href="training_curves.html" />
+    <link rel="next" title="Defining Custom Components" href="../developer_guide/custom_components.html" />
+    <link rel="prev" title="Performance Curves" href="training_curves.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -138,8 +138,8 @@
       
     
     
-    <img src="../_static/chemtorch_logo_dark_lightbackground.png" class="logo__image only-light" alt="ChemTorch documentation - Home"/>
-    <script>document.write(`<img src="../_static/chemtorch_logo_dark_lightbackground.png" class="logo__image only-dark" alt="ChemTorch documentation - Home"/>`);</script>
+    <img src="../_static/chemtorch_logo_light.svg" class="logo__image only-light" alt="ChemTorch documentation - Home"/>
+    <script>document.write(`<img src="../_static/chemtorch_logo_dark.svg" class="logo__image only-dark" alt="ChemTorch documentation - Home"/>`);</script>
   
   
 </a></div>
@@ -160,36 +160,40 @@
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/quick_start.html">Quick Start</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/logging.html">Setup Logging</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/config.html">Understand Configs</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/experiments.html">Create Experiments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/overview.html">ChemTorch Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/config.html">Understanding Configs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/experiments.html">Creating Experiments</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">User Guide</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../user_guide/cli_usage.html">CLI Usage</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../user_guide/config_ref.html">Config Reference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../user_guide/reproducing_experiments.html">Reproducing Experiments</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../user_guide/inference.html">Inference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../user_guide/pipeline_overview.html">Components Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_guide/custom_data.html">Using Your Own Data</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../user_guide/custom_components.html">Defining Custom Components</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_guide/sweeps.html">Hyperparameter Sweeps</a></li>
-</ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Advanced Guide</span></p>
-<ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../advanced_guide/reproducibility_tests.html">Reproducibility Tests</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../advanced_guide/hydra.html">Hydra Config Design</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../advanced_guide/props.html">Runtime Properties</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/reproducing_experiments.html">Reproducing Experiments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/reproducibility_tests.html">Reproducibility Tests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/config_ref.html">Config Reference</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Examples</span></p>
 <ul class="current nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="training_curves.html">Training Curves</a></li>
+<li class="toctree-l1"><a class="reference internal" href="training_curves.html">Performance Curves</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">OOD benchmarking</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Developer Guide</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../developer_guide/contributing.html">Contributing</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../developer_guide/framework_structure.html">Framework Structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer_guide/custom_components.html">Defining Custom Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer_guide/props.html">Runtime Properties</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer_guide/hydra.html">Hydra Config Design</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../developer_guide/testing.html">Testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer_guide/contributing.html">Contributing</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api_autodoc/index.html">API Reference</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api_autodoc/components.html">Components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_autodoc/core.html">Core</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_autodoc/utils.html">Utilities</a></li>
+</ul>
+</details></li>
 </ul>
 
     </div>
@@ -330,7 +334,9 @@ document.write(`
   </button>
 `);
 </script>
-
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
 </div></div>
       
     </div>
@@ -346,6 +352,28 @@ document.write(`
     <div id="print-main-content">
         <div id="jb-print-toc">
             
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#prerequisites">Prerequisites</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-1-set-up-optimal-configs">Step 1 – Set up optimal configs</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-2-configure-split-generation">Step 2 – Configure split generation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-3-generate-split-specific-configs">Step 3 – Generate split-specific configs</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#script-reference">Script reference</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#choosing-ood-splits-rdb7-example">Choosing OOD splits (RDB7 example)</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-4-launch-the-benchmark-runs">Step 4 – Launch the benchmark runs</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-5-collect-metrics-predictions-and-checkpoints">Step 5 – Collect metrics, predictions, and checkpoints</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-6-extend-the-rdb7-benchmark-optional">Step 6 – Extend the RDB7 benchmark (optional)</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#adding-a-new-baseline">Adding a new baseline:</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#adding-a-new-splitter">Adding a new splitter</a></li>
+</ul>
+</li>
+</ul>
+            </nav>
         </div>
     </div>
 </div>
@@ -357,7 +385,197 @@ document.write(`
                   
   <section id="ood-benchmarking">
 <span id="id1"></span><h1>OOD benchmarking<a class="headerlink" href="#ood-benchmarking" title="Link to this heading">#</a></h1>
-<p>Coming soon …</p>
+<p>Standard random train/val/test splits mostly measure interpolation <strong>within</strong> the training distribution.
+In deployment, models often face out-of-distribution (OOD) samples—for example larger molecules than those seen in training, reactions with higher or lower barriers, or entirely new reaction types.
+To meaningfully assess robustness, evaluation routines must therefore go beyond random splits and explicitly probe such OOD scenarios.</p>
+<p>ChemTorch provides an extensible library of data splitters that makes setting up OOD benchmarks straightforward.
+This tutorial explains the general workflow and uses the CGR/D-MPNN OOD benchmark from the ChemTorch paper as a running example.
+You can (and should) substitute your own model, dataset, and hyperparameter-optimal config.</p>
+<section id="prerequisites">
+<h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Link to this heading">#</a></h2>
+<p>To follow along with your own experiment, you should already have:</p>
+<ol class="arabic simple">
+<li><p>Install ChemTorch (see <a class="reference internal" href="../getting_started/quick_start.html#quick-start"><span class="std std-ref">Quick Start</span></a>).</p></li>
+<li><p>Configure Weights &amp; Biases (see <a class="reference internal" href="../getting_started/logging.html#logging"><span class="std std-ref">Setup Logging</span></a>).</p></li>
+<li><p>Run a <strong>hyperparameter sweep</strong> (for example on a random split) and identify the run that performs best on the validation set (see <a class="reference internal" href="../user_guide/sweeps.html#sweeps"><span class="std std-ref">Hyperparameter Sweeps</span></a>).</p></li>
+<li><p>Take the fully resolved config saved by W&amp;B, convert it into a Hydra-compatible YAML file, and save it in a folder of your choosing (see <a class="reference internal" href="../user_guide/reproducing_experiments.html#reproducing-experiments"><span class="std std-ref">Reproducing Experiments</span></a>).</p></li>
+</ol>
+</section>
+<section id="step-1-set-up-optimal-configs">
+<h2>Step 1 – Set up optimal configs<a class="headerlink" href="#step-1-set-up-optimal-configs" title="Link to this heading">#</a></h2>
+<p>Starting from the prerequisites above, pick the best-performing sweep run and turn it into a reusable “reference” config.
+For example, we saved the optimal model configs used in the chemtorch paper to <code class="docutils literal notranslate"><span class="pre">conf/saved_configs/chemtorch_benchmark/optimal_model_configs</span></code>:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>conf/saved_configs/chemtorch_benchmark/
+└── optimal_model_configs/
+    ├── atom_han.yaml
+    ├── cgr_dmpnn.yaml
+    ├── dimereaction.yaml
+    └── drfp_mlp.yaml
+</pre></div>
+</div>
+<p>Each file is a fully resolved Hydra config.
+In what follows we use the models from the ChemTorch paper as an example; replace the paths and file names with those for your own best-performing run.</p>
+</section>
+<section id="step-2-configure-split-generation">
+<h2>Step 2 – Configure split generation<a class="headerlink" href="#step-2-configure-split-generation" title="Link to this heading">#</a></h2>
+<p>Use <code class="docutils literal notranslate"><span class="pre">scripts/generate_data_split_configs.py</span></code> to systematically generate split-specific configs based on the hyperparameter-optimal reference config from Step 1.</p>
+<p>First, configure the script via the constants at the top of
+<code class="docutils literal notranslate"><span class="pre">scripts/generate_data_split_configs.py</span></code>:</p>
+<div class="pst-scrollable-table-container"><table class="table" id="id2">
+<caption><span class="caption-text">Configuration fields for <code class="docutils literal notranslate"><span class="pre">generate_data_split_configs.py</span></code></span><a class="headerlink" href="#id2" title="Link to this table">#</a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>Field</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">SOURCE_MODEL_CONFIG_DIR</span></code></p></td>
+<td><p>Folder containing the per-model source configs (for example <code class="docutils literal notranslate"><span class="pre">conf/saved_configs/chemtorch_benchmark/optimal_model_configs</span></code>).</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">OOD_CONFIG_OUTPUT_DIR</span></code></p></td>
+<td><p>Destination directory where the split configs will be written (for example <code class="docutils literal notranslate"><span class="pre">conf/saved_configs/chemtorch_benchmark/ood_benchmark</span></code>).</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">PREDICTION_BASE</span></code> / <code class="docutils literal notranslate"><span class="pre">CHECKPOINT_BASE</span></code></p></td>
+<td><p>Base paths used for predictions and checkpoint directories when new configs are generated.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">SAVE_PREDICTIONS_FOR</span></code></p></td>
+<td><p>For which partitions to save predictions (see <a class="reference internal" href="../user_guide/config_ref.html#config-ref"><span class="std std-ref">Config Reference</span></a>).</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">GROUP_NAME</span></code></p></td>
+<td><p>Name under which benchmark runs are grouped in Weights &amp; Biases.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">TRAIN/VAL/TEST_RATIO</span></code></p></td>
+<td><p>Ratios used to partition the dataset (should sum up to 1; otherwise you will get an error).</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>For example, for the OOD benchmark in the ChemTorch paper we used the following paths:</p>
+<ul class="simple">
+<li><p>Predictions: <code class="docutils literal notranslate"><span class="pre">predictions/chemtorch_paper/ood_benchmark/&lt;model&gt;/&lt;split&gt;/seed_*</span></code>.</p></li>
+<li><p>Checkpoints: <code class="docutils literal notranslate"><span class="pre">lightning_logs/chemtorch_paper/ood_benchmark/&lt;split&gt;/seed_*/checkpoints</span></code>.</p></li>
+</ul>
+<p>The lowest level file/folder will be named automatically to <code class="docutils literal notranslate"><span class="pre">seed_&lt;seed&gt;_&lt;time</span> <span class="pre">stamp&gt;</span></code>.
+You can change this by setting <code class="docutils literal notranslate"><span class="pre">SEED_DIR_TEMPLATE</span></code>.</p>
+</section>
+<section id="step-3-generate-split-specific-configs">
+<h2>Step 3 – Generate split-specific configs<a class="headerlink" href="#step-3-generate-split-specific-configs" title="Link to this heading">#</a></h2>
+<p>Once the configuration constants are set, you can generate the configs.
+In a typical workflow you will:</p>
+<ol class="arabic simple">
+<li><p>Choose which <strong>models</strong> to include in the benchmark.</p></li>
+<li><p>Choose which <strong>splits</strong> to generate (for example, a mix of random and OOD splits).</p></li>
+<li><p>Run the generator to materialize one YAML file per (model, split) combination.</p></li>
+</ol>
+<p>For example, to create configs for two models and three splits:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>uv<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>scripts/generate_data_split_configs.py<span class="w"> </span><span class="se">\</span>
+<span class="w">         </span>--models<span class="w"> </span>cgr_dmpnn<span class="w"> </span>drfp_mlp<span class="w"> </span><span class="se">\</span>
+<span class="w">         </span>--splits<span class="w"> </span>random_split<span class="w"> </span>reactant_scaffold_split<span class="w"> </span>reaction_core_split<span class="w"> </span><span class="se">\</span>
+<span class="w">         </span>--overwrite
+</pre></div>
+</div>
+<p>This command writes YAML files to
+<code class="docutils literal notranslate"><span class="pre">conf/saved_configs/chemtorch_benchmark/ood_benchmark/&lt;model&gt;/&lt;split&gt;.yaml</span></code>.
+Pass <code class="docutils literal notranslate"><span class="pre">--dry-run</span></code> first if you want to see what would be created without touching the filesystem.</p>
+<section id="script-reference">
+<h3>Script reference<a class="headerlink" href="#script-reference" title="Link to this heading">#</a></h3>
+<p>For a complete overview of the available command-line options, you can inspect
+the built-in help of the generator script:</p>
+<div class="literal-block-wrapper docutils container" id="id3">
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">generate_data_split_configs.py</span></code> usage</span><a class="headerlink" href="#id3" title="Link to this code">#</a></div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>usage: generate_data_split_configs.py [-h] [--models MODELS [MODELS ...]]
+                                      [--splits {random_split,reactant_scaffold_split,reaction_core_split,size_split_asc,size_split_desc,target_split_asc,target_split_desc} [{random_split,reactant_scaffold_split,reaction_core_split,size_split_asc,size_split_desc,target_split_asc,target_split_desc} ...]]
+                                      [--overwrite] [--dry-run]
+
+Create OOD benchmark configs by cloning source model configs. Update the
+constants at the top of the script to change directories.
+
+options:
+  -h, --help            show this help message and exit
+  --models MODELS [MODELS ...]
+                        Specific model config stems to process (e.g.,
+                        atom_han). Defaults to every *.yaml in the source
+                        config directory.
+  --splits {random_split,reactant_scaffold_split,reaction_core_split,size_split_asc,size_split_desc,target_split_asc,target_split_desc} [{random_split,reactant_scaffold_split,reaction_core_split,size_split_asc,size_split_desc,target_split_asc,target_split_desc} ...]
+                        Subset of split configs to generate. Defaults to all
+                        supported splits.
+  --overwrite           Overwrite configs if they already exist.
+  --dry-run             Print planned actions without writing files.
+</pre></div>
+</div>
+</div>
+</section>
+<section id="choosing-ood-splits-rdb7-example">
+<h3>Choosing OOD splits (RDB7 example)<a class="headerlink" href="#choosing-ood-splits-rdb7-example" title="Link to this heading">#</a></h3>
+<p>To reproduce the OOD benchmark on RDB7 from the ChemTorch paper, refer to the
+config files in <code class="docutils literal notranslate"><span class="pre">conf/saved_configs/chemtorch_benchmark/ood_benchmark</span></code> for the
+specific splitter settings used.</p>
+<p>For descriptions and parameters of all available splitters, see <a class="reference internal" href="../user_guide/custom_data.html#custom-dataset"><span class="std std-ref">Using Your Own Data</span></a>
+(“Configuring the Data Splitter” section).</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>New data splitters may have been added since the paper was published.
+Check <code class="docutils literal notranslate"><span class="pre">conf/data_module/data_pipeline/data_splitter/</span></code> and the corresponding
+Python implementations in <code class="docutils literal notranslate"><span class="pre">src/chemtorch/components/data_pipeline/data_splitter/</span></code>
+for the current, complete list and configuration options.</p>
+</div>
+</section>
+</section>
+<section id="step-4-launch-the-benchmark-runs">
+<h2>Step 4 – Launch the benchmark runs<a class="headerlink" href="#step-4-launch-the-benchmark-runs" title="Link to this heading">#</a></h2>
+<p>Each YAML file under <code class="docutils literal notranslate"><span class="pre">ood_benchmark/&lt;model&gt;/</span></code> is runnable on its own. Use <code class="docutils literal notranslate"><span class="pre">-cd</span></code> to point Hydra at the split folder and <code class="docutils literal notranslate"><span class="pre">-cn</span></code> to pick the split name. Combine with <code class="docutils literal notranslate"><span class="pre">-m</span></code> to sweep over seeds (see also <a class="reference internal" href="../user_guide/reproducing_experiments.html#reproducing-experiments"><span class="std std-ref">Reproducing Experiments</span></a> for the general pattern of running saved configs):</p>
+<div class="highlight-chemtorch notranslate"><div class="highlight"><pre><span></span><span class="ne">chemtorch</span><span class="w"> </span>-m<span class="w"> </span>\
+<span class="w">         </span>-cd=conf/saved_configs/chemtorch_benchmark/ood_benchmark/cgr_dmpnn<span class="w"> </span>\
+<span class="w">         </span>-cn<span class="o">=</span>random_split<span class="w"> </span>\
+<span class="w">         </span><span class="gi">seed</span><span class="o">=</span>0,1,2,3,4,5,6,7,8,9<span class="w"> </span>\
+<span class="w">         </span><span class="gi">log</span><span class="o">=</span>true
+</pre></div>
+</div>
+<p>Repeat for the remaining splits (<code class="docutils literal notranslate"><span class="pre">reactant_scaffold_split</span></code>, <code class="docutils literal notranslate"><span class="pre">reaction_core_split</span></code>, <code class="docutils literal notranslate"><span class="pre">size_split_asc</span></code>/<code class="docutils literal notranslate"><span class="pre">desc</span></code>, <code class="docutils literal notranslate"><span class="pre">target_split_asc</span></code>/<code class="docutils literal notranslate"><span class="pre">desc</span></code>).
+In practice you will typically wrap these commands in a small shell loop or a job submission script if you are running on a cluster.</p>
+</section>
+<section id="step-5-collect-metrics-predictions-and-checkpoints">
+<h2>Step 5 – Collect metrics, predictions, and checkpoints<a class="headerlink" href="#step-5-collect-metrics-predictions-and-checkpoints" title="Link to this heading">#</a></h2>
+<p>Once the runs have finished, all outputs are saved to the folders defined in the generated YAML files:</p>
+<ul class="simple">
+<li><p>Metrics + resolved configs: W&amp;B run (if <code class="docutils literal notranslate"><span class="pre">log=true</span></code>) and <code class="docutils literal notranslate"><span class="pre">wandb/</span></code> backup.</p></li>
+<li><p>Predictions: <code class="docutils literal notranslate"><span class="pre">predictions/chemtorch_paper/ood_benchmark/&lt;model&gt;/&lt;split&gt;/seed_*</span></code>.</p></li>
+<li><p>Checkpoints: <code class="docutils literal notranslate"><span class="pre">lightning_logs/chemtorch_paper/ood_benchmark/&lt;split&gt;/seed_*/checkpoints</span></code>.</p></li>
+</ul>
+<p>These artifacts form the raw material for your analysis: you can derive comparison plots, compute gap-to-random deltas, or seed downstream integration tests.</p>
+<p>For example, the figure below shows a pair of radar plots that summarize
+out-of-distribution performance for the RDB7 benchmark from the ChemTorch paper:</p>
+<figure class="align-center" id="id4">
+<a class="reference internal image-reference" href="../_images/ood_radar_mae_dual.svg"><img alt="Comparison of OOD performance (MAE) across models and splits on RDB7." src="../_images/ood_radar_mae_dual.svg" style="width: 80%;" />
+</a>
+<figcaption>
+<p><span class="caption-text">Comparison of OOD performance (higher is better); mean
+standard deviation over 9 seeds. Left: radar plot showing
+the MAE of each model scaled by the MAE of the best-performing
+model on the respective split. Right: radar plot displaying
+each model’s MAE scaled by that model’s MAE on the random split.</span><a class="headerlink" href="#id4" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+<p>To construct this figure we:</p>
+<ol class="arabic simple">
+<li><p>Downloaded all metrics for the relevant <code class="docutils literal notranslate"><span class="pre">(model,</span> <span class="pre">split,</span> <span class="pre">seed)</span></code> tuples from W&amp;B into a single CSV file.</p></li>
+<li><p>Parsed that CSV into an aggregated CSV containing the mean and standard deviation for each <code class="docutils literal notranslate"><span class="pre">(model,</span> <span class="pre">split)</span></code> pair.</p></li>
+<li><p>Used Matplotlib to load the aggregated CSV and render the dual radar plots.</p></li>
+</ol>
+</section>
+<section id="step-6-extend-the-rdb7-benchmark-optional">
+<h2>Step 6 – Extend the RDB7 benchmark (optional)<a class="headerlink" href="#step-6-extend-the-rdb7-benchmark-optional" title="Link to this heading">#</a></h2>
+<p>Do you want to compare a new model head-to-head with the ChemTorch paper baselines on
+RDB7? Or do you want to try out a custom data splitter?</p>
+<section id="adding-a-new-baseline">
+<h3>Adding a new baseline:<a class="headerlink" href="#adding-a-new-baseline" title="Link to this heading">#</a></h3>
+<p>Tune the hyperparameter of your model with the same settings as for the other models of the benchmark (see <code class="docutils literal notranslate"><span class="pre">sweep/rdb7_fwd</span></code>), add the optimal config to <code class="docutils literal notranslate"><span class="pre">conf/saved_configs/chemtorch_benchmark/optimal_model_configs</span></code>, and run the OOD benchmark with the same settings as in the ChemTorch paper!</p>
+</section>
+<section id="adding-a-new-splitter">
+<h3>Adding a new splitter<a class="headerlink" href="#adding-a-new-splitter" title="Link to this heading">#</a></h3>
+<p>Add a new entry to <code class="docutils literal notranslate"><span class="pre">SPLIT_SPECS</span></code> inside <code class="docutils literal notranslate"><span class="pre">scripts/generate_data_split_configs.py</span></code> (set <code class="docutils literal notranslate"><span class="pre">file_name</span></code>, <code class="docutils literal notranslate"><span class="pre">prefix</span></code>, and <code class="docutils literal notranslate"><span class="pre">splitter</span></code> fields), use the generator to create matching YAML files, and retrain all models in <code class="docutils literal notranslate"><span class="pre">conf/saved_configs/chemtorch_benchmark/optimal_model_configs</span></code> with the same settings as in the ChemTorch paper!</p>
+</section>
+</section>
 </section>
 
 
@@ -377,15 +595,15 @@ document.write(`
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Training Curves</p>
+        <p class="prev-next-title">Performance Curves</p>
       </div>
     </a>
     <a class="right-next"
-       href="../developer_guide/contributing.html"
+       href="../developer_guide/custom_components.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Contributing</p>
+        <p class="prev-next-title">Defining Custom Components</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -395,6 +613,35 @@ document.write(`
             </div>
             
             
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#prerequisites">Prerequisites</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-1-set-up-optimal-configs">Step 1 – Set up optimal configs</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-2-configure-split-generation">Step 2 – Configure split generation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-3-generate-split-specific-configs">Step 3 – Generate split-specific configs</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#script-reference">Script reference</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#choosing-ood-splits-rdb7-example">Choosing OOD splits (RDB7 example)</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-4-launch-the-benchmark-runs">Step 4 – Launch the benchmark runs</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-5-collect-metrics-predictions-and-checkpoints">Step 5 – Collect metrics, predictions, and checkpoints</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-6-extend-the-rdb7-benchmark-optional">Step 6 – Extend the RDB7 benchmark (optional)</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#adding-a-new-baseline">Adding a new baseline:</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#adding-a-new-splitter">Adding a new splitter</a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
               
             
           </div>
@@ -415,7 +662,7 @@ By Anton Zamyatin, Jasper De Landsheere, Esther Heid
 
   <p class="copyright">
     
-      © Copyright 2025 Esther Heid.
+      © Copyright 2026 Esther Heid.
       <br/>
     
   </p>

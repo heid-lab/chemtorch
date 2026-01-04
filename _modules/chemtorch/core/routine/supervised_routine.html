@@ -1,0 +1,846 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>chemtorch.core.routine.supervised_routine &#8212; ChemTorch</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../../../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/custom_syntax.css?v=9e2307e4" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../../../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../../../../_static/documentation_options.js?v=1a9ffd16"></script>
+    <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/chemtorch/core/routine/supervised_routine';</script>
+    <link rel="icon" href="../../../../_static/chemtorch_favicon.png"/>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../../_static/chemtorch_logo_light.svg" class="logo__image only-light" alt="ChemTorch documentation - Home"/>
+    <script>document.write(`<img src="../../../../_static/chemtorch_logo_dark.svg" class="logo__image only-dark" alt="ChemTorch documentation - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../../getting_started/quick_start.html">Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../getting_started/logging.html">Setup Logging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../getting_started/overview.html">ChemTorch Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../getting_started/config.html">Understanding Configs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../getting_started/experiments.html">Creating Experiments</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../../user_guide/cli_usage.html">CLI Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user_guide/custom_data.html">Using Your Own Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user_guide/sweeps.html">Hyperparameter Sweeps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user_guide/reproducing_experiments.html">Reproducing Experiments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user_guide/reproducibility_tests.html">Reproducibility Tests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user_guide/config_ref.html">Config Reference</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Examples</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../../examples/training_curves.html">Performance Curves</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../examples/ood_benchmarking.html">OOD benchmarking</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Developer Guide</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../../developer_guide/custom_components.html">Defining Custom Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../developer_guide/props.html">Runtime Properties</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../developer_guide/hydra.html">Hydra Config Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../developer_guide/testing.html">Testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../developer_guide/contributing.html">Contributing</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../api_autodoc/index.html">API Reference</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../api_autodoc/components.html">Components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../api_autodoc/core.html">Core</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../api_autodoc/utils.html">Utilities</a></li>
+</ul>
+</details></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+<a href="https://github.com/heid-lab/chemtorch" target="_blank"
+   class="btn btn-sm btn-source-repository-button"
+   title="Source repository"
+   data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+
+</a>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1></h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for chemtorch.core.routine.supervised_routine</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Iterator</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Any</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">lightning</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">L</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch</span><span class="w"> </span><span class="kn">import</span> <span class="n">nn</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch.optim</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optimizer</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch.optim.lr_scheduler</span><span class="w"> </span><span class="kn">import</span> <span class="n">LRScheduler</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torchmetrics</span><span class="w"> </span><span class="kn">import</span> <span class="n">Metric</span><span class="p">,</span> <span class="n">MetricCollection</span>
+
+
+<div class="viewcode-block" id="SupervisedRoutine">
+<a class="viewcode-back" href="../../../../api_autodoc/core.html#chemtorch.core.routine.supervised_routine.SupervisedRoutine">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">SupervisedRoutine</span><span class="p">(</span><span class="n">L</span><span class="o">.</span><span class="n">LightningModule</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A flexible LightningModule wrapper for supervised tasks, supporting both training and inference.</span>
+
+<span class="sd">    This class can be used for:</span>
+<span class="sd">      - Full training/validation/testing with loss, optimizer, scheduler, and metrics.</span>
+<span class="sd">      - Inference-only (prediction), requiring only the model.</span>
+
+<span class="sd">    Example usage:</span>
+
+<span class="sd">        &gt;&gt;&gt; # Training usage</span>
+<span class="sd">        &gt;&gt;&gt; routine = SupervisedRoutine(</span>
+<span class="sd">        ...     model=my_model,</span>
+<span class="sd">        ...     loss=my_loss_fn,</span>
+<span class="sd">        ...     optimizer=lambda params: torch.optim.Adam(params, lr=1e-3),</span>
+<span class="sd">        ...     lr_scheduler=lambda opt: torch.optim.lr_scheduler.StepLR(opt, step_size=10),</span>
+<span class="sd">        ...     metrics=my_metrics,</span>
+<span class="sd">        ... )</span>
+<span class="sd">        &gt;&gt;&gt; trainer = pl.Trainer(...)</span>
+<span class="sd">        &gt;&gt;&gt; trainer.fit(routine, datamodule=my_datamodule)</span>
+
+<span class="sd">        &gt;&gt;&gt; # Inference-only usage</span>
+<span class="sd">        &gt;&gt;&gt; routine = SupervisedRoutine(model=my_model)</span>
+<span class="sd">        &gt;&gt;&gt; preds = routine(torch.randn(8, 16))  # Forward pass for prediction</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="SupervisedRoutine.__init__">
+<a class="viewcode-back" href="../../../../api_autodoc/core.html#chemtorch.core.routine.supervised_routine.SupervisedRoutine.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> 
+            <span class="n">model</span><span class="p">:</span> <span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">,</span> 
+            <span class="n">loss</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+            <span class="n">optimizer</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="n">Iterator</span><span class="p">[</span><span class="n">nn</span><span class="o">.</span><span class="n">Parameter</span><span class="p">]],</span> <span class="n">Optimizer</span><span class="p">],</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">lr_scheduler</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="n">Optimizer</span><span class="p">],</span> <span class="n">LRScheduler</span><span class="p">],</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">ckpt_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">resume_training</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="n">metrics</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Metric</span><span class="p">,</span> <span class="n">MetricCollection</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="n">Metric</span><span class="p">,</span> <span class="n">MetricCollection</span><span class="p">]]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">test_dataloader_idx_to_suffix</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize the SupervisedRoutine.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            model (nn.Module): The model to be trained or used for inference.</span>
+<span class="sd">            loss (Callable, optional): The loss function to be used. Required for training/validation/testing.</span>
+<span class="sd">            optimizer (Callable, optional): A factory function that takes in the model&#39;s parameters </span>
+<span class="sd">                and returns an optimizer instance. Required for training/validation/testing.</span>
+<span class="sd">                </span>
+<span class="sd">                Example:</span>
+<span class="sd">                    optimizer=lambda params: torch.optim.Adam(params, lr=1e-3)</span>
+<span class="sd">                    </span>
+<span class="sd">            lr_scheduler (Callable or Dict, optional): Either a factory function that takes in the optimizer</span>
+<span class="sd">                and returns a learning rate scheduler instance, or a Lightning config dictionary containing</span>
+<span class="sd">                a &quot;scheduler&quot; key with the partially instantiated scheduler factory and optional Lightning-specific keys.</span>
+<span class="sd">                Only needed for training.</span>
+<span class="sd">                </span>
+<span class="sd">                Examples:</span>
+<span class="sd">                    # Factory function approach</span>
+<span class="sd">                    lr_scheduler=lambda opt: torch.optim.lr_scheduler.StepLR(opt, step_size=10)</span>
+<span class="sd">                    </span>
+<span class="sd">                    # Lightning config dictionary approach</span>
+<span class="sd">                    lr_scheduler={</span>
+<span class="sd">                        &quot;scheduler&quot;: partial_scheduler_factory,  # e.g., functools.partial(torch.optim.lr_scheduler.StepLR, step_size=10)</span>
+<span class="sd">                        # Lightning-specific keys (optional):</span>
+<span class="sd">                        &quot;interval&quot;: &quot;epoch&quot;,</span>
+<span class="sd">                        &quot;frequency&quot;: 1,</span>
+<span class="sd">                        &quot;monitor&quot;: &quot;val_loss&quot;,</span>
+<span class="sd">                        # etc.</span>
+<span class="sd">                    }</span>
+<span class="sd">                    </span>
+<span class="sd">            ckpt_path (str, optional): Path to a pre-trained model checkpoint.</span>
+<span class="sd">            resume_training (bool, optional): Whether to resume training from a checkpoint.</span>
+<span class="sd">            metrics (Metric, MetricCollection or Dict[str, Metric/MetricCollection], optional): Metrics to use for evaluation.</span>
+<span class="sd">                - If a single `Metric` is provided, it will be cloned for &#39;train&#39;, &#39;val&#39; and &#39;test&#39; stages.</span>
+<span class="sd">                - If a single `MetricCollection` is provided, it will be cloned for &#39;train&#39;, &#39;val&#39; and &#39;test&#39; stages.</span>
+<span class="sd">                - If a dictionary is provided, it must map keys &#39;train&#39;, &#39;val&#39;, and/or &#39;test&#39; to </span>
+<span class="sd">                `Metric` or `MetricCollection` instances. This allows you to specify different metrics for each stage.</span>
+<span class="sd">                In all cases, the metrics will be registered as attributes of the LightningModule for proper logging.</span>
+
+<span class="sd">                Example usage:</span>
+<span class="sd">                    &gt;&gt;&gt; from torchmetrics import MetricCollection, MeanAbsoluteError, MeanSquaredError</span>
+<span class="sd">                    ...</span>
+<span class="sd">                    &gt;&gt;&gt; # Single Metric for all stages</span>
+<span class="sd">                    &gt;&gt;&gt; metric = MeanAbsoluteError()</span>
+<span class="sd">                    &gt;&gt;&gt; routine = SupervisedRoutine(</span>
+<span class="sd">                    ...     model=my_model,</span>
+<span class="sd">                    ...     loss=my_loss_fn,</span>
+<span class="sd">                    ...     optimizer=lambda params: torch.optim.Adam(params, lr=1e-3),</span>
+<span class="sd">                    ...     metrics=metric,</span>
+<span class="sd">                    ... )</span>
+<span class="sd">                    &gt;&gt;&gt; # Single MetricCollection for all stages</span>
+<span class="sd">                    &gt;&gt;&gt; metrics = MetricCollection({</span>
+<span class="sd">                    ...     &quot;mae&quot;: MeanAbsoluteError(),</span>
+<span class="sd">                    ...     &quot;rmse&quot;: MeanSquaredError(squared=False),</span>
+<span class="sd">                    ... })</span>
+<span class="sd">                    &gt;&gt;&gt; routine = SupervisedRoutine(</span>
+<span class="sd">                    ...     model=my_model,</span>
+<span class="sd">                    ...     loss=my_loss_fn,</span>
+<span class="sd">                    ...     optimizer=lambda params: torch.optim.Adam(params, lr=1e-3),</span>
+<span class="sd">                    ...     metrics=metrics,</span>
+<span class="sd">                    ... )</span>
+<span class="sd">                    &gt;&gt;&gt; # Distinct metrics for each stage (mix of single metrics and collections)</span>
+<span class="sd">                    &gt;&gt;&gt; metrics_dict = {</span>
+<span class="sd">                    ...     &quot;train&quot;: MeanAbsoluteError(),  # Single metric</span>
+<span class="sd">                    ...     &quot;val&quot;: MetricCollection({&quot;rmse&quot;: MeanSquaredError(squared=False)}),  # Collection</span>
+<span class="sd">                    ...     &quot;test&quot;: MeanSquaredError(),  # Single metric</span>
+<span class="sd">                    ... }</span>
+<span class="sd">                    &gt;&gt;&gt; routine = SupervisedRoutine(</span>
+<span class="sd">                    ...     model=my_model,</span>
+<span class="sd">                    ...     loss=my_loss_fn,</span>
+<span class="sd">                    ...     optimizer=lambda params: torch.optim.Adam(params, lr=1e-3),</span>
+<span class="sd">                    ...     metrics=metrics_dict,</span>
+<span class="sd">                    ... )</span>
+<span class="sd">            test_dataloader_idx_to_suffix (Dict[int, str], optional): A mapping from test dataloader index to its suffix.</span>
+<span class="sd">                This is used to suffix test metrics like `test_&lt;metric_name&gt;/&lt;suffix&gt;`. If not suffix mapping is provided,</span>
+<span class="sd">                the dataloader index will be used as the suffix. </span>
+<span class="sd">                The keys should be integers corresponding to dataloader indices (1, 2, ...).</span>
+<span class="sd">                No suffix mapping is needed for the first test dataloader (index 0) since it is assumed to be the main test set</span>
+<span class="sd">                and not suffixed.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            TypeError: If `metrics` is not a Metric, MetricCollection, or a dictionary of Metrics/MetricCollections.</span>
+<span class="sd">            ValueError: If `metrics` is a dictionary, but its keys are not &#39;train&#39;, &#39;val&#39;, or &#39;test&#39;,</span>
+<span class="sd">                or if the keys are not unique.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">model</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">loss</span> <span class="o">=</span> <span class="n">loss</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">optimizer_factory</span> <span class="o">=</span> <span class="n">optimizer</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lr_scheduler_config</span> <span class="o">=</span> <span class="n">lr_scheduler</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ckpt_path</span> <span class="o">=</span> <span class="n">ckpt_path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">resume_training</span> <span class="o">=</span> <span class="n">resume_training</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">metrics</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_init_metrics</span><span class="p">(</span><span class="n">metrics</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_should_init_metrics</span><span class="p">(</span><span class="n">metrics</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span>  <span class="c1"># type: ignore</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">test_dataloader_idx_to_suffix</span> <span class="o">=</span> <span class="n">test_dataloader_idx_to_suffix</span> <span class="k">if</span> <span class="n">test_dataloader_idx_to_suffix</span> <span class="k">else</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ckpt_path</span> <span class="o">=</span> <span class="n">ckpt_path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">resume_training</span> <span class="o">=</span> <span class="n">resume_training</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_should_init_metrics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">metrics</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Helper to determine if metrics should be initialized.</span>
+<span class="sd">        Returns True if metrics is not None and either not a dict or a non-empty dict.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">metrics</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">metrics</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">metrics</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
+        <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="c1">########## LightningModule Methods ##############################################</span>
+<div class="viewcode-block" id="SupervisedRoutine.setup">
+<a class="viewcode-back" href="../../../../api_autodoc/core.html#chemtorch.core.routine.supervised_routine.SupervisedRoutine.setup">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stage</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;fit&#39;</span><span class="p">,</span> <span class="s1">&#39;validate&#39;</span><span class="p">,</span> <span class="s1">&#39;test&#39;</span><span class="p">,</span> <span class="s1">&#39;predict&#39;</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">stage</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;fit&#39;</span><span class="p">,</span> <span class="s1">&#39;validate&#39;</span><span class="p">,</span> <span class="s1">&#39;test&#39;</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">loss</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Loss function must be defined for training.&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">optimizer_factory</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Optimizer must be defined for training.&quot;</span><span class="p">)</span>
+        
+        <span class="c1"># Handle checkpoint loading</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ckpt_path</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_load_pretrained</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ckpt_path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">resume_training</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">resume_training</span><span class="p">:</span>
+            <span class="c1"># Resume training requested but no checkpoint provided</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="s2">&quot;resume_training=True but no checkpoint path was provided. &quot;</span>
+                <span class="s2">&quot;Training will start from scratch with random initialization.&quot;</span><span class="p">,</span>
+                <span class="ne">UserWarning</span><span class="p">,</span>
+                <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span>
+            <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="SupervisedRoutine.configure_optimizers">
+<a class="viewcode-back" href="../../../../api_autodoc/core.html#chemtorch.core.routine.supervised_routine.SupervisedRoutine.configure_optimizers">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">configure_optimizers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">optimizer_factory</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        
+        <span class="c1"># Create optimizer from factory function</span>
+        <span class="n">optimizer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">optimizer_factory</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">())</span>
+        
+        <span class="c1"># Load optimizer state if resuming training</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">resume_training</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;_checkpoint_state&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="s1">&#39;optimizer_state_dict&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_checkpoint_state</span><span class="p">:</span>
+            <span class="n">optimizer</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_checkpoint_state</span><span class="p">[</span><span class="s1">&#39;optimizer_state_dict&#39;</span><span class="p">])</span>
+        
+        <span class="c1"># Handle lr_scheduler configuration</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">lr_scheduler_config</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># Return just the optimizer</span>
+            <span class="k">return</span> <span class="n">optimizer</span>
+        
+        <span class="k">if</span> <span class="nb">callable</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lr_scheduler_config</span><span class="p">):</span>
+            <span class="c1"># Factory function approach</span>
+            <span class="n">lr_scheduler</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lr_scheduler_config</span><span class="p">(</span><span class="n">optimizer</span><span class="p">)</span>
+            <span class="n">lr_scheduler_config</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;scheduler&quot;</span><span class="p">:</span> <span class="n">lr_scheduler</span><span class="p">}</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lr_scheduler_config</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="c1"># Lightning config dictionary approach</span>
+            <span class="n">config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lr_scheduler_config</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="k">if</span> <span class="s2">&quot;scheduler&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">config</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;LR scheduler config dictionary must contain &#39;scheduler&#39; key with the scheduler factory&quot;</span><span class="p">)</span>
+            
+            <span class="n">scheduler_factory</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;scheduler&quot;</span><span class="p">)</span>
+            <span class="n">lr_scheduler</span> <span class="o">=</span> <span class="n">scheduler_factory</span><span class="p">(</span><span class="n">optimizer</span><span class="p">)</span>
+            <span class="n">lr_scheduler_config</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;scheduler&quot;</span><span class="p">:</span> <span class="n">lr_scheduler</span><span class="p">,</span> <span class="o">**</span><span class="n">config</span><span class="p">}</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;LR scheduler must be callable or dict, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lr_scheduler_config</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        
+        <span class="c1"># Load scheduler state if resuming training</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">resume_training</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;_checkpoint_state&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="s1">&#39;lr_scheduler_state_dict&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_checkpoint_state</span><span class="p">:</span>
+            <span class="n">lr_scheduler</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_checkpoint_state</span><span class="p">[</span><span class="s1">&#39;lr_scheduler_state_dict&#39;</span><span class="p">])</span>
+        
+        <span class="c1"># Return optimizer and scheduler configuration</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;optimizer&quot;</span><span class="p">:</span> <span class="n">optimizer</span><span class="p">,</span>
+            <span class="s2">&quot;lr_scheduler&quot;</span><span class="p">:</span> <span class="n">lr_scheduler_config</span><span class="p">,</span>
+        <span class="p">}</span></div>
+
+
+<div class="viewcode-block" id="SupervisedRoutine.forward">
+<a class="viewcode-back" href="../../../../api_autodoc/core.html#chemtorch.core.routine.supervised_routine.SupervisedRoutine.forward">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inputs</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span></div>
+
+    
+<div class="viewcode-block" id="SupervisedRoutine.training_step">
+<a class="viewcode-back" href="../../../../api_autodoc/core.html#chemtorch.core.routine.supervised_routine.SupervisedRoutine.training_step">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">training_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_step</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="n">partition</span><span class="o">=</span><span class="s2">&quot;train&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="SupervisedRoutine.validation_step">
+<a class="viewcode-back" href="../../../../api_autodoc/core.html#chemtorch.core.routine.supervised_routine.SupervisedRoutine.validation_step">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">validation_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_step</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="n">partition</span><span class="o">=</span><span class="s2">&quot;val&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="SupervisedRoutine.test_step">
+<a class="viewcode-back" href="../../../../api_autodoc/core.html#chemtorch.core.routine.supervised_routine.SupervisedRoutine.test_step">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch</span><span class="p">,</span> <span class="n">batch_idx</span><span class="p">,</span> <span class="n">dataloader_idx</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="c1"># For multiple test dataloaders, use the dataloader name as postfix</span>
+        <span class="c1"># Lightning will automatically add &quot;test/&quot; prefix, so we just need to distinguish between dataloaders</span>
+        <span class="n">suffix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_test_suffix</span><span class="p">(</span><span class="n">dataloader_idx</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_step</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="n">partition</span><span class="o">=</span><span class="s2">&quot;test&quot;</span><span class="p">,</span> <span class="n">test_suffix</span><span class="o">=</span><span class="n">suffix</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_test_suffix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataloader_idx</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">dataloader_idx</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">elif</span> <span class="n">dataloader_idx</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">test_dataloader_idx_to_suffix</span><span class="p">:</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">test_dataloader_idx_to_suffix</span><span class="p">[</span><span class="n">dataloader_idx</span><span class="p">]</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;/</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="n">name</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;/</span><span class="si">{</span><span class="n">dataloader_idx</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;/</span><span class="si">{</span><span class="n">dataloader_idx</span><span class="si">}</span><span class="s2">&quot;</span>
+
+<div class="viewcode-block" id="SupervisedRoutine.predict_step">
+<a class="viewcode-back" href="../../../../api_autodoc/core.html#chemtorch.core.routine.supervised_routine.SupervisedRoutine.predict_step">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">predict_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]],</span> <span class="n">batch_idx</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">dataloader_idx</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Perform a prediction step.</span>
+<span class="sd">        </span>
+<span class="sd">        This method handles batch unpacking for prediction, supporting both:</span>
+<span class="sd">        1. Batches with targets: (inputs, targets) - extracts only inputs for prediction</span>
+<span class="sd">        2. Batches without targets: inputs only - uses directly</span>
+
+<span class="sd">        This allows calling `trainer.predict()` with both training, validation, testing</span>
+<span class="sd">        dataloaders which contain targets, as well as prediction dataloaders which contain</span>
+<span class="sd">        just the inputs.</span>
+<span class="sd">        Otherwise, an error would be raised if the dataloader yields batches with targets.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            batch: Either a tuple (inputs, targets) or just inputs</span>
+<span class="sd">            batch_idx: Index of the current batch</span>
+<span class="sd">            dataloader_idx: Index of the current dataloader</span>
+<span class="sd">            </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            torch.Tensor: Model predictions</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Handle both cases: batch with targets and batch without targets</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">,</span> <span class="nb">list</span><span class="p">))</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">batch</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="c1"># Batch format: (inputs, targets) - extract only inputs for prediction</span>
+            <span class="n">inputs</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">batch</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Batch format: inputs only - use directly</span>
+            <span class="n">inputs</span> <span class="o">=</span> <span class="n">batch</span>
+            
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span></div>
+
+
+    <span class="c1">########### Private Methods ##########################################################</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_step</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">batch</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">],</span> 
+        <span class="n">partition</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;train&#39;</span><span class="p">,</span> <span class="s1">&#39;val&#39;</span><span class="p">,</span> <span class="s1">&#39;test&#39;</span><span class="p">],</span>
+        <span class="n">test_suffix</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Perform a training, validation, or test step.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">inputs</span><span class="p">,</span> <span class="n">targets</span> <span class="o">=</span> <span class="n">batch</span>
+        <span class="n">batch_size</span> <span class="o">=</span> <span class="n">inputs</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">preds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span>
+        <span class="n">loss</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_loss</span><span class="p">(</span><span class="n">preds</span><span class="p">,</span> <span class="n">targets</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">partition</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;train&quot;</span><span class="p">,</span> <span class="s2">&quot;val&quot;</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">partition</span><span class="si">}</span><span class="s2">_loss&quot;</span><span class="p">,</span> <span class="n">loss</span><span class="p">,</span> 
+                <span class="n">on_step</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> 
+                <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span>
+                <span class="n">prog_bar</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> 
+                <span class="n">add_dataloader_idx</span><span class="o">=</span><span class="kc">False</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">metrics</span> <span class="ow">and</span> <span class="n">partition</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">metrics</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_update_metrics</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">metrics</span><span class="p">[</span><span class="n">partition</span><span class="p">],</span> <span class="n">preds</span><span class="p">,</span> <span class="n">targets</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">metrics</span><span class="p">[</span><span class="n">partition</span><span class="p">],</span> <span class="n">Metric</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">metrics</span><span class="p">[</span><span class="n">partition</span><span class="p">]</span><span class="o">.</span><span class="n">_get_name</span><span class="p">()</span><span class="si">}{</span><span class="n">test_suffix</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">metrics</span><span class="p">[</span><span class="n">partition</span><span class="p">],</span>    <span class="c1"># type: ignore</span>
+                    <span class="n">on_step</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> 
+                    <span class="n">on_epoch</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                    <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span>
+                    <span class="n">add_dataloader_idx</span><span class="o">=</span><span class="kc">False</span>
+                <span class="p">)</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">metrics</span><span class="p">[</span><span class="n">partition</span><span class="p">],</span> <span class="n">MetricCollection</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">log_dict</span><span class="p">(</span>
+                    <span class="p">{</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">k</span><span class="si">}{</span><span class="n">test_suffix</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">metrics</span><span class="p">[</span><span class="n">partition</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">()},</span>
+                    <span class="n">on_step</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> 
+                    <span class="n">on_epoch</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                    <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span>
+                    <span class="n">add_dataloader_idx</span><span class="o">=</span><span class="kc">False</span>
+                <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">loss</span>
+    
+    <span class="k">def</span><span class="w"> </span><span class="nf">_loss</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">preds</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">targets</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compute the loss for the given predictions and targets.</span>
+<span class="sd">        Override this method to customize loss computation.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">loss</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Loss function is not defined. Cannot compute loss.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">loss</span><span class="p">(</span><span class="n">preds</span><span class="p">,</span> <span class="n">targets</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_update_metrics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">metrics</span><span class="p">:</span> <span class="n">Metric</span> <span class="o">|</span> <span class="n">MetricCollection</span><span class="p">,</span> <span class="n">preds</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">targets</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Update the metrics with the current predictions and targets.</span>
+<span class="sd">        Override this method to customize metric updates.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">metrics</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">preds</span><span class="p">,</span> <span class="n">targets</span><span class="p">)</span>
+    
+    <span class="k">def</span><span class="w"> </span><span class="nf">_init_metrics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">metrics</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Metric</span><span class="p">,</span> <span class="n">MetricCollection</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="n">Metric</span><span class="p">,</span> <span class="n">MetricCollection</span><span class="p">]]])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="n">Metric</span><span class="p">,</span> <span class="n">MetricCollection</span><span class="p">]]:</span>
+        <span class="n">metrics_dict</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">metrics</span><span class="p">,</span> <span class="n">Metric</span><span class="p">):</span>
+            <span class="c1"># Single metric for all stages - clone and reset state</span>
+            <span class="k">for</span> <span class="n">stage</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;train&quot;</span><span class="p">,</span> <span class="s2">&quot;val&quot;</span><span class="p">,</span> <span class="s2">&quot;test&quot;</span><span class="p">]:</span>
+                <span class="n">cloned_metric</span> <span class="o">=</span> <span class="n">metrics</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span>
+                <span class="n">cloned_metric</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+                <span class="n">cloned_metric</span><span class="o">.</span><span class="n">prefix</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">stage</span><span class="si">}</span><span class="s2">_&quot;</span>
+                <span class="n">metrics_dict</span><span class="p">[</span><span class="n">stage</span><span class="p">]</span> <span class="o">=</span> <span class="n">cloned_metric</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">metrics</span><span class="p">,</span> <span class="n">MetricCollection</span><span class="p">):</span>
+            <span class="c1"># Single MetricCollection for all stages - clone and reset state</span>
+            <span class="k">for</span> <span class="n">stage</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;train&quot;</span><span class="p">,</span> <span class="s2">&quot;val&quot;</span><span class="p">,</span> <span class="s2">&quot;test&quot;</span><span class="p">]:</span>
+                <span class="n">cloned_collection</span> <span class="o">=</span> <span class="n">metrics</span><span class="o">.</span><span class="n">clone</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">stage</span><span class="si">}</span><span class="s2">_&quot;</span><span class="p">)</span>
+                <span class="n">cloned_collection</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+                <span class="n">metrics_dict</span><span class="p">[</span><span class="n">stage</span><span class="p">]</span> <span class="o">=</span> <span class="n">cloned_collection</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">metrics</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="c1"># Dictionary that assigns each stage its own Metric/MetricCollection</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="p">(</span><span class="n">Metric</span><span class="p">,</span> <span class="n">MetricCollection</span><span class="p">))</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">metrics</span><span class="o">.</span><span class="n">values</span><span class="p">()):</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Metrics must be instances of torchmetrics.Metric or torchmetrics.MetricCollection.&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="n">k</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;train&quot;</span><span class="p">,</span> <span class="s2">&quot;val&quot;</span><span class="p">,</span> <span class="s2">&quot;test&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">metrics</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Metric dictionary keys must be any of &#39;train&#39;, &#39;val&#39;, and &#39;test&#39;.&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">metrics</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">metrics</span><span class="o">.</span><span class="n">keys</span><span class="p">())):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Metric dictionary keys must be unique.&quot;</span><span class="p">)</span>
+            
+            <span class="c1"># Clone metrics and ensure proper prefixes</span>
+            <span class="k">for</span> <span class="n">stage</span><span class="p">,</span> <span class="n">metric</span> <span class="ow">in</span> <span class="n">metrics</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">metric</span><span class="p">,</span> <span class="n">Metric</span><span class="p">):</span>
+                    <span class="n">cloned_metric</span> <span class="o">=</span> <span class="n">metric</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span>
+                    <span class="n">cloned_metric</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+                    <span class="n">cloned_metric</span><span class="o">.</span><span class="n">prefix</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">stage</span><span class="si">}</span><span class="s2">_&quot;</span>
+                    <span class="n">metrics_dict</span><span class="p">[</span><span class="n">stage</span><span class="p">]</span> <span class="o">=</span> <span class="n">cloned_metric</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">cloned_collection</span> <span class="o">=</span> <span class="n">metric</span><span class="o">.</span><span class="n">clone</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">stage</span><span class="si">}</span><span class="s2">_&quot;</span><span class="p">)</span>
+                    <span class="n">cloned_collection</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+                    <span class="n">metrics_dict</span><span class="p">[</span><span class="n">stage</span><span class="p">]</span> <span class="o">=</span> <span class="n">cloned_collection</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Metrics must be a torchmetrics.Metric, torchmetrics.MetricCollection, or a dictionary of Metrics/MetricCollections, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">metrics</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+
+        <span class="c1"># Register each metric/MetricCollection as an attribute (required by Lightning for logging)</span>
+        <span class="k">for</span> <span class="n">stage</span><span class="p">,</span> <span class="n">metric</span> <span class="ow">in</span> <span class="n">metrics_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">stage</span><span class="si">}</span><span class="s2">_metrics&quot;</span><span class="p">,</span> <span class="n">metric</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">metrics_dict</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_validate_metrics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">metrics</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Metric</span><span class="p">]):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Assert that the metrics are a dictionary of Metric objects.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">metric</span> <span class="ow">in</span> <span class="n">metrics</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">metric</span><span class="p">,</span> <span class="n">Metric</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Metric &#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39; is not an instance of torchmetrics.Metric.&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_load_pretrained</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">resume_training</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Pretrained path does not exist: </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="n">checkpoint</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">map_location</span><span class="o">=</span><span class="s1">&#39;cpu&#39;</span><span class="p">,</span> <span class="n">weights_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="c1"># NOTE:PyTorch deserializes checkpoint on CPU and then moves them to the device-type</span>
+        <span class="c1"># it saved on (e.g. &#39;cuda&#39;) by default. This can lead to surged in memory usage</span>
+        <span class="c1"># if the model is large. To avoid this, we load the checkpoint on CPU and move </span>
+        <span class="c1"># the model to the correct device later.</span>
+        <span class="c1"># We also use `weights_only=True` to load only the model weights, out of security</span>
+        <span class="c1"># reasons.</span>
+
+        <span class="c1"># Always validate that model state dict is present</span>
+        <span class="n">required_keys</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;model_state_dict&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_validate_checkpoint_dict</span><span class="p">(</span><span class="n">checkpoint</span><span class="p">,</span> <span class="n">required_keys</span><span class="p">)</span>
+
+        <span class="c1"># Always load the model state dict</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="n">checkpoint</span><span class="p">[</span><span class="s1">&#39;model_state_dict&#39;</span><span class="p">])</span>
+
+        <span class="c1"># Store checkpoint state for potential optimizer/scheduler loading if resuming training</span>
+        <span class="k">if</span> <span class="n">resume_training</span><span class="p">:</span>
+            <span class="c1"># When resuming training, we expect optimizer state dict to be present</span>
+            <span class="k">if</span> <span class="s1">&#39;optimizer_state_dict&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">checkpoint</span><span class="p">:</span>
+                <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                    <span class="s2">&quot;resume_training=True but checkpoint does not contain &#39;optimizer_state_dict&#39;. &quot;</span>
+                    <span class="s2">&quot;Optimizer will start with fresh initialization.&quot;</span><span class="p">,</span>
+                    <span class="ne">UserWarning</span><span class="p">,</span>
+                    <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span>
+                <span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">lr_scheduler_config</span> <span class="ow">and</span> <span class="s1">&#39;lr_scheduler_state_dict&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">checkpoint</span><span class="p">:</span>
+                <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                    <span class="s2">&quot;resume_training=True but checkpoint does not contain &#39;lr_scheduler_state_dict&#39;. &quot;</span>
+                    <span class="s2">&quot;LR scheduler will start with fresh initialization.&quot;</span><span class="p">,</span>
+                    <span class="ne">UserWarning</span><span class="p">,</span>
+                    <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span>
+                <span class="p">)</span>
+            <span class="c1"># Store checkpoint for later use in configure_optimizers</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_checkpoint_state</span> <span class="o">=</span> <span class="n">checkpoint</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s2">&quot;pretrained_model_loaded&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">prog_bar</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_validate_checkpoint_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">checkpoint</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">keys</span><span class="p">:</span> <span class="nb">list</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Validate that the checkpoint dictionary contains the required keys.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">missing_keys</span> <span class="o">=</span> <span class="p">[</span><span class="n">key</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">keys</span> <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">checkpoint</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">missing_keys</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Checkpoint is missing required keys: </span><span class="si">{</span><span class="n">missing_keys</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+</pre></div>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Anton Zamyatin, Jasper De Landsheere, Esther Heid
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2026 Esther Heid.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

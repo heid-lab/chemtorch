@@ -1,0 +1,764 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>ChemTorch Overview &#8212; ChemTorch</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom_syntax.css?v=9e2307e4" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../_static/documentation_options.js?v=1a9ffd16"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'getting_started/overview';</script>
+    <link rel="icon" href="../_static/chemtorch_favicon.png"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Understanding Configs" href="config.html" />
+    <link rel="prev" title="Setup Logging" href="logging.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/chemtorch_logo_light.svg" class="logo__image only-light" alt="ChemTorch documentation - Home"/>
+    <script>document.write(`<img src="../_static/chemtorch_logo_dark.svg" class="logo__image only-dark" alt="ChemTorch documentation - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="quick_start.html">Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="logging.html">Setup Logging</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">ChemTorch Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="config.html">Understanding Configs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="experiments.html">Creating Experiments</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/cli_usage.html">CLI Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/custom_data.html">Using Your Own Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/sweeps.html">Hyperparameter Sweeps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/reproducing_experiments.html">Reproducing Experiments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/reproducibility_tests.html">Reproducibility Tests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/config_ref.html">Config Reference</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Examples</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../examples/training_curves.html">Performance Curves</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/ood_benchmarking.html">OOD benchmarking</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Developer Guide</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../developer_guide/custom_components.html">Defining Custom Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer_guide/props.html">Runtime Properties</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer_guide/hydra.html">Hydra Config Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer_guide/testing.html">Testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer_guide/contributing.html">Contributing</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api_autodoc/index.html">API Reference</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api_autodoc/components.html">Components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_autodoc/core.html">Core</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_autodoc/utils.html">Utilities</a></li>
+</ul>
+</details></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+<a href="https://github.com/heid-lab/chemtorch" target="_blank"
+   class="btn btn-sm btn-source-repository-button"
+   title="Source repository"
+   data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+
+</a>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/getting_started/overview.rst" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.rst</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>ChemTorch Overview</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#components-src-components">Components (<code class="docutils literal notranslate"><span class="pre">src/components</span></code>)</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#data-pipeline">Data Pipeline</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#representation">Representation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#transform-augmentation">Transform / Augmentation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#model">Model</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core-modules-src-core">Core Modules (<code class="docutils literal notranslate"><span class="pre">src/core</span></code>)</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#data-module">Data Module</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#routine">Routine</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#trainer">Trainer</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#putting-everything-together-in-code">Putting everything together in code</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="chemtorch-overview">
+<span id="overview"></span><h1>ChemTorch Overview<a class="headerlink" href="#chemtorch-overview" title="Link to this heading">#</a></h1>
+<p>This page introduces ChemTorch in three layers:</p>
+<ol class="arabic simple">
+<li><p>the high-level components,</p></li>
+<li><p>how the core modules wire them together, and</p></li>
+<li><p>how to assemble everything in code.</p></li>
+</ol>
+<p>Configuration is covered separately in <a class="reference internal" href="config.html#config"><span class="std std-ref">Understanding Configs</span></a>.</p>
+<figure class="align-center" id="id1">
+<a class="reference internal image-reference" href="../_images/chemtorch_pipeline.svg"><img alt="ChemTorch pipeline architecture" src="../_images/chemtorch_pipeline.svg" style="width: 100%;" />
+</a>
+<figcaption>
+<p><span class="caption-text"><strong>ChemTorch pipeline</strong>: raw data → data pipeline → representation → transform → model</span><a class="headerlink" href="#id1" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+<section id="components-src-components">
+<h2>Components (<code class="docutils literal notranslate"><span class="pre">src/components</span></code>)<a class="headerlink" href="#components-src-components" title="Link to this heading">#</a></h2>
+<section id="data-pipeline">
+<h3>Data Pipeline<a class="headerlink" href="#data-pipeline" title="Link to this heading">#</a></h3>
+<p>The <strong>data pipeline</strong> loads raw chemical data, standardizes column names, and splits into train/val/test sets. It is composed of three swappable components that transform data step-by-step:</p>
+<ol class="arabic">
+<li><p><strong>Data Source</strong> — Loads raw data from CSV or other sources:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">chemtorch.components.data_pipeline.data_source</span><span class="w"> </span><span class="kn">import</span> <span class="n">SingleCSVSource</span>
+
+<span class="n">source</span> <span class="o">=</span> <span class="n">SingleCSVSource</span><span class="p">(</span><span class="n">data_path</span><span class="o">=</span><span class="s2">&quot;data.csv&quot;</span><span class="p">)</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">source</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>  <span class="c1"># Returns pandas.DataFrame</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>Column Mapper</strong> — Filters and renames columns to match ChemTorch’s expected format (e.g., <code class="docutils literal notranslate"><span class="pre">smiles</span></code>, <code class="docutils literal notranslate"><span class="pre">label</span></code>):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">chemtorch.components.data_pipeline.column_mapper</span><span class="w"> </span><span class="kn">import</span> <span class="n">ColumnFilterAndRename</span>
+
+<span class="n">mapper</span> <span class="o">=</span> <span class="n">ColumnFilterAndRename</span><span class="p">(</span>
+    <span class="n">smiles</span><span class="o">=</span><span class="s2">&quot;rxn_smiles&quot;</span><span class="p">,</span>
+    <span class="n">label</span><span class="o">=</span><span class="s2">&quot;barrier_energy&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">df_mapped</span> <span class="o">=</span> <span class="n">mapper</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>  <span class="c1"># Returns pandas.DataFrame (same rows, renamed/filtered columns)</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>Data Splitter</strong> — Divides data into train/val/test sets. Returns a <code class="docutils literal notranslate"><span class="pre">DataSplit</span></code> object:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">chemtorch.components.data_pipeline.data_splitter</span><span class="w"> </span><span class="kn">import</span> <span class="n">RatioSplitter</span>
+
+<span class="n">splitter</span> <span class="o">=</span> <span class="n">RatioSplitter</span><span class="p">(</span><span class="n">train_ratio</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">val_ratio</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">test_ratio</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+<span class="n">data_split</span> <span class="o">=</span> <span class="n">splitter</span><span class="p">(</span><span class="n">df_mapped</span><span class="p">)</span>  <span class="c1"># Returns DataSplit(train=..., val=..., test=...)</span>
+</pre></div>
+</div>
+</li>
+</ol>
+<p>The three are orchestrated by <strong>SimpleDataPipeline</strong>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">chemtorch.components.data_pipeline</span><span class="w"> </span><span class="kn">import</span> <span class="n">SimpleDataPipeline</span>
+
+<span class="n">pipeline</span> <span class="o">=</span> <span class="n">SimpleDataPipeline</span><span class="p">(</span>
+    <span class="n">data_source</span><span class="o">=</span><span class="n">source</span><span class="p">,</span>
+    <span class="n">column_mapper</span><span class="o">=</span><span class="n">mapper</span><span class="p">,</span>
+    <span class="n">data_splitter</span><span class="o">=</span><span class="n">splitter</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">data_split</span> <span class="o">=</span> <span class="n">pipeline</span><span class="p">()</span>  <span class="c1"># Runs: load → map → split</span>
+</pre></div>
+</div>
+</section>
+<section id="representation">
+<h3>Representation<a class="headerlink" href="#representation" title="Link to this heading">#</a></h3>
+<p>The <strong>representation</strong> converts chemical structures (typically SMILES strings) into data structures suitable for neural networks (e.g. tensors or graphs).
+ChemTorch provides multiple representations, for example the <strong>Condensed Graph of Reaction (CGR)</strong>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">chemtorch.components.representation.graph</span><span class="w"> </span><span class="kn">import</span> <span class="n">CGRRepresentation</span>
+
+<span class="n">representation</span> <span class="o">=</span> <span class="n">CGRRepresentation</span><span class="p">(</span>
+    <span class="n">atom_featurizer</span><span class="o">=...</span><span class="p">,</span>  <span class="c1"># Composition of atomic featurizers (e.g., atom type, charge, aromaticity)</span>
+    <span class="n">bond_featurizer</span><span class="o">=...</span><span class="p">,</span>  <span class="c1"># Composition of bond featurizers (e.g., bond type, aromatic)</span>
+<span class="p">)</span>
+
+<span class="c1"># Apply to a single SMILES</span>
+<span class="n">data_obj</span> <span class="o">=</span> <span class="n">representation</span><span class="o">.</span><span class="n">construct</span><span class="p">(</span><span class="s2">&quot;CC&gt;&gt;CCO&quot;</span><span class="p">)</span>  <span class="c1"># Returns a graph data object</span>
+</pre></div>
+</div>
+</section>
+<section id="transform-augmentation">
+<h3>Transform / Augmentation<a class="headerlink" href="#transform-augmentation" title="Link to this heading">#</a></h3>
+<p><strong>Transforms</strong> are optional pre-processing or augmentation steps applied to individual/batched data objects.
+For example, we can add positional encoding to graphs:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">chemtorch.components.transform.graph_transform</span><span class="w"> </span><span class="kn">import</span> <span class="n">RandomWalkPE</span>
+
+<span class="c1"># Add random walk positional encodings to graph nodes</span>
+<span class="n">transform</span> <span class="o">=</span> <span class="n">RandomWalkPE</span><span class="p">(</span><span class="n">walk_length</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span>
+
+<span class="n">data_obj</span> <span class="o">=</span> <span class="n">representation</span><span class="o">.</span><span class="n">featurize</span><span class="p">(</span><span class="s2">&quot;CC&gt;&gt;CCO&quot;</span><span class="p">)</span>
+<span class="n">transformed</span> <span class="o">=</span> <span class="n">transform</span><span class="p">(</span><span class="n">data_obj</span><span class="p">)</span>  <span class="c1"># Adds positional encodings to the graph</span>
+</pre></div>
+</div>
+<p>Other graph transforms could include dummy node injection, node/edge masking, and subgraph sampling.</p>
+</section>
+<section id="model">
+<h3>Model<a class="headerlink" href="#model" title="Link to this heading">#</a></h3>
+<p><strong>Models</strong> are PyTorch <code class="docutils literal notranslate"><span class="pre">nn.Module</span></code> architectures that take in data objects and produce predictions.
+ChemTorch emphasizes modular, composable models.
+<strong>Graph Neural Networks (GNNs)</strong> are a prime example because they can be hierarchically decomposed into four components:</p>
+<ul class="simple">
+<li><p><strong>Encoder</strong>: projects node/edge features to hidden dimension</p></li>
+<li><p><strong>Layer Stack</strong>: repeatedly applies message-passing blocks (e.g., DMPNN, GIN, GAT)</p></li>
+<li><p><strong>Pool</strong>: aggregates node embeddings to graph embedding</p></li>
+<li><p><strong>Head</strong>: final fully-connected layer(s) for prediction</p></li>
+</ul>
+<p>Each component can be swapped (e.g., different encoder, different message-passing layer, different pooling strategy) without touching the others, making GNNs highly modular.</p>
+<p><strong>Directed Message-Passing Neural Network (D-MPNN)</strong> example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">chemtorch.components.model.gnn</span><span class="w"> </span><span class="kn">import</span> <span class="n">GNN</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">chemtorch.components.layer.gnn_layer</span><span class="w"> </span><span class="kn">import</span> <span class="n">DMPNNStack</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">chemtorch.components.model.gnn.encoder</span><span class="w"> </span><span class="kn">import</span> <span class="n">DirectedEdgeEncoder</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">chemtorch.components.model.gnn.pool</span><span class="w"> </span><span class="kn">import</span> <span class="n">GlobalPool</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">GNN</span><span class="p">(</span>
+    <span class="n">num_node_features</span><span class="o">=</span><span class="n">num_node_features</span><span class="p">,</span>
+    <span class="n">num_edge_features</span><span class="o">=</span><span class="n">num_edge_features</span><span class="p">,</span>
+    <span class="n">hidden_channels</span><span class="o">=</span><span class="mi">256</span><span class="p">,</span>
+    <span class="n">encoder</span><span class="o">=</span><span class="n">DirectedEdgeEncoder</span><span class="p">(</span><span class="n">hidden_channels</span><span class="o">=</span><span class="mi">256</span><span class="p">),</span>
+    <span class="n">layer_stack</span><span class="o">=</span><span class="n">DMPNNStack</span><span class="p">(</span><span class="n">hidden_channels</span><span class="o">=</span><span class="mi">256</span><span class="p">,</span> <span class="n">num_layers</span><span class="o">=</span><span class="mi">4</span><span class="p">),</span>
+    <span class="n">pool</span><span class="o">=</span><span class="n">GlobalPool</span><span class="p">(</span><span class="n">pooling_fn</span><span class="o">=</span><span class="s2">&quot;mean&quot;</span><span class="p">),</span>
+    <span class="n">head</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">256</span><span class="p">,</span> <span class="n">output_dim</span><span class="p">),</span>
+<span class="p">)</span>
+
+<span class="c1"># Forward pass</span>
+<span class="n">output</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">batch</span><span class="p">)</span>  <span class="c1"># batch is a batched graph of single graph data objects</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="core-modules-src-core">
+<h2>Core Modules (<code class="docutils literal notranslate"><span class="pre">src/core</span></code>)<a class="headerlink" href="#core-modules-src-core" title="Link to this heading">#</a></h2>
+<p>ChemTorch’s core modules are built on top of <a class="reference external" href="https://lightning.ai/docs/pytorch/stable/">PyTorch Lightning</a>, which provides a standardized, high-quality training loop (device placement, logging, checkpointing, distributed execution). You do not need to be a Lightning expert to use ChemTorch—common workflows and simple components work out of the box. If you plan to go beyond implementing individual components and want to adapt the core modules themselves, we recommend skimming the Lightning tutorials or a short crash course to get familiar with <code class="docutils literal notranslate"><span class="pre">LightningModule</span></code>, <code class="docutils literal notranslate"><span class="pre">LightningDataModule</span></code>, and <code class="docutils literal notranslate"><span class="pre">Trainer</span></code>.</p>
+<section id="data-module">
+<h3>Data Module<a class="headerlink" href="#data-module" title="Link to this heading">#</a></h3>
+<p>The <strong>Data Module</strong> is a <code class="docutils literal notranslate"><span class="pre">LightningDataModule</span></code> and wires together the data pipeline, representation, and optional transforms/augmentations:</p>
+<ul class="simple">
+<li><p>Runs the pipeline (load → map → split) to get a <code class="docutils literal notranslate"><span class="pre">DataSplit</span></code>/<code class="docutils literal notranslate"><span class="pre">DataFrame</span></code>.</p></li>
+<li><p>Applies the representation to construct model-ready data objects.</p></li>
+<li><p>Wraps datasets and instantiates dataloaders for <code class="docutils literal notranslate"><span class="pre">train</span></code>, <code class="docutils literal notranslate"><span class="pre">val</span></code>, <code class="docutils literal notranslate"><span class="pre">test</span></code>, and <code class="docutils literal notranslate"><span class="pre">predict</span></code>.</p></li>
+</ul>
+<p>Basic usage:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">chemtorch.core.data_module</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataModule</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+
+<span class="n">data_module</span> <span class="o">=</span> <span class="n">DataModule</span><span class="p">(</span>
+        <span class="n">data_pipeline</span><span class="o">=</span><span class="n">pipeline</span><span class="p">,</span>
+        <span class="n">representation</span><span class="o">=</span><span class="n">representation</span><span class="p">,</span>
+        <span class="n">dataloader_factory</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">DataLoader</span><span class="p">,</span>
+        <span class="n">transform</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">augmentations</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">train_loader</span> <span class="o">=</span> <span class="n">data_module</span><span class="o">.</span><span class="n">train_dataloader</span><span class="p">()</span>
+<span class="n">val_loader</span> <span class="o">=</span> <span class="n">data_module</span><span class="o">.</span><span class="n">val_dataloader</span><span class="p">()</span>
+<span class="n">test_loader</span> <span class="o">=</span> <span class="n">data_module</span><span class="o">.</span><span class="n">test_dataloader</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="routine">
+<h3>Routine<a class="headerlink" href="#routine" title="Link to this heading">#</a></h3>
+<p>The <strong>Routine</strong> is a <code class="docutils literal notranslate"><span class="pre">LightningModule</span></code> that wraps the model and training logic (loss, optimizer, LR scheduler, metrics, and step hooks). Use a specific routine for your task (e.g., regression or classification).</p>
+<p>Example (regression):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">chemtorch.core.routine</span><span class="w"> </span><span class="kn">import</span> <span class="n">RegressionRoutine</span>
+
+<span class="n">routine</span> <span class="o">=</span> <span class="n">RegressionRoutine</span><span class="p">(</span>
+        <span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span>
+        <span class="n">loss</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">MSELoss</span><span class="p">(),</span>
+        <span class="n">optimizer</span><span class="o">=</span><span class="k">lambda</span> <span class="n">params</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">lr</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">),</span>
+        <span class="n">lr_scheduler</span><span class="o">=</span><span class="k">lambda</span> <span class="n">opt</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">lr_scheduler</span><span class="o">.</span><span class="n">StepLR</span><span class="p">(</span><span class="n">opt</span><span class="p">,</span> <span class="n">step_size</span><span class="o">=</span><span class="mi">10</span><span class="p">),</span>
+        <span class="n">metrics</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>Supervised routines expose the usual Lightning hooks (<code class="docutils literal notranslate"><span class="pre">training_step</span></code>, <code class="docutils literal notranslate"><span class="pre">validation_step</span></code>, etc.) internally, so you focus on component selection rather than boilerplate.</p>
+</section>
+<section id="trainer">
+<h3>Trainer<a class="headerlink" href="#trainer" title="Link to this heading">#</a></h3>
+<p>The <strong>Trainer</strong> (PyTorch Lightning) drives execution. It handles device placement, logging, checkpointing, and distributed training.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">lightning</span><span class="w"> </span><span class="kn">import</span> <span class="n">Trainer</span>
+
+<span class="n">trainer</span> <span class="o">=</span> <span class="n">Trainer</span><span class="p">(</span><span class="n">max_epochs</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">log_every_n_steps</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">trainer</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">routine</span><span class="p">,</span> <span class="n">datamodule</span><span class="o">=</span><span class="n">data_module</span><span class="p">)</span>
+<span class="n">trainer</span><span class="o">.</span><span class="n">test</span><span class="p">(</span><span class="n">routine</span><span class="p">,</span> <span class="n">datamodule</span><span class="o">=</span><span class="n">data_module</span><span class="p">)</span>
+<span class="c1"># trainer.predict(routine, datamodule=data_module)</span>
+</pre></div>
+</div>
+<p>Together: <strong>DataModule</strong> provides dataloaders; <strong>Routine</strong> runs optimization and evaluation; <strong>Trainer</strong> orchestrates the loop.</p>
+</section>
+</section>
+<section id="putting-everything-together-in-code">
+<h2>Putting everything together in code<a class="headerlink" href="#putting-everything-together-in-code" title="Link to this heading">#</a></h2>
+<p>Below is a minimal hands on example showing how the pieces fit together.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">lightning</span><span class="w"> </span><span class="kn">import</span> <span class="n">Trainer</span>
+
+<span class="c1"># Components (src/components)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">chemtorch.components.data_pipeline</span><span class="w"> </span><span class="kn">import</span> <span class="n">SimpleDataPipeline</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">chemtorch.components.data_pipeline.data_source</span><span class="w"> </span><span class="kn">import</span> <span class="n">SingleCSVSource</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">chemtorch.components.data_pipeline.column_mapper</span><span class="w"> </span><span class="kn">import</span> <span class="n">ColumnFilterAndRename</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">chemtorch.components.data_pipeline.data_splitter</span><span class="w"> </span><span class="kn">import</span> <span class="n">RatioSplitter</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">chemtorch.components.representation.graph</span><span class="w"> </span><span class="kn">import</span> <span class="n">CGRRepresentation</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">chemtorch.components.model.gnn</span><span class="w"> </span><span class="kn">import</span> <span class="n">GNN</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">chemtorch.components.model.gnn.encoder</span><span class="w"> </span><span class="kn">import</span> <span class="n">DirectedEdgeEncoder</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">chemtorch.components.layer.gnn_layer</span><span class="w"> </span><span class="kn">import</span> <span class="n">DMPNNStack</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">chemtorch.components.model.gnn.pool</span><span class="w"> </span><span class="kn">import</span> <span class="n">GlobalPool</span>
+
+<span class="c1"># Core modules (src/core)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">chemtorch.core.data_module</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataModule</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">chemtorch.core.routine</span><span class="w"> </span><span class="kn">import</span> <span class="n">RegressionRoutine</span>
+
+<span class="c1"># 1) Data pipeline</span>
+<span class="n">pipeline</span> <span class="o">=</span> <span class="n">SimpleDataPipeline</span><span class="p">(</span>
+    <span class="n">data_source</span><span class="o">=</span><span class="n">SingleCSVSource</span><span class="p">(</span><span class="n">data_path</span><span class="o">=</span><span class="s2">&quot;data.csv&quot;</span><span class="p">),</span>
+    <span class="n">column_mapper</span><span class="o">=</span><span class="n">ColumnFilterAndRename</span><span class="p">(</span><span class="n">smiles</span><span class="o">=</span><span class="s2">&quot;rxn_smiles&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;barrier&quot;</span><span class="p">),</span>
+    <span class="n">data_splitter</span><span class="o">=</span><span class="n">RatioSplitter</span><span class="p">(</span><span class="n">train_ratio</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">val_ratio</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">test_ratio</span><span class="o">=</span><span class="mf">0.1</span><span class="p">),</span>
+<span class="p">)</span>
+
+<span class="c1"># 2) Representation (CGR)</span>
+<span class="n">representation</span> <span class="o">=</span> <span class="n">CGRRepresentation</span><span class="p">(</span>
+    <span class="n">atom_featurizer</span><span class="o">=...</span><span class="p">,</span>   <span class="c1"># compose your atom featurizers</span>
+    <span class="n">bond_featurizer</span><span class="o">=...</span><span class="p">,</span>   <span class="c1"># compose your bond featurizers</span>
+<span class="p">)</span>
+
+<span class="c1"># 3) DataModule (wires pipeline + representation + optional transforms/augmentations)</span>
+<span class="n">dataloader_factory</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">DataLoader</span>  <span class="c1"># or a custom factory</span>
+<span class="n">data_module</span> <span class="o">=</span> <span class="n">DataModule</span><span class="p">(</span>
+    <span class="n">data_pipeline</span><span class="o">=</span><span class="n">pipeline</span><span class="p">,</span>
+    <span class="n">representation</span><span class="o">=</span><span class="n">representation</span><span class="p">,</span>
+    <span class="n">dataloader_factory</span><span class="o">=</span><span class="n">dataloader_factory</span><span class="p">,</span>
+    <span class="n">transform</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">augmentations</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="c1"># 4) Model (GNN with D-MPNN stack)</span>
+<span class="n">num_node_features</span> <span class="o">=</span> <span class="mi">128</span>  <span class="c1"># match your representation</span>
+<span class="n">num_edge_features</span> <span class="o">=</span> <span class="mi">32</span>   <span class="c1"># match your representation</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">GNN</span><span class="p">(</span>
+    <span class="n">num_node_features</span><span class="o">=</span><span class="n">num_node_features</span><span class="p">,</span>
+    <span class="n">num_edge_features</span><span class="o">=</span><span class="n">num_edge_features</span><span class="p">,</span>
+    <span class="n">hidden_channels</span><span class="o">=</span><span class="mi">256</span><span class="p">,</span>
+    <span class="n">encoder</span><span class="o">=</span><span class="n">DirectedEdgeEncoder</span><span class="p">(</span><span class="n">hidden_channels</span><span class="o">=</span><span class="mi">256</span><span class="p">),</span>
+    <span class="n">layer_stack</span><span class="o">=</span><span class="n">DMPNNStack</span><span class="p">(</span><span class="n">hidden_channels</span><span class="o">=</span><span class="mi">256</span><span class="p">,</span> <span class="n">num_layers</span><span class="o">=</span><span class="mi">4</span><span class="p">),</span>
+    <span class="n">pool</span><span class="o">=</span><span class="n">GlobalPool</span><span class="p">(</span><span class="n">pooling_fn</span><span class="o">=</span><span class="s2">&quot;mean&quot;</span><span class="p">),</span>
+    <span class="n">head</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">256</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+<span class="p">)</span>
+
+<span class="c1"># 5) Routine (wraps model with training logic)</span>
+<span class="n">routine</span> <span class="o">=</span> <span class="n">RegressionRoutine</span><span class="p">(</span>
+    <span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span>
+    <span class="n">loss</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">MSELoss</span><span class="p">(),</span>
+    <span class="n">optimizer</span><span class="o">=</span><span class="k">lambda</span> <span class="n">params</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">lr</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">),</span>
+    <span class="n">lr_scheduler</span><span class="o">=</span><span class="k">lambda</span> <span class="n">opt</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">lr_scheduler</span><span class="o">.</span><span class="n">StepLR</span><span class="p">(</span><span class="n">opt</span><span class="p">,</span> <span class="n">step_size</span><span class="o">=</span><span class="mi">10</span><span class="p">),</span>
+    <span class="n">metrics</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="c1"># 6) Trainer (executes)</span>
+<span class="n">trainer</span> <span class="o">=</span> <span class="n">Trainer</span><span class="p">(</span><span class="n">max_epochs</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">log_every_n_steps</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">trainer</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">routine</span><span class="p">,</span> <span class="n">datamodule</span><span class="o">=</span><span class="n">data_module</span><span class="p">)</span>
+<span class="n">trainer</span><span class="o">.</span><span class="n">test</span><span class="p">(</span><span class="n">routine</span><span class="p">,</span> <span class="n">datamodule</span><span class="o">=</span><span class="n">data_module</span><span class="p">)</span>
+<span class="c1"># trainer.predict(routine, datamodule=data_module)</span>
+</pre></div>
+</div>
+<p>This is very close to what ChemTorch actually does under the hood (ignoring all other software features for a second).</p>
+</section>
+</section>
+
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="logging.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Setup Logging</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="config.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Understanding Configs</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#components-src-components">Components (<code class="docutils literal notranslate"><span class="pre">src/components</span></code>)</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#data-pipeline">Data Pipeline</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#representation">Representation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#transform-augmentation">Transform / Augmentation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#model">Model</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core-modules-src-core">Core Modules (<code class="docutils literal notranslate"><span class="pre">src/core</span></code>)</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#data-module">Data Module</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#routine">Routine</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#trainer">Trainer</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#putting-everything-together-in-code">Putting everything together in code</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Anton Zamyatin, Jasper De Landsheere, Esther Heid
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2026 Esther Heid.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

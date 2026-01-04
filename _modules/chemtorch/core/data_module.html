@@ -1,0 +1,725 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>chemtorch.core.data_module &#8212; ChemTorch</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/custom_syntax.css?v=9e2307e4" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../../../_static/documentation_options.js?v=1a9ffd16"></script>
+    <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/chemtorch/core/data_module';</script>
+    <link rel="icon" href="../../../_static/chemtorch_favicon.png"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../_static/chemtorch_logo_light.svg" class="logo__image only-light" alt="ChemTorch documentation - Home"/>
+    <script>document.write(`<img src="../../../_static/chemtorch_logo_dark.svg" class="logo__image only-dark" alt="ChemTorch documentation - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/quick_start.html">Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/logging.html">Setup Logging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/overview.html">ChemTorch Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/config.html">Understanding Configs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/experiments.html">Creating Experiments</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../user_guide/cli_usage.html">CLI Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_guide/custom_data.html">Using Your Own Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_guide/sweeps.html">Hyperparameter Sweeps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_guide/reproducing_experiments.html">Reproducing Experiments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_guide/reproducibility_tests.html">Reproducibility Tests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_guide/config_ref.html">Config Reference</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Examples</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../examples/training_curves.html">Performance Curves</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples/ood_benchmarking.html">OOD benchmarking</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Developer Guide</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../developer_guide/custom_components.html">Defining Custom Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../developer_guide/props.html">Runtime Properties</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../developer_guide/hydra.html">Hydra Config Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../developer_guide/testing.html">Testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../developer_guide/contributing.html">Contributing</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../api_autodoc/index.html">API Reference</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../api_autodoc/components.html">Components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api_autodoc/core.html">Core</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api_autodoc/utils.html">Utilities</a></li>
+</ul>
+</details></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+<a href="https://github.com/heid-lab/chemtorch" target="_blank"
+   class="btn btn-sm btn-source-repository-button"
+   title="Source repository"
+   data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+
+</a>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1></h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for chemtorch.core.data_module</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">builtins</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">TypeGuard</span><span class="p">,</span> <span class="n">cast</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">lightning</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">L</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch.utils.data</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataLoader</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">omegaconf</span><span class="w"> </span><span class="kn">import</span> <span class="n">DictConfig</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="n">DictConfig</span> <span class="o">=</span> <span class="kc">None</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">chemtorch.core.dataset_base</span><span class="w"> </span><span class="kn">import</span> <span class="n">DatasetBase</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">chemtorch.core.property_system</span><span class="w"> </span><span class="kn">import</span> <span class="n">DatasetProperty</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">chemtorch.components.representation.abstract_representation</span><span class="w"> </span><span class="kn">import</span> <span class="n">AbstractRepresentation</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">chemtorch.components.transform.abstract_transform</span><span class="w"> </span><span class="kn">import</span> <span class="n">AbstractTransform</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">chemtorch.utils.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">AugmentationType</span><span class="p">,</span> <span class="n">DataLoaderFactoryProtocol</span><span class="p">,</span> <span class="n">DataSplit</span><span class="p">,</span> <span class="n">DatasetKey</span><span class="p">,</span> <span class="n">TransformType</span>
+
+
+<div class="viewcode-block" id="DataModule">
+<a class="viewcode-back" href="../../../api_autodoc/core.html#chemtorch.core.data_module.DataModule">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">DataModule</span><span class="p">(</span><span class="n">L</span><span class="o">.</span><span class="n">LightningDataModule</span><span class="p">):</span>
+<div class="viewcode-block" id="DataModule.__init__">
+<a class="viewcode-back" href="../../../api_autodoc/core.html#chemtorch.core.data_module.DataModule.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">data_pipeline</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">DataSplit</span> <span class="o">|</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">],</span>
+        <span class="n">representation</span><span class="p">:</span> <span class="n">AbstractRepresentation</span><span class="p">,</span>
+        <span class="n">dataloader_factory</span><span class="p">:</span> <span class="n">DataLoaderFactoryProtocol</span><span class="p">,</span>
+        <span class="n">transform</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">TransformType</span> <span class="o">|</span> <span class="n">Dict</span><span class="p">[</span><span class="n">DatasetKey</span><span class="p">,</span> <span class="n">TransformType</span><span class="p">]</span> <span class="o">|</span> <span class="n">Dict</span><span class="p">[</span><span class="n">DatasetKey</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">TransformType</span><span class="p">],</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">TransformType</span><span class="p">]]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">augmentations</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">AugmentationType</span><span class="p">]</span> <span class="o">|</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">AugmentationType</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">subsample</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span> <span class="o">|</span> <span class="nb">float</span> <span class="o">|</span> <span class="n">Dict</span><span class="p">[</span><span class="n">DatasetKey</span><span class="p">,</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">precompute_all</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">max_cache_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">integer_labels</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize the DataModule with a data pipeline, dataset factory, and dataloader factory.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            data_pipeline (Callable): A callable that returns a DataSplit or a pandas DataFrame.</span>
+<span class="sd">            representation (AbstractRepresentation): An instance of a representation class to convert raw data into model-ready format.</span>
+<span class="sd">            dataloader_factory (DataLoaderFactoryProtocol): A DataLoader class or factory function to create DataLoader instances that </span>
+<span class="sd">                work with the data format returned by the representation. Typically, this will be a partially initialized object that</span>
+<span class="sd">                subclasses the torch.utils.data.DataLoader class.</span>
+<span class="sd">            transform (Optional[Union[TransformType, Dict[DatasetKey, TransformType], Dict[DatasetKey, Union[List[TransformType], Dict[str, TransformType]]]]]):</span>
+<span class="sd">                An optional transform or a dictionary of transforms for each stage (&#39;train&#39;, &#39;val&#39;, &#39;test&#39;, &#39;predict&#39;).</span>
+<span class="sd">                If a single transform is provided, it will be applied to all stages.</span>
+<span class="sd">                If a dictionary is provided, it should map each dataset key to its corresponding transform.</span>
+<span class="sd">                For the test set, a list or dict of transforms can be provided to create multiple test datasets.</span>
+<span class="sd">                If a dict is provided, the keys should be the names of the test datasets.</span>
+<span class="sd">            augmentations (Optional[List[AbstractAugmentation]] | Dict[str, AbstractAugmentation]):</span>
+<span class="sd">                An optional list or dictionary of augmentations to be applied to the training dataset.</span>
+<span class="sd">            subsample (Optional[Union[int, float, Dict[DatasetKey, Union[int, float]]]]):</span>
+<span class="sd">                An optional integer or float to subsample the datasets. If a float is provided,</span>
+<span class="sd">                it should be between 0 and 1 and represents the fraction of the dataset to keep.</span>
+<span class="sd">                If an integer is provided, it represents the exact number of samples to keep.</span>
+<span class="sd">                If a dictionary is provided, it should map each dataset key to its corresponding </span>
+<span class="sd">                subsample fraction or count.</span>
+<span class="sd">            precompute_all (bool): If True, precompute all samples of the dataset. Default is True.</span>
+<span class="sd">            cache (bool): If True, enable caching of dataset samples. Default is False.</span>
+<span class="sd">            max_cache_size (Optional[int]): Maximum number of samples to cache. If None, cache</span>
+<span class="sd">                size is unlimited. Default is None.</span>
+<span class="sd">            integer_labels (bool): If True, convert labels to integers. Default is False.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            TypeError: If the output of the data pipeline is not a DataSplit or a pandas DataFrame.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+        <span class="c1"># Initialize transforms</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">is_single_transform</span><span class="p">(</span><span class="n">t</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TypeGuard</span><span class="p">[</span><span class="n">TransformType</span><span class="p">]:</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;Type guard to check if a transform is a single transform (not list/dict).&quot;&quot;&quot;</span>
+            <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">AbstractTransform</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">callable</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="n">transform</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">transform_dict</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">transform</span><span class="p">,</span> <span class="n">AbstractTransform</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">callable</span><span class="p">(</span><span class="n">transform</span><span class="p">):</span>
+            <span class="n">transform_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">stage</span><span class="p">:</span> <span class="n">transform</span> <span class="k">for</span> <span class="n">stage</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;train&quot;</span><span class="p">,</span> <span class="s2">&quot;val&quot;</span><span class="p">,</span> <span class="s2">&quot;test&quot;</span><span class="p">,</span> <span class="s2">&quot;predict&quot;</span><span class="p">]}</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">transform</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="n">stage</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;train&quot;</span><span class="p">,</span> <span class="s2">&quot;val&quot;</span><span class="p">,</span> <span class="s2">&quot;test&quot;</span><span class="p">,</span> <span class="s2">&quot;predict&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">stage</span> <span class="ow">in</span> <span class="n">transform</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Transforms dictionary keys must be one of &#39;train&#39;, &#39;val&#39;, &#39;test&#39;, or &#39;predict&#39;.&quot;</span><span class="p">)</span>
+            
+            <span class="c1"># Check individual keys - train, val, predict should be single transforms</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;train&quot;</span><span class="p">,</span> <span class="s2">&quot;val&quot;</span><span class="p">,</span> <span class="s2">&quot;predict&quot;</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">transform</span><span class="p">:</span>
+                    <span class="n">t</span> <span class="o">=</span> <span class="n">transform</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>  <span class="c1"># type: ignore  # key is guaranteed to be DatasetKey from the list above</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">is_single_transform</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+                        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The value for the &#39;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&#39; key in transforms must be an AbstractTransform or callable.&quot;</span><span class="p">)</span>
+            
+            <span class="c1"># Test key can be single transform, list, or dict</span>
+            <span class="k">if</span> <span class="s2">&quot;test&quot;</span> <span class="ow">in</span> <span class="n">transform</span><span class="p">:</span>
+                <span class="n">test_value</span> <span class="o">=</span> <span class="n">transform</span><span class="p">[</span><span class="s2">&quot;test&quot;</span><span class="p">]</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">test_value</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)):</span>
+                    <span class="n">test_transforms</span> <span class="o">=</span> <span class="n">test_value</span><span class="o">.</span><span class="n">values</span><span class="p">()</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">test_value</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="k">else</span> <span class="n">test_value</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="n">is_single_transform</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">test_transforms</span><span class="p">):</span>
+                        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;All elements in the list or dict of transforms for the &#39;test&#39; key must be AbstractTransform instances or callables.&quot;</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="ow">not</span> <span class="n">is_single_transform</span><span class="p">(</span><span class="n">test_value</span><span class="p">):</span>
+                    <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;The value for the &#39;test&#39; key in transforms must be an AbstractTransform, callable, a list of AbstractTransforms, or a dict of AbstractTransforms.&quot;</span><span class="p">)</span>
+            
+            <span class="n">transform_dict</span> <span class="o">=</span> <span class="n">transform</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Transforms must be either an AbstractTransform instance, callable, or a dictionary mapping dataset key to AbstractTransform instances, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">transform</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Validate subsample if dict and normalize subsample to a dictionary</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">subsample</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">subsample</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;train&quot;</span><span class="p">,</span> <span class="s2">&quot;val&quot;</span><span class="p">,</span> <span class="s2">&quot;test&quot;</span><span class="p">,</span> <span class="s2">&quot;predict&quot;</span><span class="p">]:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Subsample dictionary keys must be one of &#39;train&#39;, &#39;val&#39;, &#39;test&#39;, or &#39;predict&#39;.&quot;</span><span class="p">)</span>
+            <span class="n">subsample_dict</span> <span class="o">=</span> <span class="n">subsample</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">subsample_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">subsample</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;train&quot;</span><span class="p">,</span> <span class="s2">&quot;val&quot;</span><span class="p">,</span> <span class="s2">&quot;test&quot;</span><span class="p">,</span> <span class="s2">&quot;predict&quot;</span><span class="p">]}</span>
+
+        <span class="c1"># Initialize datasets</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">create_dataset</span><span class="p">(</span>
+            <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+            <span class="n">dataframe</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
+            <span class="n">subsample</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span> <span class="o">|</span> <span class="nb">float</span><span class="p">],</span>
+            <span class="n">transform</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">augmentations</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">AugmentationType</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DatasetBase</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="n">transform</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">is_single_transform</span><span class="p">(</span><span class="n">transform</span><span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> transform validation failed&quot;</span>
+            <span class="k">return</span> <span class="n">DatasetBase</span><span class="p">(</span>
+                <span class="n">dataframe</span><span class="o">=</span><span class="n">dataframe</span><span class="p">,</span>
+                <span class="n">representation</span><span class="o">=</span><span class="n">representation</span><span class="p">,</span>  <span class="c1"># from __init__</span>
+                <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+                <span class="n">transform</span><span class="o">=</span><span class="n">transform</span><span class="p">,</span>
+                <span class="n">augmentation_list</span><span class="o">=</span><span class="n">augmentations</span><span class="p">,</span>
+                <span class="n">subsample</span><span class="o">=</span><span class="n">subsample</span><span class="p">,</span>
+                <span class="n">precompute_all</span><span class="o">=</span><span class="n">precompute_all</span><span class="p">,</span>  <span class="c1"># from __init__</span>
+                <span class="n">cache</span><span class="o">=</span><span class="n">cache</span><span class="p">,</span>                    <span class="c1"># from __init__</span>
+                <span class="n">max_cache_size</span><span class="o">=</span><span class="n">max_cache_size</span><span class="p">,</span>  <span class="c1"># from __init__</span>
+                <span class="n">integer_labels</span><span class="o">=</span><span class="n">integer_labels</span>   <span class="c1"># from __init__</span>
+            <span class="p">)</span>
+
+        <span class="n">data</span> <span class="o">=</span> <span class="n">data_pipeline</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="p">(</span><span class="n">DataSplit</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="s2">&quot;Data pipeline must output either a DataSplit or a pandas DataFrame&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">DataSplit</span><span class="p">):</span>
+            <span class="n">augmentation_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">augmentations</span><span class="o">.</span><span class="n">values</span><span class="p">())</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">augmentations</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="k">else</span> <span class="n">augmentations</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">train_dataset</span> <span class="o">=</span> <span class="n">create_dataset</span><span class="p">(</span><span class="s2">&quot;train&quot;</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">train</span><span class="p">,</span> <span class="n">subsample_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;train&quot;</span><span class="p">),</span> <span class="n">transform_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;train&quot;</span><span class="p">),</span> <span class="n">augmentation_list</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">val_dataset</span> <span class="o">=</span> <span class="n">create_dataset</span><span class="p">(</span><span class="s2">&quot;val&quot;</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">val</span><span class="p">,</span> <span class="n">subsample_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;val&quot;</span><span class="p">),</span> <span class="n">transform_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;val&quot;</span><span class="p">))</span>
+
+            <span class="c1"># Handle test datasets - flatten them as individual properties</span>
+            <span class="n">test_transforms</span> <span class="o">=</span> <span class="n">transform_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;test&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">test_transforms</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                <span class="c1"># Create multiple test datasets with different transforms</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">test_dataset</span> <span class="o">=</span> <span class="n">create_dataset</span><span class="p">(</span><span class="s2">&quot;test&quot;</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">test</span><span class="p">,</span> <span class="n">subsample_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;test&quot;</span><span class="p">))</span>  <span class="c1"># Default without transform</span>
+                <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">transform</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">test_transforms</span><span class="p">):</span>
+                    <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;test_</span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">_dataset&quot;</span><span class="p">,</span> <span class="n">create_dataset</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;test_</span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">test</span><span class="p">,</span> <span class="n">subsample_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;test&quot;</span><span class="p">),</span> <span class="n">transform</span><span class="o">=</span><span class="n">transform</span><span class="p">))</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">test_transforms</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+                <span class="c1"># Create named test datasets</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">test_dataset</span> <span class="o">=</span> <span class="n">create_dataset</span><span class="p">(</span><span class="s2">&quot;test&quot;</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">test</span><span class="p">,</span> <span class="n">subsample_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;test&quot;</span><span class="p">))</span>  <span class="c1"># Default without transform</span>
+                <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">transform</span> <span class="ow">in</span> <span class="n">test_transforms</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;test_</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">_dataset&quot;</span><span class="p">,</span> <span class="n">create_dataset</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;test/</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">test</span><span class="p">,</span> <span class="n">subsample_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;test&quot;</span><span class="p">),</span> <span class="n">transform</span><span class="o">=</span><span class="n">transform</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># Single test transform or None -&gt; single test dataset </span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">test_dataset</span> <span class="o">=</span> <span class="n">create_dataset</span><span class="p">(</span><span class="s2">&quot;test&quot;</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">test</span><span class="p">,</span> <span class="n">subsample_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;test&quot;</span><span class="p">),</span> <span class="n">test_transforms</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">predict_dataset</span> <span class="o">=</span> <span class="n">create_dataset</span><span class="p">(</span><span class="s2">&quot;predict&quot;</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">subsample_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;predict&quot;</span><span class="p">),</span> <span class="n">transform_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;predict&quot;</span><span class="p">))</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">dataloader_factory</span> <span class="o">=</span> <span class="n">dataloader_factory</span></div>
+
+
+<div class="viewcode-block" id="DataModule.get_dataset">
+<a class="viewcode-back" href="../../../api_autodoc/core.html#chemtorch.core.data_module.DataModule.get_dataset">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_dataset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DatasetBase</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieve the dataset for the specified key.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            key (str): The key for which to retrieve the dataset (&#39;train&#39;, &#39;val&#39;, &#39;test&#39;, &#39;predict&#39;, &#39;test_&lt;name&gt;&#39;).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            DatasetBase: The dataset corresponding to the specified key.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: If the dataset for the specified key is not initialized.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># NOTE: This function relies on the datasets being named &#39;train_dataset&#39;, &#39;val_dataset&#39;, etc.</span>
+        <span class="n">dataset</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">_dataset&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">dataset</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">key</span><span class="o">.</span><span class="n">capitalize</span><span class="p">()</span><span class="si">}</span><span class="s2"> dataset is not initialized.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">dataset</span></div>
+
+
+<div class="viewcode-block" id="DataModule.get_dataset_names">
+<a class="viewcode-back" href="../../../api_autodoc/core.html#chemtorch.core.data_module.DataModule.get_dataset_names">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_dataset_names</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get all available dataset names/keys.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            List[str]: List of all dataset keys that can be used with get_dataset() and make_dataloader().</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">dataset_names</span> <span class="o">=</span> <span class="p">[]</span>
+        
+        <span class="c1"># Check for standard datasets</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;train&quot;</span><span class="p">,</span> <span class="s2">&quot;val&quot;</span><span class="p">,</span> <span class="s2">&quot;test&quot;</span><span class="p">,</span> <span class="s2">&quot;predict&quot;</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">_dataset&quot;</span><span class="p">):</span>
+                <span class="n">dataset_names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        
+        <span class="c1"># Check for additional test datasets (test_&lt;name&gt;)</span>
+        <span class="k">for</span> <span class="n">attr_name</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">attr_name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;test_&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">attr_name</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;_dataset&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">attr_name</span> <span class="o">!=</span> <span class="s2">&quot;test_dataset&quot;</span><span class="p">:</span>
+                <span class="c1"># Extract the dataset key (remove &#39;_dataset&#39; suffix)</span>
+                <span class="n">dataset_key</span> <span class="o">=</span> <span class="n">attr_name</span><span class="p">[:</span><span class="o">-</span><span class="mi">8</span><span class="p">]</span>  <span class="c1"># Remove &#39;_dataset&#39;</span>
+                <span class="n">dataset_names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dataset_key</span><span class="p">)</span>
+        
+        <span class="k">return</span> <span class="n">dataset_names</span></div>
+
+
+<div class="viewcode-block" id="DataModule.make_dataloader">
+<a class="viewcode-back" href="../../../api_autodoc/core.html#chemtorch.core.data_module.DataModule.make_dataloader">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">make_dataloader</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DataLoader</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create a dataloader for the specified key.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            key (str): The key for which to create the dataloader (&#39;train&#39;, &#39;val&#39;, &#39;test&#39;, &#39;predict&#39;, &#39;test_&lt;name&gt;&#39;).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            DataLoader: The created dataloader for the specified dataset key.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: If the dataset for the specified key is not initialized.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># if key == &quot;test&quot;:</span>
+        <span class="c1">#     return self._make_test_dataloader()</span>
+        <span class="c1"># else:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataloader_factory</span><span class="p">(</span>
+            <span class="n">dataset</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_dataset</span><span class="p">(</span><span class="n">key</span><span class="p">),</span> 
+            <span class="n">shuffle</span><span class="o">=</span><span class="p">(</span><span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;train&quot;</span><span class="p">)</span>
+        <span class="p">)</span></div>
+
+    
+    <span class="c1"># TODO: Remove (not needed if custom trainer is implemented that passes the dataloader name directly to the routine)</span>
+<div class="viewcode-block" id="DataModule.maybe_get_test_dataloader_idx_to_suffix">
+<a class="viewcode-back" href="../../../api_autodoc/core.html#chemtorch.core.data_module.DataModule.maybe_get_test_dataloader_idx_to_suffix">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">maybe_get_test_dataloader_idx_to_suffix</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        If multiple named test datasets are initialized by passing a dict with named</span>
+<span class="sd">        test set transforms, return a mapping from dataloader index to suffix.</span>
+<span class="sd">        Otherwise, return None.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Dict[int, str]: A mapping from dataloader index to suffix, or None.</span>
+<span class="sd">            Index 0 is always the main &quot;test&quot; dataset (no suffix).</span>
+<span class="sd">            Indices 1+ correspond to additional test datasets sorted alphabetically.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Get all test dataset names in consistent order</span>
+        <span class="n">sorted_names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_sorted_test_dataset_names</span><span class="p">()</span>
+        
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sorted_names</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        
+        <span class="c1"># Create mapping: index 0 has no suffix, others get suffixes</span>
+        <span class="n">idx_to_suffix</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">sorted_names</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># Main test dataset</span>
+                <span class="k">continue</span>  <span class="c1"># No suffix for index 0</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># Extract suffix from test dataset name</span>
+                <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;test&quot;</span><span class="p">:</span>
+                    <span class="n">suffix</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>  <span class="c1"># This shouldn&#39;t happen since &quot;test&quot; should be first</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">suffix</span> <span class="o">=</span> <span class="n">name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;test_&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="n">name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;test_&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="n">name</span>
+                <span class="n">idx_to_suffix</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">suffix</span>
+        
+        <span class="k">return</span> <span class="n">idx_to_suffix</span></div>
+
+
+    <span class="c1">########## Lightning DataModule Methods ##############################################</span>
+    <span class="c1"># TODO: Optionally, add `prepare_data()` to preprocess datasets and save preprocesssed data to disc.</span>
+    <span class="c1"># TODO: Optionally, move dataset initialization to `setup()` method to allow for lazy loading.</span>
+<div class="viewcode-block" id="DataModule.train_dataloader">
+<a class="viewcode-back" href="../../../api_autodoc/core.html#chemtorch.core.data_module.DataModule.train_dataloader">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">train_dataloader</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_dataloader</span><span class="p">(</span><span class="s2">&quot;train&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DataModule.val_dataloader">
+<a class="viewcode-back" href="../../../api_autodoc/core.html#chemtorch.core.data_module.DataModule.val_dataloader">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">val_dataloader</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_dataloader</span><span class="p">(</span><span class="s2">&quot;val&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DataModule.test_dataloader">
+<a class="viewcode-back" href="../../../api_autodoc/core.html#chemtorch.core.data_module.DataModule.test_dataloader">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_dataloader</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_make_test_dataloader</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="DataModule.predict_dataloader">
+<a class="viewcode-back" href="../../../api_autodoc/core.html#chemtorch.core.data_module.DataModule.predict_dataloader">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">predict_dataloader</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_dataloader</span><span class="p">(</span><span class="s2">&quot;predict&quot;</span><span class="p">)</span></div>
+
+
+    <span class="c1">########### Private Methods ##########################################################</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_sorted_test_dataset_names</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get all test dataset names sorted in a consistent order.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            List[str]: Test dataset names sorted with &quot;test&quot; first, then others alphabetically.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Get all test dataset names (including test_&lt;name&gt; variants)</span>
+        <span class="n">test_dataset_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">name</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_dataset_names</span><span class="p">()</span> <span class="k">if</span> <span class="n">name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;test&quot;</span><span class="p">)]</span>
+        
+        <span class="c1"># Sort to ensure consistent ordering: &quot;test&quot; first, then others alphabetically</span>
+        <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">test_dataset_names</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="p">(</span><span class="n">x</span> <span class="o">!=</span> <span class="s2">&quot;test&quot;</span><span class="p">,</span> <span class="n">x</span><span class="p">))</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_make_test_dataloader</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DataLoader</span> <span class="o">|</span> <span class="n">List</span><span class="p">[</span><span class="n">DataLoader</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create dataloaders for the test datasets. If multiple test datasets are initialized,</span>
+<span class="sd">        it returns a list of dataloaders, one for each test dataset.</span>
+<span class="sd">        </span>
+<span class="sd">        The ordering is consistent with maybe_get_test_dataloader_idx_to_suffix():</span>
+<span class="sd">        - Index 0: main &quot;test&quot; dataset</span>
+<span class="sd">        - Index 1+: additional test datasets sorted alphabetically</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            DataLoader or List[DataLoader]: The created dataloader(s) for the test dataset(s).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Get all test dataset names in consistent order</span>
+        <span class="n">sorted_names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_sorted_test_dataset_names</span><span class="p">()</span>
+        
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sorted_names</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="c1"># Single test dataset</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataloader_factory</span><span class="p">(</span><span class="n">dataset</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">test_dataset</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Multiple test datasets - create list of dataloaders in consistent order</span>
+            <span class="k">return</span> <span class="p">[</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">dataloader_factory</span><span class="p">(</span><span class="n">dataset</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_dataset</span><span class="p">(</span><span class="n">cast</span><span class="p">(</span><span class="n">DatasetKey</span><span class="p">,</span> <span class="n">name</span><span class="p">)),</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">sorted_names</span>
+            <span class="p">]</span></div>
+
+</pre></div>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Anton Zamyatin, Jasper De Landsheere, Esther Heid
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2026 Esther Heid.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

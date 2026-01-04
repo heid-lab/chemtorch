@@ -45,8 +45,8 @@
     <link rel="icon" href="../_static/chemtorch_favicon.png"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Defining Custom Components" href="custom_components.html" />
-    <link rel="prev" title="Components Overview" href="pipeline_overview.html" />
+    <link rel="next" title="Hyperparameter Sweeps" href="sweeps.html" />
+    <link rel="prev" title="CLI Usage" href="cli_usage.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -138,8 +138,8 @@
       
     
     
-    <img src="../_static/chemtorch_logo_dark_lightbackground.png" class="logo__image only-light" alt="ChemTorch documentation - Home"/>
-    <script>document.write(`<img src="../_static/chemtorch_logo_dark_lightbackground.png" class="logo__image only-dark" alt="ChemTorch documentation - Home"/>`);</script>
+    <img src="../_static/chemtorch_logo_light.svg" class="logo__image only-light" alt="ChemTorch documentation - Home"/>
+    <script>document.write(`<img src="../_static/chemtorch_logo_dark.svg" class="logo__image only-dark" alt="ChemTorch documentation - Home"/>`);</script>
   
   
 </a></div>
@@ -160,36 +160,40 @@
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/quick_start.html">Quick Start</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/logging.html">Setup Logging</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/config.html">Understand Configs</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/experiments.html">Create Experiments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/overview.html">ChemTorch Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/config.html">Understanding Configs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/experiments.html">Creating Experiments</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">User Guide</span></p>
 <ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="cli_usage.html">CLI Usage</a></li>
-<li class="toctree-l1"><a class="reference internal" href="config_ref.html">Config Reference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="reproducing_experiments.html">Reproducing Experiments</a></li>
-<li class="toctree-l1"><a class="reference internal" href="inference.html">Inference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="pipeline_overview.html">Components Overview</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Using Your Own Data</a></li>
-<li class="toctree-l1"><a class="reference internal" href="custom_components.html">Defining Custom Components</a></li>
 <li class="toctree-l1"><a class="reference internal" href="sweeps.html">Hyperparameter Sweeps</a></li>
-</ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Advanced Guide</span></p>
-<ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../advanced_guide/reproducibility_tests.html">Reproducibility Tests</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../advanced_guide/hydra.html">Hydra Config Design</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../advanced_guide/props.html">Runtime Properties</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reproducing_experiments.html">Reproducing Experiments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reproducibility_tests.html">Reproducibility Tests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="config_ref.html">Config Reference</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Examples</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../examples/training_curves.html">Training Curves</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/training_curves.html">Performance Curves</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../examples/ood_benchmarking.html">OOD benchmarking</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Developer Guide</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../developer_guide/contributing.html">Contributing</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../developer_guide/framework_structure.html">Framework Structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer_guide/custom_components.html">Defining Custom Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer_guide/props.html">Runtime Properties</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer_guide/hydra.html">Hydra Config Design</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../developer_guide/testing.html">Testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer_guide/contributing.html">Contributing</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api_autodoc/index.html">API Reference</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api_autodoc/components.html">Components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_autodoc/core.html">Core</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_autodoc/utils.html">Utilities</a></li>
+</ul>
+</details></li>
 </ul>
 
     </div>
@@ -330,7 +334,9 @@ document.write(`
   </button>
 `);
 </script>
-
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
 </div></div>
       
     </div>
@@ -346,6 +352,36 @@ document.write(`
     <div id="print-main-content">
         <div id="jb-print-toc">
             
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data-pipeline-overview">Data Pipeline Overview</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#configuring-the-data-pipeline">Configuring the Data Pipeline</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#configuring-the-data-source">Configuring the Data Source</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#singlecsvsource">SingleCSVSource</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#presplitcsvsource">PreSplitCSVSource</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#configuring-the-column-mapper">Configuring the Column Mapper</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#columnfilterandrename">ColumnFilterAndRename</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#configuring-the-data-splitter">Configuring the Data Splitter</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#complete-example">Complete Example</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#defining-config-defaults">Defining Config Defaults</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#customizing-the-data-pipeline">Customizing the Data Pipeline</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#running-inference">Running Inference</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#key-config-differences-vs-training">Key config differences vs. training</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#what-main-py-does-automatically">What <code class="docutils literal notranslate"><span class="pre">main.py</span></code> does automatically</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#minimal-inference-config">Minimal inference config</a></li>
+</ul>
+</li>
+</ul>
+            </nav>
         </div>
     </div>
 </div>
@@ -357,7 +393,250 @@ document.write(`
                   
   <section id="using-your-own-data">
 <span id="custom-dataset"></span><h1>Using Your Own Data<a class="headerlink" href="#using-your-own-data" title="Link to this heading">#</a></h1>
-<p>Coming soon…</p>
+<p>This guide shows how to use your own data with ChemTorch by configuring the <strong>data pipeline</strong>.
+The data pipeline is composed of three main components that you can mix and match:</p>
+<ol class="arabic simple">
+<li><p><strong>Data Source</strong>: loads your raw data (from CSV files, databases, etc.)</p></li>
+<li><p><strong>Column Mapper</strong>: filters and renames columns to match ChemTorch’s expected format</p></li>
+<li><p><strong>Data Splitter</strong>: splits your data into train/val/test sets (optional for pre-split data)</p></li>
+</ol>
+<section id="data-pipeline-overview">
+<h2>Data Pipeline Overview<a class="headerlink" href="#data-pipeline-overview" title="Link to this heading">#</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">SimpleDataPipeline</span></code> orchestrates these three components in sequence:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">raw_data</span> <span class="o">=</span> <span class="n">data_source</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>           <span class="c1"># 1. Load raw data</span>
+<span class="n">processed</span> <span class="o">=</span> <span class="n">column_mapper</span><span class="p">(</span><span class="n">raw_data</span><span class="p">)</span>     <span class="c1"># 2. Map columns</span>
+<span class="n">split_data</span> <span class="o">=</span> <span class="n">data_splitter</span><span class="p">(</span><span class="n">processed</span><span class="p">)</span>   <span class="c1"># 3. Split data (if needed)</span>
+</pre></div>
+</div>
+<p>You configure the pipeline in your Hydra config under <code class="docutils literal notranslate"><span class="pre">data_module.data_pipeline</span></code>.</p>
+</section>
+<section id="configuring-the-data-pipeline">
+<h2>Configuring the Data Pipeline<a class="headerlink" href="#configuring-the-data-pipeline" title="Link to this heading">#</a></h2>
+<section id="configuring-the-data-source">
+<h3>Configuring the Data Source<a class="headerlink" href="#configuring-the-data-source" title="Link to this heading">#</a></h3>
+<p>The data source loads your raw data. ChemTorch provides two built-in options:</p>
+<section id="singlecsvsource">
+<h4>SingleCSVSource<a class="headerlink" href="#singlecsvsource" title="Link to this heading">#</a></h4>
+<p>For loading data from a single CSV file that will be split later:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">data_module</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">data_pipeline</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">data_source</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">_target_</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">chemtorch.components.data_pipeline.data_source.SingleCSVSource</span>
+<span class="w">      </span><span class="nt">data_path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/path/to/your/data.csv</span>
+</pre></div>
+</div>
+</section>
+<section id="presplitcsvsource">
+<h4>PreSplitCSVSource<a class="headerlink" href="#presplitcsvsource" title="Link to this heading">#</a></h4>
+<p>For data already split into separate train/val/test CSV files:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">data_module</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">data_pipeline</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">data_source</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">_target_</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">chemtorch.components.data_pipeline.data_source.PreSplitCSVSource</span>
+<span class="w">      </span><span class="nt">train_path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/path/to/train.csv</span>
+<span class="w">      </span><span class="nt">val_path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/path/to/val.csv</span>
+<span class="w">      </span><span class="nt">test_path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/path/to/test.csv</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>When using <code class="docutils literal notranslate"><span class="pre">PreSplitCSVSource</span></code>, you must use <code class="docutils literal notranslate"><span class="pre">IndexSplitter</span></code> as the data splitter to load a <code class="docutils literal notranslate"><span class="pre">.pkl</span></code> file which partitions the data points by their row indices.</p>
+</div>
+</section>
+</section>
+<section id="configuring-the-column-mapper">
+<h3>Configuring the Column Mapper<a class="headerlink" href="#configuring-the-column-mapper" title="Link to this heading">#</a></h3>
+<p>The column mapper transforms your CSV columns to match ChemTorch’s expected format.
+At minimum, you need a column containing SMILES strings.</p>
+<section id="columnfilterandrename">
+<h4>ColumnFilterAndRename<a class="headerlink" href="#columnfilterandrename" title="Link to this heading">#</a></h4>
+<p>The standard column mapper filters and renames columns:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">data_module</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">data_pipeline</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">column_mapper</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">_target_</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">chemtorch.components.data_pipeline.column_mapper.ColumnFilterAndRename</span>
+<span class="w">      </span><span class="nt">smiles</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;reaction_smiles&quot;</span><span class="w">    </span><span class="c1"># your column name -&gt; ChemTorch&#39;s expected name</span>
+<span class="w">      </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;barrier_kcal_mol&quot;</span><span class="w">    </span><span class="c1"># optional: only needed for training</span>
+</pre></div>
+</div>
+<p>The left side (<code class="docutils literal notranslate"><span class="pre">smiles</span></code>, <code class="docutils literal notranslate"><span class="pre">label</span></code>) is what ChemTorch expects. The right side
+(<code class="docutils literal notranslate"><span class="pre">&quot;reaction_smiles&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;barrier_kcal_mol&quot;</span></code>) is your actual column name in the CSV.</p>
+</section>
+</section>
+<section id="configuring-the-data-splitter">
+<h3>Configuring the Data Splitter<a class="headerlink" href="#configuring-the-data-splitter" title="Link to this heading">#</a></h3>
+<p>The data splitter divides your data into train/validation/test sets.
+ChemTorch provides several splitters for different use cases:</p>
+<div class="pst-scrollable-table-container"><table class="table" id="id1">
+<caption><span class="caption-text">Available data splitters</span><a class="headerlink" href="#id1" title="Link to this table">#</a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>Splitter</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Use case</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">RatioSplitter</span></code></p></td>
+<td><p>Randomly shuffles the data and splits it according to train/val/test ratios (default behavior).</p></td>
+<td><p>Standard train/val/test split.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ScaffoldSplitter</span></code></p></td>
+<td><p>Splits by molecular scaffold (Bemis–Murcko) to test generalization to novel scaffolds.</p></td>
+<td><p>Evaluating scaffold generalization; can split on reactants, products, or both.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">TargetSplitter</span></code></p></td>
+<td><p>Splits by target value range (e.g., low/mid/high barriers).</p></td>
+<td><p>Evaluating extrapolation in property space.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">SizeSplitter</span></code></p></td>
+<td><p>Splits by molecular size (ascending or descending).</p></td>
+<td><p>Evaluating extrapolation to larger/smaller molecules.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ReactionCoreSplitter</span></code></p></td>
+<td><p>Splits by reaction core identity (reaction SMARTS).</p></td>
+<td><p>Evaluating generalization to novel reaction types.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">IndexSplitter</span></code></p></td>
+<td><p>Splits by explicit row indices (requires a <code class="docutils literal notranslate"><span class="pre">.pkl</span></code> file mapping split names to indices).</p></td>
+<td><p>Pre-computed or custom splits.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>For a complete list of available options and parameters, see <code class="docutils literal notranslate"><span class="pre">conf/data_module/data_pipeline/data_splitter/</span></code>.</p>
+</section>
+<section id="complete-example">
+<h3>Complete Example<a class="headerlink" href="#complete-example" title="Link to this heading">#</a></h3>
+<p>Here’s a complete data pipeline config for training on custom data:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">data_module</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">data_pipeline</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">_target_</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">chemtorch.components.data_pipeline.SimpleDataPipeline</span>
+
+<span class="w">    </span><span class="nt">data_source</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">_target_</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">chemtorch.components.data_pipeline.data_source.SingleCSVSource</span>
+<span class="w">      </span><span class="nt">data_path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/path/to/my_reactions.csv</span>
+
+<span class="w">    </span><span class="nt">column_mapper</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">_target_</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">chemtorch.components.data_pipeline.column_mapper.ColumnFilterAndRename</span>
+<span class="w">      </span><span class="nt">smiles</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;rxn_smiles&quot;</span>
+<span class="w">      </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;activation_energy&quot;</span>
+
+<span class="w">    </span><span class="nt">data_splitter</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">_target_</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">chemtorch.components.data_pipeline.data_splitter.RatioSplitter</span>
+<span class="w">      </span><span class="nt">train_ratio</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.8</span>
+<span class="w">      </span><span class="nt">val_ratio</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.1</span>
+<span class="w">      </span><span class="nt">test_ratio</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.1</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="defining-config-defaults">
+<h2>Defining Config Defaults<a class="headerlink" href="#defining-config-defaults" title="Link to this heading">#</a></h2>
+<p>Instead of specifying the full data pipeline inline every time, create reusable config files
+for each dataset under <code class="docutils literal notranslate"><span class="pre">conf/data_module/data_pipeline/</span></code>. This lets you swap data pipelines
+from the CLI without touching your experiment config.</p>
+<p>For example, create <code class="docutils literal notranslate"><span class="pre">conf/data_module/data_pipeline/my_dataset.yaml</span></code>:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">_target_</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">chemtorch.components.data_pipeline.SimpleDataPipeline</span>
+
+<span class="nt">data_source</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">_target_</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">chemtorch.components.data_pipeline.data_source.SingleCSVSource</span>
+<span class="w">  </span><span class="nt">data_path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/path/to/my_dataset.csv</span>
+
+<span class="nt">column_mapper</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">_target_</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">chemtorch.components.data_pipeline.column_mapper.ColumnFilterAndRename</span>
+<span class="w">  </span><span class="nt">smiles</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;rxn_smiles&quot;</span>
+<span class="w">  </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;activation_energy&quot;</span>
+
+<span class="nt">data_splitter</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">_target_</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">chemtorch.components.data_pipeline.data_splitter.RatioSplitter</span>
+<span class="w">  </span><span class="nt">train_ratio</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.8</span>
+<span class="w">  </span><span class="nt">val_ratio</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.1</span>
+<span class="w">  </span><span class="nt">test_ratio</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.1</span>
+</pre></div>
+</div>
+<p>Then, in your experiment config, simply reference it via defaults:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">defaults</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">/data_module/data_pipeline</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_dataset</span>
+</pre></div>
+</div>
+<p>Or swap data pipelines from the CLI:</p>
+<div class="highlight-chemtorch notranslate"><div class="highlight"><pre><span></span><span class="ne">chemtorch</span><span class="w"> </span><span class="gi">experiment</span><span class="o">=</span>my_experiment<span class="w"> </span><span class="gi">data_module.data_pipeline</span><span class="o">=</span>my_dataset
+<span class="ne">chemtorch</span><span class="w"> </span><span class="gi">experiment</span><span class="o">=</span>my_experiment<span class="w"> </span><span class="gi">data_module.data_pipeline</span><span class="o">=</span>other_dataset
+</pre></div>
+</div>
+<p>See <code class="docutils literal notranslate"><span class="pre">conf/data_module/data_pipeline/</span></code> for examples like <code class="docutils literal notranslate"><span class="pre">rdb7_fwd.yaml</span></code>, <code class="docutils literal notranslate"><span class="pre">rgd1.yaml</span></code>, etc.</p>
+</section>
+<section id="customizing-the-data-pipeline">
+<h2>Customizing the Data Pipeline<a class="headerlink" href="#customizing-the-data-pipeline" title="Link to this heading">#</a></h2>
+<p>If the built-in components don’t fit your needs, you can implement custom ones.
+See <a class="reference internal" href="../developer_guide/custom_components.html#custom-components"><span class="std std-ref">Defining Custom Components</span></a> for details on extending ChemTorch.</p>
+</section>
+<section id="running-inference">
+<span id="inference"></span><h2>Running Inference<a class="headerlink" href="#running-inference" title="Link to this heading">#</a></h2>
+<p>Running inference with a pretrained ChemTorch model uses the same data pipeline configuration
+as training, with a few key differences.</p>
+<section id="key-config-differences-vs-training">
+<h3>Key config differences vs. training<a class="headerlink" href="#key-config-differences-vs-training" title="Link to this heading">#</a></h3>
+<p>Set or override the following when running inference (see <a class="reference internal" href="config_ref.html#config-ref"><span class="std std-ref">Config Reference</span></a> for detailed field descriptions):</p>
+<div class="pst-scrollable-table-container"><table class="table" id="id2">
+<caption><span class="caption-text">Inference-specific config tweaks</span><a class="headerlink" href="#id2" title="Link to this table">#</a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>Setting</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">tasks:</span> <span class="pre">[predict]</span></code></p></td>
+<td><p>Required.</p></td>
+</tr>
+<tr class="row-odd"><td><div class="line-block">
+<div class="line"><code class="docutils literal notranslate"><span class="pre">load_model:</span> <span class="pre">true</span></code></div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">ckpt_path:</span> <span class="pre">/path/to/model.ckpt</span></code></div>
+</div>
+</td>
+<td><p>Required to load trained weights.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">predictions_save_path</span></code> <strong>or</strong> <code class="docutils literal notranslate"><span class="pre">predictions_save_dir</span></code></p></td>
+<td><p>Exactly one must be set to write predictions.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">save_predictions_for:</span> <span class="pre">[predict]</span></code></p></td>
+<td><p>Optional; can also be left empty (<code class="docutils literal notranslate"><span class="pre">[]</span></code>) since there is only one data partition.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="what-main-py-does-automatically">
+<h3>What <code class="docutils literal notranslate"><span class="pre">main.py</span></code> does automatically<a class="headerlink" href="#what-main-py-does-automatically" title="Link to this heading">#</a></h3>
+<p>When <code class="docutils literal notranslate"><span class="pre">predict</span></code> is in <code class="docutils literal notranslate"><span class="pre">tasks</span></code>, <code class="docutils literal notranslate"><span class="pre">main.py</span></code> will:</p>
+<ul class="simple">
+<li><p>Clear <code class="docutils literal notranslate"><span class="pre">column_mapper.label</span></code> and <code class="docutils literal notranslate"><span class="pre">data_pipeline.data_splitter</span></code>.</p></li>
+<li><p>Clear <code class="docutils literal notranslate"><span class="pre">routine.standardizer</span></code> so it is loaded from the checkpoint.</p></li>
+<li><p>Enforce that either <code class="docutils literal notranslate"><span class="pre">predictions_save_path</span></code> or <code class="docutils literal notranslate"><span class="pre">predictions_save_dir</span></code> is set.</p></li>
+</ul>
+<p>Even though these are handled automatically, we recommend setting them explicitly
+in the config to keep things clear and reproducible.</p>
+</section>
+<section id="minimal-inference-config">
+<h3>Minimal inference config<a class="headerlink" href="#minimal-inference-config" title="Link to this heading">#</a></h3>
+<p>Below is a minimal patch you can apply on top of your training config:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># ...existing code...</span>
+<span class="nt">tasks</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">predict</span><span class="p p-Indicator">]</span>
+
+<span class="nt">load_model</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="nt">ckpt_path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/path/to/model.ckpt</span>
+
+<span class="nt">predictions_save_path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/path/to/preds.csv</span><span class="w">  </span><span class="c1"># or use predictions_save_dir</span>
+<span class="nt">save_predictions_for</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">predict</span><span class="p p-Indicator">]</span>
+<span class="c1"># ...existing code...</span>
+</pre></div>
+</div>
+<p>You’ll also need to configure the data pipeline to point to your unlabeled data
+(see the sections above for data source, column mapper, and data splitter configuration).</p>
+<p>For a complete example, see <code class="docutils literal notranslate"><span class="pre">conf/experiment/opi_tutorial/inference.yaml</span></code>
+and <code class="docutils literal notranslate"><span class="pre">conf/experiment/opi_tutorial/training.yaml</span></code> for the corresponding training config.</p>
+</section>
+</section>
 </section>
 
 
@@ -372,20 +651,20 @@ document.write(`
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="pipeline_overview.html"
+       href="cli_usage.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Components Overview</p>
+        <p class="prev-next-title">CLI Usage</p>
       </div>
     </a>
     <a class="right-next"
-       href="custom_components.html"
+       href="sweeps.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Defining Custom Components</p>
+        <p class="prev-next-title">Hyperparameter Sweeps</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -395,6 +674,43 @@ document.write(`
             </div>
             
             
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data-pipeline-overview">Data Pipeline Overview</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#configuring-the-data-pipeline">Configuring the Data Pipeline</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#configuring-the-data-source">Configuring the Data Source</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#singlecsvsource">SingleCSVSource</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#presplitcsvsource">PreSplitCSVSource</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#configuring-the-column-mapper">Configuring the Column Mapper</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#columnfilterandrename">ColumnFilterAndRename</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#configuring-the-data-splitter">Configuring the Data Splitter</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#complete-example">Complete Example</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#defining-config-defaults">Defining Config Defaults</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#customizing-the-data-pipeline">Customizing the Data Pipeline</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#running-inference">Running Inference</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#key-config-differences-vs-training">Key config differences vs. training</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#what-main-py-does-automatically">What <code class="docutils literal notranslate"><span class="pre">main.py</span></code> does automatically</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#minimal-inference-config">Minimal inference config</a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
               
             
           </div>
@@ -415,7 +731,7 @@ By Anton Zamyatin, Jasper De Landsheere, Esther Heid
 
   <p class="copyright">
     
-      © Copyright 2025 Esther Heid.
+      © Copyright 2026 Esther Heid.
       <br/>
     
   </p>

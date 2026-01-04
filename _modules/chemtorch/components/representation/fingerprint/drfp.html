@@ -1,0 +1,887 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>chemtorch.components.representation.fingerprint.drfp &#8212; ChemTorch</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../../../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../../../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../../../../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/custom_syntax.css?v=9e2307e4" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../../../../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../../../../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../../../../../_static/documentation_options.js?v=1a9ffd16"></script>
+    <script src="../../../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/chemtorch/components/representation/fingerprint/drfp';</script>
+    <link rel="icon" href="../../../../../_static/chemtorch_favicon.png"/>
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../../../_static/chemtorch_logo_light.svg" class="logo__image only-light" alt="ChemTorch documentation - Home"/>
+    <script>document.write(`<img src="../../../../../_static/chemtorch_logo_dark.svg" class="logo__image only-dark" alt="ChemTorch documentation - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../../../getting_started/quick_start.html">Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../getting_started/logging.html">Setup Logging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../getting_started/overview.html">ChemTorch Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../getting_started/config.html">Understanding Configs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../getting_started/experiments.html">Creating Experiments</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../../../user_guide/cli_usage.html">CLI Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../user_guide/custom_data.html">Using Your Own Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../user_guide/sweeps.html">Hyperparameter Sweeps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../user_guide/reproducing_experiments.html">Reproducing Experiments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../user_guide/reproducibility_tests.html">Reproducibility Tests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../user_guide/config_ref.html">Config Reference</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Examples</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../../../examples/training_curves.html">Performance Curves</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../examples/ood_benchmarking.html">OOD benchmarking</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Developer Guide</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../../../developer_guide/custom_components.html">Defining Custom Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../developer_guide/props.html">Runtime Properties</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../developer_guide/hydra.html">Hydra Config Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../developer_guide/testing.html">Testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../developer_guide/contributing.html">Contributing</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../api_autodoc/index.html">API Reference</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../api_autodoc/components.html">Components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../api_autodoc/core.html">Core</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../api_autodoc/utils.html">Utilities</a></li>
+</ul>
+</details></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+<a href="https://github.com/heid-lab/chemtorch" target="_blank"
+   class="btn btn-sm btn-source-repository-button"
+   title="Source repository"
+   data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+
+</a>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1></h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for chemtorch.components.representation.fingerprint.drfp</h1><div class="highlight"><pre>
+<span></span><span class="c1"># started from code from https://github.com/reymond-group/drfp/blob/main/src/drfp/fingerprint.py, MIT License, Copyright (c) 2021 Daniel Probst</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">defaultdict</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">hashlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">blake2b</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Set</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">rdkit</span><span class="w"> </span><span class="kn">import</span> <span class="n">RDLogger</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">rdkit.Chem</span><span class="w"> </span><span class="kn">import</span> <span class="n">AllChem</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">rdkit.Chem.rdchem</span><span class="w"> </span><span class="kn">import</span> <span class="n">Mol</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tqdm</span><span class="w"> </span><span class="kn">import</span> <span class="n">tqdm</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">chemtorch.components.representation</span><span class="w"> </span><span class="kn">import</span> <span class="n">AbstractRepresentation</span>
+
+<span class="n">RDLogger</span><span class="o">.</span><span class="n">DisableLog</span><span class="p">(</span><span class="s2">&quot;rdApp.*&quot;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="DRFP">
+<a class="viewcode-back" href="../../../../../api_autodoc/components.html#chemtorch.components.representation.fingerprint.drfp.DRFP">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">DRFP</span><span class="p">(</span><span class="n">AbstractRepresentation</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Stateless class for constructing DRFP (Differential Reaction Fingerprints).</span>
+
+<span class="sd">    This class provides a `forward()` method that takes a reaction SMILES string</span>
+<span class="sd">    and returns a PyTorch Tensor representing the folded DRFP fingerprint.</span>
+<span class="sd">    It utilizes the DrfpEncoder class for the core fingerprint generation logic.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="DRFP.__init__">
+<a class="viewcode-back" href="../../../../../api_autodoc/components.html#chemtorch.components.representation.fingerprint.drfp.DRFP.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">n_folded_length</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2048</span><span class="p">,</span>
+        <span class="n">min_radius</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="n">radius</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
+        <span class="n">rings</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">root_central_atom</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">include_hydrogens</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initializes the DRFP representation creator.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            n_folded_length (int, optional): The length of the folded fingerprint.</span>
+<span class="sd">                Default is 2048.</span>
+<span class="sd">            min_radius (int, optional): The minimum radius for substructure extraction.</span>
+<span class="sd">                Default is 0 (includes single atoms).</span>
+<span class="sd">            radius (int, optional): The maximum radius for substructure extraction.</span>
+<span class="sd">                Default is 3 (corresponds to DRFP6).</span>
+<span class="sd">            rings (bool, optional): Whether to include full rings as substructures.</span>
+<span class="sd">                Default is True.</span>
+<span class="sd">            root_central_atom (bool, optional): Whether to root the central atom</span>
+<span class="sd">                of substructures when generating SMILES. Default is True.</span>
+<span class="sd">            include_hydrogens (bool, optional): Whether to include hydrogens in the</span>
+<span class="sd">                molecular representation. Default is False.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_folded_length</span> <span class="o">=</span> <span class="n">n_folded_length</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">min_radius</span> <span class="o">=</span> <span class="n">min_radius</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">radius</span> <span class="o">=</span> <span class="n">radius</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rings</span> <span class="o">=</span> <span class="n">rings</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">root_central_atom</span> <span class="o">=</span> <span class="n">root_central_atom</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">include_hydrogens</span> <span class="o">=</span> <span class="n">include_hydrogens</span></div>
+
+
+<div class="viewcode-block" id="DRFP.construct">
+<a class="viewcode-back" href="../../../../../api_autodoc/components.html#chemtorch.components.representation.fingerprint.drfp.DRFP.construct">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">construct</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">smiles</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generates a DRFP fingerprint for a single reaction SMILES string.</span>
+
+<span class="sd">        The method uses `DrfpEncoder.internal_encode` to get the hashed difference</span>
+<span class="sd">        features of the reaction and then `DrfpEncoder.fold` to create the</span>
+<span class="sd">        final binary fingerprint vector as a NumPy array, which is then converted</span>
+<span class="sd">        to a PyTorch Tensor.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            smiles: The reaction SMILES string (e.g., &quot;R1.R2&gt;A&gt;P1.P2&quot;).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A PyTorch Tensor (dtype=torch.float32) representing the folded DRFP fingerprint.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            NoReactionError: If the input SMILES is not a valid reaction SMILES</span>
+<span class="sd">                             (as detected by `DrfpEncoder.internal_encode`).</span>
+<span class="sd">            RuntimeError: For other errors encountered during fingerprint generation,</span>
+<span class="sd">                          wrapping the original exception.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">hashed_diff_np</span><span class="p">,</span> <span class="n">_shingles_diff_bytes</span> <span class="o">=</span> <span class="n">DRFPUtil</span><span class="o">.</span><span class="n">internal_encode</span><span class="p">(</span>
+            <span class="n">smiles</span><span class="p">,</span>
+            <span class="n">radius</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">radius</span><span class="p">,</span>
+            <span class="n">min_radius</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">min_radius</span><span class="p">,</span>
+            <span class="n">rings</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">rings</span><span class="p">,</span>
+            <span class="n">get_atom_indices</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">root_central_atom</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">root_central_atom</span><span class="p">,</span>
+            <span class="n">include_hydrogens</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">include_hydrogens</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">fingerprint_np</span><span class="p">,</span> <span class="n">_on_bits</span> <span class="o">=</span> <span class="n">DRFPUtil</span><span class="o">.</span><span class="n">fold</span><span class="p">(</span>
+            <span class="n">hashed_diff_np</span><span class="p">,</span>
+            <span class="n">length</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">n_folded_length</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">fingerprint_np</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="DRFPUtil">
+<a class="viewcode-back" href="../../../../../api_autodoc/components.html#chemtorch.components.representation.fingerprint.drfp.DRFPUtil">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">DRFPUtil</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A utility class for encoding SMILES as drfp fingerprints.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="DRFPUtil.shingling_from_mol">
+<a class="viewcode-back" href="../../../../../api_autodoc/components.html#chemtorch.components.representation.fingerprint.drfp.DRFPUtil.shingling_from_mol">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">shingling_from_mol</span><span class="p">(</span>
+        <span class="n">in_mol</span><span class="p">:</span> <span class="n">Mol</span><span class="p">,</span>
+        <span class="n">radius</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
+        <span class="n">rings</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">min_radius</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="n">get_atom_indices</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">root_central_atom</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">include_hydrogens</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Set</span><span class="p">[</span><span class="nb">int</span><span class="p">]]]]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates a molecular shingling from a RDKit molecule (rdkit.Chem.rdchem.Mol).</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            in_mol: A RDKit molecule instance</span>
+<span class="sd">            radius: The drfp radius (a radius of 3 corresponds to drfp6)</span>
+<span class="sd">            rings: Whether or not to include rings in the shingling</span>
+<span class="sd">            min_radius: The minimum radius that is used to extract n-grams</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The molecular shingling.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">include_hydrogens</span><span class="p">:</span>
+            <span class="n">in_mol</span> <span class="o">=</span> <span class="n">AllChem</span><span class="o">.</span><span class="n">AddHs</span><span class="p">(</span><span class="n">in_mol</span><span class="p">)</span>
+
+        <span class="n">shingling</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">atom_indices</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">rings</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">ring</span> <span class="ow">in</span> <span class="n">AllChem</span><span class="o">.</span><span class="n">GetSymmSSSR</span><span class="p">(</span><span class="n">in_mol</span><span class="p">):</span>
+                <span class="n">bonds</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+                <span class="n">ring</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">ring</span><span class="p">)</span>
+                <span class="n">indices</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">ring</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">ring</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">i</span> <span class="o">!=</span> <span class="n">j</span><span class="p">:</span>
+                            <span class="n">indices</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+                            <span class="n">indices</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">j</span><span class="p">)</span>
+                            <span class="n">bond</span> <span class="o">=</span> <span class="n">in_mol</span><span class="o">.</span><span class="n">GetBondBetweenAtoms</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">)</span>
+                            <span class="k">if</span> <span class="n">bond</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                                <span class="n">bonds</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">bond</span><span class="o">.</span><span class="n">GetIdx</span><span class="p">())</span>
+
+                <span class="n">ngram</span> <span class="o">=</span> <span class="n">AllChem</span><span class="o">.</span><span class="n">MolToSmiles</span><span class="p">(</span>
+                    <span class="n">AllChem</span><span class="o">.</span><span class="n">PathToSubmol</span><span class="p">(</span><span class="n">in_mol</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">bonds</span><span class="p">)),</span>
+                    <span class="n">canonical</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                    <span class="n">allHsExplicit</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+
+                <span class="n">shingling</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ngram</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">get_atom_indices</span><span class="p">:</span>
+                    <span class="n">atom_indices</span><span class="p">[</span><span class="n">ngram</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">indices</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">min_radius</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">atom</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">in_mol</span><span class="o">.</span><span class="n">GetAtoms</span><span class="p">()):</span>
+                <span class="n">ngram</span> <span class="o">=</span> <span class="n">atom</span><span class="o">.</span><span class="n">GetSmarts</span><span class="p">()</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+                <span class="n">shingling</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ngram</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">get_atom_indices</span><span class="p">:</span>
+                    <span class="n">atom_indices</span><span class="p">[</span><span class="n">ngram</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">set</span><span class="p">([</span><span class="n">atom</span><span class="o">.</span><span class="n">GetIdx</span><span class="p">()]))</span>
+
+        <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">in_mol</span><span class="o">.</span><span class="n">GetAtoms</span><span class="p">()):</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">radius</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+                <span class="n">p</span> <span class="o">=</span> <span class="n">AllChem</span><span class="o">.</span><span class="n">FindAtomEnvironmentOfRadiusN</span><span class="p">(</span>
+                    <span class="n">in_mol</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">useHs</span><span class="o">=</span><span class="n">include_hydrogens</span>
+                <span class="p">)</span>
+                <span class="n">amap</span> <span class="o">=</span> <span class="p">{}</span>
+                <span class="n">submol</span> <span class="o">=</span> <span class="n">AllChem</span><span class="o">.</span><span class="n">PathToSubmol</span><span class="p">(</span><span class="n">in_mol</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">atomMap</span><span class="o">=</span><span class="n">amap</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">index</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">amap</span><span class="p">:</span>
+                    <span class="k">continue</span>
+
+                <span class="n">smiles</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+                <span class="k">if</span> <span class="n">root_central_atom</span><span class="p">:</span>
+                    <span class="n">smiles</span> <span class="o">=</span> <span class="n">AllChem</span><span class="o">.</span><span class="n">MolToSmiles</span><span class="p">(</span>
+                        <span class="n">submol</span><span class="p">,</span>
+                        <span class="n">rootedAtAtom</span><span class="o">=</span><span class="n">amap</span><span class="p">[</span><span class="n">index</span><span class="p">],</span>
+                        <span class="n">canonical</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                        <span class="n">allHsExplicit</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                    <span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">smiles</span> <span class="o">=</span> <span class="n">AllChem</span><span class="o">.</span><span class="n">MolToSmiles</span><span class="p">(</span>
+                        <span class="n">submol</span><span class="p">,</span>
+                        <span class="n">canonical</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                        <span class="n">allHsExplicit</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                    <span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">smiles</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+                    <span class="n">shingling</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">smiles</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">))</span>
+                    <span class="k">if</span> <span class="n">get_atom_indices</span><span class="p">:</span>
+                        <span class="n">atom_indices</span><span class="p">[</span><span class="n">smiles</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">amap</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">root_central_atom</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">atom_indices</span><span class="p">:</span>
+                <span class="n">atom_indices</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">([</span><span class="nb">frozenset</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">atom_indices</span><span class="p">[</span><span class="n">key</span><span class="p">]]))</span>
+
+        <span class="c1"># Set ensures that the same shingle is not hashed multiple times</span>
+        <span class="c1"># (which would not change the hash, since there would be no new minima)</span>
+        <span class="k">if</span> <span class="n">get_atom_indices</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">shingling</span><span class="p">)),</span> <span class="n">atom_indices</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">shingling</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="DRFPUtil.internal_encode">
+<a class="viewcode-back" href="../../../../../api_autodoc/components.html#chemtorch.components.representation.fingerprint.drfp.DRFPUtil.internal_encode">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">internal_encode</span><span class="p">(</span>
+        <span class="n">in_smiles</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">radius</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
+        <span class="n">min_radius</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="n">rings</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">get_atom_indices</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">root_central_atom</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">include_hydrogens</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span>
+        <span class="n">Tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span>
+        <span class="n">Tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Set</span><span class="p">[</span><span class="nb">int</span><span class="p">]]]]]],</span>
+    <span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates an drfp array from a reaction SMILES string.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            in_smiles: A valid reaction SMILES string</span>
+<span class="sd">            radius: The drfp radius (a radius of 3 corresponds to drfp6)</span>
+<span class="sd">            min_radius: The minimum radius that is used to extract n-grams</span>
+<span class="sd">            rings: Whether or not to include rings in the shingling</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A tuple with two arrays, the first containing the drfp hash values, the second the substructure SMILES</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">atom_indices</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">atom_indices</span><span class="p">[</span><span class="s2">&quot;reactants&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">atom_indices</span><span class="p">[</span><span class="s2">&quot;products&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="n">sides</span> <span class="o">=</span> <span class="n">in_smiles</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;&gt;&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sides</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;The following is not a valid reaction SMILES: &#39;</span><span class="si">{</span><span class="n">in_smiles</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sides</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">sides</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+=</span> <span class="s2">&quot;.&quot;</span> <span class="o">+</span> <span class="n">sides</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="n">left</span> <span class="o">=</span> <span class="n">sides</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)</span>
+        <span class="n">right</span> <span class="o">=</span> <span class="n">sides</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)</span>
+
+        <span class="n">left_shingles</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="n">right_shingles</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">left</span><span class="p">:</span>
+            <span class="n">mol</span> <span class="o">=</span> <span class="n">AllChem</span><span class="o">.</span><span class="n">MolFromSmiles</span><span class="p">(</span><span class="n">l</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">mol</span><span class="p">:</span>
+                <span class="n">atom_indices</span><span class="p">[</span><span class="s2">&quot;reactants&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+                <span class="k">continue</span>
+
+            <span class="k">if</span> <span class="n">get_atom_indices</span><span class="p">:</span>
+                <span class="n">sh</span><span class="p">,</span> <span class="n">ai</span> <span class="o">=</span> <span class="n">DRFPUtil</span><span class="o">.</span><span class="n">shingling_from_mol</span><span class="p">(</span>
+                    <span class="n">mol</span><span class="p">,</span>
+                    <span class="n">radius</span><span class="o">=</span><span class="n">radius</span><span class="p">,</span>
+                    <span class="n">rings</span><span class="o">=</span><span class="n">rings</span><span class="p">,</span>
+                    <span class="n">min_radius</span><span class="o">=</span><span class="n">min_radius</span><span class="p">,</span>
+                    <span class="n">get_atom_indices</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                    <span class="n">root_central_atom</span><span class="o">=</span><span class="n">root_central_atom</span><span class="p">,</span>
+                    <span class="n">include_hydrogens</span><span class="o">=</span><span class="n">include_hydrogens</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="n">atom_indices</span><span class="p">[</span><span class="s2">&quot;reactants&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ai</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">sh</span> <span class="o">=</span> <span class="n">DRFPUtil</span><span class="o">.</span><span class="n">shingling_from_mol</span><span class="p">(</span>
+                    <span class="n">mol</span><span class="p">,</span>
+                    <span class="n">radius</span><span class="o">=</span><span class="n">radius</span><span class="p">,</span>
+                    <span class="n">rings</span><span class="o">=</span><span class="n">rings</span><span class="p">,</span>
+                    <span class="n">min_radius</span><span class="o">=</span><span class="n">min_radius</span><span class="p">,</span>
+                    <span class="n">root_central_atom</span><span class="o">=</span><span class="n">root_central_atom</span><span class="p">,</span>
+                    <span class="n">include_hydrogens</span><span class="o">=</span><span class="n">include_hydrogens</span><span class="p">,</span>
+                <span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">sh</span><span class="p">:</span>
+                <span class="n">right_shingles</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">right</span><span class="p">:</span>
+            <span class="n">mol</span> <span class="o">=</span> <span class="n">AllChem</span><span class="o">.</span><span class="n">MolFromSmiles</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">mol</span><span class="p">:</span>
+                <span class="n">atom_indices</span><span class="p">[</span><span class="s2">&quot;products&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+                <span class="k">continue</span>
+
+            <span class="k">if</span> <span class="n">get_atom_indices</span><span class="p">:</span>
+                <span class="n">sh</span><span class="p">,</span> <span class="n">ai</span> <span class="o">=</span> <span class="n">DRFPUtil</span><span class="o">.</span><span class="n">shingling_from_mol</span><span class="p">(</span>
+                    <span class="n">mol</span><span class="p">,</span>
+                    <span class="n">radius</span><span class="o">=</span><span class="n">radius</span><span class="p">,</span>
+                    <span class="n">rings</span><span class="o">=</span><span class="n">rings</span><span class="p">,</span>
+                    <span class="n">min_radius</span><span class="o">=</span><span class="n">min_radius</span><span class="p">,</span>
+                    <span class="n">get_atom_indices</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                    <span class="n">root_central_atom</span><span class="o">=</span><span class="n">root_central_atom</span><span class="p">,</span>
+                    <span class="n">include_hydrogens</span><span class="o">=</span><span class="n">include_hydrogens</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="n">atom_indices</span><span class="p">[</span><span class="s2">&quot;products&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ai</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">sh</span> <span class="o">=</span> <span class="n">DRFPUtil</span><span class="o">.</span><span class="n">shingling_from_mol</span><span class="p">(</span>
+                    <span class="n">mol</span><span class="p">,</span>
+                    <span class="n">radius</span><span class="o">=</span><span class="n">radius</span><span class="p">,</span>
+                    <span class="n">rings</span><span class="o">=</span><span class="n">rings</span><span class="p">,</span>
+                    <span class="n">min_radius</span><span class="o">=</span><span class="n">min_radius</span><span class="p">,</span>
+                    <span class="n">root_central_atom</span><span class="o">=</span><span class="n">root_central_atom</span><span class="p">,</span>
+                    <span class="n">include_hydrogens</span><span class="o">=</span><span class="n">include_hydrogens</span><span class="p">,</span>
+                <span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">sh</span><span class="p">:</span>
+                <span class="n">left_shingles</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+
+        <span class="n">s</span> <span class="o">=</span> <span class="n">right_shingles</span><span class="o">.</span><span class="n">symmetric_difference</span><span class="p">(</span><span class="n">left_shingles</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">get_atom_indices</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">DRFPUtil</span><span class="o">.</span><span class="n">hash</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">s</span><span class="p">)),</span> <span class="nb">list</span><span class="p">(</span><span class="n">s</span><span class="p">),</span> <span class="n">atom_indices</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">DRFPUtil</span><span class="o">.</span><span class="n">hash</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">s</span><span class="p">)),</span> <span class="nb">list</span><span class="p">(</span><span class="n">s</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DRFPUtil.hash">
+<a class="viewcode-back" href="../../../../../api_autodoc/components.html#chemtorch.components.representation.fingerprint.drfp.DRFPUtil.hash">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">hash</span><span class="p">(</span><span class="n">shingling</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Directly hash all the SMILES in a shingling to a 32-bit integer.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            shingling: A list of n-grams</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A list of hashed n-grams</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">hash_values</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">shingling</span><span class="p">:</span>
+            <span class="c1"># Convert to signed 32-bit by taking modulo 2^32 and subtracting 2^32 if &gt;= 2^31</span>
+            <span class="n">h</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">blake2b</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">digest_size</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">(),</span> <span class="mi">16</span><span class="p">)</span>
+            <span class="n">h</span> <span class="o">=</span> <span class="n">h</span> <span class="o">&amp;</span> <span class="mh">0xFFFFFFFF</span>  <span class="c1"># Ensure 32-bit</span>
+            <span class="k">if</span> <span class="n">h</span> <span class="o">&gt;=</span> <span class="mh">0x80000000</span><span class="p">:</span>  <span class="c1"># If &gt;= 2^31</span>
+                <span class="n">h</span> <span class="o">-=</span> <span class="mh">0x100000000</span>  <span class="c1"># Subtract 2^32 to make negative</span>
+            <span class="n">hash_values</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">h</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">hash_values</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DRFPUtil.fold">
+<a class="viewcode-back" href="../../../../../api_autodoc/components.html#chemtorch.components.representation.fingerprint.drfp.DRFPUtil.fold">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">fold</span><span class="p">(</span>
+        <span class="n">hash_values</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">length</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2048</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Folds the hash values to a binary vector of a given length.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            hash_value: An array containing the hash values</span>
+<span class="sd">            length: The length of the folded fingerprint</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A tuple containing the folded fingerprint and the indices of the on bits</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">folded</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">length</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
+        <span class="n">on_bits</span> <span class="o">=</span> <span class="n">hash_values</span> <span class="o">%</span> <span class="n">length</span>
+        <span class="n">folded</span><span class="p">[</span><span class="n">on_bits</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+
+        <span class="k">return</span> <span class="n">folded</span><span class="p">,</span> <span class="n">on_bits</span></div>
+
+
+<div class="viewcode-block" id="DRFPUtil.encode">
+<a class="viewcode-back" href="../../../../../api_autodoc/components.html#chemtorch.components.representation.fingerprint.drfp.DRFPUtil.encode">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">encode</span><span class="p">(</span>
+        <span class="n">X</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Iterable</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
+        <span class="n">n_folded_length</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2048</span><span class="p">,</span>
+        <span class="n">min_radius</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="n">radius</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
+        <span class="n">rings</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">mapping</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">atom_index_mapping</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">root_central_atom</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">include_hydrogens</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">show_progress_bar</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span>
+        <span class="n">List</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span>
+        <span class="n">Tuple</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]]],</span>
+        <span class="n">Tuple</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]]],</span>
+        <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Set</span><span class="p">[</span><span class="nb">int</span><span class="p">]]]]]],</span>
+    <span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Encodes a list of reaction SMILES using the drfp fingerprint.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            X: An iterable (e.g. List) of reaction SMILES or a single reaction SMILES to be encoded</span>
+<span class="sd">            n_folded_length: The folded length of the fingerprint (the parameter for the modulo hashing)</span>
+<span class="sd">            min_radius: The minimum radius of a substructure (0 includes single atoms)</span>
+<span class="sd">            radius: The maximum radius of a substructure</span>
+<span class="sd">            rings: Whether to include full rings as substructures</span>
+<span class="sd">            mapping: Return a feature to substructure mapping in addition to the fingerprints</span>
+<span class="sd">            atom_index_mapping: Return the atom indices of mapped substructures for each reaction</span>
+<span class="sd">            root_central_atom: Whether to root the central atom of substructures when generating SMILES</span>
+<span class="sd">            show_progress_bar: Whether to show a progress bar when encoding reactions</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A list of drfp fingerprints or, if mapping is enabled, a tuple containing a list of drfp fingerprints and a mapping dict.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">X</span> <span class="o">=</span> <span class="p">[</span><span class="n">X</span><span class="p">]</span>
+
+        <span class="n">show_progress_bar</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">show_progress_bar</span>
+
+        <span class="c1"># If mapping is required for atom_index_mapping</span>
+        <span class="k">if</span> <span class="n">atom_index_mapping</span><span class="p">:</span>
+            <span class="n">mapping</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">result_map</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">set</span><span class="p">)</span>
+        <span class="n">atom_index_maps</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="nb">enumerate</span><span class="p">(</span><span class="n">X</span><span class="p">),</span> <span class="n">total</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">X</span><span class="p">),</span> <span class="n">disable</span><span class="o">=</span><span class="n">show_progress_bar</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">atom_index_mapping</span><span class="p">:</span>
+                <span class="n">hashed_diff</span><span class="p">,</span> <span class="n">smiles_diff</span><span class="p">,</span> <span class="n">atom_index_map</span> <span class="o">=</span> <span class="n">DRFPUtil</span><span class="o">.</span><span class="n">internal_encode</span><span class="p">(</span>
+                    <span class="n">x</span><span class="p">,</span>
+                    <span class="n">min_radius</span><span class="o">=</span><span class="n">min_radius</span><span class="p">,</span>
+                    <span class="n">radius</span><span class="o">=</span><span class="n">radius</span><span class="p">,</span>
+                    <span class="n">rings</span><span class="o">=</span><span class="n">rings</span><span class="p">,</span>
+                    <span class="n">get_atom_indices</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                    <span class="n">root_central_atom</span><span class="o">=</span><span class="n">root_central_atom</span><span class="p">,</span>
+                    <span class="n">include_hydrogens</span><span class="o">=</span><span class="n">include_hydrogens</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">hashed_diff</span><span class="p">,</span> <span class="n">smiles_diff</span> <span class="o">=</span> <span class="n">DRFPUtil</span><span class="o">.</span><span class="n">internal_encode</span><span class="p">(</span>
+                    <span class="n">x</span><span class="p">,</span>
+                    <span class="n">min_radius</span><span class="o">=</span><span class="n">min_radius</span><span class="p">,</span>
+                    <span class="n">radius</span><span class="o">=</span><span class="n">radius</span><span class="p">,</span>
+                    <span class="n">rings</span><span class="o">=</span><span class="n">rings</span><span class="p">,</span>
+                    <span class="n">root_central_atom</span><span class="o">=</span><span class="n">root_central_atom</span><span class="p">,</span>
+                    <span class="n">include_hydrogens</span><span class="o">=</span><span class="n">include_hydrogens</span><span class="p">,</span>
+                <span class="p">)</span>
+
+            <span class="n">difference_folded</span><span class="p">,</span> <span class="n">on_bits</span> <span class="o">=</span> <span class="n">DRFPUtil</span><span class="o">.</span><span class="n">fold</span><span class="p">(</span>
+                <span class="n">hashed_diff</span><span class="p">,</span>
+                <span class="n">length</span><span class="o">=</span><span class="n">n_folded_length</span><span class="p">,</span>
+            <span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">mapping</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">unfolded_index</span><span class="p">,</span> <span class="n">folded_index</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">on_bits</span><span class="p">):</span>
+                    <span class="n">result_map</span><span class="p">[</span><span class="n">folded_index</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
+                        <span class="n">smiles_diff</span><span class="p">[</span><span class="n">unfolded_index</span><span class="p">]</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+                    <span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">atom_index_mapping</span><span class="p">:</span>
+                <span class="n">aidx_bit_map</span> <span class="o">=</span> <span class="p">{}</span>
+                <span class="n">aidx_bit_map</span><span class="p">[</span><span class="s2">&quot;reactants&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="n">aidx_bit_map</span><span class="p">[</span><span class="s2">&quot;products&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
+                <span class="k">for</span> <span class="n">reactant</span> <span class="ow">in</span> <span class="n">atom_index_map</span><span class="p">[</span><span class="s2">&quot;reactants&quot;</span><span class="p">]:</span>
+                    <span class="n">r</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">reactant</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                        <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">smiles_diff</span><span class="p">:</span>
+                            <span class="n">idx</span> <span class="o">=</span> <span class="n">smiles_diff</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+                            <span class="n">r</span><span class="p">[</span><span class="n">on_bits</span><span class="p">[</span><span class="n">idx</span><span class="p">]]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+                    <span class="n">aidx_bit_map</span><span class="p">[</span><span class="s2">&quot;reactants&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+
+                <span class="k">for</span> <span class="n">product</span> <span class="ow">in</span> <span class="n">atom_index_map</span><span class="p">[</span><span class="s2">&quot;products&quot;</span><span class="p">]:</span>
+                    <span class="n">r</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">product</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                        <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">smiles_diff</span><span class="p">:</span>
+                            <span class="n">idx</span> <span class="o">=</span> <span class="n">smiles_diff</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+                            <span class="n">r</span><span class="p">[</span><span class="n">on_bits</span><span class="p">[</span><span class="n">idx</span><span class="p">]]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+                    <span class="n">aidx_bit_map</span><span class="p">[</span><span class="s2">&quot;products&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+
+                <span class="n">atom_index_maps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">aidx_bit_map</span><span class="p">)</span>
+
+            <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">difference_folded</span><span class="p">)</span>
+
+        <span class="n">r</span> <span class="o">=</span> <span class="p">[</span><span class="n">result</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">mapping</span><span class="p">:</span>
+            <span class="n">r</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">result_map</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">atom_index_mapping</span><span class="p">:</span>
+            <span class="n">r</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">atom_index_maps</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">r</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">r</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">r</span><span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Anton Zamyatin, Jasper De Landsheere, Esther Heid
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2026 Esther Heid.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../../../../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

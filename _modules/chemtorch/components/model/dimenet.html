@@ -1,0 +1,1341 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>chemtorch.components.model.dimenet &#8212; ChemTorch</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../../../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/custom_syntax.css?v=9e2307e4" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../../../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../../../../_static/documentation_options.js?v=1a9ffd16"></script>
+    <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/chemtorch/components/model/dimenet';</script>
+    <link rel="icon" href="../../../../_static/chemtorch_favicon.png"/>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../../_static/chemtorch_logo_light.svg" class="logo__image only-light" alt="ChemTorch documentation - Home"/>
+    <script>document.write(`<img src="../../../../_static/chemtorch_logo_dark.svg" class="logo__image only-dark" alt="ChemTorch documentation - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../../getting_started/quick_start.html">Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../getting_started/logging.html">Setup Logging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../getting_started/overview.html">ChemTorch Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../getting_started/config.html">Understanding Configs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../getting_started/experiments.html">Creating Experiments</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../../user_guide/cli_usage.html">CLI Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user_guide/custom_data.html">Using Your Own Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user_guide/sweeps.html">Hyperparameter Sweeps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user_guide/reproducing_experiments.html">Reproducing Experiments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user_guide/reproducibility_tests.html">Reproducibility Tests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user_guide/config_ref.html">Config Reference</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Examples</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../../examples/training_curves.html">Performance Curves</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../examples/ood_benchmarking.html">OOD benchmarking</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Developer Guide</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../../developer_guide/custom_components.html">Defining Custom Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../developer_guide/props.html">Runtime Properties</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../developer_guide/hydra.html">Hydra Config Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../developer_guide/testing.html">Testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../developer_guide/contributing.html">Contributing</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../api_autodoc/index.html">API Reference</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../api_autodoc/components.html">Components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../api_autodoc/core.html">Core</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../api_autodoc/utils.html">Utilities</a></li>
+</ul>
+</details></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+<a href="https://github.com/heid-lab/chemtorch" target="_blank"
+   class="btn btn-sm btn-source-repository-button"
+   title="Source repository"
+   data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+
+</a>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1></h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for chemtorch.components.model.dimenet</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">functools</span><span class="w"> </span><span class="kn">import</span> <span class="n">partial</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">math</span><span class="w"> </span><span class="kn">import</span> <span class="n">pi</span> <span class="k">as</span> <span class="n">PI</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">math</span><span class="w"> </span><span class="kn">import</span> <span class="n">sqrt</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch</span><span class="w"> </span><span class="kn">import</span> <span class="n">Tensor</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch.nn</span><span class="w"> </span><span class="kn">import</span> <span class="n">Embedding</span><span class="p">,</span> <span class="n">Linear</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch_geometric.nn</span><span class="w"> </span><span class="kn">import</span> <span class="n">radius_graph</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch_geometric.nn.inits</span><span class="w"> </span><span class="kn">import</span> <span class="n">glorot_orthogonal</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch_geometric.nn.resolver</span><span class="w"> </span><span class="kn">import</span> <span class="n">activation_resolver</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch_geometric.typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">SparseTensor</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch_geometric.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">scatter</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch_geometric.data</span><span class="w"> </span><span class="kn">import</span> <span class="n">Batch</span>
+
+
+<div class="viewcode-block" id="Envelope">
+<a class="viewcode-back" href="../../../../api_autodoc/components.html#chemtorch.components.model.dimenet.Envelope">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Envelope</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<div class="viewcode-block" id="Envelope.__init__">
+<a class="viewcode-back" href="../../../../api_autodoc/components.html#chemtorch.components.model.dimenet.Envelope.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exponent</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">p</span> <span class="o">=</span> <span class="n">exponent</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">a</span> <span class="o">=</span> <span class="o">-</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">p</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">p</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">b</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">p</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">p</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">c</span> <span class="o">=</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">p</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">p</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span></div>
+
+
+<div class="viewcode-block" id="Envelope.forward">
+<a class="viewcode-back" href="../../../../api_autodoc/components.html#chemtorch.components.model.dimenet.Envelope.forward">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
+        <span class="n">p</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">p</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">a</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">c</span>
+        <span class="n">x_pow_p0</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">pow</span><span class="p">(</span><span class="n">p</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">x_pow_p1</span> <span class="o">=</span> <span class="n">x_pow_p0</span> <span class="o">*</span> <span class="n">x</span>
+        <span class="n">x_pow_p2</span> <span class="o">=</span> <span class="n">x_pow_p1</span> <span class="o">*</span> <span class="n">x</span>
+        <span class="k">return</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="n">x</span> <span class="o">+</span> <span class="n">a</span> <span class="o">*</span> <span class="n">x_pow_p0</span> <span class="o">+</span> <span class="n">b</span> <span class="o">*</span> <span class="n">x_pow_p1</span> <span class="o">+</span> <span class="n">c</span> <span class="o">*</span> <span class="n">x_pow_p2</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span>
+            <span class="n">x</span> <span class="o">&lt;</span> <span class="mf">1.0</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="BesselBasisLayer">
+<a class="viewcode-back" href="../../../../api_autodoc/components.html#chemtorch.components.model.dimenet.BesselBasisLayer">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">BesselBasisLayer</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<div class="viewcode-block" id="BesselBasisLayer.__init__">
+<a class="viewcode-back" href="../../../../api_autodoc/components.html#chemtorch.components.model.dimenet.BesselBasisLayer.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">num_radial</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">cutoff</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">5.0</span><span class="p">,</span> <span class="n">envelope_exponent</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cutoff</span> <span class="o">=</span> <span class="n">cutoff</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">envelope</span> <span class="o">=</span> <span class="n">Envelope</span><span class="p">(</span><span class="n">envelope_exponent</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">freq</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">num_radial</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">reset_parameters</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="BesselBasisLayer.reset_parameters">
+<a class="viewcode-back" href="../../../../api_autodoc/components.html#chemtorch.components.model.dimenet.BesselBasisLayer.reset_parameters">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">reset_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+            <span class="n">torch</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">freq</span><span class="o">.</span><span class="n">numel</span><span class="p">()</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">freq</span><span class="p">)</span><span class="o">.</span><span class="n">mul_</span><span class="p">(</span><span class="n">PI</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">freq</span><span class="o">.</span><span class="n">requires_grad_</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="BesselBasisLayer.forward">
+<a class="viewcode-back" href="../../../../api_autodoc/components.html#chemtorch.components.model.dimenet.BesselBasisLayer.forward">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dist</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
+        <span class="n">dist</span> <span class="o">=</span> <span class="n">dist</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">cutoff</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">envelope</span><span class="p">(</span><span class="n">dist</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">freq</span> <span class="o">*</span> <span class="n">dist</span><span class="p">)</span><span class="o">.</span><span class="n">sin</span><span class="p">()</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="SphericalBasisLayer">
+<a class="viewcode-back" href="../../../../api_autodoc/components.html#chemtorch.components.model.dimenet.SphericalBasisLayer">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">SphericalBasisLayer</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<div class="viewcode-block" id="SphericalBasisLayer.__init__">
+<a class="viewcode-back" href="../../../../api_autodoc/components.html#chemtorch.components.model.dimenet.SphericalBasisLayer.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">num_spherical</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">num_radial</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">cutoff</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">5.0</span><span class="p">,</span>
+        <span class="n">envelope_exponent</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">sympy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sym</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">torch_geometric.nn.models.dimenet_utils</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+            <span class="n">bessel_basis</span><span class="p">,</span>
+            <span class="n">real_sph_harm</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="k">assert</span> <span class="n">num_radial</span> <span class="o">&lt;=</span> <span class="mi">64</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_spherical</span> <span class="o">=</span> <span class="n">num_spherical</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_radial</span> <span class="o">=</span> <span class="n">num_radial</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cutoff</span> <span class="o">=</span> <span class="n">cutoff</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">envelope</span> <span class="o">=</span> <span class="n">Envelope</span><span class="p">(</span><span class="n">envelope_exponent</span><span class="p">)</span>
+
+        <span class="n">bessel_forms</span> <span class="o">=</span> <span class="n">bessel_basis</span><span class="p">(</span><span class="n">num_spherical</span><span class="p">,</span> <span class="n">num_radial</span><span class="p">)</span>
+        <span class="n">sph_harm_forms</span> <span class="o">=</span> <span class="n">real_sph_harm</span><span class="p">(</span><span class="n">num_spherical</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sph_funcs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bessel_funcs</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="n">x</span><span class="p">,</span> <span class="n">theta</span> <span class="o">=</span> <span class="n">sym</span><span class="o">.</span><span class="n">symbols</span><span class="p">(</span><span class="s2">&quot;x theta&quot;</span><span class="p">)</span>
+        <span class="n">modules</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;sin&quot;</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">sin</span><span class="p">,</span> <span class="s2">&quot;cos&quot;</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">cos</span><span class="p">}</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_spherical</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">sph1</span> <span class="o">=</span> <span class="n">sym</span><span class="o">.</span><span class="n">lambdify</span><span class="p">([</span><span class="n">theta</span><span class="p">],</span> <span class="n">sph_harm_forms</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">modules</span><span class="p">)(</span><span class="mi">0</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">sph_funcs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">partial</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sph_to_tensor</span><span class="p">,</span> <span class="n">sph1</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">sph</span> <span class="o">=</span> <span class="n">sym</span><span class="o">.</span><span class="n">lambdify</span><span class="p">([</span><span class="n">theta</span><span class="p">],</span> <span class="n">sph_harm_forms</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">modules</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">sph_funcs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sph</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_radial</span><span class="p">):</span>
+                <span class="n">bessel</span> <span class="o">=</span> <span class="n">sym</span><span class="o">.</span><span class="n">lambdify</span><span class="p">([</span><span class="n">x</span><span class="p">],</span> <span class="n">bessel_forms</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">],</span> <span class="n">modules</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">bessel_funcs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">bessel</span><span class="p">)</span></div>
+
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_sph_to_tensor</span><span class="p">(</span><span class="n">sph</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">+</span> <span class="n">sph</span>
+
+<div class="viewcode-block" id="SphericalBasisLayer.forward">
+<a class="viewcode-back" href="../../../../api_autodoc/components.html#chemtorch.components.model.dimenet.SphericalBasisLayer.forward">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dist</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">angle</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">idx_kj</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
+        <span class="n">dist</span> <span class="o">=</span> <span class="n">dist</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">cutoff</span>
+        <span class="n">rbf</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">stack</span><span class="p">([</span><span class="n">f</span><span class="p">(</span><span class="n">dist</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">bessel_funcs</span><span class="p">],</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">rbf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">envelope</span><span class="p">(</span><span class="n">dist</span><span class="p">)</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">rbf</span>
+
+        <span class="n">cbf</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">stack</span><span class="p">([</span><span class="n">f</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sph_funcs</span><span class="p">],</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="n">n</span><span class="p">,</span> <span class="n">k</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_spherical</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_radial</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="p">(</span><span class="n">rbf</span><span class="p">[</span><span class="n">idx_kj</span><span class="p">]</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span> <span class="o">*</span> <span class="n">cbf</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">n</span> <span class="o">*</span> <span class="n">k</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">out</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="EmbeddingBlock">
+<a class="viewcode-back" href="../../../../api_autodoc/components.html#chemtorch.components.model.dimenet.EmbeddingBlock">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">EmbeddingBlock</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<div class="viewcode-block" id="EmbeddingBlock.__init__">
+<a class="viewcode-back" href="../../../../api_autodoc/components.html#chemtorch.components.model.dimenet.EmbeddingBlock.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_radial</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">hidden_channels</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">act</span><span class="p">:</span> <span class="n">Callable</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">act</span> <span class="o">=</span> <span class="n">act</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">emb</span> <span class="o">=</span> <span class="n">Embedding</span><span class="p">(</span><span class="mi">95</span><span class="p">,</span> <span class="n">hidden_channels</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lin_rbf</span> <span class="o">=</span> <span class="n">Linear</span><span class="p">(</span><span class="n">num_radial</span><span class="p">,</span> <span class="n">hidden_channels</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lin</span> <span class="o">=</span> <span class="n">Linear</span><span class="p">(</span><span class="mi">3</span> <span class="o">*</span> <span class="n">hidden_channels</span><span class="p">,</span> <span class="n">hidden_channels</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">reset_parameters</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="EmbeddingBlock.reset_parameters">
+<a class="viewcode-back" href="../../../../api_autodoc/components.html#chemtorch.components.model.dimenet.EmbeddingBlock.reset_parameters">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">reset_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">emb</span><span class="o">.</span><span class="n">weight</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">uniform_</span><span class="p">(</span><span class="o">-</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span> <span class="n">sqrt</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lin_rbf</span><span class="o">.</span><span class="n">reset_parameters</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lin</span><span class="o">.</span><span class="n">reset_parameters</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="EmbeddingBlock.forward">
+<a class="viewcode-back" href="../../../../api_autodoc/components.html#chemtorch.components.model.dimenet.EmbeddingBlock.forward">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">rbf</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">i</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">j</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">emb</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">rbf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">act</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lin_rbf</span><span class="p">(</span><span class="n">rbf</span><span class="p">))</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">act</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lin</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">([</span><span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="n">j</span><span class="p">],</span> <span class="n">rbf</span><span class="p">],</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)))</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="ResidualLayer">
+<a class="viewcode-back" href="../../../../api_autodoc/components.html#chemtorch.components.model.dimenet.ResidualLayer">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ResidualLayer</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<div class="viewcode-block" id="ResidualLayer.__init__">
+<a class="viewcode-back" href="../../../../api_autodoc/components.html#chemtorch.components.model.dimenet.ResidualLayer.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hidden_channels</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">act</span><span class="p">:</span> <span class="n">Callable</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">act</span> <span class="o">=</span> <span class="n">act</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lin1</span> <span class="o">=</span> <span class="n">Linear</span><span class="p">(</span><span class="n">hidden_channels</span><span class="p">,</span> <span class="n">hidden_channels</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lin2</span> <span class="o">=</span> <span class="n">Linear</span><span class="p">(</span><span class="n">hidden_channels</span><span class="p">,</span> <span class="n">hidden_channels</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">reset_parameters</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="ResidualLayer.reset_parameters">
+<a class="viewcode-back" href="../../../../api_autodoc/components.html#chemtorch.components.model.dimenet.ResidualLayer.reset_parameters">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">reset_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">glorot_orthogonal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lin1</span><span class="o">.</span><span class="n">weight</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">2.0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lin1</span><span class="o">.</span><span class="n">bias</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">fill_</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">glorot_orthogonal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lin2</span><span class="o">.</span><span class="n">weight</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">2.0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lin2</span><span class="o">.</span><span class="n">bias</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">fill_</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ResidualLayer.forward">
+<a class="viewcode-back" href="../../../../api_autodoc/components.html#chemtorch.components.model.dimenet.ResidualLayer.forward">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">x</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">act</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lin2</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">act</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lin1</span><span class="p">(</span><span class="n">x</span><span class="p">))))</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="InteractionBlock">
+<a class="viewcode-back" href="../../../../api_autodoc/components.html#chemtorch.components.model.dimenet.InteractionBlock">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">InteractionBlock</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<div class="viewcode-block" id="InteractionBlock.__init__">
+<a class="viewcode-back" href="../../../../api_autodoc/components.html#chemtorch.components.model.dimenet.InteractionBlock.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">hidden_channels</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">num_bilinear</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">num_spherical</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">num_radial</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">num_before_skip</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">num_after_skip</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">act</span><span class="p">:</span> <span class="n">Callable</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">act</span> <span class="o">=</span> <span class="n">act</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lin_rbf</span> <span class="o">=</span> <span class="n">Linear</span><span class="p">(</span><span class="n">num_radial</span><span class="p">,</span> <span class="n">hidden_channels</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lin_sbf</span> <span class="o">=</span> <span class="n">Linear</span><span class="p">(</span>
+            <span class="n">num_spherical</span> <span class="o">*</span> <span class="n">num_radial</span><span class="p">,</span> <span class="n">num_bilinear</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="kc">False</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Dense transformations of input messages.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lin_kj</span> <span class="o">=</span> <span class="n">Linear</span><span class="p">(</span><span class="n">hidden_channels</span><span class="p">,</span> <span class="n">hidden_channels</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lin_ji</span> <span class="o">=</span> <span class="n">Linear</span><span class="p">(</span><span class="n">hidden_channels</span><span class="p">,</span> <span class="n">hidden_channels</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">W</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span>
+            <span class="n">torch</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">hidden_channels</span><span class="p">,</span> <span class="n">num_bilinear</span><span class="p">,</span> <span class="n">hidden_channels</span><span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">layers_before_skip</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">ModuleList</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="n">ResidualLayer</span><span class="p">(</span><span class="n">hidden_channels</span><span class="p">,</span> <span class="n">act</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_before_skip</span><span class="p">)</span>
+            <span class="p">]</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lin</span> <span class="o">=</span> <span class="n">Linear</span><span class="p">(</span><span class="n">hidden_channels</span><span class="p">,</span> <span class="n">hidden_channels</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layers_after_skip</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">ModuleList</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="n">ResidualLayer</span><span class="p">(</span><span class="n">hidden_channels</span><span class="p">,</span> <span class="n">act</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_after_skip</span><span class="p">)</span>
+            <span class="p">]</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">reset_parameters</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="InteractionBlock.reset_parameters">
+<a class="viewcode-back" href="../../../../api_autodoc/components.html#chemtorch.components.model.dimenet.InteractionBlock.reset_parameters">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">reset_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">glorot_orthogonal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lin_rbf</span><span class="o">.</span><span class="n">weight</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">2.0</span><span class="p">)</span>
+        <span class="n">glorot_orthogonal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lin_sbf</span><span class="o">.</span><span class="n">weight</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">2.0</span><span class="p">)</span>
+        <span class="n">glorot_orthogonal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lin_kj</span><span class="o">.</span><span class="n">weight</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">2.0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lin_kj</span><span class="o">.</span><span class="n">bias</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">fill_</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">glorot_orthogonal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lin_ji</span><span class="o">.</span><span class="n">weight</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">2.0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lin_ji</span><span class="o">.</span><span class="n">bias</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">fill_</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">normal_</span><span class="p">(</span><span class="n">mean</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">std</span><span class="o">=</span><span class="mi">2</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">W</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">res_layer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">layers_before_skip</span><span class="p">:</span>
+            <span class="n">res_layer</span><span class="o">.</span><span class="n">reset_parameters</span><span class="p">()</span>
+        <span class="n">glorot_orthogonal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lin</span><span class="o">.</span><span class="n">weight</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">2.0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lin</span><span class="o">.</span><span class="n">bias</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">fill_</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">res_layer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">layers_after_skip</span><span class="p">:</span>
+            <span class="n">res_layer</span><span class="o">.</span><span class="n">reset_parameters</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="InteractionBlock.forward">
+<a class="viewcode-back" href="../../../../api_autodoc/components.html#chemtorch.components.model.dimenet.InteractionBlock.forward">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">x</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span>
+        <span class="n">rbf</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span>
+        <span class="n">sbf</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span>
+        <span class="n">idx_kj</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span>
+        <span class="n">idx_ji</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
+        <span class="n">rbf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lin_rbf</span><span class="p">(</span><span class="n">rbf</span><span class="p">)</span>
+        <span class="n">sbf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lin_sbf</span><span class="p">(</span><span class="n">sbf</span><span class="p">)</span>
+
+        <span class="n">x_ji</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">act</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lin_ji</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+        <span class="n">x_kj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">act</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lin_kj</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+        <span class="n">x_kj</span> <span class="o">=</span> <span class="n">x_kj</span> <span class="o">*</span> <span class="n">rbf</span>
+        <span class="n">x_kj</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s2">&quot;wj,wl,ijl-&gt;wi&quot;</span><span class="p">,</span> <span class="n">sbf</span><span class="p">,</span> <span class="n">x_kj</span><span class="p">[</span><span class="n">idx_kj</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">W</span><span class="p">)</span>
+        <span class="n">x_kj</span> <span class="o">=</span> <span class="n">scatter</span><span class="p">(</span><span class="n">x_kj</span><span class="p">,</span> <span class="n">idx_ji</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">dim_size</span><span class="o">=</span><span class="n">x</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">reduce</span><span class="o">=</span><span class="s2">&quot;sum&quot;</span><span class="p">)</span>
+
+        <span class="n">h</span> <span class="o">=</span> <span class="n">x_ji</span> <span class="o">+</span> <span class="n">x_kj</span>
+        <span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">layers_before_skip</span><span class="p">:</span>
+            <span class="n">h</span> <span class="o">=</span> <span class="n">layer</span><span class="p">(</span><span class="n">h</span><span class="p">)</span>
+        <span class="n">h</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">act</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lin</span><span class="p">(</span><span class="n">h</span><span class="p">))</span> <span class="o">+</span> <span class="n">x</span>
+        <span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">layers_after_skip</span><span class="p">:</span>
+            <span class="n">h</span> <span class="o">=</span> <span class="n">layer</span><span class="p">(</span><span class="n">h</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">h</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="InteractionPPBlock">
+<a class="viewcode-back" href="../../../../api_autodoc/components.html#chemtorch.components.model.dimenet.InteractionPPBlock">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">InteractionPPBlock</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<div class="viewcode-block" id="InteractionPPBlock.__init__">
+<a class="viewcode-back" href="../../../../api_autodoc/components.html#chemtorch.components.model.dimenet.InteractionPPBlock.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">hidden_channels</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">int_emb_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">basis_emb_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">num_spherical</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">num_radial</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">num_before_skip</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">num_after_skip</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">act</span><span class="p">:</span> <span class="n">Callable</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">act</span> <span class="o">=</span> <span class="n">act</span>
+
+        <span class="c1"># Transformation of Bessel and spherical basis representations:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lin_rbf1</span> <span class="o">=</span> <span class="n">Linear</span><span class="p">(</span><span class="n">num_radial</span><span class="p">,</span> <span class="n">basis_emb_size</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lin_rbf2</span> <span class="o">=</span> <span class="n">Linear</span><span class="p">(</span><span class="n">basis_emb_size</span><span class="p">,</span> <span class="n">hidden_channels</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lin_sbf1</span> <span class="o">=</span> <span class="n">Linear</span><span class="p">(</span>
+            <span class="n">num_spherical</span> <span class="o">*</span> <span class="n">num_radial</span><span class="p">,</span> <span class="n">basis_emb_size</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="kc">False</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lin_sbf2</span> <span class="o">=</span> <span class="n">Linear</span><span class="p">(</span><span class="n">basis_emb_size</span><span class="p">,</span> <span class="n">int_emb_size</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="c1"># Hidden transformation of input message:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lin_kj</span> <span class="o">=</span> <span class="n">Linear</span><span class="p">(</span><span class="n">hidden_channels</span><span class="p">,</span> <span class="n">hidden_channels</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lin_ji</span> <span class="o">=</span> <span class="n">Linear</span><span class="p">(</span><span class="n">hidden_channels</span><span class="p">,</span> <span class="n">hidden_channels</span><span class="p">)</span>
+
+        <span class="c1"># Embedding projections for interaction triplets:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lin_down</span> <span class="o">=</span> <span class="n">Linear</span><span class="p">(</span><span class="n">hidden_channels</span><span class="p">,</span> <span class="n">int_emb_size</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lin_up</span> <span class="o">=</span> <span class="n">Linear</span><span class="p">(</span><span class="n">int_emb_size</span><span class="p">,</span> <span class="n">hidden_channels</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="c1"># Residual layers before and after skip connection:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layers_before_skip</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">ModuleList</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="n">ResidualLayer</span><span class="p">(</span><span class="n">hidden_channels</span><span class="p">,</span> <span class="n">act</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_before_skip</span><span class="p">)</span>
+            <span class="p">]</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lin</span> <span class="o">=</span> <span class="n">Linear</span><span class="p">(</span><span class="n">hidden_channels</span><span class="p">,</span> <span class="n">hidden_channels</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layers_after_skip</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">ModuleList</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="n">ResidualLayer</span><span class="p">(</span><span class="n">hidden_channels</span><span class="p">,</span> <span class="n">act</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_after_skip</span><span class="p">)</span>
+            <span class="p">]</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">reset_parameters</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="InteractionPPBlock.reset_parameters">
+<a class="viewcode-back" href="../../../../api_autodoc/components.html#chemtorch.components.model.dimenet.InteractionPPBlock.reset_parameters">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">reset_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">glorot_orthogonal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lin_rbf1</span><span class="o">.</span><span class="n">weight</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">2.0</span><span class="p">)</span>
+        <span class="n">glorot_orthogonal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lin_rbf2</span><span class="o">.</span><span class="n">weight</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">2.0</span><span class="p">)</span>
+        <span class="n">glorot_orthogonal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lin_sbf1</span><span class="o">.</span><span class="n">weight</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">2.0</span><span class="p">)</span>
+        <span class="n">glorot_orthogonal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lin_sbf2</span><span class="o">.</span><span class="n">weight</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">2.0</span><span class="p">)</span>
+
+        <span class="n">glorot_orthogonal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lin_kj</span><span class="o">.</span><span class="n">weight</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">2.0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lin_kj</span><span class="o">.</span><span class="n">bias</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">fill_</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">glorot_orthogonal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lin_ji</span><span class="o">.</span><span class="n">weight</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">2.0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lin_ji</span><span class="o">.</span><span class="n">bias</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">fill_</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="n">glorot_orthogonal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lin_down</span><span class="o">.</span><span class="n">weight</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">2.0</span><span class="p">)</span>
+        <span class="n">glorot_orthogonal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lin_up</span><span class="o">.</span><span class="n">weight</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">2.0</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">res_layer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">layers_before_skip</span><span class="p">:</span>
+            <span class="n">res_layer</span><span class="o">.</span><span class="n">reset_parameters</span><span class="p">()</span>
+        <span class="n">glorot_orthogonal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lin</span><span class="o">.</span><span class="n">weight</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">2.0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lin</span><span class="o">.</span><span class="n">bias</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">fill_</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">res_layer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">layers_after_skip</span><span class="p">:</span>
+            <span class="n">res_layer</span><span class="o">.</span><span class="n">reset_parameters</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="InteractionPPBlock.forward">
+<a class="viewcode-back" href="../../../../api_autodoc/components.html#chemtorch.components.model.dimenet.InteractionPPBlock.forward">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">x</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span>
+        <span class="n">rbf</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span>
+        <span class="n">sbf</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span>
+        <span class="n">idx_kj</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span>
+        <span class="n">idx_ji</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
+        <span class="c1"># Initial transformation:</span>
+        <span class="n">x_ji</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">act</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lin_ji</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+        <span class="n">x_kj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">act</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lin_kj</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+
+        <span class="c1"># Transformation via Bessel basis:</span>
+        <span class="n">rbf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lin_rbf1</span><span class="p">(</span><span class="n">rbf</span><span class="p">)</span>
+        <span class="n">rbf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lin_rbf2</span><span class="p">(</span><span class="n">rbf</span><span class="p">)</span>
+        <span class="n">x_kj</span> <span class="o">=</span> <span class="n">x_kj</span> <span class="o">*</span> <span class="n">rbf</span>
+
+        <span class="c1"># Down project embedding and generating triple-interactions:</span>
+        <span class="n">x_kj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">act</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lin_down</span><span class="p">(</span><span class="n">x_kj</span><span class="p">))</span>
+
+        <span class="c1"># Transform via 2D spherical basis:</span>
+        <span class="n">sbf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lin_sbf1</span><span class="p">(</span><span class="n">sbf</span><span class="p">)</span>
+        <span class="n">sbf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lin_sbf2</span><span class="p">(</span><span class="n">sbf</span><span class="p">)</span>
+        <span class="n">x_kj</span> <span class="o">=</span> <span class="n">x_kj</span><span class="p">[</span><span class="n">idx_kj</span><span class="p">]</span> <span class="o">*</span> <span class="n">sbf</span>
+
+        <span class="c1"># Aggregate interactions and up-project embeddings:</span>
+        <span class="n">x_kj</span> <span class="o">=</span> <span class="n">scatter</span><span class="p">(</span><span class="n">x_kj</span><span class="p">,</span> <span class="n">idx_ji</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">dim_size</span><span class="o">=</span><span class="n">x</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">reduce</span><span class="o">=</span><span class="s2">&quot;sum&quot;</span><span class="p">)</span>
+        <span class="n">x_kj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">act</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lin_up</span><span class="p">(</span><span class="n">x_kj</span><span class="p">))</span>
+
+        <span class="n">h</span> <span class="o">=</span> <span class="n">x_ji</span> <span class="o">+</span> <span class="n">x_kj</span>
+        <span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">layers_before_skip</span><span class="p">:</span>
+            <span class="n">h</span> <span class="o">=</span> <span class="n">layer</span><span class="p">(</span><span class="n">h</span><span class="p">)</span>
+        <span class="n">h</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">act</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lin</span><span class="p">(</span><span class="n">h</span><span class="p">))</span> <span class="o">+</span> <span class="n">x</span>
+        <span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">layers_after_skip</span><span class="p">:</span>
+            <span class="n">h</span> <span class="o">=</span> <span class="n">layer</span><span class="p">(</span><span class="n">h</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">h</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="OutputBlock">
+<a class="viewcode-back" href="../../../../api_autodoc/components.html#chemtorch.components.model.dimenet.OutputBlock">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">OutputBlock</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<div class="viewcode-block" id="OutputBlock.__init__">
+<a class="viewcode-back" href="../../../../api_autodoc/components.html#chemtorch.components.model.dimenet.OutputBlock.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">num_radial</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">hidden_channels</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">out_channels</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">num_layers</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">act</span><span class="p">:</span> <span class="n">Callable</span><span class="p">,</span>
+        <span class="n">output_initializer</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;zeros&quot;</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="k">assert</span> <span class="n">output_initializer</span> <span class="ow">in</span> <span class="p">{</span><span class="s2">&quot;zeros&quot;</span><span class="p">,</span> <span class="s2">&quot;glorot_orthogonal&quot;</span><span class="p">}</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">act</span> <span class="o">=</span> <span class="n">act</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_initializer</span> <span class="o">=</span> <span class="n">output_initializer</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lin_rbf</span> <span class="o">=</span> <span class="n">Linear</span><span class="p">(</span><span class="n">num_radial</span><span class="p">,</span> <span class="n">hidden_channels</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lins</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">ModuleList</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_layers</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lins</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Linear</span><span class="p">(</span><span class="n">hidden_channels</span><span class="p">,</span> <span class="n">hidden_channels</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lin</span> <span class="o">=</span> <span class="n">Linear</span><span class="p">(</span><span class="n">hidden_channels</span><span class="p">,</span> <span class="n">out_channels</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">reset_parameters</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="OutputBlock.reset_parameters">
+<a class="viewcode-back" href="../../../../api_autodoc/components.html#chemtorch.components.model.dimenet.OutputBlock.reset_parameters">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">reset_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">glorot_orthogonal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lin_rbf</span><span class="o">.</span><span class="n">weight</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">2.0</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">lin</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">lins</span><span class="p">:</span>
+            <span class="n">glorot_orthogonal</span><span class="p">(</span><span class="n">lin</span><span class="o">.</span><span class="n">weight</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">2.0</span><span class="p">)</span>
+            <span class="n">lin</span><span class="o">.</span><span class="n">bias</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">fill_</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_initializer</span> <span class="o">==</span> <span class="s2">&quot;zeros&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lin</span><span class="o">.</span><span class="n">weight</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">fill_</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_initializer</span> <span class="o">==</span> <span class="s2">&quot;glorot_orthogonal&quot;</span><span class="p">:</span>
+            <span class="n">glorot_orthogonal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lin</span><span class="o">.</span><span class="n">weight</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">2.0</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="OutputBlock.forward">
+<a class="viewcode-back" href="../../../../api_autodoc/components.html#chemtorch.components.model.dimenet.OutputBlock.forward">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">x</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span>
+        <span class="n">rbf</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span>
+        <span class="n">i</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span>
+        <span class="n">num_nodes</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lin_rbf</span><span class="p">(</span><span class="n">rbf</span><span class="p">)</span> <span class="o">*</span> <span class="n">x</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">scatter</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">dim_size</span><span class="o">=</span><span class="n">num_nodes</span><span class="p">,</span> <span class="n">reduce</span><span class="o">=</span><span class="s2">&quot;sum&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">lin</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">lins</span><span class="p">:</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">act</span><span class="p">(</span><span class="n">lin</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">lin</span><span class="p">(</span><span class="n">x</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="OutputPPBlock">
+<a class="viewcode-back" href="../../../../api_autodoc/components.html#chemtorch.components.model.dimenet.OutputPPBlock">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">OutputPPBlock</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<div class="viewcode-block" id="OutputPPBlock.__init__">
+<a class="viewcode-back" href="../../../../api_autodoc/components.html#chemtorch.components.model.dimenet.OutputPPBlock.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">num_radial</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">hidden_channels</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">out_emb_channels</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">out_channels</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">num_layers</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">act</span><span class="p">:</span> <span class="n">Callable</span><span class="p">,</span>
+        <span class="n">output_initializer</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;zeros&quot;</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="k">assert</span> <span class="n">output_initializer</span> <span class="ow">in</span> <span class="p">{</span><span class="s2">&quot;zeros&quot;</span><span class="p">,</span> <span class="s2">&quot;glorot_orthogonal&quot;</span><span class="p">}</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">act</span> <span class="o">=</span> <span class="n">act</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_initializer</span> <span class="o">=</span> <span class="n">output_initializer</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lin_rbf</span> <span class="o">=</span> <span class="n">Linear</span><span class="p">(</span><span class="n">num_radial</span><span class="p">,</span> <span class="n">hidden_channels</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="c1"># The up-projection layer:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lin_up</span> <span class="o">=</span> <span class="n">Linear</span><span class="p">(</span><span class="n">hidden_channels</span><span class="p">,</span> <span class="n">out_emb_channels</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lins</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">ModuleList</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_layers</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lins</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Linear</span><span class="p">(</span><span class="n">out_emb_channels</span><span class="p">,</span> <span class="n">out_emb_channels</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lin</span> <span class="o">=</span> <span class="n">Linear</span><span class="p">(</span><span class="n">out_emb_channels</span><span class="p">,</span> <span class="n">out_channels</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">reset_parameters</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="OutputPPBlock.reset_parameters">
+<a class="viewcode-back" href="../../../../api_autodoc/components.html#chemtorch.components.model.dimenet.OutputPPBlock.reset_parameters">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">reset_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">glorot_orthogonal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lin_rbf</span><span class="o">.</span><span class="n">weight</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">2.0</span><span class="p">)</span>
+        <span class="n">glorot_orthogonal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lin_up</span><span class="o">.</span><span class="n">weight</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">2.0</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">lin</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">lins</span><span class="p">:</span>
+            <span class="n">glorot_orthogonal</span><span class="p">(</span><span class="n">lin</span><span class="o">.</span><span class="n">weight</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">2.0</span><span class="p">)</span>
+            <span class="n">lin</span><span class="o">.</span><span class="n">bias</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">fill_</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_initializer</span> <span class="o">==</span> <span class="s2">&quot;zeros&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lin</span><span class="o">.</span><span class="n">weight</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">fill_</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_initializer</span> <span class="o">==</span> <span class="s2">&quot;glorot_orthogonal&quot;</span><span class="p">:</span>
+            <span class="n">glorot_orthogonal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lin</span><span class="o">.</span><span class="n">weight</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">2.0</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="OutputPPBlock.forward">
+<a class="viewcode-back" href="../../../../api_autodoc/components.html#chemtorch.components.model.dimenet.OutputPPBlock.forward">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">x</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span>
+        <span class="n">rbf</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span>
+        <span class="n">i</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span>
+        <span class="n">num_nodes</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lin_rbf</span><span class="p">(</span><span class="n">rbf</span><span class="p">)</span> <span class="o">*</span> <span class="n">x</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">scatter</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">dim_size</span><span class="o">=</span><span class="n">num_nodes</span><span class="p">,</span> <span class="n">reduce</span><span class="o">=</span><span class="s2">&quot;sum&quot;</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lin_up</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">lin</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">lins</span><span class="p">:</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">act</span><span class="p">(</span><span class="n">lin</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">lin</span><span class="p">(</span><span class="n">x</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="triplets">
+<a class="viewcode-back" href="../../../../api_autodoc/components.html#chemtorch.components.model.dimenet.triplets">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">triplets</span><span class="p">(</span>
+    <span class="n">edge_index</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span>
+    <span class="n">num_nodes</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">Tensor</span><span class="p">]:</span>
+    <span class="n">row</span><span class="p">,</span> <span class="n">col</span> <span class="o">=</span> <span class="n">edge_index</span>  <span class="c1"># j-&gt;i</span>
+
+    <span class="n">value</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">device</span><span class="o">=</span><span class="n">row</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+    <span class="n">adj_t</span> <span class="o">=</span> <span class="n">SparseTensor</span><span class="p">(</span>
+        <span class="n">row</span><span class="o">=</span><span class="n">col</span><span class="p">,</span> <span class="n">col</span><span class="o">=</span><span class="n">row</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">value</span><span class="p">,</span> <span class="n">sparse_sizes</span><span class="o">=</span><span class="p">(</span><span class="n">num_nodes</span><span class="p">,</span> <span class="n">num_nodes</span><span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">adj_t_row</span> <span class="o">=</span> <span class="n">adj_t</span><span class="p">[</span><span class="n">row</span><span class="p">]</span>
+    <span class="n">num_triplets</span> <span class="o">=</span> <span class="n">adj_t_row</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">long</span><span class="p">)</span>
+
+    <span class="c1"># Node indices (k-&gt;j-&gt;i) for triplets.</span>
+    <span class="n">idx_i</span> <span class="o">=</span> <span class="n">col</span><span class="o">.</span><span class="n">repeat_interleave</span><span class="p">(</span><span class="n">num_triplets</span><span class="p">)</span>
+    <span class="n">idx_j</span> <span class="o">=</span> <span class="n">row</span><span class="o">.</span><span class="n">repeat_interleave</span><span class="p">(</span><span class="n">num_triplets</span><span class="p">)</span>
+    <span class="n">idx_k</span> <span class="o">=</span> <span class="n">adj_t_row</span><span class="o">.</span><span class="n">storage</span><span class="o">.</span><span class="n">col</span><span class="p">()</span>
+    <span class="n">mask</span> <span class="o">=</span> <span class="n">idx_i</span> <span class="o">!=</span> <span class="n">idx_k</span>  <span class="c1"># Remove i == k triplets.</span>
+    <span class="n">idx_i</span><span class="p">,</span> <span class="n">idx_j</span><span class="p">,</span> <span class="n">idx_k</span> <span class="o">=</span> <span class="n">idx_i</span><span class="p">[</span><span class="n">mask</span><span class="p">],</span> <span class="n">idx_j</span><span class="p">[</span><span class="n">mask</span><span class="p">],</span> <span class="n">idx_k</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span>
+
+    <span class="c1"># Edge indices (k-j, j-&gt;i) for triplets.</span>
+    <span class="n">idx_kj</span> <span class="o">=</span> <span class="n">adj_t_row</span><span class="o">.</span><span class="n">storage</span><span class="o">.</span><span class="n">value</span><span class="p">()[</span><span class="n">mask</span><span class="p">]</span>
+    <span class="n">idx_ji</span> <span class="o">=</span> <span class="n">adj_t_row</span><span class="o">.</span><span class="n">storage</span><span class="o">.</span><span class="n">row</span><span class="p">()[</span><span class="n">mask</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">col</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="n">idx_i</span><span class="p">,</span> <span class="n">idx_j</span><span class="p">,</span> <span class="n">idx_k</span><span class="p">,</span> <span class="n">idx_kj</span><span class="p">,</span> <span class="n">idx_ji</span></div>
+
+
+
+<div class="viewcode-block" id="DimeNet">
+<a class="viewcode-back" href="../../../../api_autodoc/components.html#chemtorch.components.model.dimenet.DimeNet">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">DimeNet</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;The directional message passing neural network (DimeNet) from the</span>
+<span class="sd">    `&quot;Directional Message Passing for Molecular Graphs&quot;</span>
+<span class="sd">    &lt;https://arxiv.org/abs/2003.03123&gt;`_ paper.</span>
+<span class="sd">    DimeNet transforms messages based on the angle between them in a</span>
+<span class="sd">    rotation-equivariant fashion.</span>
+
+<span class="sd">    .. note::</span>
+
+<span class="sd">        For an example of using a pretrained DimeNet variant, see</span>
+<span class="sd">        `examples/qm9_pretrained_dimenet.py</span>
+<span class="sd">        &lt;https://github.com/pyg-team/pytorch_geometric/blob/master/examples/</span>
+<span class="sd">        qm9_pretrained_dimenet.py&gt;`_.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        hidden_channels (int): Hidden embedding size.</span>
+<span class="sd">        out_channels (int): Size of each output sample.</span>
+<span class="sd">        num_blocks (int): Number of building blocks.</span>
+<span class="sd">        num_bilinear (int): Size of the bilinear layer tensor.</span>
+<span class="sd">        num_spherical (int): Number of spherical harmonics.</span>
+<span class="sd">        num_radial (int): Number of radial basis functions.</span>
+<span class="sd">        cutoff (float, optional): Cutoff distance for interatomic</span>
+<span class="sd">            interactions. (default: :obj:`5.0`)</span>
+<span class="sd">        max_num_neighbors (int, optional): The maximum number of neighbors to</span>
+<span class="sd">            collect for each node within the :attr:`cutoff` distance.</span>
+<span class="sd">            (default: :obj:`32`)</span>
+<span class="sd">        envelope_exponent (int, optional): Shape of the smooth cutoff.</span>
+<span class="sd">            (default: :obj:`5`)</span>
+<span class="sd">        num_before_skip (int, optional): Number of residual layers in the</span>
+<span class="sd">            interaction blocks before the skip connection. (default: :obj:`1`)</span>
+<span class="sd">        num_after_skip (int, optional): Number of residual layers in the</span>
+<span class="sd">            interaction blocks after the skip connection. (default: :obj:`2`)</span>
+<span class="sd">        num_output_layers (int, optional): Number of linear layers for the</span>
+<span class="sd">            output blocks. (default: :obj:`3`)</span>
+<span class="sd">        act (str or Callable, optional): The activation function.</span>
+<span class="sd">            (default: :obj:`&quot;swish&quot;`)</span>
+<span class="sd">        output_initializer (str, optional): The initialization method for the</span>
+<span class="sd">            output layer (:obj:`&quot;zeros&quot;`, :obj:`&quot;glorot_orthogonal&quot;`).</span>
+<span class="sd">            (default: :obj:`&quot;zeros&quot;`)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">url</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">&quot;https://github.com/klicperajo/dimenet/raw/master/pretrained/&quot;</span>
+        <span class="s2">&quot;dimenet&quot;</span>
+    <span class="p">)</span>
+
+<div class="viewcode-block" id="DimeNet.__init__">
+<a class="viewcode-back" href="../../../../api_autodoc/components.html#chemtorch.components.model.dimenet.DimeNet.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">hidden_channels</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">out_channels</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">num_blocks</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">num_bilinear</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">num_spherical</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">num_radial</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">head</span><span class="p">,</span>
+        <span class="n">cutoff</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">5.0</span><span class="p">,</span>
+        <span class="n">max_num_neighbors</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">32</span><span class="p">,</span>
+        <span class="n">envelope_exponent</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
+        <span class="n">num_before_skip</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="n">num_after_skip</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+        <span class="n">num_output_layers</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
+        <span class="n">act</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Callable</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;swish&quot;</span><span class="p">,</span>
+        <span class="n">output_initializer</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;zeros&quot;</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">num_spherical</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;&#39;num_spherical&#39; should be greater than 1&quot;</span><span class="p">)</span>
+
+        <span class="n">act</span> <span class="o">=</span> <span class="n">activation_resolver</span><span class="p">(</span><span class="n">act</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cutoff</span> <span class="o">=</span> <span class="n">cutoff</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_num_neighbors</span> <span class="o">=</span> <span class="n">max_num_neighbors</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_blocks</span> <span class="o">=</span> <span class="n">num_blocks</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">rbf</span> <span class="o">=</span> <span class="n">BesselBasisLayer</span><span class="p">(</span><span class="n">num_radial</span><span class="p">,</span> <span class="n">cutoff</span><span class="p">,</span> <span class="n">envelope_exponent</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sbf</span> <span class="o">=</span> <span class="n">SphericalBasisLayer</span><span class="p">(</span>
+            <span class="n">num_spherical</span><span class="p">,</span> <span class="n">num_radial</span><span class="p">,</span> <span class="n">cutoff</span><span class="p">,</span> <span class="n">envelope_exponent</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">emb</span> <span class="o">=</span> <span class="n">EmbeddingBlock</span><span class="p">(</span><span class="n">num_radial</span><span class="p">,</span> <span class="n">hidden_channels</span><span class="p">,</span> <span class="n">act</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_blocks</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">ModuleList</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="n">OutputBlock</span><span class="p">(</span>
+                    <span class="n">num_radial</span><span class="p">,</span>
+                    <span class="n">hidden_channels</span><span class="p">,</span>
+                    <span class="n">out_channels</span><span class="p">,</span>
+                    <span class="n">num_output_layers</span><span class="p">,</span>
+                    <span class="n">act</span><span class="p">,</span>
+                    <span class="n">output_initializer</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_blocks</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="p">]</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">interaction_blocks</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">ModuleList</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="n">InteractionBlock</span><span class="p">(</span>
+                    <span class="n">hidden_channels</span><span class="p">,</span>
+                    <span class="n">num_bilinear</span><span class="p">,</span>
+                    <span class="n">num_spherical</span><span class="p">,</span>
+                    <span class="n">num_radial</span><span class="p">,</span>
+                    <span class="n">num_before_skip</span><span class="p">,</span>
+                    <span class="n">num_after_skip</span><span class="p">,</span>
+                    <span class="n">act</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_blocks</span><span class="p">)</span>
+            <span class="p">]</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">head</span> <span class="o">=</span> <span class="n">head</span></div>
+
+
+<div class="viewcode-block" id="DimeNet.reset_parameters">
+<a class="viewcode-back" href="../../../../api_autodoc/components.html#chemtorch.components.model.dimenet.DimeNet.reset_parameters">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">reset_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Resets all learnable parameters of the module.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rbf</span><span class="o">.</span><span class="n">reset_parameters</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">emb</span><span class="o">.</span><span class="n">reset_parameters</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">out</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_blocks</span><span class="p">:</span>
+            <span class="n">out</span><span class="o">.</span><span class="n">reset_parameters</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">interaction</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">interaction_blocks</span><span class="p">:</span>
+            <span class="n">interaction</span><span class="o">.</span><span class="n">reset_parameters</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="DimeNet.embed">
+<a class="viewcode-back" href="../../../../api_autodoc/components.html#chemtorch.components.model.dimenet.DimeNet.embed">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">embed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">z</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">pos</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">batch_indices</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Embed node features and perform multiple interaction and output blocks.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            z (Tensor): Atomic numbers of shape :obj:`[num_atoms]`.</span>
+<span class="sd">            pos (Tensor): Atom positions of shape :obj:`[num_atoms, 3]`.</span>
+<span class="sd">            batch_indices (Tensor): Batch indices assigning each atom to a</span>
+<span class="sd">                separate molecule of shape :obj:`[num_atoms]`.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            Tensor: The output node features of shape :obj:`[num_molecules, out_channels]`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">edge_index</span> <span class="o">=</span> <span class="n">radius_graph</span><span class="p">(</span>
+            <span class="n">pos</span><span class="p">,</span>
+            <span class="n">r</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cutoff</span><span class="p">,</span>
+            <span class="n">batch</span><span class="o">=</span><span class="n">batch_indices</span><span class="p">,</span>
+            <span class="n">max_num_neighbors</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">max_num_neighbors</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">idx_i</span><span class="p">,</span> <span class="n">idx_j</span><span class="p">,</span> <span class="n">idx_k</span><span class="p">,</span> <span class="n">idx_kj</span><span class="p">,</span> <span class="n">idx_ji</span> <span class="o">=</span> <span class="n">triplets</span><span class="p">(</span>
+            <span class="n">edge_index</span><span class="p">,</span> <span class="n">num_nodes</span><span class="o">=</span><span class="n">z</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Calculate distances.</span>
+        <span class="n">dist</span> <span class="o">=</span> <span class="p">(</span><span class="n">pos</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">pos</span><span class="p">[</span><span class="n">j</span><span class="p">])</span><span class="o">.</span><span class="n">pow</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">sqrt</span><span class="p">()</span>
+
+        <span class="c1"># Calculate angles.</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">DimeNetPlusPlus</span><span class="p">):</span>
+            <span class="n">pos_jk</span><span class="p">,</span> <span class="n">pos_ij</span> <span class="o">=</span> <span class="n">pos</span><span class="p">[</span><span class="n">idx_j</span><span class="p">]</span> <span class="o">-</span> <span class="n">pos</span><span class="p">[</span><span class="n">idx_k</span><span class="p">],</span> <span class="n">pos</span><span class="p">[</span><span class="n">idx_i</span><span class="p">]</span> <span class="o">-</span> <span class="n">pos</span><span class="p">[</span><span class="n">idx_j</span><span class="p">]</span>
+            <span class="n">a</span> <span class="o">=</span> <span class="p">(</span><span class="n">pos_ij</span> <span class="o">*</span> <span class="n">pos_jk</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">b</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cross</span><span class="p">(</span><span class="n">pos_ij</span><span class="p">,</span> <span class="n">pos_jk</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">DimeNet</span><span class="p">):</span>
+            <span class="n">pos_ji</span><span class="p">,</span> <span class="n">pos_ki</span> <span class="o">=</span> <span class="n">pos</span><span class="p">[</span><span class="n">idx_j</span><span class="p">]</span> <span class="o">-</span> <span class="n">pos</span><span class="p">[</span><span class="n">idx_i</span><span class="p">],</span> <span class="n">pos</span><span class="p">[</span><span class="n">idx_k</span><span class="p">]</span> <span class="o">-</span> <span class="n">pos</span><span class="p">[</span><span class="n">idx_i</span><span class="p">]</span>
+            <span class="n">a</span> <span class="o">=</span> <span class="p">(</span><span class="n">pos_ji</span> <span class="o">*</span> <span class="n">pos_ki</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">b</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cross</span><span class="p">(</span><span class="n">pos_ji</span><span class="p">,</span> <span class="n">pos_ki</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">angle</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">atan2</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">a</span><span class="p">)</span>
+
+        <span class="n">rbf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rbf</span><span class="p">(</span><span class="n">dist</span><span class="p">)</span>
+        <span class="n">sbf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sbf</span><span class="p">(</span><span class="n">dist</span><span class="p">,</span> <span class="n">angle</span><span class="p">,</span> <span class="n">idx_kj</span><span class="p">)</span>
+
+        <span class="c1"># Embedding block.</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">emb</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">rbf</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">)</span>
+        <span class="n">P</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_blocks</span><span class="p">[</span><span class="mi">0</span><span class="p">](</span><span class="n">x</span><span class="p">,</span> <span class="n">rbf</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">num_nodes</span><span class="o">=</span><span class="n">pos</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
+
+        <span class="c1"># Interaction blocks.</span>
+        <span class="k">for</span> <span class="n">interaction_block</span><span class="p">,</span> <span class="n">output_block</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">interaction_blocks</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_blocks</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+        <span class="p">):</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">interaction_block</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">rbf</span><span class="p">,</span> <span class="n">sbf</span><span class="p">,</span> <span class="n">idx_kj</span><span class="p">,</span> <span class="n">idx_ji</span><span class="p">)</span>
+            <span class="n">P</span> <span class="o">=</span> <span class="n">P</span> <span class="o">+</span> <span class="n">output_block</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">rbf</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">num_nodes</span><span class="o">=</span><span class="n">pos</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
+
+        <span class="n">x</span> <span class="o">=</span> <span class="n">scatter</span><span class="p">(</span><span class="n">P</span><span class="p">,</span> <span class="n">batch_indices</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">reduce</span><span class="o">=</span><span class="s2">&quot;sum&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">x</span></div>
+
+
+
+<div class="viewcode-block" id="DimeNet.forward">
+<a class="viewcode-back" href="../../../../api_autodoc/components.html#chemtorch.components.model.dimenet.DimeNet.forward">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Forward pass.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            batch (Data): A batch of :obj:`torch_geometric.data.Data` objects</span>
+<span class="sd">                holding multiple molecular graphs. Must contain the following</span>
+<span class="sd">                attributes:</span>
+<span class="sd">                    z (torch.Tensor): Atomic number of each atom with shape</span>
+<span class="sd">                        :obj:`[num_atoms]`.</span>
+<span class="sd">                    pos (torch.Tensor): Coordinates of each atom with shape</span>
+<span class="sd">                        :obj:`[num_atoms, 3]`.</span>
+<span class="sd">                    batch (torch.Tensor, optional): Batch indices assigning each atom</span>
+<span class="sd">                        to a separate molecule with shape :obj:`[num_atoms]`.</span>
+<span class="sd">                        (default: :obj:`None`)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">z</span> <span class="o">=</span> <span class="n">batch</span><span class="o">.</span><span class="n">z</span>
+        <span class="n">pos</span> <span class="o">=</span> <span class="n">batch</span><span class="o">.</span><span class="n">pos</span>
+        <span class="n">batch_indices</span> <span class="o">=</span> <span class="n">batch</span><span class="o">.</span><span class="n">batch</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">embed</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">batch_indices</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="n">x</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="DimeNetPlusPlus">
+<a class="viewcode-back" href="../../../../api_autodoc/components.html#chemtorch.components.model.dimenet.DimeNetPlusPlus">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">DimeNetPlusPlus</span><span class="p">(</span><span class="n">DimeNet</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;The DimeNet++ from the `&quot;Fast and Uncertainty-Aware</span>
+<span class="sd">    Directional Message Passing for Non-Equilibrium Molecules&quot;</span>
+<span class="sd">    &lt;https://arxiv.org/abs/2011.14115&gt;`_ paper.</span>
+
+<span class="sd">    :class:`DimeNetPlusPlus` is an upgrade to the :class:`DimeNet` model with</span>
+<span class="sd">    8x faster and 10% more accurate than :class:`DimeNet`.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        hidden_channels (int): Hidden embedding size.</span>
+<span class="sd">        out_channels (int): Size of each output sample.</span>
+<span class="sd">        num_blocks (int): Number of building blocks.</span>
+<span class="sd">        int_emb_size (int): Size of embedding in the interaction block.</span>
+<span class="sd">        basis_emb_size (int): Size of basis embedding in the interaction block.</span>
+<span class="sd">        out_emb_channels (int): Size of embedding in the output block.</span>
+<span class="sd">        num_spherical (int): Number of spherical harmonics.</span>
+<span class="sd">        num_radial (int): Number of radial basis functions.</span>
+<span class="sd">        cutoff: (float, optional): Cutoff distance for interatomic</span>
+<span class="sd">            interactions. (default: :obj:`5.0`)</span>
+<span class="sd">        max_num_neighbors (int, optional): The maximum number of neighbors to</span>
+<span class="sd">            collect for each node within the :attr:`cutoff` distance.</span>
+<span class="sd">            (default: :obj:`32`)</span>
+<span class="sd">        envelope_exponent (int, optional): Shape of the smooth cutoff.</span>
+<span class="sd">            (default: :obj:`5`)</span>
+<span class="sd">        num_before_skip: (int, optional): Number of residual layers in the</span>
+<span class="sd">            interaction blocks before the skip connection. (default: :obj:`1`)</span>
+<span class="sd">        num_after_skip: (int, optional): Number of residual layers in the</span>
+<span class="sd">            interaction blocks after the skip connection. (default: :obj:`2`)</span>
+<span class="sd">        num_output_layers: (int, optional): Number of linear layers for the</span>
+<span class="sd">            output blocks. (default: :obj:`3`)</span>
+<span class="sd">        act: (str or Callable, optional): The activation function.</span>
+<span class="sd">            (default: :obj:`&quot;swish&quot;`)</span>
+<span class="sd">        output_initializer (str, optional): The initialization method for the</span>
+<span class="sd">            output layer (:obj:`&quot;zeros&quot;`, :obj:`&quot;glorot_orthogonal&quot;`).</span>
+<span class="sd">            (default: :obj:`&quot;zeros&quot;`)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">url</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">&quot;https://raw.githubusercontent.com/gasteigerjo/dimenet/&quot;</span>
+        <span class="s2">&quot;master/pretrained/dimenet_pp&quot;</span>
+    <span class="p">)</span>
+
+<div class="viewcode-block" id="DimeNetPlusPlus.__init__">
+<a class="viewcode-back" href="../../../../api_autodoc/components.html#chemtorch.components.model.dimenet.DimeNetPlusPlus.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">hidden_channels</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">out_channels</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">num_blocks</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">int_emb_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">basis_emb_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">out_emb_channels</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">num_spherical</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">num_radial</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">head</span><span class="p">,</span>
+        <span class="n">cutoff</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">5.0</span><span class="p">,</span>
+        <span class="n">max_num_neighbors</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">32</span><span class="p">,</span>
+        <span class="n">envelope_exponent</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
+        <span class="n">num_before_skip</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="n">num_after_skip</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+        <span class="n">num_output_layers</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
+        <span class="n">act</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Callable</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;swish&quot;</span><span class="p">,</span>
+        <span class="n">output_initializer</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;zeros&quot;</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="n">act</span> <span class="o">=</span> <span class="n">activation_resolver</span><span class="p">(</span><span class="n">act</span><span class="p">)</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">hidden_channels</span><span class="o">=</span><span class="n">hidden_channels</span><span class="p">,</span>
+            <span class="n">out_channels</span><span class="o">=</span><span class="n">out_channels</span><span class="p">,</span>
+            <span class="n">num_blocks</span><span class="o">=</span><span class="n">num_blocks</span><span class="p">,</span>
+            <span class="n">num_bilinear</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+            <span class="n">num_spherical</span><span class="o">=</span><span class="n">num_spherical</span><span class="p">,</span>
+            <span class="n">num_radial</span><span class="o">=</span><span class="n">num_radial</span><span class="p">,</span>
+            <span class="n">cutoff</span><span class="o">=</span><span class="n">cutoff</span><span class="p">,</span>
+            <span class="n">max_num_neighbors</span><span class="o">=</span><span class="n">max_num_neighbors</span><span class="p">,</span>
+            <span class="n">envelope_exponent</span><span class="o">=</span><span class="n">envelope_exponent</span><span class="p">,</span>
+            <span class="n">num_before_skip</span><span class="o">=</span><span class="n">num_before_skip</span><span class="p">,</span>
+            <span class="n">num_after_skip</span><span class="o">=</span><span class="n">num_after_skip</span><span class="p">,</span>
+            <span class="n">num_output_layers</span><span class="o">=</span><span class="n">num_output_layers</span><span class="p">,</span>
+            <span class="n">act</span><span class="o">=</span><span class="n">act</span><span class="p">,</span>
+            <span class="n">output_initializer</span><span class="o">=</span><span class="n">output_initializer</span><span class="p">,</span>
+            <span class="n">head</span><span class="o">=</span><span class="n">head</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="c1"># We are re-using the RBF, SBF and embedding layers of `DimeNet` and</span>
+        <span class="c1"># redefine output_block and interaction_block in DimeNet++.</span>
+        <span class="c1"># Hence, it is to be noted that in the above initialization, the</span>
+        <span class="c1"># variable `num_bilinear` does not have any purpose as it is used</span>
+        <span class="c1"># solely in the `OutputBlock` of DimeNet:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_blocks</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">ModuleList</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="n">OutputPPBlock</span><span class="p">(</span>
+                    <span class="n">num_radial</span><span class="p">,</span>
+                    <span class="n">hidden_channels</span><span class="p">,</span>
+                    <span class="n">out_emb_channels</span><span class="p">,</span>
+                    <span class="n">out_channels</span><span class="p">,</span>
+                    <span class="n">num_output_layers</span><span class="p">,</span>
+                    <span class="n">act</span><span class="p">,</span>
+                    <span class="n">output_initializer</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_blocks</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="p">]</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">interaction_blocks</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">ModuleList</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="n">InteractionPPBlock</span><span class="p">(</span>
+                    <span class="n">hidden_channels</span><span class="p">,</span>
+                    <span class="n">int_emb_size</span><span class="p">,</span>
+                    <span class="n">basis_emb_size</span><span class="p">,</span>
+                    <span class="n">num_spherical</span><span class="p">,</span>
+                    <span class="n">num_radial</span><span class="p">,</span>
+                    <span class="n">num_before_skip</span><span class="p">,</span>
+                    <span class="n">num_after_skip</span><span class="p">,</span>
+                    <span class="n">act</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_blocks</span><span class="p">)</span>
+            <span class="p">]</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">reset_parameters</span><span class="p">()</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="DimeReaction">
+<a class="viewcode-back" href="../../../../api_autodoc/components.html#chemtorch.components.model.dimenet.DimeReaction">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">DimeReaction</span><span class="p">(</span><span class="n">DimeNetPlusPlus</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    DimeReaction model used by Spiekerman et al. in https://pubs.acs.org/doi/10.1021/acs.jpca.2c02614.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="DimeReaction.forward">
+<a class="viewcode-back" href="../../../../api_autodoc/components.html#chemtorch.components.model.dimenet.DimeReaction.forward">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch</span><span class="p">:</span> <span class="n">Batch</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Forward pass.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            batch (Batch): A batch of :obj:`torch_geometric.data.Data` objects</span>
+<span class="sd">                holding multiple molecular graphs. Must contain the following</span>
+<span class="sd">                attributes:</span>
+<span class="sd">                    z_r (torch.Tensor): Atomic number of each atom in the reactant with shape</span>
+<span class="sd">                        :obj:`[num_atoms]`.</span>
+<span class="sd">                    pos_r (torch.Tensor): Coordinates of each atom in the reactant with shape</span>
+<span class="sd">                        :obj:`[num_atoms, 3]`.</span>
+<span class="sd">                    z_ts (torch.Tensor): Atomic number of each atom in the transition state with shape</span>
+<span class="sd">                        :obj:`[num_atoms]`.</span>
+<span class="sd">                    pos_ts (torch.Tensor): Coordinates of each atom in the transition state with shape</span>
+<span class="sd">                        :obj:`[num_atoms, 3]`.</span>
+<span class="sd">                    batch (torch.Tensor, optional): Batch indices assigning each atom</span>
+<span class="sd">                        to a separate molecule with shape :obj:`[num_atoms]`.</span>
+<span class="sd">                        (default: :obj:`None`)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">x_r</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">embed</span><span class="p">(</span><span class="n">batch</span><span class="o">.</span><span class="n">z_r</span><span class="p">,</span> <span class="n">batch</span><span class="o">.</span><span class="n">pos_r</span><span class="p">,</span> <span class="n">batch</span><span class="o">.</span><span class="n">batch</span><span class="p">)</span>
+        <span class="n">x_ts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">embed</span><span class="p">(</span><span class="n">batch</span><span class="o">.</span><span class="n">z_ts</span><span class="p">,</span> <span class="n">batch</span><span class="o">.</span><span class="n">pos_ts</span><span class="p">,</span> <span class="n">batch</span><span class="o">.</span><span class="n">batch</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">x_ts</span> <span class="o">-</span> <span class="n">x_r</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="n">x</span><span class="p">)</span></div>
+</div>
+
+
+</pre></div>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Anton Zamyatin, Jasper De Landsheere, Esther Heid
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2026 Esther Heid.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

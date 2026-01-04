@@ -45,8 +45,8 @@
     <link rel="icon" href="../_static/chemtorch_favicon.png"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Inference" href="inference.html" />
-    <link rel="prev" title="Config Reference" href="config_ref.html" />
+    <link rel="next" title="Reproducibility Tests" href="reproducibility_tests.html" />
+    <link rel="prev" title="Hyperparameter Sweeps" href="sweeps.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -138,8 +138,8 @@
       
     
     
-    <img src="../_static/chemtorch_logo_dark_lightbackground.png" class="logo__image only-light" alt="ChemTorch documentation - Home"/>
-    <script>document.write(`<img src="../_static/chemtorch_logo_dark_lightbackground.png" class="logo__image only-dark" alt="ChemTorch documentation - Home"/>`);</script>
+    <img src="../_static/chemtorch_logo_light.svg" class="logo__image only-light" alt="ChemTorch documentation - Home"/>
+    <script>document.write(`<img src="../_static/chemtorch_logo_dark.svg" class="logo__image only-dark" alt="ChemTorch documentation - Home"/>`);</script>
   
   
 </a></div>
@@ -160,36 +160,40 @@
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/quick_start.html">Quick Start</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/logging.html">Setup Logging</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/config.html">Understand Configs</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/experiments.html">Create Experiments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/overview.html">ChemTorch Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/config.html">Understanding Configs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/experiments.html">Creating Experiments</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">User Guide</span></p>
 <ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="cli_usage.html">CLI Usage</a></li>
-<li class="toctree-l1"><a class="reference internal" href="config_ref.html">Config Reference</a></li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Reproducing Experiments</a></li>
-<li class="toctree-l1"><a class="reference internal" href="inference.html">Inference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="pipeline_overview.html">Components Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="custom_data.html">Using Your Own Data</a></li>
-<li class="toctree-l1"><a class="reference internal" href="custom_components.html">Defining Custom Components</a></li>
 <li class="toctree-l1"><a class="reference internal" href="sweeps.html">Hyperparameter Sweeps</a></li>
-</ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Advanced Guide</span></p>
-<ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../advanced_guide/reproducibility_tests.html">Reproducibility Tests</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../advanced_guide/hydra.html">Hydra Config Design</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../advanced_guide/props.html">Runtime Properties</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Reproducing Experiments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reproducibility_tests.html">Reproducibility Tests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="config_ref.html">Config Reference</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Examples</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../examples/training_curves.html">Training Curves</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/training_curves.html">Performance Curves</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../examples/ood_benchmarking.html">OOD benchmarking</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Developer Guide</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../developer_guide/contributing.html">Contributing</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../developer_guide/framework_structure.html">Framework Structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer_guide/custom_components.html">Defining Custom Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer_guide/props.html">Runtime Properties</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer_guide/hydra.html">Hydra Config Design</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../developer_guide/testing.html">Testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer_guide/contributing.html">Contributing</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api_autodoc/index.html">API Reference</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api_autodoc/components.html">Components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_autodoc/core.html">Core</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_autodoc/utils.html">Utilities</a></li>
+</ul>
+</details></li>
 </ul>
 
     </div>
@@ -450,20 +454,20 @@ The data split benchmark configs use the same hyper-parameters as the optimal mo
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="config_ref.html"
+       href="sweeps.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Config Reference</p>
+        <p class="prev-next-title">Hyperparameter Sweeps</p>
       </div>
     </a>
     <a class="right-next"
-       href="inference.html"
+       href="reproducibility_tests.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Inference</p>
+        <p class="prev-next-title">Reproducibility Tests</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -508,7 +512,7 @@ By Anton Zamyatin, Jasper De Landsheere, Esther Heid
 
   <p class="copyright">
     
-      © Copyright 2025 Esther Heid.
+      © Copyright 2026 Esther Heid.
       <br/>
     
   </p>

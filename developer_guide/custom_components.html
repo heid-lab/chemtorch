@@ -1,0 +1,829 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Defining Custom Components &#8212; ChemTorch</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom_syntax.css?v=9e2307e4" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../_static/documentation_options.js?v=1a9ffd16"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'developer_guide/custom_components';</script>
+    <link rel="icon" href="../_static/chemtorch_favicon.png"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Runtime Properties" href="props.html" />
+    <link rel="prev" title="OOD benchmarking" href="../examples/ood_benchmarking.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/chemtorch_logo_light.svg" class="logo__image only-light" alt="ChemTorch documentation - Home"/>
+    <script>document.write(`<img src="../_static/chemtorch_logo_dark.svg" class="logo__image only-dark" alt="ChemTorch documentation - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/quick_start.html">Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/logging.html">Setup Logging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/overview.html">ChemTorch Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/config.html">Understanding Configs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/experiments.html">Creating Experiments</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/cli_usage.html">CLI Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/custom_data.html">Using Your Own Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/sweeps.html">Hyperparameter Sweeps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/reproducing_experiments.html">Reproducing Experiments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/reproducibility_tests.html">Reproducibility Tests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/config_ref.html">Config Reference</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Examples</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../examples/training_curves.html">Performance Curves</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/ood_benchmarking.html">OOD benchmarking</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Developer Guide</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Defining Custom Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="props.html">Runtime Properties</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hydra.html">Hydra Config Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="testing.html">Testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api_autodoc/index.html">API Reference</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api_autodoc/components.html">Components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_autodoc/core.html">Core</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_autodoc/utils.html">Utilities</a></li>
+</ul>
+</details></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+<a href="https://github.com/heid-lab/chemtorch" target="_blank"
+   class="btn btn-sm btn-source-repository-button"
+   title="Source repository"
+   data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+
+</a>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/developer_guide/custom_components.rst" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.rst</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Defining Custom Components</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#development-workflow">Development Workflow</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#component-interfaces">Component Interfaces</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data-pipeline">Data Pipeline</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#representation">Representation</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#best-practices">Best Practices</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#transform-augmentation">Transform / Augmentation</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">Best Practices</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#model">Model</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">Best practices:</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#common-patterns">Common Patterns</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#next-steps">Next Steps</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="defining-custom-components">
+<span id="custom-components"></span><h1>Defining Custom Components<a class="headerlink" href="#defining-custom-components" title="Link to this heading">#</a></h1>
+<p>This page shows how to extend ChemTorch with custom components, highlights recurring design patterns, and points you to real, well-documented implementations in the codebase and API docs to get you started.</p>
+<section id="development-workflow">
+<h2>Development Workflow<a class="headerlink" href="#development-workflow" title="Link to this heading">#</a></h2>
+<p>Use this lightweight checklist before you start coding:</p>
+<ol class="arabic simple">
+<li><p>Check existing components in the API docs and source.</p></li>
+<li><p>Implement by inheriting and reusing existing components wherever possible.</p></li>
+<li><p>Test thoroughly: start with unit tests; add integration tests when helpful.</p></li>
+</ol>
+</section>
+<section id="component-interfaces">
+<h2>Component Interfaces<a class="headerlink" href="#component-interfaces" title="Link to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 25.0%" />
+<col style="width: 35.0%" />
+<col style="width: 20.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Component</p></th>
+<th class="head"><p>Required Method</p></th>
+<th class="head"><p>Input → Output</p></th>
+<th class="head"><p>See Also</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Data Source</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">load()</span></code></p></td>
+<td><p>→ <code class="docutils literal notranslate"><span class="pre">pd.DataFrame</span></code></p></td>
+<td><p>API docs</p></td>
+</tr>
+<tr class="row-odd"><td><p>Column Mapper</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">__call__()</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">pd.DataFrame</span></code> → <a href="#id1"><span class="problematic" id="id2">``</span></a>pd.DataFrame``µ</p></td>
+<td><p>API docs</p></td>
+</tr>
+<tr class="row-even"><td><p>Data Splitter</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">__call__()</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">pd.DataFrame</span></code> → <code class="docutils literal notranslate"><span class="pre">DataSplit</span></code></p></td>
+<td><p>API docs</p></td>
+</tr>
+<tr class="row-odd"><td><p>Representation</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">construct()</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">str</span></code> → <code class="docutils literal notranslate"><span class="pre">T</span></code> (e.g., <code class="docutils literal notranslate"><span class="pre">pyg.Data</span></code>, <code class="docutils literal notranslate"><span class="pre">torch.Tensor</span></code>)</p></td>
+<td><p>API docs</p></td>
+</tr>
+<tr class="row-even"><td><p>Transform</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">__call__()</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">T</span></code> → <code class="docutils literal notranslate"><span class="pre">T</span></code></p></td>
+<td><p>API docs</p></td>
+</tr>
+<tr class="row-odd"><td><p>Model</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">forward()</span></code></p></td>
+<td><p>batch → predictions</p></td>
+<td><p>API docs</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Refer to the API docs for full signatures, parameters, and existing implementations.</p>
+</section>
+<section id="data-pipeline">
+<h2>Data Pipeline<a class="headerlink" href="#data-pipeline" title="Link to this heading">#</a></h2>
+<p>A data pipeline is anything that returns a <code class="docutils literal notranslate"><span class="pre">pd.DataFrame</span></code> or <code class="docutils literal notranslate"><span class="pre">DataSplit</span></code> when called.
+There is no explicit abstract interface—the contract is implicit.
+In practice, data pipelines typically load data, apply transformations, and split into train/val/test.
+<a class="reference internal" href="../api_autodoc/components.html#chemtorch.components.data_pipeline.simple_data_pipeline.SimpleDataPipeline" title="chemtorch.components.data_pipeline.simple_data_pipeline.SimpleDataPipeline"><code class="xref py py-class docutils literal notranslate"><span class="pre">SimpleDataPipeline</span></code></a> provides a reference implementation that composes a data source, column mapper, and splitter.
+You can use it as a starting point or build your own from scratch.
+See <a class="reference internal" href="../user_guide/custom_data.html#custom-dataset"><span class="std std-ref">Using Your Own Data</span></a> for a comprehensive walkthrough of building a complete data pipeline.</p>
+<p>You may want to implement your own data source component for your specific data format, or a custom data splitter tailored to your use case. The examples below illustrate both.</p>
+<p><strong>Example: custom data source (SQLite database)</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">sqlite3</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">chemtorch.components.data_pipeline.data_source</span><span class="w"> </span><span class="kn">import</span> <span class="n">AbstractDataSource</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">SQLiteDataSource</span><span class="p">(</span><span class="n">AbstractDataSource</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Loads chemical data from a SQLite database.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">db_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">table_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">query</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            db_path: Path to SQLite database file</span>
+<span class="sd">            table_name: Name of the table to query</span>
+<span class="sd">            query: Optional custom SQL query (overrides table_name)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db_path</span> <span class="o">=</span> <span class="n">db_path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">table_name</span> <span class="o">=</span> <span class="n">table_name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">query</span> <span class="o">=</span> <span class="n">query</span> <span class="ow">or</span> <span class="sa">f</span><span class="s2">&quot;SELECT * FROM </span><span class="si">{</span><span class="n">table_name</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load data from SQLite database.&quot;&quot;&quot;</span>
+        <span class="n">conn</span> <span class="o">=</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db_path</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_sql_query</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">query</span><span class="p">,</span> <span class="n">conn</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">df</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="n">conn</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+</div>
+<p><strong>Example: custom data splitter (time-based)</strong></p>
+<p>The following example demonstrates inheriting from <a class="reference internal" href="../api_autodoc/components.html#chemtorch.components.data_pipeline.data_splitter.ratio_splitter.RatioSplitter" title="chemtorch.components.data_pipeline.data_splitter.ratio_splitter.RatioSplitter"><code class="xref py py-class docutils literal notranslate"><span class="pre">RatioSplitter</span></code></a> rather than implementing <a class="reference internal" href="../api_autodoc/components.html#chemtorch.components.data_pipeline.data_splitter.abstract_data_splitter.AbstractDataSplitter" title="chemtorch.components.data_pipeline.data_splitter.abstract_data_splitter.AbstractDataSplitter"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractDataSplitter</span></code></a> directly.
+This approach reuses ratio validation and other infrastructure:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">chemtorch.components.data_pipeline.data_splitter</span><span class="w"> </span><span class="kn">import</span> <span class="n">RatioSplitter</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">chemtorch.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataSplit</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">TimeBasedSplitter</span><span class="p">(</span><span class="n">RatioSplitter</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Splits data chronologically based on a timestamp column.</span>
+
+<span class="sd">    Useful for time-series data where you want to predict future outcomes.</span>
+<span class="sd">    Inherits ratio validation from RatioSplitter.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">timestamp_col</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">train_ratio</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.7</span><span class="p">,</span>
+        <span class="n">val_ratio</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.15</span><span class="p">,</span>
+        <span class="n">test_ratio</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.15</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            timestamp_col: Column name containing timestamps</span>
+<span class="sd">            train_ratio: Fraction for training (earliest data)</span>
+<span class="sd">            val_ratio: Fraction for validation</span>
+<span class="sd">            test_ratio: Fraction for testing (most recent data)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">train_ratio</span><span class="o">=</span><span class="n">train_ratio</span><span class="p">,</span>
+            <span class="n">val_ratio</span><span class="o">=</span><span class="n">val_ratio</span><span class="p">,</span>
+            <span class="n">test_ratio</span><span class="o">=</span><span class="n">test_ratio</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">timestamp_col</span> <span class="o">=</span> <span class="n">timestamp_col</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_split</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DataSplit</span><span class="p">:</span>
+        <span class="c1"># Sort by timestamp instead of random shuffle</span>
+        <span class="n">df_sorted</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">timestamp_col</span><span class="p">)</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">df_sorted</span><span class="p">)</span>
+        <span class="n">train_end</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">n</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_ratio</span><span class="p">)</span>
+        <span class="n">val_end</span> <span class="o">=</span> <span class="n">train_end</span> <span class="o">+</span> <span class="nb">int</span><span class="p">(</span><span class="n">n</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">val_ratio</span><span class="p">)</span>
+
+        <span class="n">train_df</span> <span class="o">=</span> <span class="n">df_sorted</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:</span><span class="n">train_end</span><span class="p">]</span>
+        <span class="n">val_df</span> <span class="o">=</span> <span class="n">df_sorted</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">train_end</span><span class="p">:</span><span class="n">val_end</span><span class="p">]</span>
+        <span class="n">test_df</span> <span class="o">=</span> <span class="n">df_sorted</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">val_end</span><span class="p">:]</span>
+
+        <span class="k">return</span> <span class="n">DataSplit</span><span class="p">(</span><span class="n">train</span><span class="o">=</span><span class="n">train_df</span><span class="p">,</span> <span class="n">val</span><span class="o">=</span><span class="n">val_df</span><span class="p">,</span> <span class="n">test</span><span class="o">=</span><span class="n">test_df</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>To further avoid code duplication, we could add a <code class="docutils literal notranslate"><span class="pre">_sort()</span></code> method to <a class="reference internal" href="../api_autodoc/components.html#chemtorch.components.data_pipeline.data_splitter.ratio_splitter.RatioSplitter" title="chemtorch.components.data_pipeline.data_splitter.ratio_splitter.RatioSplitter"><code class="xref py py-class docutils literal notranslate"><span class="pre">RatioSplitter</span></code></a> with random shuffling as default implementation and call it in the <code class="docutils literal notranslate"><span class="pre">_split()</span></code> method.
+Then the <code class="docutils literal notranslate"><span class="pre">TimeBasedSplitter</span></code> could simply override the <code class="docutils literal notranslate"><span class="pre">_sort()</span></code> method instead of re-implementing the whole <code class="docutils literal notranslate"><span class="pre">_split()</span></code> method.</p>
+</section>
+<section id="representation">
+<h2>Representation<a class="headerlink" href="#representation" title="Link to this heading">#</a></h2>
+<p>Representations convert SMILES strings into data structures suitable for neural networks (graphs, tensors, etc.).
+Below is a high-level overview of representation classes, how they are implemented, and source code examples to get you started.</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 55.0%" />
+<col style="width: 25.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Representation</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Examples</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Fingerprint</p></td>
+<td><p>Fixed-length binary or count vectors encoding molecular substructures occuring in (reaction) SMILES.</p></td>
+<td><p><a class="reference internal" href="../api_autodoc/components.html#chemtorch.components.representation.fingerprint.drfp.DRFP" title="chemtorch.components.representation.fingerprint.drfp.DRFP"><code class="xref py py-class docutils literal notranslate"><span class="pre">DRFP</span></code></a></p></td>
+</tr>
+<tr class="row-odd"><td><p>Graph (CGR)</p></td>
+<td><p>Graph representation encoding molecular connectivity as nodes (atoms) and edges (bonds). Uses composable featurizers to extract node and edge features. For reactions, uses condensed graph of reaction (CGR) or similar.</p></td>
+<td><p><a class="reference internal" href="../api_autodoc/components.html#chemtorch.components.representation.graph.cgr.CGR" title="chemtorch.components.representation.graph.cgr.CGR"><code class="xref py py-class docutils literal notranslate"><span class="pre">CGR</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractFeaturizer</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">FeaturizerCompose</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Token</p></td>
+<td><p>Sequence-based representation encoding molecules/reactions as sequences of discrete tokens (similar to text). Uses external vocabulary file which must first be created and validated (see <code class="docutils literal notranslate"><span class="pre">scripts/check_vocab.py</span></code>), and uses tokenizers which specify the tokenization scheme.</p></td>
+<td><p><code class="xref py py-class docutils literal notranslate"><span class="pre">TokenRepresentationBase</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ReactionTokenizer</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">MoleculeTokenizerBase</span></code>, <code class="docutils literal notranslate"><span class="pre">scripts/check_vocab.py</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>3D Graph</p></td>
+<td><p>Graph representation with 3D spatial coordinates capturing molecular geometry and conformational information. Requires external <code class="docutils literal notranslate"><span class="pre">.xyz</span></code> files which imposes a constraint on the storage format (requires indexing to associate reactions with 3D data) and requires a custom data pipeline to add a column with folder paths to the 3D data of each reaction.</p></td>
+<td><p><a class="reference internal" href="../api_autodoc/components.html#chemtorch.components.representation.graph.reaction_3d_graph.Reaction3DGraph" title="chemtorch.components.representation.graph.reaction_3d_graph.Reaction3DGraph"><code class="xref py py-class docutils literal notranslate"><span class="pre">Reaction3DGraph</span></code></a></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>See <code class="xref py py-mod docutils literal notranslate"><span class="pre">chemtorch.components.representation</span></code> for full API details and implementations.</p>
+<section id="best-practices">
+<h3>Best Practices<a class="headerlink" href="#best-practices" title="Link to this heading">#</a></h3>
+<ol class="arabic">
+<li><p><strong>Type Hints</strong>: Always specify the generic type parameter indicating the type of the produced data object:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">MyRep</span><span class="p">(</span><span class="n">AbstractRepresentation</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]):</span>  <span class="c1"># ✓ Good</span>
+    <span class="o">...</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">MyRep</span><span class="p">(</span><span class="n">AbstractRepresentation</span><span class="p">):</span>  <span class="c1"># ✗ Missing type info</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>Error Handling</strong>: Validate SMILES and provide clear error messages:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">construct</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">smiles</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="n">mol</span> <span class="o">=</span> <span class="n">Chem</span><span class="o">.</span><span class="n">MolFromSmiles</span><span class="p">(</span><span class="n">smiles</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">mol</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid SMILES: </span><span class="si">{</span><span class="n">smiles</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="c1"># ... rest of implementation</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>Statefulness</strong>: Keep representations stateless. Don’t store mutable state:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># ✓ Good: parameters are immutable</span>
+<span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">radius</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">radius</span> <span class="o">=</span> <span class="n">radius</span>
+
+<span class="c1"># ✗ Bad: mutable state</span>
+<span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">cache</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># Don&#39;t cache results</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</section>
+</section>
+<section id="transform-augmentation">
+<h2>Transform / Augmentation<a class="headerlink" href="#transform-augmentation" title="Link to this heading">#</a></h2>
+<p><strong>Transforms</strong> are commonly used in computer vision to preprocess or augment images (e.g., normalization, rotation, cropping). In ChemTorch, transforms serve a similar purpose for molecular representations.
+For example, graph transforms modify graph structure or features (e.g., positional encodings, dummy nodes, feature normalization) and 3D transforms modify spatial coordinates (e.g., random noise, rotation, translation).</p>
+<p>Transforms can be composed into pipelines via <a class="reference internal" href="../api_autodoc/utils.html#chemtorch.utils.callable_compose.CallableCompose" title="chemtorch.utils.callable_compose.CallableCompose"><code class="xref py py-class docutils literal notranslate"><span class="pre">CallableCompose</span></code></a>.
+You can also leverage transforms to create additional test data loaders by providing a list or dict of test transforms in the <a class="reference internal" href="../api_autodoc/core.html#chemtorch.core.data_module.DataModule" title="chemtorch.core.data_module.DataModule"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataModule</span></code></a>.
+Each entry becomes its own test dataset/dataloader with the specified transform applied.</p>
+<p><strong>Augmentations</strong> are built on top of transforms to augment training data with transformed versions, making models invariant to specific perturbations.</p>
+<p>See <code class="xref py py-mod docutils literal notranslate"><span class="pre">chemtorch.components.transform</span></code> and <code class="xref py py-mod docutils literal notranslate"><span class="pre">chemtorch.components.augmentation</span></code> for available transforms and augmentations, and consult the API docs for implementation details.</p>
+<section id="id3">
+<h3>Best Practices<a class="headerlink" href="#id3" title="Link to this heading">#</a></h3>
+<ol class="arabic">
+<li><p><strong>Immutability</strong>: Avoid modifying the input in-place. Clone if needed:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Data</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Data</span><span class="p">:</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span>  <span class="c1"># ✓ Safe</span>
+    <span class="n">data</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">x</span> <span class="o">*</span> <span class="mi">2</span>
+    <span class="k">return</span> <span class="n">data</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>Type Consistency</strong>: Preserve the object type:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Data</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Data</span><span class="p">:</span>
+    <span class="c1"># Return same type</span>
+    <span class="k">return</span> <span class="n">data</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>Docstrings</strong>: Document what the transform does:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">MyTransform</span><span class="p">(</span><span class="n">AbstractTransform</span><span class="p">[</span><span class="n">Data</span><span class="p">]):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Brief description of what this transform does.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        param1: Description</span>
+<span class="sd">        param2: Description</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</section>
+</section>
+<section id="model">
+<h2>Model<a class="headerlink" href="#model" title="Link to this heading">#</a></h2>
+<p>ChemTorch models are standard PyTorch modules with no special abstract base class.
+The only requirement is that the <code class="docutils literal notranslate"><span class="pre">forward()</span></code> method accepts batched inputs matching the representation type and returns predictions as <code class="docutils literal notranslate"><span class="pre">torch.Tensor</span></code> with shape <code class="docutils literal notranslate"><span class="pre">(batch_size,</span> <span class="pre">output_dim)</span></code>.
+For example, graph models typically accepts PyTorch Geometric <code class="docutils literal notranslate"><span class="pre">Batch</span></code> objects.</p>
+<section id="id4">
+<h3>Best practices:<a class="headerlink" href="#id4" title="Link to this heading">#</a></h3>
+<ol class="arabic simple">
+<li><p><strong>Device Handling</strong>: Let PyTorch Lightning handle device placement (don’t call <code class="docutils literal notranslate"><span class="pre">.to(device)</span></code> manually)</p></li>
+<li><p><strong>Documentation</strong>: Document the <code class="docutils literal notranslate"><span class="pre">__init__()</span></code> method and the input/output shapes and requirements of the <code class="docutils literal notranslate"><span class="pre">forward()</span></code> method.</p></li>
+<li><p><strong>Modularization</strong>: start simple and protype your neural network in a single file but modlarize it as variants emerge. The <a class="reference internal" href="../api_autodoc/components.html#chemtorch.components.model.gnn.gnn.GNN" title="chemtorch.components.model.gnn.gnn.GNN"><code class="xref py py-class docutils literal notranslate"><span class="pre">GNN</span></code></a> is the perfact example since it decomposes into encoder blocks, a configurable layer stack, pooling, and a head. See, <code class="xref py py-mod docutils literal notranslate"><span class="pre">chemtorch.components.model.gnn</span></code> and <code class="xref py py-mod docutils literal notranslate"><span class="pre">chemtorch.components.layer</span></code>. This decomposition makes it easy to swap components, run ablations, and scale complexity while keeping everything testable.</p></li>
+</ol>
+</section>
+</section>
+<section id="common-patterns">
+<span id="id5"></span><h2>Common Patterns<a class="headerlink" href="#common-patterns" title="Link to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 25.0%" />
+<col style="width: 55.0%" />
+<col style="width: 20.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Pattern</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Examples</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Composition</p></td>
+<td><p>Build complex behavior from small, focused components.</p></td>
+<td><p><code class="xref py py-class docutils literal notranslate"><span class="pre">FeaturizerCompose</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">CallableCompose</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Orchestration &amp; Delegation</p></td>
+<td><p>Keep top-level components lean; orchestrate and delegate specifics.</p></td>
+<td><p><a class="reference internal" href="../api_autodoc/components.html#chemtorch.components.representation.graph.cgr.CGR" title="chemtorch.components.representation.graph.cgr.CGR"><code class="xref py py-class docutils literal notranslate"><span class="pre">CGR</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">TokenRepresentationBase</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ReactionTokenizer</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>External Artifact Contracts</p></td>
+<td><p>Components require external data/artifacts referenced via paths.</p></td>
+<td><p><code class="xref py py-class docutils literal notranslate"><span class="pre">TokenRepresentationBase</span></code>, <a class="reference internal" href="../api_autodoc/components.html#chemtorch.components.representation.graph.reaction_3d_graph.Reaction3DGraph" title="chemtorch.components.representation.graph.reaction_3d_graph.Reaction3DGraph"><code class="xref py py-class docutils literal notranslate"><span class="pre">Reaction3DGraph</span></code></a></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="next-steps">
+<h2>Next Steps<a class="headerlink" href="#next-steps" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><strong>Create default configs</strong> for your components to make them swappable from the CLI, see <a class="reference internal" href="../getting_started/config.html#config"><span class="std std-ref">Understanding Configs</span></a> and the <code class="docutils literal notranslate"><span class="pre">conf</span></code> folder for composition patterns and overrides.</p></li>
+<li><p><strong>Add integration tests</strong> to validate your components work together with the data pipelines, transforms, and models end-to-end, and detect regressions, see <a class="reference internal" href="testing.html#testing"><span class="std std-ref">Testing</span></a>.</p></li>
+<li><p><strong>Contribute</strong> you tested components to help us grow ChemTorch, see <a class="reference internal" href="contributing.html#contributing"><span class="std std-ref">Contributing</span></a>.</p></li>
+</ul>
+</section>
+</section>
+
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="../examples/ood_benchmarking.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">OOD benchmarking</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="props.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Runtime Properties</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#development-workflow">Development Workflow</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#component-interfaces">Component Interfaces</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data-pipeline">Data Pipeline</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#representation">Representation</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#best-practices">Best Practices</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#transform-augmentation">Transform / Augmentation</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">Best Practices</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#model">Model</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">Best practices:</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#common-patterns">Common Patterns</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#next-steps">Next Steps</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Anton Zamyatin, Jasper De Landsheere, Esther Heid
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2026 Esther Heid.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>
