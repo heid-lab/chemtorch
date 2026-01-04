@@ -8,11 +8,11 @@ except ImportError:
     # Python < 3.12
     from typing_extensions import override  # type: ignore
 
-from chemtorch.components.data_pipeline.data_source import DataSource
+from chemtorch.components.data_pipeline.data_source import AbstractDataSource
 from chemtorch.utils import DataSplit
 
 
-class PreSplitCSVSource(DataSource):
+class PreSplitCSVSource(AbstractDataSource):
     def __init__(
         self,
         data_folder: str,

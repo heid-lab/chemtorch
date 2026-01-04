@@ -11,7 +11,6 @@ class AbstractTokenRepresentation(AbstractRepresentation[torch.Tensor], ABC):
     
     All token representations must implement vocabulary management methods.
     """
-    # Abstract properties - subclasses must implement these
 
     @property
     @abstractmethod

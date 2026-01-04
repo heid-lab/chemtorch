@@ -1,7 +1,7 @@
 .. _config:
 
 =====================
-Understand Configs
+Understanding Configs
 =====================
 
 In the :ref:`quick-start`, you launched an experiment using the command line.
@@ -11,10 +11,13 @@ This page explains the core concepts of ChemTorch's configuration system.
 What is Configuration?
 ======================
 
-Configuration files define *what* your experiment does without changing the source code.
-They specify which model to use, how to process your data, which optimizer to use, and many other settings.
+In :ref:`overview`, you saw how ChemTorch assembles a pipeline from modular components:
 
-ChemTorch uses **YAML files** for configuration. If you're new to YAML, here's a quick primer:
+    **data pipeline** → **representation** → **transform** → **model** → **routine** → **trainer**
+
+Configuration lets you compose and customize these components *declaratively* using **YAML files**, without writing Python code.
+Instead of instantiating classes in Python, you specify which components to use and their parameters in config files.
+If you're new to YAML, here's a quick primer:
 
 .. code-block:: yaml
 
@@ -54,10 +57,13 @@ All configuration files live in the ``conf/`` folder at the root of the ChemTorc
 Here's what each part does:
 
 * ``base.yaml``: Top-level defaults loaded automatically
-* ``data_module/``, ``model/``, ``routine/``, ``trainer/``: Component building blocks
+* ``data_module/``, ``model/``, ``routine/``, ``trainer/``: Component configs matching the pipeline from :ref:`overview`
 * ``experiment/``: Your experiment configurations (see :ref:`experiments`)
 * ``saved_configs/``: Saved configs for reproducibility (see :ref:`reproducing-experiments`)
 * ``props/``: Runtime-computed properties (see :ref:`props`)
+
+Each component folder (``data_module/``, ``model/``, etc.) contains interchangeable configs for that pipeline stage.
+For example, ``model/`` has configs for DMPNN, GCN, GAT, and other architectures---all implementing the same interface but with different internal structure.
 
 
 Hierarchical Configuration with Hydra

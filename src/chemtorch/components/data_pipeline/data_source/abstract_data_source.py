@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
 
-class DataSource(ABC):
+class AbstractDataSource(ABC):
     """
     Abstract base class for data sources.
 

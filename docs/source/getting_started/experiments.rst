@@ -1,7 +1,7 @@
 .. _experiments:
 
 ===========
-Create Experiments
+Creating Experiments
 ===========
 
 In the :ref:`quick-start` you saw that you can launch an experiment from the ChemTorch CLI by passing the ``+experiment`` option.
@@ -91,7 +91,7 @@ Let's break this down:
 .. note::
 
     The ``/`` prefix tells Hydra to look in the root ``conf/`` directory.
-    See :ref:`pipeline_overview` for all available components.
+    See :ref:`overview` for all available components.
 
 Step 4: Add Logging Configuration
 ---------------------------------

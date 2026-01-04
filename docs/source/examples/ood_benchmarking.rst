@@ -58,7 +58,7 @@ First, configure the script via the constants at the top of
    * - ``PREDICTION_BASE`` / ``CHECKPOINT_BASE``
      - Base paths used for predictions and checkpoint directories when new configs are generated.
    * - ``SAVE_PREDICTIONS_FOR``
-     - For which partitions to save predictions (see :ref:`config-reference`).
+     - For which partitions to save predictions (see :ref:`config-ref`).
    * - ``GROUP_NAME``
      - Name under which benchmark runs are grouped in Weights & Biases.
    * - ``TRAIN/VAL/TEST_RATIO``
@@ -106,40 +106,18 @@ the built-in help of the generator script:
 
 Choosing OOD splits (RDB7 example)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-To reproduce the OOD benchmark on RDB7 from the ChemTorch paper, use the
-following split names and splitters as a starting point when calling the
-generator:
+To reproduce the OOD benchmark on RDB7 from the ChemTorch paper, refer to the
+config files in ``conf/saved_configs/chemtorch_benchmark/ood_benchmark`` for the
+specific splitter settings used.
 
-.. list-table:: Selected OOD splitters used in the ChemTorch RDB7 benchmark
-   :header-rows: 1
+For descriptions and parameters of all available splitters, see :ref:`custom-dataset`
+("Configuring the Data Splitter" section).
 
-   * - Split name
-     - Splitter class
-     - Description
-   * - ``random_split``
-     - ``RatioSplitter``
-     - Standard 80/10/10 shuffle.
-   * - ``reactant_scaffold_split``
-     - ``ScaffoldSplitter``
-     - Reactant Bemis–Murcko scaffold split.
-   * - ``reaction_core_split``
-     - ``ReactionCoreSplitter``
-     - Split by reaction core identity (reaction SMARTS).
-   * - ``size_split_asc`` / ``size_split_desc``
-     - ``SizeSplitter``
-     - Size-ordered splits to probe extrapolation in molecular size.
-   * - ``target_split_asc`` / ``target_split_desc``
-     - ``TargetSplitter``
-     - Target-ordered splits to probe extrapolation in the property of interest.
-
-New splitters or additional variants may have been added since the paper, and
-several splitters expose extra options (for example, the scaffold splitter can
-split on reactants, products, or both).
-Check the config stubs in
-``conf/data_module/data_pipeline/data_splitter/`` and the corresponding
-Python implementations in
-``src/chemtorch/components/data_pipeline/data_splitter/``
-for the current, complete list and configuration options.
+.. note::
+   New data splitters may have been added since the paper was published.
+   Check ``conf/data_module/data_pipeline/data_splitter/`` and the corresponding
+   Python implementations in ``src/chemtorch/components/data_pipeline/data_splitter/``
+   for the current, complete list and configuration options.
 
 Step 4 -- Launch the benchmark runs
 ==================================
