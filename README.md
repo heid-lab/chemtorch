@@ -1,8 +1,12 @@
 <div align="center">
 
-![ChemTorch](docs/source/_static/chemtorch_logo_dark_lightbackground.png)
+<picture>
+	<source media="(prefers-color-scheme: dark)" srcset="docs/source/_static/chemtorch_logo_dark.svg">
+	<source media="(prefers-color-scheme: light)" srcset="docs/source/_static/chemtorch_logo_light.svg">
+	<img alt="ChemTorch logo" src="docs/source/_static/chemtorch_logo_light.svg" width="360" />
+</picture>
 
-<h3>ChemTorch · Modular Deep Learning for Reactive Chemistry</h3>
+<h3>A Modular Deep Learning for Reactive Chemistry</h3>
 
 [![tests](https://github.com/heid-lab/chemtorch/actions/workflows/pytest.yml/badge.svg)](https://github.com/heid-lab/chemtorch/actions)
 [![Docs](https://img.shields.io/badge/docs-online-brightgreen.svg)](https://heid-lab.github.io/chemtorch)

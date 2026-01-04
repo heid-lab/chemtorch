@@ -1,13 +1,21 @@
-# Utility scripts
+# Utility Scripts
 
-This directory hosts helper scripts used during development, troubleshooting, and reproducibility workflows.
+Helper utilities that make it easier to debug, reproduce, and extend ChemTorch experiments. Each script is self-contained, and some include deeper walk-throughs in the web docs (see links in the quick reference table when available).
 
-## Top-level helpers
+## Quick Reference
 
-- `wandb_to_hydra.py` — convert a Weights & Biases run into a Hydra config snippet (examples: https://heid-lab.github.io/chemtorch/user_guide/reproducibility.html)
-- `collect_env.py` — capture hardware and Python package metadata for baselines (guidance: https://heid-lab.github.io/chemtorch/advanced_guide/integration_tests.html)
+| Script | Core purpose |
+| --- | --- |
+| `install_pyg_deps.py` | Recommend (or install) the matching PyTorch Geometric wheels |
+| `generate_data_split_configs.py` | Build OOD benchmark configs for every model/split combo |
+| `check_vocab.py` | Inspect token vocabularies, OOV stats, and tokenizer artifacts |
+| `resolve_target.py` | Jump from a Hydra `_target_` string to its Python definition |
+| `collect_env.py` | Snapshot hardware/CUDA/Python package info for reproducibility (see [docs](https://heid-lab.github.io/chemtorch/advanced_guide/integration_tests.html)) |
+| `wandb_to_hydra.py` | Turn a Weights & Biases run into Hydra overrides (see [docs](https://heid-lab.github.io/chemtorch/user_guide/reproducibility.html) for examples) |
 
-## PyG wheel helper — `install_pyg_deps.py`
+## Detailed Guides
+
+### PyG wheel helper — `install_pyg_deps.py`
 
 Inspect the active `torch` install, derive the CUDA tag, and construct the correct PyG wheel index URL.
 
@@ -21,11 +29,67 @@ python scripts/install_pyg_deps.py --run  # or: -y
 
 If the pip command fails because no wheel exists for your platform, follow the official fallback steps: https://pytorch-geometric.readthedocs.io/en/latest/install/installation.html#installation-from-wheels
 
-## Vocabulary analysis — `check_vocab.py`
+---
+
+### Data split config generator — `generate_data_split_configs.py`
+
+Automates the creation of OOD benchmark configs by cloning a "source" config per model (typically the tuned/baseline config) and stamping in all supported data splitters.
+
+#### Purpose
+
+- Standardize benchmarking across random, scaffold, reaction-core, size, and target ordered splits.
+- Keep project-wide conventions (group name, prediction folders, run names) in sync without editing YAML manually.
+
+#### Configuration fields
+
+Configure the script by editing the constants at the top of `generate_data_split_configs.py`:
+
+- `SOURCE_MODEL_CONFIG_DIR` – folder containing the per-model source configs (`<model>.yaml`).
+- `OOD_CONFIG_OUTPUT_DIR` – destination directory where split configs will be written (`<model>/<split>.yaml`).
+- `PREDICTION_BASE` – base path used when stamping `predictions_save_dir`.
+- `CHECKPOINT_BASE` – base path injected into `trainer.checkpoint_callback.dirpath`.
+- `GROUP_NAME` – value assigned to `group_name` in every generated config.
+- `TRAIN_RATIO` / `VAL_RATIO` / `TEST_RATIO` – shared split fractions applied to every splitter definition.
+
+#### Usage
+
+Run the script, optionally filtering by models or splits:
+
+```bash
+python scripts/generate_data_split_configs.py              # build every model/split
+python scripts/generate_data_split_configs.py --models atom_han drfp_mlp
+python scripts/generate_data_split_configs.py --splits random_split size_split_desc
+python scripts/generate_data_split_configs.py --models dimereaction --overwrite
+```
+
+#### Structural assumptions
+
+- Source configs are named `<model>.yaml` (for example `atom_han.yaml`) and located inside `SOURCE_MODEL_CONFIG_DIR`.
+- Each config already contains a valid Hydra `data_module` block; the script only swaps `data_splitter`.
+- Output configs are written under `<OOD_CONFIG_OUTPUT_DIR>/<model>/`.
+- Prediction and checkpoint paths follow `<PREDICTION_BASE|CHECKPOINT_BASE>/<model>/<split_prefix>/seed_...` and mirror the same structure for checkpoints.
+
+#### Outcome
+
+- For every requested split, a YAML file such as `size_split_desc.yaml` is created with updated `group_name`, `run_name`, `data_module.data_splitter`, predictions directory, and checkpoint directory.
+- Existing files are preserved unless `--overwrite` is passed (or the path is removed manually).
+
+#### Extending to new splitters
+
+- Add a new entry to the `SPLIT_SPECS` dictionary inside `generate_data_split_configs.py`. Each entry defines:
+  - `file_name`: output YAML name (for example, `index_split.yaml`).
+  - `prefix`: label used for `run_name`, prediction paths, and checkpoint paths.
+  - `splitter`: the Hydra config snippet that should replace `data_module.data_splitter`.
+- Keep the `prefix` unique so run names and directories stay disambiguated.
+- When splitters need extra parameters, add them to the `splitter` mapping; the script deep-copies it into each generated config.
+
+---
+
+### Vocabulary analysis — `check_vocab.py`
 
 Provides detailed tokenizer and vocabulary diagnostics using the existing ChemTorch data pipelines and tokenizers.
 
-**Features**
+#### Features
 
 - Reuses configured data pipelines and tokenizers from ChemTorch
 - Token frequency statistics and length distributions
@@ -33,7 +97,7 @@ Provides detailed tokenizer and vocabulary diagnostics using the existing ChemTo
 - Artifact detection (whitespace, Unicode, malformed chemistry tokens)
 - Works with single datasets or pre-split datasets
 
-**Basic usage**
+#### Basic usage
 
 ```bash
 # Default configuration (USPTO-1K pipeline)
@@ -48,7 +112,7 @@ python scripts/check_vocab.py data_pipeline=sn2
 python scripts/check_vocab.py max_samples=1000 report_top_k=50
 ```
 
-**Key parameters**
+#### Key parameters
 
 - `data_pipeline`: select the Hydra data pipeline config
 - `tokenizer`: override the tokenizer config
@@ -62,7 +126,7 @@ python scripts/check_vocab.py max_samples=1000 report_top_k=50
 - `display_bad_tokens`: print problematic tokens or OOV causes
 - `seed`: random seed for reproducibility when sampling
 
-**Output highlights**
+#### Output
 
 - Total and unique token counts
 - Average and maximum token lengths
@@ -71,15 +135,17 @@ python scripts/check_vocab.py max_samples=1000 report_top_k=50
 - Top frequent tokens and length distributions
 - Unicode category statistics (when enabled)
 
-**Data requirements**
+#### Data requirements
 
 The configured pipeline must expose a `smiles` column; this is the convention used across ChemTorch datasets.
 
-## Hydra target resolver — `resolve_target.py`
+---
+
+### Hydra target resolver — `resolve_target.py`
 
 Jump from a Hydra YAML `_target_` entry to the corresponding Python definition.
 
-**VS Code task example**
+#### VS Code task example
 
 ```json
 {
@@ -107,7 +173,7 @@ Jump from a Hydra YAML `_target_` entry to the corresponding Python definition.
 }
 ```
 
-**Keybinding example**
+#### Keybinding example
 
 ```json
 {
@@ -118,76 +184,13 @@ Jump from a Hydra YAML `_target_` entry to the corresponding Python definition.
 }
 ```
 
-**Usage**
+#### Usage
 
 1. Open a Hydra YAML config in VS Code.
 2. Place the cursor on the `_target_:` line.
 3. Trigger the task (for example `Ctrl+F12`) to open the Python definition.
 
-**Shortcuts**
+#### Shortcuts
 
 - Resolve the first `_target_` in a file: `python scripts/resolve_target.py --top-target path/to/config.yaml`
 - Resolve by fully qualified name: `python scripts/resolve_target.py package.module.ClassName`
-
-If you want me to further polish this README (add examples for `wandb_to_hydra.py`, usage examples for `collect_env.py`, or add a small index in `scripts/`), I can do that next.
-
-"""
-# Documentation of Utiliry Scripts
-## Vocabulary Analysis with `check_vocab.py`
-
-This script provides comprehensive vocabulary analysis for chemical datasets using Hydra configuration and reuses the existing ChemTorch data pipeline and tokenizer configurations.
-
-### Features
-
-- **Reuses ChemTorch Configs**: Leverages existing data_pipeline and tokenizer configurations
-- **Tokenization Statistics**: Token frequencies, length distributions, unique token counts
-- **OOV Analysis**: Out-of-vocabulary analysis against existing vocabularies
-- **Artifact Detection**: Detection of problematic tokens (whitespace, Unicode issues, malformed chemical notation)
-- **Split Data Support**: Handle both single datasets and pre-split data automatically
-
-### Usage
-
-#### Basic Usage
-
-```bash
-# Run with default configuration (uses USPTO-1K data pipeline)
-python scripts/check_vocab.py
-
-# Use different dataset by changing data pipeline
-python scripts/check_vocab.py data_pipeline=rdb7_fwd
-python scripts/check_vocab.py data_pipeline=rgd1
-python scripts/check_vocab.py data_pipeline=sn2
-
-# Limit analysis and change reporting
-python scripts/check_vocab.py max_samples=1000 report_top_k=50
-```
-
-### Configuration Parameters
-
-- `data_pipeline`: Which data pipeline config to use
-- `tokenizer`: Which tokenizer config to use
-- `max_samples`: Limit number of samples (null = all)
-- `report_top_k`: Number of top tokens to report
-- `min_frequency`: Minimum frequency threshold
-- `detect_artifacts`: Enable artifact detection
-- `unicode_analysis`: Enable Unicode category analysis
-- `whitespace_analysis`: Enable whitespace detection
-- `vocab_path`: Path to existing vocabulary for OOV analysis
-- `display_bad_tokens`: Displays a summary of bad tokens causing OOV issues or artifacts
-- `seed`: Random seed for reproducibility
-
-### Output
-
-The script outputs a comprehensive summary to the console including:
-
-- Total and unique token counts
-- Average and max token lengths
-- OOV rate (if vocabulary provided)
-- Detected artifacts by category
-- Top frequent tokens
-- Token length distribution
-- Unicode category summary
-
-### Data Requirements
-
-The script expects the data pipeline to produce data with a standard `smiles` column containing SMILES strings. This is the convention used throughout ChemTorch.
