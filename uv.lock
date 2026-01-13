@@ -530,6 +530,8 @@ dependencies = [
     { name = "numpy", version = "2.3.4", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11' or (extra == 'extra-9-chemtorch-cpu' and extra == 'extra-9-chemtorch-cu118') or (extra == 'extra-9-chemtorch-cpu' and extra == 'extra-9-chemtorch-cu121') or (extra == 'extra-9-chemtorch-cpu' and extra == 'extra-9-chemtorch-cu124') or (extra == 'extra-9-chemtorch-cpu' and extra == 'extra-9-chemtorch-cu126') or (extra == 'extra-9-chemtorch-cpu' and extra == 'extra-9-chemtorch-cu128') or (extra == 'extra-9-chemtorch-cpu' and extra == 'extra-9-chemtorch-cu129') or (extra == 'extra-9-chemtorch-cpu' and extra == 'extra-9-chemtorch-cu130') or (extra == 'extra-9-chemtorch-cpu' and extra == 'extra-9-chemtorch-macos') or (extra == 'extra-9-chemtorch-cu118' and extra == 'extra-9-chemtorch-cu121') or (extra == 'extra-9-chemtorch-cu118' and extra == 'extra-9-chemtorch-cu124') or (extra == 'extra-9-chemtorch-cu118' and extra == 'extra-9-chemtorch-cu126') or (extra == 'extra-9-chemtorch-cu118' and extra == 'extra-9-chemtorch-cu128') or (extra == 'extra-9-chemtorch-cu118' and extra == 'extra-9-chemtorch-cu129') or (extra == 'extra-9-chemtorch-cu118' and extra == 'extra-9-chemtorch-cu130') or (extra == 'extra-9-chemtorch-cu118' and extra == 'extra-9-chemtorch-macos') or (extra == 'extra-9-chemtorch-cu121' and extra == 'extra-9-chemtorch-cu124') or (extra == 'extra-9-chemtorch-cu121' and extra == 'extra-9-chemtorch-cu126') or (extra == 'extra-9-chemtorch-cu121' and extra == 'extra-9-chemtorch-cu128') or (extra == 'extra-9-chemtorch-cu121' and extra == 'extra-9-chemtorch-cu129') or (extra == 'extra-9-chemtorch-cu121' and extra == 'extra-9-chemtorch-cu130') or (extra == 'extra-9-chemtorch-cu121' and extra == 'extra-9-chemtorch-macos') or (extra == 'extra-9-chemtorch-cu124' and extra == 'extra-9-chemtorch-cu126') or (extra == 'extra-9-chemtorch-cu124' and extra == 'extra-9-chemtorch-cu128') or (extra == 'extra-9-chemtorch-cu124' and extra == 'extra-9-chemtorch-cu129') or (extra == 'extra-9-chemtorch-cu124' and extra == 'extra-9-chemtorch-cu130') or (extra == 'extra-9-chemtorch-cu124' and extra == 'extra-9-chemtorch-macos') or (extra == 'extra-9-chemtorch-cu126' and extra == 'extra-9-chemtorch-cu128') or (extra == 'extra-9-chemtorch-cu126' and extra == 'extra-9-chemtorch-cu129') or (extra == 'extra-9-chemtorch-cu126' and extra == 'extra-9-chemtorch-cu130') or (extra == 'extra-9-chemtorch-cu126' and extra == 'extra-9-chemtorch-macos') or (extra == 'extra-9-chemtorch-cu128' and extra == 'extra-9-chemtorch-cu129') or (extra == 'extra-9-chemtorch-cu128' and extra == 'extra-9-chemtorch-cu130') or (extra == 'extra-9-chemtorch-cu128' and extra == 'extra-9-chemtorch-macos') or (extra == 'extra-9-chemtorch-cu129' and extra == 'extra-9-chemtorch-cu130') or (extra == 'extra-9-chemtorch-cu129' and extra == 'extra-9-chemtorch-macos') or (extra == 'extra-9-chemtorch-cu130' and extra == 'extra-9-chemtorch-macos')" },
     { name = "omegaconf" },
     { name = "pandas" },
+    { name = "pytest-dependency" },
+    { name = "pytest-order" },
     { name = "pytorch-lightning" },
     { name = "rdkit" },
     { name = "scikit-learn" },
@@ -599,6 +601,8 @@ requires-dist = [
     { name = "numpy" },
     { name = "omegaconf", specifier = ">=2.3.0" },
     { name = "pandas" },
+    { name = "pytest-dependency", specifier = ">=0.6.0" },
+    { name = "pytest-order", specifier = ">=1.3.0" },
     { name = "pytorch-lightning", specifier = ">=2.4.0" },
     { name = "rdkit" },
     { name = "scikit-learn" },
@@ -3448,6 +3452,28 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/5e/f7/c933acc76f5208b3b00089573cf6a2bc26dc80a8aece8f52bb7d6b1855ca/pytest_cov-7.0.0.tar.gz", hash = "sha256:33c97eda2e049a0c5298e91f519302a1334c26ac65c1a483d6206fd458361af1", size = 54328, upload-time = "2025-09-09T10:57:02.113Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/ee/49/1377b49de7d0c1ce41292161ea0f721913fa8722c19fb9c1e3aa0367eecb/pytest_cov-7.0.0-py3-none-any.whl", hash = "sha256:3b8e9558b16cc1479da72058bdecf8073661c7f57f7d3c5f22a1c23507f2d861", size = 22424, upload-time = "2025-09-09T10:57:00.695Z" },
+]
+
+[[package]]
+name = "pytest-dependency"
+version = "0.6.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "pytest" },
+    { name = "setuptools" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/7e/3b/317cc04e77d707d338540ca67b619df8f247f3f4c9f40e67bf5ea503ad94/pytest-dependency-0.6.0.tar.gz", hash = "sha256:934b0e6a39d95995062c193f7eaeed8a8ffa06ff1bcef4b62b0dc74a708bacc1", size = 19499, upload-time = "2023-12-31T20:38:54.991Z" }
+
+[[package]]
+name = "pytest-order"
+version = "1.3.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "pytest" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/1d/66/02ae17461b14a52ce5a29ae2900156b9110d1de34721ccc16ccd79419876/pytest_order-1.3.0.tar.gz", hash = "sha256:51608fec3d3ee9c0adaea94daa124a5c4c1d2bb99b00269f098f414307f23dde", size = 47544, upload-time = "2024-08-22T12:29:54.512Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/1b/73/59b038d1aafca89f8e9936eaa8ffa6bb6138d00459d13a32ce070be4f280/pytest_order-1.3.0-py3-none-any.whl", hash = "sha256:2cd562a21380345dd8d5774aa5fd38b7849b6ee7397ca5f6999bbe6e89f07f6e", size = 14609, upload-time = "2024-08-22T12:29:53.156Z" },
 ]
 
 [[package]]

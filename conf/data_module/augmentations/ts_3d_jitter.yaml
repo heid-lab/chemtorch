@@ -1,0 +1,6 @@
+
+_target_: chemtorch.components.augmentation.TS3DJitterAugmentation
+jitter:
+  _target_: chemtorch.components.transform.TS3DJitterTransform
+  sigma: 0.1
+  clip: 0.5
