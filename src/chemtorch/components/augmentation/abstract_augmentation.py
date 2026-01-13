@@ -1,7 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Generic, List, Optional
-
-from pyparsing import TypeVar
+from typing import Generic, List, Optional, TypeVar
 import torch
 
 T = TypeVar("T")

@@ -1,0 +1,28 @@
+# A registry of all test sets.
+# Users can disable default sets or add their own.
+test_sets:
+  # Our default benchmark suite. Users can disable this.
+  chemtorch_benchmark:
+    enabled: true
+    path: "conf/saved_configs/chemtorch_benchmark/optimal_model_configs"
+    invocation_mode: "config_name"
+    test_cases: ["init", "baseline", "extended"]
+    fixtures_path: "test/test_integration/fixtures/chemtorch_benchmark"
+    force_debug_log: false
+      
+  experiment_configs:
+    enabled: true
+    path: "conf/experiment"
+    invocation_mode: "experiment"
+    test_cases: ["init", "smoke"]  # Available: init, smoke, baseline, extended
+    skip_configs:
+      - "fingerprint"
+      - "example/fingerprint"
+    overrides:
+      opi_tutorial/training:
+        - ++data_module.data_pipeline.data_source.data_path=test/test_integration/fixtures/opi_tutorial/training.csv
+      opi_tutorial/inference:
+        - ++data_module.data_pipeline.data_source.data_path=test/test_integration/fixtures/opi_tutorial/inference.csv
+        - ++load_model=false
+        - ~ckpt_path
+        - ++predictions_save_path=/tmp/chemtorch_test_preds.csv

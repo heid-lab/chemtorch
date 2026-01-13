@@ -1,7 +1,6 @@
-program: chemtorch_cli.py
+program: chemtorch
 command:
   - ${env}
-  - python
   - ${program}
   - "+experiment=3d_graph"
   - "run_name=dimereaction"

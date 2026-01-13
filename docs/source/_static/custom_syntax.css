@@ -1,0 +1,417 @@
+/* Minimal CSS for custom ChemTorch lexers */
+
+/* Make chemtorch command bold */
+.highlight-chemtorch .ne:contains("chemtorch"),
+.highlight-wandb .ne:contains("chemtorch") {
+    font-weight: bold !important;
+}
+
+/* Make all .ne elements (ChemTorch script names) bold */
+.highlight-chemtorch .ne,
+.highlight-wandb .ne {
+    font-weight: bold !important;
+}
+
+/* Style regular inline code to match our subtle theme */
+code.literal {
+    color: #5a6c7d !important; /* Subtle blue-gray - stands apart from standard text but not competing with link blue */
+    /* Very light gray background */
+    /* background-color: #f8f9fa !important; 
+    padding: 0.1em 0.2em !important;
+    border-radius: 0.25rem !important; */
+}
+
+/* Dark mode for inline code */
+[data-theme="dark"] code.literal,
+.theme-dark code.literal,
+html[data-theme="dark"] code.literal {
+    color: #9bb5d1 !important; /* Soft blue-gray for dark mode - distinguishable but not competing with links */
+    /* Dark background */
+    /* background-color: #343a40 !important;  */
+}
+
+@media (prefers-color-scheme: dark) {
+    code.literal {
+        color: #9bb5d1 !important; /* Soft blue-gray for dark mode fallback */
+        /* background-color: #343a40 !important; */
+    }
+}
+
+/* Light mode colors (default) */
+.highlight-chemtorch .gi,
+.highlight-wandb .gi {
+    color: #d1570a !important; /* Darker but still vibrant orange for hydra overrides */
+    background-color: transparent !important;
+}
+
+.highlight-chemtorch .ne,
+.highlight-wandb .ne {
+    color: #7a007a !important; /* More vibrant purple for chemtorch script commands - pops out more */
+    background-color: transparent !important;
+}
+
+.highlight-chemtorch .nb,
+.highlight-wandb .nb,
+.highlight-install .nb,
+.highlight-installation .nb {
+    color: #5a6c7d !important; /* Same subtle blue-gray as inline code */
+    /* background-color: transparent !important; */
+}
+
+/* Dark mode colors - using multiple selectors to catch different theme implementations */
+[data-theme="dark"] .highlight-chemtorch .gi,
+[data-theme="dark"] .highlight-wandb .gi,
+.theme-dark .highlight-chemtorch .gi,
+.theme-dark .highlight-wandb .gi,
+html[data-theme="dark"] .highlight-chemtorch .gi,
+html[data-theme="dark"] .highlight-wandb .gi {
+    color: #ffa64d !important; /* Lighter ChemTorch orange for hydra overrides in dark mode */
+}
+
+[data-theme="dark"] .highlight-chemtorch .ne,
+[data-theme="dark"] .highlight-wandb .ne,
+.theme-dark .highlight-chemtorch .ne,
+.theme-dark .highlight-wandb .ne,
+html[data-theme="dark"] .highlight-chemtorch .ne,
+html[data-theme="dark"] .highlight-wandb .ne {
+    color: #c466c4 !important; /* More purple, less pink for chemtorch script in dark mode */
+}
+
+[data-theme="dark"] .highlight-chemtorch .nb,
+[data-theme="dark"] .highlight-wandb .nb,
+[data-theme="dark"] .highlight-install .nb,
+[data-theme="dark"] .highlight-installation .nb,
+.theme-dark .highlight-chemtorch .nb,
+.theme-dark .highlight-wandb .nb,
+.theme-dark .highlight-install .nb,
+.theme-dark .highlight-installation .nb,
+html[data-theme="dark"] .highlight-chemtorch .nb,
+html[data-theme="dark"] .highlight-wandb .nb,
+html[data-theme="dark"] .highlight-install .nb,
+html[data-theme="dark"] .highlight-installation .nb {
+    color: #9bb5d1 !important; /* Same soft blue-gray as inline code for dark mode */
+}
+
+/* Fallback using prefers-color-scheme */
+@media (prefers-color-scheme: dark) {
+    .highlight-chemtorch .gi,
+    .highlight-wandb .gi {
+        color: #ffa64d !important; /* Lighter ChemTorch orange for hydra overrides in dark mode fallback */
+    }
+    
+    .highlight-chemtorch .ne,
+    .highlight-wandb .ne {
+        color: #c466c4 !important; /* More purple, less pink for chemtorch script in dark mode fallback */
+    }
+    
+    .highlight-chemtorch .nb,
+    .highlight-wandb .nb,
+    .highlight-install .nb,
+    .highlight-installation .nb {
+        color: #9bb5d1 !important; /* Same soft blue-gray as inline code for dark mode fallback */
+    }
+}
+
+/*
+ Page-level light-mode overrides
+ When the system is in dark mode but the rendered Sphinx page uses a light
+ theme (for example via `html[data-theme="light"]` or the `.theme-light`
+ class), the browser may still apply `prefers-color-scheme: dark` rules.
+ These explicit selectors come after the dark-mode rules and force the
+ intended light-mode colors for the code highlight tokens on the page.
+ */
+html[data-theme="light"] .highlight-chemtorch .gi,
+.theme-light .highlight-chemtorch .gi,
+html[data-theme="light"] .highlight-wandb .gi,
+.theme-light .highlight-wandb .gi,
+html:not([data-theme="dark"]) .highlight-chemtorch .gi,
+html:not([data-theme="dark"]) .highlight-wandb .gi {
+    color: #d1570a !important; /* Light-mode ChemTorch orange */
+}
+
+html[data-theme="light"] .highlight-chemtorch .ne,
+.theme-light .highlight-chemtorch .ne,
+html[data-theme="light"] .highlight-wandb .ne,
+.theme-light .highlight-wandb .ne,
+html:not([data-theme="dark"]) .highlight-chemtorch .ne,
+html:not([data-theme="dark"]) .highlight-wandb .ne {
+    color: #7a007a !important; /* Light-mode chemtorch purple */
+}
+
+html[data-theme="light"] .highlight-chemtorch .nb,
+.theme-light .highlight-chemtorch .nb,
+html[data-theme="light"] .highlight-wandb .nb,
+.theme-light .highlight-wandb .nb,
+html[data-theme="light"] .highlight-install .nb,
+.theme-light .highlight-install .nb,
+html[data-theme="light"] .highlight-installation .nb,
+.theme-light .highlight-installation .nb,
+html:not([data-theme="dark"]) .highlight-chemtorch .nb,
+html:not([data-theme="dark"]) .highlight-wandb .nb,
+html:not([data-theme="dark"]) .highlight-install .nb,
+html:not([data-theme="dark"]) .highlight-installation .nb {
+    color: #5a6c7d !important; /* Light-mode subtle blue-gray */
+}
+
+html[data-theme="light"] code.literal,
+.theme-light code.literal,
+html:not([data-theme="dark"]) code.literal {
+    color: #5a6c7d !important; /* Inline code color for light pages */
+}
+
+/*
+Muted YAML highlighting
+
+Goal:
+- Make YAML keys use the inline code color so they are visible but subtle.
+- Make most other YAML tokens use the page's standard text color (muted).
+- Preserve numbers, operators and comments so they remain easy to find and
+    match the colors used in bash/installation examples.
+*/
+
+/* Most name/identifier tokens -> inherit page text color (muted)
+   (these classes cover common Pygments name/token classes used by YAML lexers) */
+.highlight-yaml .n,
+.highlight-yaml .nf,
+.highlight-yaml .nc,
+.highlight-yaml .nd,
+.highlight-yaml .ni,
+.highlight-yaml .ne,
+.highlight-yaml .nl,
+.highlight-yaml .na,
+.highlight-yaml .nv,
+.highlight-yaml .pygments .w,
+.highlight-yaml .err {
+    color: inherit !important;
+}
+
+/* Strings and literals -> inherit (don't stand out) */
+.highlight-yaml .s,
+.highlight-yaml .se,
+.highlight-yaml .sh,
+.highlight-yaml .s1,
+.highlight-yaml .s2,
+.highlight-yaml .sb {
+    color: inherit !important;
+}
+
+/* Keys (often represented as Keyword or Name.Tag) -> use inline code color */
+.highlight-yaml .k,
+.highlight-yaml .kt,
+.highlight-yaml .kp,
+.highlight-yaml .kt,
+.highlight-yaml .nt,
+.highlight-yaml .na {
+    color: #5a6c7d !important; /* same as code.literal in light mode */
+    font-weight: 500 !important; /* slightly emphasized but not bold */
+}
+
+/* Numbers - keep the subtle blue-gray used for numbers elsewhere */
+.highlight-yaml .m,
+.highlight-yaml .mf,
+.highlight-yaml .mi,
+.highlight-yaml .mb,
+.highlight-yaml .nb {
+    color: #5a6c7d !important;
+}
+
+/* Operators and punctuation - keep theme/default coloring so they match bash examples */
+.highlight-yaml .o,
+.highlight-yaml .p {
+    color: inherit !important; /* let the theme/style for operators apply */
+}
+
+/* Comments - preserve comment color (let theme handle it) */
+.highlight-yaml .c,
+.highlight-yaml .cm,
+.highlight-yaml .cp,
+.highlight-yaml .c1,
+.highlight-yaml .cs {
+    color: inherit !important;
+}
+
+/* Dark-mode variants: use the dark inline-code color for keys and numbers */
+[data-theme="dark"] .highlight-yaml .k,
+.theme-dark .highlight-yaml .k,
+html[data-theme="dark"] .highlight-yaml .k,
+[data-theme="dark"] .highlight-yaml .nt,
+.theme-dark .highlight-yaml .nt,
+html[data-theme="dark"] .highlight-yaml .nt,
+[data-theme="dark"] .highlight-yaml .na,
+.theme-dark .highlight-yaml .na,
+html[data-theme="dark"] .highlight-yaml .na {
+    color: #9bb5d1 !important; /* inline code color in dark mode */
+}
+
+[data-theme="dark"] .highlight-yaml .m,
+.theme-dark .highlight-yaml .m,
+html[data-theme="dark"] .highlight-yaml .m,
+[data-theme="dark"] .highlight-yaml .nb,
+.theme-dark .highlight-yaml .nb,
+html[data-theme="dark"] .highlight-yaml .nb {
+    color: #9bb5d1 !important; /* number color in dark mode */
+}
+
+/*
+Broader YAML coverage: some themes/highlighters emit different class names
+(e.g. Prism-style `token` classes or different Pygments aliases). The rules
+below first mute most token text inside YAML blocks, then explicitly
+restore color for keys and numbers so they remain readable.
+*/
+
+/* Mute most tokens in YAML blocks to the page text color */
+.highlight-yaml span,
+pre[class*="language-yaml"] span,
+code.language-yaml span,
+.highlight-yaml .token,
+pre[class*="language-yaml"] .token,
+code.language-yaml .token {
+    color: inherit !important;
+}
+
+/* YAML keys (Prism `token.key` or Pygments `k`, `kt`, `nt`, `na`) */
+.highlight-yaml .token.key,
+pre[class*="language-yaml"] .token.key,
+code.language-yaml .token.key,
+.highlight-yaml .k,
+.highlight-yaml .kt,
+.highlight-yaml .kp,
+.highlight-yaml .nt,
+.highlight-yaml .na,
+pre[class*="language-yaml"] .k,
+pre[class*="language-yaml"] .kt,
+pre[class*="language-yaml"] .nt,
+code.language-yaml .k,
+code.language-yaml .kt,
+code.language-yaml .nt {
+    color: #5a6c7d !important; /* inline code color in light mode */
+    font-weight: 500 !important;
+}
+
+/* Numbers (Prism `token.number` or Pygments `m`, `mf`, `mi`, `nb`) */
+.highlight-yaml .token.number,
+pre[class*="language-yaml"] .token.number,
+code.language-yaml .token.number,
+.highlight-yaml .m,
+.highlight-yaml .mf,
+.highlight-yaml .mi,
+.highlight-yaml .mb,
+.highlight-yaml .nb,
+pre[class*="language-yaml"] .m,
+pre[class*="language-yaml"] .mf,
+pre[class*="language-yaml"] .mi,
+pre[class*="language-yaml"] .nb,
+code.language-yaml .m,
+code.language-yaml .nb {
+    color: #5a6c7d !important; /* number color in light mode */
+}
+
+/* Operators/punctuation and comments: keep theme/default coloring (inherit)
+   but ensure they remain visible by avoiding overly muted rules above. */
+.highlight-yaml .p,
+.highlight-yaml .o,
+pre[class*="language-yaml"] .p,
+pre[class*="language-yaml"] .o,
+code.language-yaml .p,
+code.language-yaml .o,
+.highlight-yaml .c,
+.highlight-yaml .cm,
+.highlight-yaml .c1,
+.highlight-yaml .cs,
+pre[class*="language-yaml"] .c,
+pre[class*="language-yaml"] .cm {
+    color: inherit !important;
+}
+
+/* Neutralize other token classes that sometimes carry bright colors
+   (e.g. hydra override class `.gi`, names `.ne`, functions `.nf`, literals).
+   This removes residual orange/yellow highlights like `log_uniform_values`. */
+.highlight-yaml .gi,
+.highlight-yaml .ne,
+.highlight-yaml .nf,
+.highlight-yaml .nl,
+.highlight-yaml .na,
+.highlight-yaml .s,
+.highlight-yaml .se,
+.highlight-yaml .sh,
+.highlight-yaml .sb,
+pre[class*="language-yaml"] .gi,
+pre[class*="language-yaml"] .ne,
+pre[class*="language-yaml"] .nf,
+pre[class*="language-yaml"] .nl,
+pre[class*="language-yaml"] .na,
+pre[class*="language-yaml"] .s,
+pre[class*="language-yaml"] .se,
+pre[class*="language-yaml"] .sh,
+code.language-yaml .gi,
+code.language-yaml .ne,
+code.language-yaml .nf,
+code.language-yaml .nl,
+code.language-yaml .na,
+code.language-yaml .s,
+code.language-yaml .se,
+code.language-yaml .sh {
+    color: inherit !important;
+}
+
+/* ------------------------------------------------------------------
+   Override comment colors to match a standard 'bash' shell theme.
+   - Light mode: a medium green similar to GitHub/shell highlights
+   - Dark mode: a softer green (Monokai-style)
+   These rules intentionally target both Pygments and Prism-style
+   token classes and are placed last so they override earlier "inherit"
+   rules in this file.
+   ------------------------------------------------------------------ */
+
+:root {
+    --bash-comment-light: #22863a; /* light-mode shell comment (green) */
+    --bash-comment-dark:  #6a9955; /* dark-mode softer green */
+}
+
+/* Default / light mode */
+.highlight .c,
+.highlight .cm,
+.highlight .cp,
+.highlight .c1,
+.highlight .cs,
+.highlight-bash .c,
+.highlight-bash .cm,
+pre[class*="language-bash"] .token.comment,
+code[class*="language-bash"] .token.comment,
+pre[class*="language-sh"] .token.comment,
+code[class*="language-sh"] .token.comment {
+    color: var(--bash-comment-light) !important;
+}
+
+/* Dark mode overrides */
+[data-theme="dark"] .highlight .c,
+[data-theme="dark"] .highlight .cm,
+[data-theme="dark"] .highlight .cp,
+[data-theme="dark"] .highlight .c1,
+[data-theme="dark"] .highlight .cs,
+[data-theme="dark"] .highlight-bash .c,
+[data-theme="dark"] pre[class*="language-bash"] .token.comment,
+[data-theme="dark"] code[class*="language-bash"] .token.comment,
+.theme-dark .highlight .c,
+.theme-dark .highlight .cm,
+.theme-dark .highlight .cp,
+.theme-dark .highlight .c1,
+.theme-dark .highlight .cs,
+.theme-dark .highlight-bash .c {
+    color: var(--bash-comment-dark) !important;
+}
+
+/* prefers-color-scheme fallback */
+@media (prefers-color-scheme: dark) {
+    .highlight .c,
+    .highlight .cm,
+    .highlight .cp,
+    .highlight .c1,
+    .highlight .cs,
+    .highlight-bash .c {
+        color: var(--bash-comment-dark) !important;
+    }
+}
+
+
+

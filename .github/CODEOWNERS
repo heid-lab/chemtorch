@@ -1,0 +1,21 @@
+# CODEOWNERS determines automatically requested reviewers for PRs touching these paths.
+# Syntax: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# Core library code
+src/chemtorch/ @heid-lab/chemtorch-maintainers
+
+# Configuration schemas and experiment presets
+conf/ @heid-lab/chemtorch-maintainers
+
+# Documentation
+docs/source/ @heid-lab/chemtorch-maintainers
+
+# CI workflows
+.github/workflows/ @heid-lab/chemtorch-maintainers
+
+# Release management files
+CHANGELOG.md @heid-lab/chemtorch-maintainers
+.github/release-drafter.yml @heid-lab/chemtorch-maintainers
+
+# Package metadata
+pyproject.toml @heid-lab/chemtorch-maintainers

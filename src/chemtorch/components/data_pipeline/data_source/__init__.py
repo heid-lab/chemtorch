@@ -1,3 +1,3 @@
-from .data_source import DataSource
+from .abstract_data_source import AbstractDataSource
 from .single_csv_source import SingleCSVSource
 from .pre_split_csv_source import PreSplitCSVSource

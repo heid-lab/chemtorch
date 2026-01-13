@@ -116,15 +116,18 @@ class Reaction3DGraph(AbstractRepresentation[Data]):
     """
     Constructs a 3D representation of a reaction from XYZ files.
 
-    This representation reads the 3D structures for a reactant (r), transition state (ts),
-    and product (p) from their respective .xyz files and packages them into a single
-    PyTorch Geometric `Data` object. 
+    This representation reads the 3D structures for a reactant (r) and transition state (ts)
+    from their respective .xyz files and packages them into a single PyTorch Geometric
+    `Data` object (specifically, a `Reaction3DData` object).
 
-    The resulting `Data` object for each sample will contain:
-    - `z_r`, `pos_r`: Atomic numbers and coordinates for the reactant.
-    - `z_ts`, `pos_ts`: Atomic numbers and coordinates for the transition state.
-    - `z_p`, `pos_p`: Atomic numbers and coordinates for the product.
-    - `smiles`: The reaction SMILES string, for reference.
+    The resulting `Reaction3DData` object for each sample contains:
+    - `z_r`, `pos_r`: Atomic numbers and 3D coordinates for the reactant
+    - `z_ts`, `pos_ts`: Atomic numbers and 3D coordinates for the transition state
+    - `smiles`: The reaction SMILES string (for reference)
+    - `num_nodes`: Total number of atoms in the structure
+
+    This representation is particularly useful for models like DimeReaction that operate
+    on 3D geometries of chemical reactions.
     """
 
     def __init__(self, root_dir: str):
@@ -144,19 +147,25 @@ class Reaction3DGraph(AbstractRepresentation[Data]):
         """
         Constructs a single reaction graph from its corresponding XYZ files.
 
-        This method is called by `DatasetBase` for each row in the DataFrame.
+        This method is called by `DatasetBase` for each row in the DataFrame and reads
+        the reactant and transition state XYZ files from the specified reaction directory.
 
         Args:
             smiles (str): The reaction SMILES string.
-            reaction_dir (str): The name of the subdirectory within `root_dir`
-                                containing the XYZ files for this reaction.
+            reaction_dir (str): The name/ID of the subdirectory within `root_dir`
+                                containing the XYZ files for this reaction (e.g., '1', '42').
+                                Will be zero-padded to 6 digits (e.g., '000001', '000042').
 
         Returns:
-            A PyG `Data` object containing the 3D structures.
+            A `Reaction3DData` object containing the 3D structures with attributes:
+            - z_r, pos_r: Atomic numbers and positions for reactant
+            - z_ts, pos_ts: Atomic numbers and positions for transition state
+            - smiles: The reaction SMILES
+            - num_nodes: Number of atoms
 
         Raises:
             FileNotFoundError: If the reaction directory or any required .xyz file is not found.
-            ValueError: If the number of atoms is inconsistent across structures.
+            ValueError: If the number of atoms is inconsistent between reactant and TS structures.
         """
         reaction_dir = str(reaction_dir).zfill(6)
         folder_path = osp.join(self.root_dir, f"rxn{reaction_dir}")

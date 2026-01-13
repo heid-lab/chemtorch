@@ -6,10 +6,10 @@ except ImportError:
     # Python < 3.12
     from typing_extensions import override  # type: ignore
 
-from chemtorch.components.data_pipeline.data_source.data_source import DataSource
+from chemtorch.components.data_pipeline.data_source.abstract_data_source import AbstractDataSource
 
 
-class SingleCSVSource(DataSource):
+class SingleCSVSource(AbstractDataSource):
     def __init__(
         self,
         data_path: str,

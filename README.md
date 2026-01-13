@@ -1,114 +1,64 @@
 <div align="center">
 
-![ChemTorch](images/chemtorch.png)
+<picture>
+	<source media="(prefers-color-scheme: dark)" srcset="docs/source/_static/chemtorch_logo_dark.svg">
+	<source media="(prefers-color-scheme: light)" srcset="docs/source/_static/chemtorch_logo_light.svg">
+	<img alt="ChemTorch logo" src="docs/source/_static/chemtorch_logo_light.svg" width="360" />
+</picture>
+
+<h3>A Modular Deep Learning for Reactive Chemistry</h3>
 
 [![tests](https://github.com/heid-lab/chemtorch/actions/workflows/pytest.yml/badge.svg)](https://github.com/heid-lab/chemtorch/actions)
+[![Docs](https://img.shields.io/badge/docs-online-brightgreen.svg)](https://heid-lab.github.io/chemtorch)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Python](https://img.shields.io/badge/dynamic/toml?url=https://raw.githubusercontent.com/heid-lab/chemtorch/main/pyproject.toml&query=$.project.requires-python&label=python&color=blue)](#)
-<!--
+<!-- 
 When chemtorch is on PyPI uncomment this ^^
 [![PyPI version](https://img.shields.io/pypi/v/chemtorch.svg)](https://pypi.org/project/chemtorch)
 [![Python versions](https://img.shields.io/pypi/pyversions/chemtorch.svg)](https://pypi.org/project/chemtorch)
-[![Downloads](https://img.shields.io/github/downloads/heid-lab/chemtorch/total.svg)](https://github.com/heid-lab/chemtorch/releases)
--->
+[![Downloads](https://img.shields.io/github/downloads/heid-lab/chemtorch/total.svg)](https://github.com/heid-lab/chemtorch/releases) -->
 
-[Installation](#installation) | [Data](#data) | [Usage](#usage) | [Citation](#citation)
+[Quick Start](#🐎-quick-start) |
+[Documentation](https://heid-lab.github.io/chemtorch) |
+[Contributing](#🤝-contributing) |
+[White Paper](#📄-read-the-white-paper) |
+[Citation](#❤️-citation)
 
 </div>
 
-## Introduction
+ChemTorch is a modular research framework for deep learning of chemical reactions.
 
-ChemTorch is a modular framework for developing and benchmarking deep learning models on chemical reaction data. The framework supports multiple families of reaction representations, neural network architectures, and downstream tasks.
+- 🚀 **Streamline your research workflow**: seamlessly assemble modular deep learning pipelines, track experiments, conduct hyperparameter sweeps, and run benchmarks.
+- 💡 **Multiple reaction representations** with baseline implementations including SMILES tokenizations, molecular graphs, 3D geometries, and fingerprint descriptors.
+- ⚙️ **Preconfigured data pipelines** for common benchmark datasets including RDB7, cycloadditions, USPTO-1k, and more.
+- 🔬 **OOD evaluation** via chemically informed data splitters (size, target, scaffold, reaction core, ...).
+- 🗂️ **Extensible component library** (growing) for all parts of the ChemTorch pipeline.
+- 🔄 **Reproducibility by design** with Weights & Biases experiment tracking and a guide for setting up reproducibility tests.
 
-The code is provided under MIT license, making it freely available for both academic and commercial use.
+<!-- TODO: link to hosted GIF/mp4 of the ChemTorch CLI in action -->
 
-## Installation
+## 🐎 Quick Start
+Follow the [Quick Start guide](https://heid-lab.github.io/chemtorch/getting_started/quick_start.html) to install all dependencies, download some data, and run your first experiment!
+For more, checkout the [official ChemTorch documentation](https://heid-lab.github.io/chemtorch)!
 
-First clone this repo and navigate to it:
-```bash
-git clone https://github.com/heid-lab/chemtorch.git
-cd chemtorch
-```
-Then follow the instructions below to install ChemTorch's dependencies using you package manager of choice.
+## 📄 Read the white paper
+For a few examples of what you can already do with ChemTorch read our [white paper](https://chemrxiv.org/engage/chemrxiv/article-details/690357d9a482cba122e366b6) on ChemRxiv.
 
-### Via conda
-
-```bash
-conda create -n chemtorch python=3.10 && \
-conda activate chemtorch && \
-pip install rdkit numpy==1.26.4 scikit-learn pandas && \
-pip install torch && \
-pip install hydra-core && \
-pip install torch_geometric && \
-pip install torch_scatter torch_sparse torch_cluster torch_spline_conv -f https://data.pyg.org/whl/torch-2.5.0+cpu.html && \
-pip install wandb && \
-pip install ipykernel && \
-pip install -e .
-```
-
-For GPU usage
-```bash
-pip install torch-scatter torch-sparse -f https://data.pyg.org/whl/torch-${TORCH}+${CUDA}.html
-```
-
-### Via uv
-
-For installing with `uv`, first install `torch` and `uv`, for example via
-```bash
-pip install torch uv
-```
-
-Then run
-```bash
-uv sync -n
-uv add torch_scatter torch_sparse torch_cluster torch_spline_conv torch_geometric  --no-build-isolation -n
-```
-
-## Data
-
-Get the data from https://github.com/heid-lab/reaction_database and add it to the `data` folder.
-
-<!-- TODO: Add the following sections:
-## ✨ Highlights/Features
-## 🤝 Contributing
 ## 💬 Support
-## 🚀 Roadmap
+If you want to ask a question, report a bug, or suggest a feature feel free to open an issue on our [issue tracker](https://github.com/heid-lab/chemtorch/issues) and we will get back to you :)
+<!-- TODO: add Discord -->
 
-<!-- TODO: move this to web documentation -->
-## Usage
+## 🧭 Stability & Roadmap
+ChemTorch is in active development and the public CLI/configuration API may change between releases.
+To detect breaking changes early and safeguard your workflows:
+- Check the [release notes](https://github.com/heid-lab/chemtorch/releases).
+- Add and run [Integrity & Reproducibility tests](https://heid-lab.github.io/chemtorch/advanced_guide/integration_tests.html) for your experiments to ensure reproducibility of past results with newer releases.
 
-For a short demo, see `scripts/demo.ipynb`.
+## 🤝 Contributing
+We welcome contributions.
+Please read the [contribution guide](CONTRIBUTING.md) before opening issues or PRs.
 
-To run the experiments, you can use the following commands:
-
-Graph-based: GNN + CGR
-```bash
-python chemtorch_cli.py +experiment=graph dataset.subsample=0.05
-```
-Token-based: HAN + Tokenized SMILES
-```bash
-python chemtorch_cli.py +experiment=token dataset.subsample=0.05
-```
-Fingerprint-based: MLP + DRFP
-```bash
-python chemtorch_cli.py +experiment=fingerprint dataset.subsample=0.001
-```
-3D-based: DimeNetplusplus + XYZ coordinates
-```bash
-python chemtorch_cli.py +experiment=xyz dataset.subsample=0.05
-```
-
-Using the terminal, you can easily change hyperparameters. For example, to change the dataset:
-``` bash
-python chemtorch_cli.py +experiment=graph dataset.subsample=0.05 data_pipeline=sn2
-```
-
-For simple sweeps, you can:
-```bash
-python chemtorch_cli.py --multirun +experiment=graph dataset.subsample=0.05 data_pipeline=sn2,e2,cycloadd
-```
-
-## Citation
+## ❤️ Citation
 If you use this code in your research, please cite the following paper:
 
 ```
@@ -121,7 +71,15 @@ If you use this code in your research, please cite the following paper:
 }
 ```
 
-This framework was inspired by:
-- [GraphGPS](https://github.com/rampasek/GraphGPS/tree/main)
-- [GraphGym](https://github.com/snap-stanford/GraphGym)
-- [lightning-hydra-template](https://github.com/ashleve/lightning-hydra-template)
+## 📋 License
+This project is licensed under the [MIT License](LICENSE).
+
+## Thanks & inspiration
+
+ChemTorch builds on and was inspired by many excellent open-source projects and community work — thank you to the authors and maintainers <3
+
+- [Hydra](https://hydra.cc/) — flexible configuration and experiment management
+- [PyTorch Lightning](https://www.pytorchlightning.ai/) — cleaner training loops and logging
+- [Weights & Biases](https://wandb.ai/site/models/) — experiment tracking and visualization in one place
+- [GraphGPS](https://github.com/rampasek/GraphGPS) and [GraphGym](https://github.com/snap-stanford/GraphGym) — modular GNN repos which inspired this framework 
+- [lightning-hydra-template](https://github.com/ashleve/lightning-hydra-template) — project structure and integration patterns

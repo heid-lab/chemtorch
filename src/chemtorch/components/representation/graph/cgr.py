@@ -21,7 +21,7 @@ from chemtorch.utils.atom_mapping import (
     map_reac_to_prod,
 )
 
-
+# TODO: remove **kwargs once all featurizers are passed explicitly
 class CGR(AbstractRepresentation[Data]):
     """
     Stateless class for constructing Condensed Graph of Reaction (CGR) representations.
@@ -30,18 +30,36 @@ class CGR(AbstractRepresentation[Data]):
     that takes a sample (e.g., a dict or pd.Series) and returns a PyTorch Geometric Data object
     representing the reaction as a graph.
 
-    # TODO: Update docstring once featurizers are passed explicitly
     Usage:
-        >>> cgr = CGR(featurizer_cfg)
-        >>> data = cgr.construct(sample)
-        >>> data = cgr(sample)  # equivalent to above line
+        >>> from chemtorch.components.representation.graph.featurizer import FeaturizerCompose
+        >>> from chemtorch.components.representation.graph.featurizer.atom_featurizer import (
+        ...     AtomicNumber, AtomDegree, AtomFormalCharge, AtomIsAromatic
+        ... )
+        >>> from chemtorch.components.representation.graph.featurizer.bond_featurizer import (
+        ...     BondType, BondIsInRing
+        ... )
+        >>> 
+        >>> atom_featurizer = FeaturizerCompose([
+        ...     AtomicNumber(),
+        ...     AtomDegree(),
+        ...     AtomFormalCharge(),
+        ...     AtomIsAromatic(),
+        ... ])
+        >>> bond_featurizer = FeaturizerCompose([
+        ...     BondType(),
+        ...     BondIsInRing(),
+        ... ])
+        >>> 
+        >>> cgr = CGR(atom_featurizer, bond_featurizer)
+        >>> data = cgr.construct("CC>>CCO")  # reaction SMILES
+        >>> data = cgr("CC>>CCO")  # equivalent to above line
     """
 
     def __init__(
         self,
         atom_featurizer: FeaturizerBase[Atom] | FeaturizerCompose,
         bond_featurizer: FeaturizerBase[Bond] | FeaturizerCompose,
-        **kwargs,  # ignored, TODO: remove once all featurizers are passed explicitly
+        **kwargs,
     ):
         """
         Initialize the CGR representation with atom and bond featurizers.

@@ -1,0 +1,98 @@
+name: Bug report
+description: Report a reproducible bug or regression in ChemTorch.
+labels:
+  - bug
+  - needs-triage
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Thanks for helping us improve ChemTorch!
+        Please provide as much detail as possible so we can reproduce and fix the issue quickly.
+  - type: input
+    id: summary
+    attributes:
+      label: Summary
+      description: What went wrong?
+      placeholder: Short, descriptive title of the problem.
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened?
+      description: Describe the behavior you observed. Include any error messages or stack traces (use fenced code blocks for logs).
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect to happen?
+      description: Describe the behavior you expected instead.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: How can we reproduce it?
+      description: |
+        Provide a minimal reproduction: CLI command(s), configuration overrides, dataset(s), and any code snippets required. 
+        Feel free to link to a GitHub gist or attach a `yaml` file when helpful.
+      placeholder: |
+        ```bash
+        chemtorch +experiment=graph ...
+        ```
+    validations:
+      required: true
+  - type: dropdown
+    id: install
+    attributes:
+      label: Installation method
+      options:
+        - uv sync
+        - conda / mamba
+        - other (explain below)
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: ChemTorch version / commit SHA
+      description: Run `chemtorch --version` or `git rev-parse HEAD`.
+    validations:
+      required: true
+  - type: input
+    id: python
+    attributes:
+      label: Python version
+      placeholder: e.g. 3.10.15
+    validations:
+      required: true
+  - type: input
+    id: os
+    attributes:
+      label: Operating system
+      placeholder: e.g. Ubuntu 22.04, macOS 14.3, Windows 11
+    validations:
+      required: true
+  - type: input
+    id: hardware
+    attributes:
+      label: Hardware / accelerator
+      placeholder: e.g. CPU only, NVIDIA RTX 4090 (CUDA 12.1)
+  - type: textarea
+    id: integrations
+    attributes:
+      label: Relevant integrations
+      description: Mention frameworks or services involved (Hydra, PyTorch Lightning, Weights & Biases, custom datasets, etc.).
+  - type: checkboxes
+    id: confirmations
+    attributes:
+      label: Checklist
+      options:
+        - label: I have searched existing [issues](https://github.com/heid-lab/chemtorch/issues?q=is%3Aissue) and discussions.
+          required: true
+        - label: I can reproduce this issue consistently on the latest `main` commit.
+          required: false
+        - label: I am willing to submit a pull request to help fix this.
+          required: false

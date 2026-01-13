@@ -47,9 +47,9 @@ class TestSupervisedRoutineCore:
         assert routine.lr_scheduler_config is not None
         assert routine.metrics is not None
         assert len(routine.metrics) == 3
-        assert "train" in routine.metrics
-        assert "val" in routine.metrics
-        assert "test" in routine.metrics
+        assert routine.metrics is not None and "train" in routine.metrics
+        assert routine.metrics is not None and "val" in routine.metrics
+        assert routine.metrics is not None and "test" in routine.metrics
     
     def test_forward(self, simple_model, sample_batch):
         """Test forward pass."""
@@ -94,7 +94,7 @@ class TestSupervisedRoutineCore:
             optimizer=lambda params: torch.optim.Adam(params, lr=1e-3)
         )
         
-        loss = routine.test_step(sample_batch)
+        loss = routine.test_step(sample_batch, batch_idx=0)
         
         assert isinstance(loss, torch.Tensor)
     
@@ -144,10 +144,11 @@ class TestMetricsInitialization:
             metrics=metric
         )
         
+        assert routine.metrics is not None
         assert len(routine.metrics) == 3
-        assert "train" in routine.metrics
-        assert "val" in routine.metrics
-        assert "test" in routine.metrics
+        assert routine.metrics is not None and "train" in routine.metrics
+        assert routine.metrics is not None and "val" in routine.metrics
+        assert routine.metrics is not None and "test" in routine.metrics
         
         # Check that metrics are properly prefixed
         assert hasattr(routine, "train_metrics")
@@ -164,6 +165,7 @@ class TestMetricsInitialization:
             metrics=metrics
         )
         
+        assert routine.metrics is not None
         assert len(routine.metrics) == 3
         assert isinstance(routine.train_metrics, MetricCollection)
         assert isinstance(routine.val_metrics, MetricCollection)
@@ -178,6 +180,7 @@ class TestMetricsInitialization:
             metrics=metrics
         )
         
+        assert routine.metrics is not None
         assert len(routine.metrics) == 3
         assert hasattr(routine, "train_metrics")
         assert hasattr(routine, "val_metrics") 

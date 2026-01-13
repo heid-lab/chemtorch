@@ -54,7 +54,7 @@ model.norm: null
 model.num_hidden_layers: 2
 name: drfp_mlp
 parameter_limit: null
-prediction_save_path: null
+predictions_save_path: null
 predictions_save_dir: predictions/chemtorch_paper/rdb7_model_benchmark/drfp_mlp/seed_${seed}_${now:%Y-%m-%d_%H-%M-%S}
 project_name: chemtorch
 routine:

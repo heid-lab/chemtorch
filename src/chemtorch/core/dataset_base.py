@@ -109,7 +109,7 @@ class DatasetBase(Generic[T, R]):
             raise ValueError(
                 "Representation must be an instance of AbstractRepresentation."
             )
-        if not isinstance(transform, (AbstractTransform, Callable, type(None))):
+        if not (isinstance(transform, AbstractTransform) or callable(transform) or transform is None):
             raise ValueError(
                 "Transform must be an instance of AbstractTransform, Callable, or None."
             )
