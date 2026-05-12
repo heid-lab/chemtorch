@@ -1,0 +1,48 @@
+# @package _global_
+defaults:
+  - /data_module/data_pipeline: rdb7_fwd_xyz
+  - /data_module/representation: reaction_3d_graph
+  - /data_module/dataloader_factory: pyg_dataloader
+  - /data_module/transform/ts_3d_jitter@data_module.transform.test.ts_3d_jitter
+  - /model: dimereaction
+  - /routine: regression
+  - /props/label_mean@props.label_mean
+  - /props/label_std@props.label_std
+  - _self_
+
+# LOGGING (Weight and Biases)
+log: true
+project_name: chemtorch
+group_name: dimereaction_ts_sensitivity
+run_name: dimereaction
+
+# Prediction and checkpoint saving
+save_dir: experiment/dimereaction_ts_sensitivity/${run_name}/seed_${seed}_${now:%Y-%m-%d_%H-%M-%S}
+save_predictions_for: all
+predictions_save_dir: ${save_dir}/predictions
+trainer.enable_checkpointing: true
+trainer.checkpoint_callback.dirpath: ${save_dir}/checkpoints
+
+# INITIALIZATION
+seed: 0
+
+tasks:
+  - fit
+  - test
+
+trainer:
+  max_epochs: 100
+
+# HYPERPARAMETERS
+routine:
+  optimizer:
+    lr: 0.0020537287319414765
+    weight_decay: 2.5493166021321106e-05
+data_module:
+  dataloader:
+    batch_size: 32
+
+model:
+  hidden_channels: 128
+  num_blocks: 4
+  cutoff: 5.528600558772409
