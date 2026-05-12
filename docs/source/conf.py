@@ -35,12 +35,17 @@ extensions = [
     'sphinx.ext.viewcode',      # Add source code links
     'sphinx.ext.intersphinx',   # Cross-reference other projects
     'sphinx.ext.autosummary',   # Generate summary tables
-    'myst_parser',              # For markdown support
+    'myst_nb',                  # Render Jupyter notebooks in the docs
     'cli_lexer',                # Custom CLI lexer
 ]
 
 # Allow embedding program output (we use this to include the `-h` output of scripts in the docs)
 extensions.append('sphinxcontrib.programoutput')
+
+# Render notebooks as documentation pages without executing them during the docs
+# build. This keeps deployed docs deterministic and avoids requiring datasets or
+# long training runs in the documentation build job.
+nb_execution_mode = "off"
 
 
 # Napoleon settings for Google/NumPy style docstrings
