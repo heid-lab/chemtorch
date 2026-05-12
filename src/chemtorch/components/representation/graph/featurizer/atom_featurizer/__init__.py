@@ -11,3 +11,17 @@ from .atom_hybridization import AtomHybridizationFeaturizer
 from .atom_is_aromatic import AtomIsAromaticFeaturizer
 from .atom_mass import CentiAtomMassFeaturizer
 from .qm_atom import QMAtomFeaturizer
+
+__all__ = [
+    "AtomDegreeFeaturizer",
+    "AtomFormalChargeFeaturizer",
+    "AtomHCountFeaturizer",
+    "AtomHasConjugatedBondFeaturizer",
+    "AtomHybridizationFeaturizer",
+    "AtomIsAromaticFeaturizer",
+    "AtomIsInRingFeaturizer",
+    "AtomicNumberFeaturizer",
+    "CentiAtomMassFeaturizer",
+    "OrganicAtomicNumberOneHotFeaturizer",
+    "QMAtomFeaturizer",
+]
