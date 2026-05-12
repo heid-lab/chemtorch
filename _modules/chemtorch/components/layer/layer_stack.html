@@ -29,6 +29,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/custom_syntax.css?v=9e2307e4" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
@@ -158,8 +159,8 @@
         <p aria-level="2" class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../../../../getting_started/quick_start.html">Quick Start</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../getting_started/logging.html">Setup Logging</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../getting_started/overview.html">ChemTorch Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../getting_started/logging.html">Setup Logging</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../getting_started/config.html">Understanding Configs</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../getting_started/experiments.html">Creating Experiments</a></li>
 </ul>
@@ -174,6 +175,7 @@
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Examples</span></p>
 <ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../../examples/pipeline_from_scratch.html">Building a ChemTorch Pipeline from Scratch</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../examples/training_curves.html">Performance Curves</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../examples/ood_benchmarking.html">OOD benchmarking</a></li>
 </ul>
@@ -311,9 +313,12 @@ document.write(`
                 <article class="bd-article">
                   
   <h1>Source code for chemtorch.components.layer.layer_stack</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">omegaconf</span><span class="w"> </span><span class="kn">import</span> <span class="n">DictConfig</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">torch</span><span class="w"> </span><span class="kn">import</span> <span class="n">nn</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Mapping</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">copy</span><span class="w"> </span><span class="kn">import</span> <span class="n">deepcopy</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Generic</span><span class="p">,</span> <span class="n">TypeVar</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">omegaconf</span><span class="w"> </span><span class="kn">import</span> <span class="n">DictConfig</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch</span><span class="w"> </span><span class="kn">import</span> <span class="n">nn</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">chemtorch.utils.hydra</span><span class="w"> </span><span class="kn">import</span> <span class="n">safe_instantiate</span>
 
@@ -335,25 +340,50 @@ document.write(`
 
 <div class="viewcode-block" id="LayerStack.__init__">
 <a class="viewcode-back" href="../../../../api_autodoc/components.html#chemtorch.components.layer.layer_stack.LayerStack.__init__">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">layer</span><span class="p">:</span> <span class="n">DictConfig</span><span class="p">,</span> <span class="n">depth</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">share_weights</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">layer</span><span class="p">:</span> <span class="n">DictConfig</span> <span class="o">|</span> <span class="n">Mapping</span> <span class="o">|</span> <span class="n">Callable</span><span class="p">[[],</span> <span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">]</span> <span class="o">|</span> <span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">,</span>
+        <span class="n">depth</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">share_weights</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Initialize the Stack using Hydra for instantiation.</span>
+<span class="sd">        Initialize the Stack using a layer config, factory, or module.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            layer (DictConfig): The configuration for the layer to be stacked.</span>
+<span class="sd">            layer: The layer to stack. This can be a Hydra/OmegaConf config,</span>
+<span class="sd">                a mapping config, a zero-argument factory such as</span>
+<span class="sd">                ``functools.partial(MyLayer, ...)``, or an instantiated module.</span>
 <span class="sd">            depth (int): The number of times to repeat the layer.</span>
 <span class="sd">            share_weights (bool): If True, share weights between the stacked layers.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">LayerStack</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">layers</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">ModuleList</span><span class="p">()</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">make_layer</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">layer</span><span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">layer</span> <span class="k">if</span> <span class="n">share_weights</span> <span class="k">else</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">layer</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">layer</span><span class="p">,</span> <span class="p">(</span><span class="n">DictConfig</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">)):</span>
+                <span class="k">return</span> <span class="n">safe_instantiate</span><span class="p">(</span><span class="n">layer</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">callable</span><span class="p">(</span><span class="n">layer</span><span class="p">):</span>
+                <span class="n">new_layer</span> <span class="o">=</span> <span class="n">layer</span><span class="p">()</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">new_layer</span><span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+                    <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                        <span class="s2">&quot;Layer factory must return a torch.nn.Module, &quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">new_layer</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span>
+                    <span class="p">)</span>
+                <span class="k">return</span> <span class="n">new_layer</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="s2">&quot;layer must be a config, a torch.nn.Module, or a zero-argument &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;factory returning a torch.nn.Module, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">layer</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span>
+            <span class="p">)</span>
+
         <span class="k">if</span> <span class="n">share_weights</span><span class="p">:</span>
-            <span class="n">single_layer</span> <span class="o">=</span> <span class="n">safe_instantiate</span><span class="p">(</span><span class="n">layer</span><span class="p">)</span>
+            <span class="n">single_layer</span> <span class="o">=</span> <span class="n">make_layer</span><span class="p">()</span>
             <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">depth</span><span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">single_layer</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">depth</span><span class="p">):</span>
-                <span class="n">new_layer</span> <span class="o">=</span> <span class="n">safe_instantiate</span><span class="p">(</span><span class="n">layer</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_layer</span><span class="p">)</span></div>
+                <span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">make_layer</span><span class="p">())</span></div>
 
 
 <div class="viewcode-block" id="LayerStack.forward">

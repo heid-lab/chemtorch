@@ -1,0 +1,1153 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Building a ChemTorch Pipeline from Scratch &#8212; ChemTorch</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom_syntax.css?v=9e2307e4" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../_static/documentation_options.js?v=1a9ffd16"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'examples/pipeline_from_scratch';</script>
+    <link rel="icon" href="../_static/chemtorch_favicon.png"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Performance Curves" href="training_curves.html" />
+    <link rel="prev" title="Config Reference" href="../user_guide/config_ref.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/chemtorch_logo_light.svg" class="logo__image only-light" alt="ChemTorch documentation - Home"/>
+    <script>document.write(`<img src="../_static/chemtorch_logo_dark.svg" class="logo__image only-dark" alt="ChemTorch documentation - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/quick_start.html">Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/overview.html">ChemTorch Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/logging.html">Setup Logging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/config.html">Understanding Configs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/experiments.html">Creating Experiments</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/cli_usage.html">CLI Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/custom_data.html">Using Your Own Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/sweeps.html">Hyperparameter Sweeps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/reproducing_experiments.html">Reproducing Experiments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/reproducibility_tests.html">Reproducibility Tests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/config_ref.html">Config Reference</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Examples</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Building a ChemTorch Pipeline from Scratch</a></li>
+<li class="toctree-l1"><a class="reference internal" href="training_curves.html">Performance Curves</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ood_benchmarking.html">OOD benchmarking</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Developer Guide</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../developer_guide/custom_components.html">Defining Custom Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer_guide/props.html">Runtime Properties</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer_guide/hydra.html">Hydra Config Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer_guide/testing.html">Testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer_guide/contributing.html">Contributing</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api_autodoc/index.html">API Reference</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api_autodoc/components.html">Components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_autodoc/core.html">Core</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_autodoc/utils.html">Utilities</a></li>
+</ul>
+</details></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+<a href="https://github.com/heid-lab/chemtorch" target="_blank"
+   class="btn btn-sm btn-source-repository-button"
+   title="Source repository"
+   data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+
+</a>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/examples/pipeline_from_scratch.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Building a ChemTorch Pipeline from Scratch</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#prerequisites">Prerequisites</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#barrier-height-prediction">Barrier Height Prediction</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#imports">Imports</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data-pipeline">1. Data Pipeline</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#reaction-representation">2. Reaction Representation</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#cgr">CGR</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#datamodule">3. DataModule</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#d-mpnn-model">4. D-MPNN Model</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#routine">5. Routine</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#trainer">6. Trainer</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#references">References</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="building-a-chemtorch-pipeline-from-scratch">
+<h1>Building a ChemTorch Pipeline from Scratch<a class="headerlink" href="#building-a-chemtorch-pipeline-from-scratch" title="Link to this heading">#</a></h1>
+<p>In ChemTorch’s <a class="reference external" href="https://heid-lab.github.io/chemtorch/getting_started/quick_start.html#">quick start guide</a> we saw that you can train a model using a single command:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>chemtorch<span class="w"> </span>+experiment<span class="o">=</span>graph<span class="w"> </span>data_module.subsample<span class="o">=</span><span class="m">0</span>.05<span class="w"> </span><span class="nv">log</span><span class="o">=</span><span class="nb">false</span>
+</pre></div>
+</div>
+<p>In this tutorial we will rebuild this exact ChemTorch pipeline from scarch! 👀</p>
+<p>The goal is to give you a tour of the ChemTorch components and how they fit together.</p>
+<center>
+   <img src="../docs/source/_static/chemtorch_pipeline.svg" alt="ChemTorch pipeline overview" width="800px" onerror="this.onerror=null;this.src='../_static/chemtorch_pipeline.svg';">
+</center><section id="prerequisites">
+<h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Link to this heading">#</a></h2>
+<ol class="arabic simple">
+<li><p>Install ChemTorch as described in the <a class="reference external" href="https://heid-lab.github.io/chemtorch/getting_started/quick_start.html#">quick start guide</a></p></li>
+<li><p>Run this notebook from the <code class="docutils literal notranslate"><span class="pre">docs/source/examples/</span></code> folder</p></li>
+</ol>
+</section>
+<section id="barrier-height-prediction">
+<h2>Barrier Height Prediction<a class="headerlink" href="#barrier-height-prediction" title="Link to this heading">#</a></h2>
+<p>We will train a <strong>directed message passing neural network (D-MPNN) [1]</strong> to predict reaction barrier heights of small organic reactions in gas phase.</p>
+<p>We will use the <strong>RDB7 dataset [2]</strong> which contains the barrier heights of nearly 12,000 unimolecular organic reactions (expressed in kcal/mol).
+To keep training fast we will only use 5% of the data (as in the quick start command).</p>
+<blockquote>
+<div><p><em>Thoughout the notebook we will use hyperparameters similar to those obtained from our sweeps. The exact hyperparameters can be found at</em> <code class="docutils literal notranslate"><span class="pre">conf/saved_configs/chemtorch_benchmark/optimal_model_configs/cgr_dmpnn.yaml</span></code>.</p>
+</div></blockquote>
+</section>
+<section id="imports">
+<h2>Imports<a class="headerlink" href="#imports" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">copy</span><span class="w"> </span><span class="kn">import</span> <span class="n">deepcopy</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">functools</span><span class="w"> </span><span class="kn">import</span> <span class="n">partial</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">lightning</span><span class="w"> </span><span class="kn">import</span> <span class="n">Trainer</span><span class="p">,</span> <span class="n">seed_everything</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch_geometric.loader</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataLoader</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torchmetrics</span><span class="w"> </span><span class="kn">import</span> <span class="n">MeanAbsoluteError</span><span class="p">,</span> <span class="n">MeanSquaredError</span><span class="p">,</span> <span class="n">MetricCollection</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">chemtorch.components.data_pipeline</span><span class="w"> </span><span class="kn">import</span> <span class="n">SimpleDataPipeline</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">chemtorch.components.data_pipeline.column_mapper</span><span class="w"> </span><span class="kn">import</span> <span class="n">ColumnFilterAndRename</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">chemtorch.components.data_pipeline.data_source</span><span class="w"> </span><span class="kn">import</span> <span class="n">SingleCSVSource</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">chemtorch.components.data_pipeline.data_splitter</span><span class="w"> </span><span class="kn">import</span> <span class="n">RatioSplitter</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">chemtorch.components.representation.graph</span><span class="w"> </span><span class="kn">import</span> <span class="n">CGR</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">chemtorch.components.representation.graph.featurizer</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">AtomDegreeFeaturizer</span><span class="p">,</span>
+    <span class="n">AtomFormalChargeFeaturizer</span><span class="p">,</span>
+    <span class="n">AtomHCountFeaturizer</span><span class="p">,</span>
+    <span class="n">AtomHybridizationFeaturizer</span><span class="p">,</span>
+    <span class="n">AtomIsAromaticFeaturizer</span><span class="p">,</span>
+    <span class="n">AtomIsInRingFeaturizer</span><span class="p">,</span>
+    <span class="n">BondInRingFeaturizer</span><span class="p">,</span>
+    <span class="n">BondIsConjugatedFeaturizer</span><span class="p">,</span>
+    <span class="n">BondTypeFeaturizer</span><span class="p">,</span>
+    <span class="n">CentiAtomMassFeaturizer</span><span class="p">,</span>
+    <span class="n">FeaturizerCompose</span><span class="p">,</span>
+    <span class="n">OrganicAtomicNumberOneHotFeaturizer</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">chemtorch.components.layer</span><span class="w"> </span><span class="kn">import</span> <span class="n">LayerStack</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">chemtorch.components.layer.gnn_layer</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">DMPNNBlock</span><span class="p">,</span>
+    <span class="n">DMPNNConv</span><span class="p">,</span>
+    <span class="n">DMPNNStack</span><span class="p">,</span>
+    <span class="n">EdgeToNodeEmbedding</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">chemtorch.components.model</span><span class="w"> </span><span class="kn">import</span> <span class="n">MLP</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">chemtorch.components.model.gnn</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">DirectedEdgeEncoder</span><span class="p">,</span>
+    <span class="n">GNN</span><span class="p">,</span>
+    <span class="n">GlobalPool</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">chemtorch.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataModule</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">chemtorch.core.routine</span><span class="w"> </span><span class="kn">import</span> <span class="n">RegressionRoutine</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">chemtorch.core.scheduler</span><span class="w"> </span><span class="kn">import</span> <span class="n">CosineWithWarmupLR</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">chemtorch.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">Standardizer</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/anton/chemtorch/.venv/lib/python3.10/site-packages/tqdm/auto.py:21: TqdmWarning: IProgress not found. Please update jupyter and ipywidgets. See https://ipywidgets.readthedocs.io/en/stable/user_install.html
+  from .autonotebook import tqdm as notebook_tqdm
+</pre></div>
+</div>
+</div>
+</div>
+<p>Before, we start we want to seed everything to get reproducible results :)</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">seed</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">seed_everything</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+<span class="n">torch</span><span class="o">.</span><span class="n">use_deterministic_algorithms</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;CUBLAS_WORKSPACE_CONFIG&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;:4096:8&quot;</span><span class="p">)</span>     <span class="c1"># https://docs.nvidia.com/cuda/cublas/index.html#results-reproducibility</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Seed set to 0
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="data-pipeline">
+<h2>1. Data Pipeline<a class="headerlink" href="#data-pipeline" title="Link to this heading">#</a></h2>
+<p>In ChemTorch, the data pipeline is responsible for loading the raw data and turning into a format that can be consumed by downstream code.</p>
+<p>Here is what the <code class="docutils literal notranslate"><span class="pre">SimpleDataPipeline</span></code> does:</p>
+<ol class="arabic simple">
+<li><p>it loads the raw data from a data source, e.g. a CSV file,</p></li>
+<li><p>selects/renames the data columns to align with the ChemTorch API,</p></li>
+<li><p>splits the data into train/validation/test sets.</p></li>
+</ol>
+<p>The RDB7 CSV uses <code class="docutils literal notranslate"><span class="pre">smiles</span></code> for mapped reaction SMILES and <code class="docutils literal notranslate"><span class="pre">dE0</span></code> for the training target.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">DATA_PATH</span> <span class="o">=</span> <span class="s2">&quot;../data/rdb7/barriers/forward/data.csv&quot;</span>
+
+<span class="n">pipeline</span> <span class="o">=</span> <span class="n">SimpleDataPipeline</span><span class="p">(</span>
+    <span class="n">data_source</span><span class="o">=</span><span class="n">SingleCSVSource</span><span class="p">(</span><span class="n">data_path</span><span class="o">=</span><span class="n">DATA_PATH</span><span class="p">),</span>
+    <span class="n">column_mapper</span><span class="o">=</span><span class="n">ColumnFilterAndRename</span><span class="p">(</span><span class="n">smiles</span><span class="o">=</span><span class="s2">&quot;smiles&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;dE0&quot;</span><span class="p">),</span>
+    <span class="n">data_splitter</span><span class="o">=</span><span class="n">RatioSplitter</span><span class="p">(</span><span class="n">train_ratio</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">val_ratio</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">test_ratio</span><span class="o">=</span><span class="mf">0.1</span><span class="p">),</span>
+<span class="p">)</span>
+
+<span class="n">data_split</span> <span class="o">=</span> <span class="n">pipeline</span><span class="p">()</span>
+<span class="n">data_split</span><span class="o">.</span><span class="n">train</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>smiles</th>
+      <th>label</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>5780</th>
+      <td>[C:1]1([H:7])([H:8])[C:2]([H:9])=[C:3]([H:10])...</td>
+      <td>38.70907</td>
+    </tr>
+    <tr>
+      <th>2767</th>
+      <td>[o:1]1[c:2]([H:6])[n:3][n:4][c:5]1[H:7]&gt;&gt;[N:3]...</td>
+      <td>111.43065</td>
+    </tr>
+    <tr>
+      <th>8214</th>
+      <td>[C:1]1([H:8])([H:9])[O:2][C@@:3]2([H:10])[C:4]...</td>
+      <td>86.70926</td>
+    </tr>
+    <tr>
+      <th>6326</th>
+      <td>[O:1]=[c:2]1[o:3][c:4]([H:8])[c:5]([H:9])[c:6]...</td>
+      <td>74.20804</td>
+    </tr>
+    <tr>
+      <th>2821</th>
+      <td>[C:1]([C:2]1([C:5](=[O:6])[H:14])[C:3]([H:10])...</td>
+      <td>119.79524</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+</section>
+<section id="reaction-representation">
+<h2>2. Reaction Representation<a class="headerlink" href="#reaction-representation" title="Link to this heading">#</a></h2>
+<p>One of the most important questions in chemical deep learning is how to represent your molecules/reactions for your desired task.
+One simple way to represent a molecule by its connectivity.
+For machine learning, a particular convenient representation is a graph, analogous to the traditional Lewis formula or SMILES strings in chemoinformatics.</p>
+<p>For reactions, a special kind of graph is needed to encorporate both reactant and product connectivity, as well as information about bond forming and breaking.
+This graph is known as the <strong>Condensed Graph of Reaction (CGR) [3]</strong>.
+It it a graph overlay of reactant and product graphs where forming/breaking bonds carry special annotations.</p>
+<p>As shown in the <strong><a class="reference external" href="https://pubs.acs.org/doi/10.1021/acs.jcim.5c02645">ChemTorch paper</a> [4]</strong>, the CGR provides a strong baseline for barrier height prediction but it requires <strong>atom mapping</strong>.</p>
+<section id="cgr">
+<h3>CGR<a class="headerlink" href="#cgr" title="Link to this heading">#</a></h3>
+<p>In ChemTorch, each representation takes in a SMILES string and returns some kind of data object compatible with your model.
+For reference see thr <code class="docutils literal notranslate"><span class="pre">AbstractRepresentation</span></code> interface.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">CGR</span></code> representation is initilized with atom and bond featurizers which can be composed.
+The following featurizers are simple RDKit featurizers preconfigured for organic molecules.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">atom_featurizer</span> <span class="o">=</span> <span class="n">FeaturizerCompose</span><span class="p">(</span>
+    <span class="p">[</span>
+        <span class="n">OrganicAtomicNumberOneHotFeaturizer</span><span class="p">(),</span>
+        <span class="n">AtomDegreeFeaturizer</span><span class="p">(),</span>
+        <span class="n">AtomFormalChargeFeaturizer</span><span class="p">(),</span>
+        <span class="n">AtomHCountFeaturizer</span><span class="p">(),</span>
+        <span class="n">AtomHybridizationFeaturizer</span><span class="p">(),</span>
+        <span class="n">AtomIsAromaticFeaturizer</span><span class="p">(),</span>
+        <span class="n">CentiAtomMassFeaturizer</span><span class="p">(),</span>
+        <span class="n">AtomIsInRingFeaturizer</span><span class="p">(),</span>
+    <span class="p">]</span>
+<span class="p">)</span>
+
+<span class="n">bond_featurizer</span> <span class="o">=</span> <span class="n">FeaturizerCompose</span><span class="p">(</span>
+    <span class="p">[</span>
+        <span class="n">BondTypeFeaturizer</span><span class="p">(),</span>
+        <span class="n">BondIsConjugatedFeaturizer</span><span class="p">(),</span>
+        <span class="n">BondInRingFeaturizer</span><span class="p">(),</span>
+    <span class="p">]</span>
+<span class="p">)</span>
+
+<span class="n">representation</span> <span class="o">=</span> <span class="n">CGR</span><span class="p">(</span>
+    <span class="n">atom_featurizer</span><span class="o">=</span><span class="n">atom_featurizer</span><span class="p">,</span>
+    <span class="n">bond_featurizer</span><span class="o">=</span><span class="n">bond_featurizer</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">CGR</span></code> representation takes in atom mapped SMILES and turns them into featuriuzed graphs saved as <code class="docutils literal notranslate"><span class="pre">torch_geometric.Data</span></code> objects.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">example_smiles</span> <span class="o">=</span> <span class="n">data_split</span><span class="o">.</span><span class="n">train</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;smiles&quot;</span><span class="p">]</span>
+<span class="n">example_graph</span> <span class="o">=</span> <span class="n">representation</span><span class="o">.</span><span class="n">construct</span><span class="p">(</span><span class="n">example_smiles</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">example_graph</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;node feature dimension:&quot;</span><span class="p">,</span> <span class="n">example_graph</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;edge feature dimension:&quot;</span><span class="p">,</span> <span class="n">example_graph</span><span class="o">.</span><span class="n">edge_attr</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Data(x=[12, 88], edge_index=[2, 26], edge_attr=[26, 22], edge_origin_type=[26], smiles=&#39;[C:1]1([H:7])([H:8])[C:2]([H:9])=[C:3]([H:10])[C@@:4]2([H:11])[O:5][C@@:6]12[H:12]&gt;&gt;[C:1](=[C:2](/[C:3](=[C:4](\[C:6](=[O:5])[H:12])[H:11])[H:10])[H:9])([H:7])[H:8]&#39;, atom_origin_type=[12], num_nodes=12)
+node feature dimension: 88
+edge feature dimension: 22
+</pre></div>
+</div>
+</div>
+</div>
+<p>Our featurization results in 88 node features and 22 edge features.</p>
+</section>
+</section>
+<section id="datamodule">
+<h2>3. DataModule<a class="headerlink" href="#datamodule" title="Link to this heading">#</a></h2>
+<p>One of the heart pieces in the ChemTorch pipeline is the <code class="docutils literal notranslate"><span class="pre">DataModule</span></code> which extends PyTorch Lightning’s <code class="docutils literal notranslate"><span class="pre">lightning.DataModule</span></code>.
+The data module manages data object creation and batching for training/inference.</p>
+<p>It is initialized with</p>
+<ul class="simple">
+<li><p>our data pipeline,</p></li>
+<li><p>the chosen representation,</p></li>
+<li><p>a compatible <code class="docutils literal notranslate"><span class="pre">torch</span></code> dataloader class, and</p></li>
+<li><p>optional data transforms/augmentations.</p></li>
+</ul>
+<p>For graph data we use PyG’s <code class="docutils literal notranslate"><span class="pre">DataLoader</span></code>, partially configured with the batch size.
+The data module will use this as a template to create train, validation, and test dataloaders.</p>
+<p>Addtionally, we pass <code class="docutils literal notranslate"><span class="pre">subsample=0.05</span></code> to only use 5% of the whole dataset for training, validation and testing.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dataloader_factory</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span>
+    <span class="n">DataLoader</span><span class="p">,</span>
+    <span class="n">batch_size</span><span class="o">=</span><span class="mi">64</span><span class="p">,</span>
+    <span class="n">num_workers</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">pin_memory</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">data_module</span> <span class="o">=</span> <span class="n">DataModule</span><span class="p">(</span>
+    <span class="n">data_pipeline</span><span class="o">=</span><span class="n">pipeline</span><span class="p">,</span>
+    <span class="n">representation</span><span class="o">=</span><span class="n">representation</span><span class="p">,</span>
+    <span class="n">dataloader_factory</span><span class="o">=</span><span class="n">dataloader_factory</span><span class="p">,</span>
+    <span class="n">transform</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">augmentations</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">subsample</span><span class="o">=</span><span class="mf">0.05</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Let’s look at a single batch!</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">batch</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">data_module</span><span class="o">.</span><span class="n">train_dataloader</span><span class="p">()))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">batch</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">labels</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>DataBatch(x=[842, 88], edge_index=[2, 1812], edge_attr=[1812, 22], edge_origin_type=[1812], smiles=[64], atom_origin_type=[842], num_nodes=842, batch=[842], ptr=[65])
+torch.Size([64])
+</pre></div>
+</div>
+</div>
+</div>
+<p>PyTorch Geometric does graph batching by combining the individual <code class="docutils literal notranslate"><span class="pre">pyg.Data</span></code> objects into a single big disconnected graph (<code class="docutils literal notranslate"><span class="pre">pyg.DataBatch</span></code>).</p>
+</section>
+<section id="d-mpnn-model">
+<h2>4. D-MPNN Model<a class="headerlink" href="#d-mpnn-model" title="Link to this heading">#</a></h2>
+<p>ChemTorch supports any type of model compatbile with the PyTorch API.</p>
+<p>For GNNs, ChemTorch comes with a ready to use blueprint that is initialized with the following components:</p>
+<ol class="arabic">
+<li><p><code class="docutils literal notranslate"><span class="pre">encoder</span></code>: turns the node/edge features into learned embeddings.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">layer_stack</span></code>: applies repeated graph convolutions, in our case, 12 blocks of directed message passing.</p>
+<p>To increase the expressivity of our GNN, each block adds:</p>
+<ol class="arabic simple">
+<li><p>a residual connection</p></li>
+<li><p>a 2-layer feedforward network</p></li>
+<li><p>dropout</p></li>
+</ol>
+<p>These are applied after message passing and before ReLU.</p>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pool</span></code>: reduces node/edge embeddings to one graph embedding per reaction.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">head</span></code>: maps the graph embeddings to the regression prediction, in our case a scalar barrier height.</p></li>
+</ol>
+<blockquote>
+<div><p>Here, we manually compute the input dimension of the encoder as the combined dimesion of atom and bond features. In practice, ChemTorch automatically inferes the input dimension at runtime.</p>
+</div></blockquote>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">NUM_NODE_FEATURES</span> <span class="o">=</span> <span class="mi">88</span>
+<span class="n">NUM_EDGE_FEATURES</span> <span class="o">=</span> <span class="mi">22</span>
+<span class="n">DIRECTED_EDGE_ENCODER_IN_CHANNELS</span> <span class="o">=</span> <span class="n">NUM_NODE_FEATURES</span> <span class="o">+</span> <span class="n">NUM_EDGE_FEATURES</span>
+
+<span class="n">HIDDEN_CHANNELS</span> <span class="o">=</span> <span class="mi">256</span>
+<span class="n">DEPTH</span> <span class="o">=</span> <span class="mi">12</span>
+<span class="n">OUT_CHANNELS</span> <span class="o">=</span> <span class="mi">1</span>
+
+<span class="c1"># 1. directed edge encoder</span>
+<span class="n">encoder</span><span class="o">=</span><span class="n">DirectedEdgeEncoder</span><span class="p">(</span>
+    <span class="n">in_channels</span><span class="o">=</span><span class="n">DIRECTED_EDGE_ENCODER_IN_CHANNELS</span><span class="p">,</span>
+    <span class="n">out_channels</span><span class="o">=</span><span class="n">HIDDEN_CHANNELS</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="c1"># 2. directed message passing layer stack</span>
+<span class="n">layer_block</span> <span class="o">=</span> <span class="n">DMPNNBlock</span><span class="p">(</span>
+    <span class="n">graph_conv</span><span class="o">=</span><span class="n">DMPNNConv</span><span class="p">(</span>
+        <span class="n">in_channels</span><span class="o">=</span><span class="n">HIDDEN_CHANNELS</span><span class="p">,</span>
+        <span class="n">out_channels</span><span class="o">=</span><span class="n">HIDDEN_CHANNELS</span><span class="p">,</span>
+    <span class="p">),</span>
+    <span class="n">residual</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">ffn</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">dropout</span><span class="o">=</span><span class="mf">0.16713747610272822</span><span class="p">,</span>
+    <span class="n">act</span><span class="o">=</span><span class="s2">&quot;relu&quot;</span><span class="p">,</span>
+    <span class="n">hidden_channels</span><span class="o">=</span><span class="n">HIDDEN_CHANNELS</span>
+<span class="p">)</span>
+
+<span class="n">layer_stack</span> <span class="o">=</span> <span class="n">DMPNNStack</span><span class="p">(</span>
+    <span class="n">dmpnn_blocks</span><span class="o">=</span><span class="n">LayerStack</span><span class="p">(</span>
+        <span class="n">layer</span><span class="o">=</span><span class="n">layer_block</span><span class="p">,</span>
+        <span class="n">depth</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span>
+    <span class="p">),</span>
+    <span class="n">edge_to_node_embedding</span><span class="o">=</span><span class="n">EdgeToNodeEmbedding</span><span class="p">(</span>
+        <span class="n">embedding_size</span><span class="o">=</span><span class="n">HIDDEN_CHANNELS</span><span class="p">,</span>
+        <span class="n">num_node_features</span><span class="o">=</span><span class="n">NUM_NODE_FEATURES</span><span class="p">,</span>
+    <span class="p">),</span>
+<span class="p">)</span>
+
+<span class="c1"># 3. pooling function</span>
+<span class="n">pool</span> <span class="o">=</span> <span class="n">GlobalPool</span><span class="p">(</span><span class="n">aggr</span><span class="o">=</span><span class="s2">&quot;add&quot;</span><span class="p">)</span>
+
+<span class="c1"># 4. prediction head</span>
+<span class="n">head</span> <span class="o">=</span> <span class="n">MLP</span><span class="p">(</span>
+        <span class="n">in_channels</span><span class="o">=</span><span class="n">HIDDEN_CHANNELS</span><span class="p">,</span>
+        <span class="n">hidden_size</span><span class="o">=</span><span class="n">HIDDEN_CHANNELS</span><span class="p">,</span>
+        <span class="n">num_hidden_layers</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+        <span class="n">out_channels</span><span class="o">=</span><span class="n">OUT_CHANNELS</span><span class="p">,</span>
+        <span class="n">dropout</span><span class="o">=</span><span class="mf">0.012368200731827074</span><span class="p">,</span>
+        <span class="n">act</span><span class="o">=</span><span class="s2">&quot;relu&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+<span class="c1"># assmeble everything into the GNN</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">GNN</span><span class="p">(</span>
+    <span class="n">encoder</span><span class="o">=</span><span class="n">encoder</span><span class="p">,</span>
+    <span class="n">layer_stack</span><span class="o">=</span><span class="n">layer_stack</span><span class="p">,</span>
+    <span class="n">pool</span><span class="o">=</span><span class="n">pool</span><span class="p">,</span>
+    <span class="n">head</span><span class="o">=</span><span class="n">head</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>GNN(
+  (encoder): DirectedEdgeEncoder(
+    (edge_init): Linear(in_features=110, out_features=256, bias=True)
+  )
+  (layer_stack): DMPNNStack(
+    (dmpnn_blocks): LayerStack(
+      (layers): ModuleList(
+        (0-11): 12 x DMPNNBlock(
+          (graph_conv): DMPNNConv()
+          (activation): ReLU()
+          (norm): Identity()
+          (dropout): Dropout(p=0.16713747610272822, inplace=False)
+          (ffn_norm_in): Identity()
+          (ffn_linear1): Linear(in_features=256, out_features=512, bias=True)
+          (ffn_linear2): Linear(in_features=512, out_features=256, bias=True)
+          (ffn_act_fn): ReLU()
+          (ffn_norm_out): Identity()
+          (ffn_dropout1): Dropout(p=0.16713747610272822, inplace=False)
+          (ffn_dropout2): Dropout(p=0.16713747610272822, inplace=False)
+        )
+      )
+    )
+    (edge_to_node_embedding): EdgeToNodeEmbedding(
+      (linear): Linear(in_features=344, out_features=256, bias=True)
+      (activation): ReLU()
+      (aggregation): SumAggregation()
+    )
+  )
+  (pool): GlobalPool()
+  (head): MLP(
+    (activation): ReLU()
+    (layers): Sequential(
+      (0): Dropout(p=0.012368200731827074, inplace=False)
+      (1): Linear(in_features=256, out_features=256, bias=True)
+      (2): ReLU()
+      (3): Dropout(p=0.012368200731827074, inplace=False)
+      (4): Linear(in_features=256, out_features=256, bias=True)
+      (5): ReLU()
+      (6): Dropout(p=0.012368200731827074, inplace=False)
+      (7): Linear(in_features=256, out_features=256, bias=True)
+      (8): ReLU()
+      (9): Dropout(p=0.012368200731827074, inplace=False)
+      (10): Linear(in_features=256, out_features=256, bias=True)
+      (11): ReLU()
+      (12): Dropout(p=0.012368200731827074, inplace=False)
+      (13): Linear(in_features=256, out_features=1, bias=True)
+    )
+  )
+)
+</pre></div>
+</div>
+</div>
+</div>
+<p>Let’s test whether the model works!</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+    <span class="n">predictions</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">batch</span><span class="p">))</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">predictions</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">predictions</span><span class="p">[:</span><span class="mi">10</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>torch.Size([64, 1])
+tensor([[ 0.0249],
+        [-0.0119],
+        [-0.0105],
+        [ 0.0114],
+        [ 0.0183],
+        [ 0.0400],
+        [-0.0074],
+        [ 0.0343],
+        [ 0.0340],
+        [ 0.0237]])
+</pre></div>
+</div>
+</div>
+</div>
+<p>Currently, the predictions are of course random.
+Now, we we want to train the model!</p>
+</section>
+<section id="routine">
+<h2>5. Routine<a class="headerlink" href="#routine" title="Link to this heading">#</a></h2>
+<p>To reduce boilerplate PyTorch code, ChemTorch builds on PyTorch Lightning’s <code class="docutils literal notranslate"><span class="pre">LightningModule</span></code> and provides a common <code class="docutils literal notranslate"><span class="pre">Routine</span></code> abstraction that handles training and inference logic such as metric logging, optimization steps, learning-rate scheduling, and prediction rescaling for regression tasks.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">Routine</span></code> wraps our PyTorch model together with its loss function, optimizer, learning-rate scheduler, metrics, and prediction postprocessing.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">Standardizer</span></code> normalizes targets using statistics computed from the training set and later reverses this transformation to compute metrics and return predictions in the original scale.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># train data statistics from previous experiment</span>
+<span class="n">TRAIN_LABEL_MEAN</span> <span class="o">=</span> <span class="mf">80.0102253144654</span>
+<span class="n">TRAIN_LABEL_STD</span> <span class="o">=</span> <span class="mf">21.684054853890036</span>
+
+<span class="n">metrics</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;train&quot;</span><span class="p">:</span> <span class="n">MetricCollection</span><span class="p">(</span>
+        <span class="p">{</span><span class="s2">&quot;rmse&quot;</span><span class="p">:</span> <span class="n">MeanSquaredError</span><span class="p">(</span><span class="n">squared</span><span class="o">=</span><span class="kc">False</span><span class="p">)}</span>
+    <span class="p">),</span>
+    <span class="s2">&quot;val&quot;</span><span class="p">:</span> <span class="n">MetricCollection</span><span class="p">(</span>
+        <span class="p">{</span><span class="s2">&quot;rmse&quot;</span><span class="p">:</span> <span class="n">MeanSquaredError</span><span class="p">(</span><span class="n">squared</span><span class="o">=</span><span class="kc">False</span><span class="p">)}</span>
+    <span class="p">),</span>
+    <span class="s2">&quot;test&quot;</span><span class="p">:</span> <span class="n">MetricCollection</span><span class="p">(</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;mae&quot;</span><span class="p">:</span> <span class="n">MeanAbsoluteError</span><span class="p">(),</span>
+            <span class="s2">&quot;rmse&quot;</span><span class="p">:</span> <span class="n">MeanSquaredError</span><span class="p">(</span><span class="n">squared</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
+        <span class="p">}</span>
+    <span class="p">),</span>
+<span class="p">}</span>
+
+<span class="n">routine</span> <span class="o">=</span> <span class="n">RegressionRoutine</span><span class="p">(</span>
+    <span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span>
+    <span class="n">standardizer</span><span class="o">=</span><span class="n">Standardizer</span><span class="p">(</span><span class="n">mean</span><span class="o">=</span><span class="n">TRAIN_LABEL_MEAN</span><span class="p">,</span> <span class="n">std</span><span class="o">=</span><span class="n">TRAIN_LABEL_STD</span><span class="p">),</span>
+    <span class="n">loss</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">MSELoss</span><span class="p">(),</span>
+    <span class="n">optimizer</span><span class="o">=</span><span class="n">partial</span><span class="p">(</span>
+        <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">AdamW</span><span class="p">,</span>
+        <span class="n">lr</span><span class="o">=</span><span class="mf">0.0005682742759208353</span><span class="p">,</span>
+        <span class="n">weight_decay</span><span class="o">=</span><span class="mf">0.0006307405281515754</span>
+    <span class="p">),</span>
+    <span class="n">lr_scheduler</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">&quot;scheduler&quot;</span><span class="p">:</span> <span class="n">partial</span><span class="p">(</span>
+            <span class="n">CosineWithWarmupLR</span><span class="p">,</span>
+            <span class="n">num_warmup_steps</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+            <span class="n">num_training_steps</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+            <span class="n">start_factor</span><span class="o">=</span><span class="mf">1.0e-6</span><span class="p">,</span>
+            <span class="n">end_factor</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+            <span class="n">eta_min</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+        <span class="p">),</span>
+        <span class="s2">&quot;interval&quot;</span><span class="p">:</span> <span class="s2">&quot;epoch&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;frequency&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="n">metrics</span><span class="o">=</span><span class="n">metrics</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="trainer">
+<h2>6. Trainer<a class="headerlink" href="#trainer" title="Link to this heading">#</a></h2>
+<p>Finally, Lightning’s <code class="docutils literal notranslate"><span class="pre">Trainer</span></code> orchestrates fitting and testing.</p>
+<p>For the tutorial we use a maximum of 20 epoch, no logger, and disable checkpointing.</p>
+<p>When running a real experiment, we would use a higher maximum number of epochs, the Weights &amp; Biases Logger, and enable checkpointing.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">MAX_EPOCHS</span> <span class="o">=</span> <span class="mi">20</span>
+
+<span class="n">trainer</span> <span class="o">=</span> <span class="n">Trainer</span><span class="p">(</span>
+    <span class="n">max_epochs</span><span class="o">=</span><span class="n">MAX_EPOCHS</span><span class="p">,</span>
+    <span class="n">accelerator</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+    <span class="n">logger</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">enable_checkpointing</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">gradient_clip_val</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+    <span class="n">log_every_n_steps</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>GPU available: False, used: False
+TPU available: False, using: 0 TPU cores
+</pre></div>
+</div>
+</div>
+</div>
+<p>To train our model, we simply call <code class="docutils literal notranslate"><span class="pre">fit()</span></code> and pass the routine and the data module.
+The trainer will handle the rest for us.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">trainer</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">routine</span><span class="p">,</span> <span class="n">datamodule</span><span class="o">=</span><span class="n">data_module</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  | Name          | Type             | Params | Mode 
+-----------------------------------------------------------
+0 | model         | GNN              | 4.3 M  | train
+1 | loss          | MSELoss          | 0      | train
+2 | train_metrics | MetricCollection | 0      | train
+3 | val_metrics   | MetricCollection | 0      | train
+4 | test_metrics  | MetricCollection | 0      | train
+-----------------------------------------------------------
+4.3 M     Trainable params
+0         Non-trainable params
+4.3 M     Total params
+17.298    Total estimated model params size (MB)
+200       Modules in train mode
+0         Modules in eval mode
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Sanity Checking DataLoader 0:   0%|          | 0/1 [00:00&lt;?, ?it/s]
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/anton/chemtorch/.venv/lib/python3.10/site-packages/lightning/pytorch/trainer/connectors/data_connector.py:433: The &#39;val_dataloader&#39; does not have many workers which may be a bottleneck. Consider increasing the value of the `num_workers` argument` to `num_workers=7` in the `DataLoader` to improve performance.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>                                                                           
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/anton/chemtorch/.venv/lib/python3.10/site-packages/lightning/pytorch/trainer/connectors/data_connector.py:433: The &#39;train_dataloader&#39; does not have many workers which may be a bottleneck. Consider increasing the value of the `num_workers` argument` to `num_workers=7` in the `DataLoader` to improve performance.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Epoch 9: 100%|██████████| 8/8 [00:05&lt;00:00,  1.41it/s, train_loss=0.901, val_loss_step=0.670, val_loss_epoch=0.670]
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/anton/chemtorch/.venv/lib/python3.10/site-packages/torch/optim/lr_scheduler.py:209: UserWarning: The epoch parameter in `scheduler.step()` was not necessary and is being deprecated where possible. Please use `scheduler.step()` to step the scheduler. During the deprecation, if epoch is different from None, the closed form is used instead of the new chainable form, where available. Please open an issue if you are unable to replicate your use case: https://github.com/pytorch/pytorch/issues/new/choose.
+  warnings.warn(EPOCH_DEPRECATION_WARNING, UserWarning)
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Epoch 19: 100%|██████████| 8/8 [00:07&lt;00:00,  1.14it/s, train_loss=0.576, val_loss_step=0.588, val_loss_epoch=0.588] 
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>`Trainer.fit` stopped: `max_epochs=20` reached.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Epoch 19: 100%|██████████| 8/8 [00:07&lt;00:00,  1.14it/s, train_loss=0.576, val_loss_step=0.588, val_loss_epoch=0.588]
+</pre></div>
+</div>
+</div>
+</div>
+<p>We can test the model in a smilar way.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">trainer</span><span class="o">.</span><span class="n">test</span><span class="p">(</span><span class="n">routine</span><span class="p">,</span> <span class="n">datamodule</span><span class="o">=</span><span class="n">data_module</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/anton/chemtorch/.venv/lib/python3.10/site-packages/lightning/pytorch/trainer/connectors/data_connector.py:433: The &#39;test_dataloader&#39; does not have many workers which may be a bottleneck. Consider increasing the value of the `num_workers` argument` to `num_workers=7` in the `DataLoader` to improve performance.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Testing DataLoader 0: 100%|██████████| 1/1 [00:00&lt;00:00,  5.46it/s]
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+       Test metric             DataLoader 0
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+        test_mae            14.630847930908203
+        test_rmse           20.482280731201172
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+</pre></div>
+</div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[{&#39;test_mae&#39;: 14.630847930908203, &#39;test_rmse&#39;: 20.482280731201172}]
+</pre></div>
+</div>
+</div>
+</div>
+<p>Our D-MPNN model on the CGR representation achieves a mean absolute error (MAE) in the range of 12-15 kcal/mol which aligns with the values reported in the ChemTorch benchmark.
+Of course this isn’t even close to accurate but recall that we trained on only 5% of the data!
+Scaling training to the full dataset, this model achieves an MAE of approx. 4.10 kcal/mol, as seen in the figure below (pink line).</p>
+<center>
+   <img src="../docs/source/_static/performance_curves_mae.svg" alt="ChemTorch benchmark performance curves" width="600px" onerror="this.onerror=null;this.src='../_static/performance_curves_mae.svg';">
+</center>
+</section>
+<section id="references">
+<h2>References<a class="headerlink" href="#references" title="Link to this heading">#</a></h2>
+<p>[1] Yang, K.; Swanson, K.; Jin, W.; Coley, C.; Eiden, P.; Gao, H.; Guzman-Perez, A.; Hopper, T.; Kelley, B.; Mathea, M. Analyzing learned molecular representations for property prediction. J. Chem. Inf. Model. 2019, 59, 3370– 3388,  DOI: 10.1021/acs.jcim.9b00237</p>
+<p>[2] Spiekermann, K.; Pattanaik, L.; Green, W. H. High accuracy barrier heights, enthalpies, and rate coefficients for chemical reactions. Sci. Data 2022, 9, 417  DOI: 10.1038/s41597-022-01529-6</p>
+<p>[3] Heid, E.; Green, W. H. Machine learning of reaction properties via learned representations of the condensed graph of reaction. J. Chem. Inf. Model. 2022, 62, 2101– 2110,  DOI: 10.1021/acs.jcim.1c00975</p>
+<p>[4] De Landsheere, J.; Zamyatin, A.; Karwounopoulo, J.; Heid, E. ChemTorch: A Deep Learning Framework for Benchmarking and Developing Chemical Reaction Property Prediction Models. J. Chem. Inf. Model. 2026, 66, 2434-2442, DOI: 10.1021/acs.jcim.5c02645</p>
+</section>
+</section>
+
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="../user_guide/config_ref.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Config Reference</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="training_curves.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Performance Curves</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#prerequisites">Prerequisites</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#barrier-height-prediction">Barrier Height Prediction</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#imports">Imports</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data-pipeline">1. Data Pipeline</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#reaction-representation">2. Reaction Representation</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#cgr">CGR</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#datamodule">3. DataModule</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#d-mpnn-model">4. D-MPNN Model</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#routine">5. Routine</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#trainer">6. Trainer</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#references">References</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Anton Zamyatin, Jasper De Landsheere, Esther Heid
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2026 Esther Heid.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

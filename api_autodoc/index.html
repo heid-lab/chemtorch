@@ -30,6 +30,7 @@
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="../_static/custom_syntax.css?v=9e2307e4" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
@@ -41,6 +42,7 @@
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'api_autodoc/index';</script>
     <link rel="icon" href="../_static/chemtorch_favicon.png"/>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -159,8 +161,8 @@
         <p aria-level="2" class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/quick_start.html">Quick Start</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/logging.html">Setup Logging</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/overview.html">ChemTorch Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/logging.html">Setup Logging</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/config.html">Understanding Configs</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/experiments.html">Creating Experiments</a></li>
 </ul>
@@ -175,6 +177,7 @@
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Examples</span></p>
 <ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../examples/pipeline_from_scratch.html">Building a ChemTorch Pipeline from Scratch</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../examples/training_curves.html">Performance Curves</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../examples/ood_benchmarking.html">OOD benchmarking</a></li>
 </ul>
@@ -357,7 +360,7 @@ document.write(`
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-links">Module Links</a></li>
 </ul>
             </nav>
         </div>
@@ -372,6 +375,8 @@ document.write(`
   <section id="api-reference">
 <span id="api-autodoc"></span><h1>API Reference<a class="headerlink" href="#api-reference" title="Link to this heading">#</a></h1>
 <p>This section contains auto-generated API documentation from docstrings in the source code.</p>
+<section id="module-links">
+<span id="api-module-links"></span><h2>Module Links<a class="headerlink" href="#module-links" title="Link to this heading">#</a></h2>
 <div class="toctree-wrapper compound">
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Modules</span></p>
 <ul>
@@ -406,15 +411,6 @@ document.write(`
 </li>
 </ul>
 </div>
-<section id="overview">
-<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">#</a></h2>
-<p>ChemTorch is organized into three main packages:</p>
-<ul class="simple">
-<li><p><strong>components</strong>: Modular building blocks (data pipeline, representations, transforms, models, layers)</p></li>
-<li><p><strong>core</strong>: PyTorch Lightning modules (DataModule, Routine, Trainer integration)</p></li>
-<li><p><strong>utils</strong>: Helper functions and utilities</p></li>
-</ul>
-<p>All public APIs follow consistent patterns and are designed for composability.</p>
 </section>
 </section>
 
@@ -463,7 +459,7 @@ document.write(`
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-links">Module Links</a></li>
 </ul>
   </nav></div>
 

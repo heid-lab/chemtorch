@@ -29,6 +29,7 @@
 
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="_static/custom_syntax.css?v=9e2307e4" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
@@ -158,8 +159,8 @@
         <p aria-level="2" class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="getting_started/quick_start.html">Quick Start</a></li>
-<li class="toctree-l1"><a class="reference internal" href="getting_started/logging.html">Setup Logging</a></li>
 <li class="toctree-l1"><a class="reference internal" href="getting_started/overview.html">ChemTorch Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started/logging.html">Setup Logging</a></li>
 <li class="toctree-l1"><a class="reference internal" href="getting_started/config.html">Understanding Configs</a></li>
 <li class="toctree-l1"><a class="reference internal" href="getting_started/experiments.html">Creating Experiments</a></li>
 </ul>
@@ -174,6 +175,7 @@
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Examples</span></p>
 <ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="examples/pipeline_from_scratch.html">Building a ChemTorch Pipeline from Scratch</a></li>
 <li class="toctree-l1"><a class="reference internal" href="examples/training_curves.html">Performance Curves</a></li>
 <li class="toctree-l1"><a class="reference internal" href="examples/ood_benchmarking.html">OOD benchmarking</a></li>
 </ul>
@@ -391,7 +393,29 @@ document.write(`
 </li>
         <li><a href="api_autodoc/components.html#chemtorch.components.model.dimenet.SphericalBasisLayer.__init__">(chemtorch.components.model.dimenet.SphericalBasisLayer method)</a>
 </li>
+        <li><a href="api_autodoc/components.html#chemtorch.components.model.gnn.encoder.DegreeEncoder.__init__">(chemtorch.components.model.gnn.encoder.DegreeEncoder method)</a>
+</li>
+        <li><a href="api_autodoc/components.html#chemtorch.components.model.gnn.encoder.DirectedEdgeEncoder.__init__">(chemtorch.components.model.gnn.encoder.DirectedEdgeEncoder method)</a>
+</li>
+        <li><a href="api_autodoc/components.html#chemtorch.components.model.gnn.encoder.LinearEdgeEncoder.__init__">(chemtorch.components.model.gnn.encoder.LinearEdgeEncoder method)</a>
+</li>
+        <li><a href="api_autodoc/components.html#chemtorch.components.model.gnn.encoder.LinearEncoder.__init__">(chemtorch.components.model.gnn.encoder.LinearEncoder method)</a>
+</li>
+        <li><a href="api_autodoc/components.html#chemtorch.components.model.gnn.encoder.LinearNodeEncoder.__init__">(chemtorch.components.model.gnn.encoder.LinearNodeEncoder method)</a>
+</li>
+        <li><a href="api_autodoc/components.html#chemtorch.components.model.gnn.encoder.RWEncoder.__init__">(chemtorch.components.model.gnn.encoder.RWEncoder method)</a>
+</li>
         <li><a href="api_autodoc/components.html#chemtorch.components.model.gnn.gnn.GNN.__init__">(chemtorch.components.model.gnn.gnn.GNN method)</a>
+</li>
+        <li><a href="api_autodoc/components.html#chemtorch.components.model.gnn.pool.AtomTypePool.__init__">(chemtorch.components.model.gnn.pool.AtomTypePool method)</a>
+</li>
+        <li><a href="api_autodoc/components.html#chemtorch.components.model.gnn.pool.GlobalPool.__init__">(chemtorch.components.model.gnn.pool.GlobalPool method)</a>
+</li>
+        <li><a href="api_autodoc/components.html#chemtorch.components.model.gnn.pool.MultiheadAttentionBlock.__init__">(chemtorch.components.model.gnn.pool.MultiheadAttentionBlock method)</a>
+</li>
+        <li><a href="api_autodoc/components.html#chemtorch.components.model.gnn.pool.PMA.__init__">(chemtorch.components.model.gnn.pool.PMA method)</a>
+</li>
+        <li><a href="api_autodoc/components.html#chemtorch.components.model.gnn.pool.SetAttentionBlock.__init__">(chemtorch.components.model.gnn.pool.SetAttentionBlock method)</a>
 </li>
         <li><a href="api_autodoc/components.html#chemtorch.components.model.han.HAN.__init__">(chemtorch.components.model.han.HAN method)</a>
 </li>
@@ -404,6 +428,10 @@ document.write(`
         <li><a href="api_autodoc/components.html#chemtorch.components.representation.graph.reaction_3d_graph.Reaction3DData.__init__">(chemtorch.components.representation.graph.reaction_3d_graph.Reaction3DData method)</a>
 </li>
         <li><a href="api_autodoc/components.html#chemtorch.components.representation.graph.reaction_3d_graph.Reaction3DGraph.__init__">(chemtorch.components.representation.graph.reaction_3d_graph.Reaction3DGraph method)</a>
+</li>
+        <li><a href="api_autodoc/components.html#chemtorch.components.transform.graph_transform.DummyNodeTransform.__init__">(chemtorch.components.transform.graph_transform.DummyNodeTransform method)</a>
+</li>
+        <li><a href="api_autodoc/components.html#chemtorch.components.transform.graph_transform.RandomWalkPETransform.__init__">(chemtorch.components.transform.graph_transform.RandomWalkPETransform method)</a>
 </li>
         <li><a href="api_autodoc/core.html#chemtorch.core.data_module.DataModule.__init__">(chemtorch.core.data_module.DataModule method)</a>
 </li>
@@ -442,15 +470,17 @@ document.write(`
 </li>
       <li><a href="api_autodoc/components.html#chemtorch.components.data_pipeline.data_source.abstract_data_source.AbstractDataSource">AbstractDataSource (class in chemtorch.components.data_pipeline.data_source.abstract_data_source)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api_autodoc/components.html#chemtorch.components.data_pipeline.data_splitter.abstract_data_splitter.AbstractDataSplitter">AbstractDataSplitter (class in chemtorch.components.data_pipeline.data_splitter.abstract_data_splitter)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api_autodoc/components.html#chemtorch.components.representation.abstract_representation.AbstractRepresentation">AbstractRepresentation (class in chemtorch.components.representation.abstract_representation)</a>
 </li>
       <li><a href="api_autodoc/components.html#chemtorch.components.transform.abstract_transform.AbstractTransform">AbstractTransform (class in chemtorch.components.transform.abstract_transform)</a>
 </li>
       <li><a href="api_autodoc/utils.html#chemtorch.utils.atom_mapping.AtomOriginType">AtomOriginType (class in chemtorch.utils.atom_mapping)</a>
+</li>
+      <li><a href="api_autodoc/components.html#chemtorch.components.model.gnn.pool.AtomTypePool">AtomTypePool (class in chemtorch.components.model.gnn.pool)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -864,6 +894,8 @@ document.write(`
 </li>
       <li><a href="api_autodoc/components.html#chemtorch.components.data_pipeline.data_splitter.data_splitter_base.DataSplitterBase">DataSplitterBase (class in chemtorch.components.data_pipeline.data_splitter.data_splitter_base)</a>
 </li>
+      <li><a href="api_autodoc/components.html#chemtorch.components.model.gnn.encoder.DegreeEncoder">DegreeEncoder (class in chemtorch.components.model.gnn.encoder)</a>
+</li>
       <li><a href="api_autodoc/core.html#chemtorch.core.property_system.DegreeStatistics">DegreeStatistics (class in chemtorch.core.property_system)</a>
 </li>
       <li><a href="api_autodoc/utils.html#chemtorch.utils.standardizer.Standardizer.destandardize">destandardize() (chemtorch.utils.standardizer.Standardizer method)</a>
@@ -875,6 +907,8 @@ document.write(`
       <li><a href="api_autodoc/components.html#chemtorch.components.model.dimenet.DimeNetPlusPlus">DimeNetPlusPlus (class in chemtorch.components.model.dimenet)</a>
 </li>
       <li><a href="api_autodoc/components.html#chemtorch.components.model.dimenet.DimeReaction">DimeReaction (class in chemtorch.components.model.dimenet)</a>
+</li>
+      <li><a href="api_autodoc/components.html#chemtorch.components.model.gnn.encoder.DirectedEdgeEncoder">DirectedEdgeEncoder (class in chemtorch.components.model.gnn.encoder)</a>
 </li>
       <li><a href="api_autodoc/components.html#chemtorch.components.layer.gnn_layer.dmpnn_stack.DMPNNStack">DMPNNStack (class in chemtorch.components.layer.gnn_layer.dmpnn_stack)</a>
 </li>
@@ -888,6 +922,8 @@ document.write(`
         <li><a href="api_autodoc/utils.html#chemtorch.utils.atom_mapping.EdgeOriginType.DUMMY">(chemtorch.utils.atom_mapping.EdgeOriginType attribute)</a>
 </li>
       </ul></li>
+      <li><a href="api_autodoc/components.html#chemtorch.components.transform.graph_transform.DummyNodeTransform">DummyNodeTransform (class in chemtorch.components.transform.graph_transform)</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -951,7 +987,29 @@ document.write(`
 </li>
         <li><a href="api_autodoc/components.html#chemtorch.components.model.dimenet.SphericalBasisLayer.forward">(chemtorch.components.model.dimenet.SphericalBasisLayer method)</a>
 </li>
+        <li><a href="api_autodoc/components.html#chemtorch.components.model.gnn.encoder.DegreeEncoder.forward">(chemtorch.components.model.gnn.encoder.DegreeEncoder method)</a>
+</li>
+        <li><a href="api_autodoc/components.html#chemtorch.components.model.gnn.encoder.DirectedEdgeEncoder.forward">(chemtorch.components.model.gnn.encoder.DirectedEdgeEncoder method)</a>
+</li>
+        <li><a href="api_autodoc/components.html#chemtorch.components.model.gnn.encoder.LinearEdgeEncoder.forward">(chemtorch.components.model.gnn.encoder.LinearEdgeEncoder method)</a>
+</li>
+        <li><a href="api_autodoc/components.html#chemtorch.components.model.gnn.encoder.LinearEncoder.forward">(chemtorch.components.model.gnn.encoder.LinearEncoder method)</a>
+</li>
+        <li><a href="api_autodoc/components.html#chemtorch.components.model.gnn.encoder.LinearNodeEncoder.forward">(chemtorch.components.model.gnn.encoder.LinearNodeEncoder method)</a>
+</li>
+        <li><a href="api_autodoc/components.html#chemtorch.components.model.gnn.encoder.RWEncoder.forward">(chemtorch.components.model.gnn.encoder.RWEncoder method)</a>
+</li>
         <li><a href="api_autodoc/components.html#chemtorch.components.model.gnn.gnn.GNN.forward">(chemtorch.components.model.gnn.gnn.GNN method)</a>
+</li>
+        <li><a href="api_autodoc/components.html#chemtorch.components.model.gnn.pool.AtomTypePool.forward">(chemtorch.components.model.gnn.pool.AtomTypePool method)</a>
+</li>
+        <li><a href="api_autodoc/components.html#chemtorch.components.model.gnn.pool.GlobalPool.forward">(chemtorch.components.model.gnn.pool.GlobalPool method)</a>
+</li>
+        <li><a href="api_autodoc/components.html#chemtorch.components.model.gnn.pool.MultiheadAttentionBlock.forward">(chemtorch.components.model.gnn.pool.MultiheadAttentionBlock method)</a>
+</li>
+        <li><a href="api_autodoc/components.html#chemtorch.components.model.gnn.pool.PMA.forward">(chemtorch.components.model.gnn.pool.PMA method)</a>
+</li>
+        <li><a href="api_autodoc/components.html#chemtorch.components.model.gnn.pool.SetAttentionBlock.forward">(chemtorch.components.model.gnn.pool.SetAttentionBlock method)</a>
 </li>
         <li><a href="api_autodoc/components.html#chemtorch.components.model.han.HAN.forward">(chemtorch.components.model.han.HAN method)</a>
 </li>
@@ -976,15 +1034,17 @@ document.write(`
 </li>
       <li><a href="api_autodoc/core.html#chemtorch.core.data_module.DataModule.get_dataset_names">get_dataset_names() (chemtorch.core.data_module.DataModule method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api_autodoc/core.html#chemtorch.core.dataset_base.DatasetBase.get_labels">get_labels() (chemtorch.core.dataset_base.DatasetBase method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api_autodoc/core.html#chemtorch.core.scheduler.cosine_with_warmup_lr.CosineWithWarmupLR.get_last_lr">get_last_lr() (chemtorch.core.scheduler.cosine_with_warmup_lr.CosineWithWarmupLR method)</a>
 </li>
       <li><a href="api_autodoc/utils.html#chemtorch.utils.hydra.get_num_workers">get_num_workers() (in module chemtorch.utils.hydra)</a>
 </li>
       <li><a href="api_autodoc/utils.html#chemtorch.utils.reaction_utils.get_reaction_core">get_reaction_core() (in module chemtorch.utils.reaction_utils)</a>
+</li>
+      <li><a href="api_autodoc/components.html#chemtorch.components.model.gnn.pool.GlobalPool">GlobalPool (class in chemtorch.components.model.gnn.pool)</a>
 </li>
       <li><a href="api_autodoc/components.html#chemtorch.components.model.gnn.gnn.GNN">GNN (class in chemtorch.components.model.gnn.gnn)</a>
 </li>
@@ -1030,8 +1090,14 @@ document.write(`
 </li>
       <li><a href="api_autodoc/components.html#chemtorch.components.layer.layer_stack.LayerStack">LayerStack (class in chemtorch.components.layer.layer_stack)</a>
 </li>
+      <li><a href="api_autodoc/components.html#chemtorch.components.model.gnn.encoder.LinearEdgeEncoder">LinearEdgeEncoder (class in chemtorch.components.model.gnn.encoder)</a>
+</li>
+      <li><a href="api_autodoc/components.html#chemtorch.components.model.gnn.encoder.LinearEncoder">LinearEncoder (class in chemtorch.components.model.gnn.encoder)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_autodoc/components.html#chemtorch.components.model.gnn.encoder.LinearNodeEncoder">LinearNodeEncoder (class in chemtorch.components.model.gnn.encoder)</a>
+</li>
       <li><a href="api_autodoc/components.html#chemtorch.components.data_pipeline.data_source.abstract_data_source.AbstractDataSource.load">load() (chemtorch.components.data_pipeline.data_source.abstract_data_source.AbstractDataSource method)</a>
 
       <ul>
@@ -1156,6 +1222,10 @@ document.write(`
 </li>
       </ul></li>
   </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_autodoc/components.html#chemtorch.components.model.gnn.pool.MultiheadAttentionBlock">MultiheadAttentionBlock (class in chemtorch.components.model.gnn.pool)</a>
+</li>
+  </ul></td>
 </tr></table>
 
 <h2 id="N">N</h2>
@@ -1195,6 +1265,8 @@ document.write(`
 <h2 id="P">P</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_autodoc/components.html#chemtorch.components.model.gnn.pool.PMA">PMA (class in chemtorch.components.model.gnn.pool)</a>
+</li>
       <li><a href="api_autodoc/components.html#chemtorch.components.model.dimenet.DimeNet.pos">pos (chemtorch.components.model.dimenet.DimeNet attribute)</a>
 </li>
       <li><a href="api_autodoc/components.html#chemtorch.components.model.dimenet.DimeReaction.pos_r">pos_r (chemtorch.components.model.dimenet.DimeReaction attribute)</a>
@@ -1209,10 +1281,10 @@ document.write(`
         <li><a href="api_autodoc/components.html#chemtorch.components.representation.graph.reaction_3d_graph.Reaction3DData.pos_ts">(chemtorch.components.representation.graph.reaction_3d_graph.Reaction3DData attribute)</a>, <a href="api_autodoc/components.html#id3">[1]</a>
 </li>
       </ul></li>
-      <li><a href="api_autodoc/core.html#chemtorch.core.property_system.PrecomputeTime">PrecomputeTime (class in chemtorch.core.property_system)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_autodoc/core.html#chemtorch.core.property_system.PrecomputeTime">PrecomputeTime (class in chemtorch.core.property_system)</a>
+</li>
       <li><a href="api_autodoc/core.html#chemtorch.core.data_module.DataModule.predict_dataloader">predict_dataloader() (chemtorch.core.data_module.DataModule method)</a>
 </li>
       <li><a href="api_autodoc/core.html#chemtorch.core.routine.regression_routine.RegressionRoutine.predict_step">predict_step() (chemtorch.core.routine.regression_routine.RegressionRoutine method)</a>
@@ -1235,6 +1307,10 @@ document.write(`
 <h2 id="R">R</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_autodoc/components.html#chemtorch.components.transform.graph_transform.RandomWalkPE">RandomWalkPE (in module chemtorch.components.transform.graph_transform)</a>
+</li>
+      <li><a href="api_autodoc/components.html#chemtorch.components.transform.graph_transform.RandomWalkPETransform">RandomWalkPETransform (class in chemtorch.components.transform.graph_transform)</a>
+</li>
       <li><a href="api_autodoc/components.html#chemtorch.components.data_pipeline.data_splitter.ratio_splitter.RatioSplitter">RatioSplitter (class in chemtorch.components.data_pipeline.data_splitter.ratio_splitter)</a>
 </li>
       <li><a href="api_autodoc/utils.html#chemtorch.utils.atom_mapping.AtomOriginType.REACTANT">REACTANT (chemtorch.utils.atom_mapping.AtomOriginType attribute)</a>
@@ -1263,8 +1339,6 @@ document.write(`
 </li>
       <li><a href="api_autodoc/utils.html#chemtorch.utils.reaction_utils.remove_atoms_from_rxn">remove_atoms_from_rxn() (in module chemtorch.utils.reaction_utils)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api_autodoc/components.html#chemtorch.components.model.dimenet.BesselBasisLayer.reset_parameters">reset_parameters() (chemtorch.components.model.dimenet.BesselBasisLayer method)</a>
 
       <ul>
@@ -1282,7 +1356,15 @@ document.write(`
 </li>
         <li><a href="api_autodoc/components.html#chemtorch.components.model.dimenet.ResidualLayer.reset_parameters">(chemtorch.components.model.dimenet.ResidualLayer method)</a>
 </li>
+        <li><a href="api_autodoc/components.html#chemtorch.components.model.gnn.pool.MultiheadAttentionBlock.reset_parameters">(chemtorch.components.model.gnn.pool.MultiheadAttentionBlock method)</a>
+</li>
+        <li><a href="api_autodoc/components.html#chemtorch.components.model.gnn.pool.PMA.reset_parameters">(chemtorch.components.model.gnn.pool.PMA method)</a>
+</li>
+        <li><a href="api_autodoc/components.html#chemtorch.components.model.gnn.pool.SetAttentionBlock.reset_parameters">(chemtorch.components.model.gnn.pool.SetAttentionBlock method)</a>
+</li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api_autodoc/components.html#chemtorch.components.model.dimenet.ResidualLayer">ResidualLayer (class in chemtorch.components.model.dimenet)</a>
 </li>
       <li><a href="api_autodoc/core.html#chemtorch.core.property_system.resolve_sources">resolve_sources() (in module chemtorch.core.property_system)</a>
@@ -1290,6 +1372,8 @@ document.write(`
       <li><a href="api_autodoc/utils.html#chemtorch.utils.hydra.resolve_target">resolve_target() (in module chemtorch.utils.hydra)</a>
 </li>
       <li><a href="api_autodoc/utils.html#chemtorch.utils.types.RoutineFactoryProtocol">RoutineFactoryProtocol (class in chemtorch.utils.types)</a>
+</li>
+      <li><a href="api_autodoc/components.html#chemtorch.components.model.gnn.encoder.RWEncoder">RWEncoder (class in chemtorch.components.model.gnn.encoder)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -1305,6 +1389,8 @@ document.write(`
 </li>
       <li><a href="api_autodoc/core.html#chemtorch.core.scheduler.sequential_lr_wrapper.SequentialLRWrapper">SequentialLRWrapper (class in chemtorch.core.scheduler.sequential_lr_wrapper)</a>
 </li>
+      <li><a href="api_autodoc/components.html#chemtorch.components.model.gnn.pool.SetAttentionBlock">SetAttentionBlock (class in chemtorch.components.model.gnn.pool)</a>
+</li>
       <li><a href="api_autodoc/core.html#chemtorch.core.routine.supervised_routine.SupervisedRoutine.setup">setup() (chemtorch.core.routine.supervised_routine.SupervisedRoutine method)</a>
 </li>
       <li><a href="api_autodoc/components.html#chemtorch.components.representation.fingerprint.drfp.DRFPUtil.shingling_from_mol">shingling_from_mol() (chemtorch.components.representation.fingerprint.drfp.DRFPUtil static method)</a>
@@ -1313,10 +1399,10 @@ document.write(`
 </li>
       <li><a href="api_autodoc/components.html#chemtorch.components.data_pipeline.data_source.single_csv_source.SingleCSVSource">SingleCSVSource (class in chemtorch.components.data_pipeline.data_source.single_csv_source)</a>
 </li>
-      <li><a href="api_autodoc/components.html#chemtorch.components.data_pipeline.data_splitter.size_splitter.SizeSplitter">SizeSplitter (class in chemtorch.components.data_pipeline.data_splitter.size_splitter)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_autodoc/components.html#chemtorch.components.data_pipeline.data_splitter.size_splitter.SizeSplitter">SizeSplitter (class in chemtorch.components.data_pipeline.data_splitter.size_splitter)</a>
+</li>
       <li><a href="api_autodoc/utils.html#chemtorch.utils.reaction_utils.smarts2smarts">smarts2smarts() (in module chemtorch.utils.reaction_utils)</a>
 </li>
       <li><a href="api_autodoc/utils.html#chemtorch.utils.reaction_utils.smiles2smiles">smiles2smiles() (in module chemtorch.utils.reaction_utils)</a>
@@ -1347,15 +1433,17 @@ document.write(`
 </li>
       <li><a href="api_autodoc/core.html#chemtorch.core.routine.supervised_routine.SupervisedRoutine.test_step">test_step() (chemtorch.core.routine.supervised_routine.SupervisedRoutine method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api_autodoc/utils.html#chemtorch.utils.types.DataSplit.to_dict">to_dict() (chemtorch.utils.types.DataSplit method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api_autodoc/core.html#chemtorch.core.data_module.DataModule.train_dataloader">train_dataloader() (chemtorch.core.data_module.DataModule method)</a>
 </li>
       <li><a href="api_autodoc/core.html#chemtorch.core.routine.supervised_routine.SupervisedRoutine.training_step">training_step() (chemtorch.core.routine.supervised_routine.SupervisedRoutine method)</a>
 </li>
       <li><a href="api_autodoc/components.html#chemtorch.components.model.dimenet.triplets">triplets() (in module chemtorch.components.model.dimenet)</a>
+</li>
+      <li><a href="api_autodoc/components.html#chemtorch.components.model.gnn.pool.AtomTypePool.TYPE_MAPPING">TYPE_MAPPING (chemtorch.components.model.gnn.pool.AtomTypePool attribute)</a>
 </li>
   </ul></td>
 </tr></table>
