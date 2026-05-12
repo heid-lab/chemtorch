@@ -1,4 +1,4 @@
-from .dmpnn_stack import DMPNNStack
+from .dmpnn_stack import DMPNNStack, EdgeToNodeEmbedding
 from .gnn_block import GNNBlock, DMPNNBlock, GPSBlock
 from .graph_conv import (
     DMPNNConv,
@@ -10,3 +10,19 @@ from .graph_conv import (
     GINEConvESLapPE,
     PNAConv,
 )
+
+__all__ = [
+    "DMPNNBlock",
+    "DMPNNConv",
+    "DMPNNStack",
+    "EdgeToNodeEmbedding",
+    "GATConv",
+    "GATv2Conv",
+    "GCNConv",
+    "GINEConv",
+    "GINEConvESLapPE",
+    "GPSBlock",
+    "GatedGCNConv",
+    "GNNBlock",
+    "PNAConv",
+]

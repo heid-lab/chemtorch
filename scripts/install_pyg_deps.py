@@ -56,7 +56,7 @@ def normalize_torch_version(torch_ver: str) -> str:
 def make_pip_cmd(torch_ver: str, backend_tag: str) -> tuple[str, str]:
     wheel_version = normalize_torch_version(torch_ver)
     wheel_index = f"https://data.pyg.org/whl/torch-{wheel_version}+{backend_tag}.html"
-    return f"uv pip install {PKGS} -f {shlex.quote(wheel_index)}", wheel_version
+    return f"uv pip install --no-deps {PKGS} -f {shlex.quote(wheel_index)}", wheel_version
 
 def main(argv: list[str] | None = None) -> int:
     argv = sys.argv[1:] if argv is None else argv

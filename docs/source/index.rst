@@ -24,12 +24,13 @@ For a few examples of what you can already do with ChemTorch read the `white pap
    :hidden:
 
    getting_started/quick_start
-   getting_started/logging
    getting_started/overview
+   getting_started/logging
    getting_started/config
    getting_started/experiments
 
-   .. TODO: add tutorial on metric tracking
+.. TODO: add tutorial on metric tracking
+
 .. toctree::
    :maxdepth: 1
    :caption: User Guide
@@ -47,6 +48,7 @@ For a few examples of what you can already do with ChemTorch read the `white pap
    :caption: Examples
    :hidden:
    
+   examples/pipeline_from_scratch
    examples/training_curves
    examples/ood_benchmarking
 
