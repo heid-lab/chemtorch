@@ -1,3 +1,9 @@
 from .bond_type import BondTypeFeaturizer
 from .bond_in_ring import BondInRingFeaturizer
 from .bond_is_conjugated import BondIsConjugatedFeaturizer
+
+__all__ = [
+    "BondInRingFeaturizer",
+    "BondIsConjugatedFeaturizer",
+    "BondTypeFeaturizer",
+]

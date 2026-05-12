@@ -6,6 +6,11 @@ API Reference
 
 This section contains auto-generated API documentation from docstrings in the source code.
 
+.. _api-module-links:
+
+Module Links
+============
+
 .. toctree::
    :maxdepth: 2
    :caption: Modules
@@ -13,14 +18,3 @@ This section contains auto-generated API documentation from docstrings in the so
    components
    core
    utils
-
-Overview
-========
-
-ChemTorch is organized into three main packages:
-
-- **components**: Modular building blocks (data pipeline, representations, transforms, models, layers)
-- **core**: PyTorch Lightning modules (DataModule, Routine, Trainer integration)
-- **utils**: Helper functions and utilities
-
-All public APIs follow consistent patterns and are designed for composability.

@@ -1,3 +1,4 @@
+from .abstract_featurizer import AbstractFeaturizer
 from .atom_featurizer import (
     AtomDegreeFeaturizer,
     AtomHasConjugatedBondFeaturizer,
@@ -16,4 +17,25 @@ from .bond_featurizer import (
     BondInRingFeaturizer,
     BondIsConjugatedFeaturizer
 )
+from .featurizer_base import FeaturizerBase
 from .featurizer_compose import FeaturizerCompose
+
+__all__ = [
+    "AbstractFeaturizer",
+    "AtomDegreeFeaturizer",
+    "AtomFormalChargeFeaturizer",
+    "AtomHCountFeaturizer",
+    "AtomHasConjugatedBondFeaturizer",
+    "AtomHybridizationFeaturizer",
+    "AtomIsAromaticFeaturizer",
+    "AtomIsInRingFeaturizer",
+    "AtomicNumberFeaturizer",
+    "BondInRingFeaturizer",
+    "BondIsConjugatedFeaturizer",
+    "BondTypeFeaturizer",
+    "CentiAtomMassFeaturizer",
+    "FeaturizerBase",
+    "FeaturizerCompose",
+    "OrganicAtomicNumberOneHotFeaturizer",
+    "QMAtomFeaturizer",
+]

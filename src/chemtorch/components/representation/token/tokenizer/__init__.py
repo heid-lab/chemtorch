@@ -1,21 +1,17 @@
-from .abstract_token_representation import AbstractTokenRepresentation
-from .token_representation_base import TokenRepresentationBase
-from .tokenizer import (
-    AbstractTokenizer,
+from .abstract_tokenizer import AbstractTokenizer
+from .molecule_tokenizer import (
     MoleculeTokenizerBase,
-    ReactionTokenizer,
     RegexTokenizer,
     SmilesSymbolTokenizer,
     SubstructureTokenizer,
 )
+from .reaction_tokenizer import ReactionTokenizer
 
 __all__ = [
-    "AbstractTokenRepresentation",
     "AbstractTokenizer",
     "MoleculeTokenizerBase",
     "ReactionTokenizer",
     "RegexTokenizer",
     "SmilesSymbolTokenizer",
     "SubstructureTokenizer",
-    "TokenRepresentationBase",
 ]

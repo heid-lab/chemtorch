@@ -21,6 +21,7 @@ import yaml
 from test.test_integration.helpers import (
     BASE_OVERRIDES,
     CONFIG_ROOT,
+    DEFAULT_TIMEOUT,
     PROJECT_ROOT,
     TEST_DIR,
     ConfigTester,
@@ -45,6 +46,18 @@ SMOKE_KEYS_TO_REMOVE = [
     "predictions_save_path",
     "predictions_save_dir",
     "save_predictions_for",
+]
+
+# Smoke tests only verify that configs execute end-to-end. Keep them deliberately
+# tiny so heavier models do not get killed by CPU CI memory pressure.
+SMOKE_OVERRIDES = BASE_OVERRIDES + [
+    "++data_module.dataloader_factory.batch_size=1",
+    "++data_module.dataloader_factory.num_workers=0",
+    "++data_module.dataloader_factory.pin_memory=false",
+    "++trainer.limit_train_batches=1",
+    "++trainer.limit_val_batches=1",
+    "++trainer.limit_test_batches=1",
+    "++trainer.limit_predict_batches=1",
 ]
 
 # Overrides for baseline tests that generate predictions
@@ -194,6 +207,13 @@ def _get_config_overrides(test_set_data: Dict[str, Any], test_id: str) -> List[s
     return overrides_map.get(config_identifier, [])
 
 
+def _get_config_timeout(test_set_data: Dict[str, Any], test_id: str) -> int:
+    """Fetch test-set specific smoke timeout for a config, if any."""
+    timeout_map = test_set_data.get("timeouts", {})
+    config_identifier = test_id.split("-", 1)[1]
+    return timeout_map.get(config_identifier, DEFAULT_TIMEOUT)
+
+
 def _run_smoke_test(config_info, tester: UnifiedConfigTester, request: pytest.FixtureRequest):
     """Helper to run a 1-epoch smoke test."""
     test_id, test_set_data, rel_config_path, config_name = config_info
@@ -203,12 +223,15 @@ def _run_smoke_test(config_info, tester: UnifiedConfigTester, request: pytest.Fi
         pytest.skip(f"Config '{test_id}' temporarily excluded from CI/CD")
 
     extra_overrides = _get_config_overrides(test_set_data, test_id)
+    timeout = _get_config_timeout(test_set_data, test_id)
 
     tester.test_config(
         rel_config_path=rel_config_path,
         config_name=config_name,
+        timeout=timeout,
         remove_keys=SMOKE_KEYS_TO_REMOVE,
         extra_overrides=extra_overrides,
+        common_overrides=SMOKE_OVERRIDES,
     )
 
 

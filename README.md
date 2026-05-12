@@ -18,11 +18,11 @@ When chemtorch is on PyPI uncomment this ^^
 [![Python versions](https://img.shields.io/pypi/pyversions/chemtorch.svg)](https://pypi.org/project/chemtorch)
 [![Downloads](https://img.shields.io/github/downloads/heid-lab/chemtorch/total.svg)](https://github.com/heid-lab/chemtorch/releases) -->
 
-[Quick Start](#🐎-quick-start) |
+[Quick Start](#quick-start) |
 [Documentation](https://heid-lab.github.io/chemtorch) |
-[Contributing](#🤝-contributing) |
-[White Paper](#📄-read-the-white-paper) |
-[Citation](#❤️-citation)
+[Contributing](#contributing) |
+[White Paper](#white-paper) |
+[Citation](#citation)
 
 </div>
 
@@ -37,12 +37,16 @@ ChemTorch is a modular research framework for deep learning of chemical reaction
 
 <!-- TODO: link to hosted GIF/mp4 of the ChemTorch CLI in action -->
 
+<a id="quick-start"></a>
+
 ## 🐎 Quick Start
 Follow the [Quick Start guide](https://heid-lab.github.io/chemtorch/getting_started/quick_start.html) to install all dependencies, download some data, and run your first experiment!
 For more, checkout the [official ChemTorch documentation](https://heid-lab.github.io/chemtorch)!
 
+<a id="white-paper"></a>
+
 ## 📄 Read the white paper
-For a few examples of what you can already do with ChemTorch read our [white paper](https://chemrxiv.org/engage/chemrxiv/article-details/690357d9a482cba122e366b6) on ChemRxiv.
+Check out the [software/benchmarking paper](https://pubs.acs.org/doi/10.1021/acs.jcim.5c02645) published in JCIM for a few examples of what you can already do with ChemTorch!
 
 ## 💬 Support
 If you want to ask a question, report a bug, or suggest a feature feel free to open an issue on our [issue tracker](https://github.com/heid-lab/chemtorch/issues) and we will get back to you :)
@@ -54,9 +58,13 @@ To detect breaking changes early and safeguard your workflows:
 - Check the [release notes](https://github.com/heid-lab/chemtorch/releases).
 - Add and run [Integrity & Reproducibility tests](https://heid-lab.github.io/chemtorch/advanced_guide/integration_tests.html) for your experiments to ensure reproducibility of past results with newer releases.
 
+<a id="contributing"></a>
+
 ## 🤝 Contributing
 We welcome contributions.
 Please read the [contribution guide](CONTRIBUTING.md) before opening issues or PRs.
+
+<a id="citation"></a>
 
 ## ❤️ Citation
 If you use this code in your research, please cite the following paper:

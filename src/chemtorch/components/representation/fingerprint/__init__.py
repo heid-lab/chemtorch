@@ -1,1 +1,3 @@
-from .drfp import DRFP
+from .drfp import DRFP, DRFPUtil
+
+__all__ = ["DRFP", "DRFPUtil"]
